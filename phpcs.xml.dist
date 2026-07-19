@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<ruleset name="SlimSeoWpml">
+	<description>Coding standard for the Slim SEO WPML plugin.</description>
+
+	<file>.</file>
+	<exclude-pattern>/vendor/*</exclude-pattern>
+	<exclude-pattern>/node_modules/*</exclude-pattern>
+	<exclude-pattern>/languages/*</exclude-pattern>
+	<exclude-pattern>/tests/*</exclude-pattern>
+
+	<arg value="sp"/>
+	<arg name="basepath" value="."/>
+	<arg name="colors"/>
+	<arg name="extensions" value="php"/>
+
+	<rule ref="WordPress-Extra">
+		<exclude name="WordPress.Files.FileName"/>
+	</rule>
+	<rule ref="WordPress-Docs"/>
+
+	<config name="minimum_supported_wp_version" value="6.4"/>
+	<config name="testVersion" value="8.1-"/>
+	<rule ref="PHPCompatibilityWP"/>
+
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="slim-seo-wpml"/>
+			</property>
+		</properties>
+	</rule>
+
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<properties>
+			<property name="prefixes" type="array">
+				<element value="slim_seo_wpml"/>
+				<element value="SlimSeoWpml"/>
+				<element value="SLIM_SEO_WPML"/>
+			</property>
+		</properties>
+	</rule>
+</ruleset>
