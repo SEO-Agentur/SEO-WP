@@ -2,18 +2,18 @@
 /**
  * Tests for shared URL normalisation and the WPML permalink passthrough.
  *
- * @package EasyWordpressSeo
+ * @package SeoWp
  */
 
 declare(strict_types=1);
 
-namespace EasyWordpressSeo\Tests\Unit;
+namespace SeoWp\Tests\Unit;
 
-use EasyWordpressSeo\Support\Url;
+use SeoWp\Support\Url;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \EasyWordpressSeo\Support\Url
+ * @covers \SeoWp\Support\Url
  */
 final class UrlTest extends TestCase {
 

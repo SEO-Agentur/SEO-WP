@@ -6,7 +6,7 @@
  * plugin is intentionally left in place, matching the non-destructive
  * import stance described in the plugin's requirements.
  *
- * @package EasyWordpressSeo
+ * @package SeoWp
  */
 
 declare(strict_types=1);

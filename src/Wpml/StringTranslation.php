@@ -2,12 +2,12 @@
 /**
  * Per-language translation of title/description templates via WPML String Translation.
  *
- * @package EasyWordpressSeo
+ * @package SeoWp
  */
 
 declare(strict_types=1);
 
-namespace EasyWordpressSeo\Wpml;
+namespace SeoWp\Wpml;
 
 /**
  * Registers plugin templates as translatable strings so each language can

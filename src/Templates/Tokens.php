@@ -2,12 +2,12 @@
 /**
  * Internal {token} syntax and conversion from/to %token%, %%token%%, #token.
  *
- * @package EasyWordpressSeo
+ * @package SeoWp
  */
 
 declare(strict_types=1);
 
-namespace EasyWordpressSeo\Templates;
+namespace SeoWp\Templates;
 
 /**
  * Resolves internal tokens and converts between the internal {token}

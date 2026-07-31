@@ -2,15 +2,15 @@
 /**
  * PSR-4 style autoloader for the plugin's own classes.
  *
- * @package EasyWordpressSeo
+ * @package SeoWp
  */
 
 declare(strict_types=1);
 
-namespace EasyWordpressSeo;
+namespace SeoWp;
 
 /**
- * Maps the EasyWordpressSeo\ namespace prefix to the src/ directory.
+ * Maps the SeoWp\ namespace prefix to the src/ directory.
  */
 final class Autoloader {
 

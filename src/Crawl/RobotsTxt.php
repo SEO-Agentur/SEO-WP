@@ -2,12 +2,12 @@
 /**
  * Virtual, editable robots.txt output.
  *
- * @package EasyWordpressSeo
+ * @package SeoWp
  */
 
 declare(strict_types=1);
 
-namespace EasyWordpressSeo\Crawl;
+namespace SeoWp\Crawl;
 
 /**
  * Renders a virtual robots.txt with a sitemap line and an AI-crawler

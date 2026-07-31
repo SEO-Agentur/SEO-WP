@@ -2,14 +2,14 @@
 /**
  * Plugin bootstrap and hook registration container.
  *
- * @package EasyWordpressSeo
+ * @package SeoWp
  */
 
 declare(strict_types=1);
 
-namespace EasyWordpressSeo;
+namespace SeoWp;
 
-use EasyWordpressSeo\Frontend\Head;
+use SeoWp\Frontend\Head;
 
 /**
  * Singleton container responsible for wiring up all plugin modules.
@@ -43,7 +43,7 @@ final class Plugin {
 	 * Boot the plugin on plugins_loaded.
 	 */
 	public function init(): void {
-		load_plugin_textdomain( 'easy-wordpress-seo', false, dirname( BASENAME ) . '/languages' );
+		load_plugin_textdomain( 'seo-wp', false, dirname( BASENAME ) . '/languages' );
 
 		( new Head() )->register();
 	}

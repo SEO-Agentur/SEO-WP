@@ -2,12 +2,12 @@
 /**
  * Rewrite rules and request routing for the XML sitemaps.
  *
- * @package EasyWordpressSeo
+ * @package SeoWp
  */
 
 declare(strict_types=1);
 
-namespace EasyWordpressSeo\Sitemaps;
+namespace SeoWp\Sitemaps;
 
 /**
  * Registers dynamic rewrite rules for sitemap endpoints. No physical XML

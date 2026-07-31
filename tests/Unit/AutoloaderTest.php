@@ -2,19 +2,19 @@
 /**
  * Tests for the plugin's PSR-4 style autoloader.
  *
- * @package EasyWordpressSeo
+ * @package SeoWp
  */
 
 declare(strict_types=1);
 
-namespace EasyWordpressSeo\Tests\Unit;
+namespace SeoWp\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
-use EasyWordpressSeo\Templates\Tokens;
-use EasyWordpressSeo\Schema\Nodes\WebPage;
+use SeoWp\Templates\Tokens;
+use SeoWp\Schema\Nodes\WebPage;
 
 /**
- * @covers \EasyWordpressSeo\Autoloader
+ * @covers \SeoWp\Autoloader
  */
 final class AutoloaderTest extends TestCase {
 

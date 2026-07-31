@@ -2,12 +2,12 @@
 /**
  * Batched, cron/AJAX-driven import runner.
  *
- * @package EasyWordpressSeo
+ * @package SeoWp
  */
 
 declare(strict_types=1);
 
-namespace EasyWordpressSeo\Import;
+namespace SeoWp\Import;
 
 /**
  * Runs importers in batches with dry-run support and a log of what was

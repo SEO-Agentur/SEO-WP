@@ -2,18 +2,18 @@
 /**
  * Tests for the pure override-vs-computed precedence used by Canonical.
  *
- * @package EasyWordpressSeo
+ * @package SeoWp
  */
 
 declare(strict_types=1);
 
-namespace EasyWordpressSeo\Tests\Unit;
+namespace SeoWp\Tests\Unit;
 
-use EasyWordpressSeo\Meta\Canonical;
+use SeoWp\Meta\Canonical;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \EasyWordpressSeo\Meta\Canonical
+ * @covers \SeoWp\Meta\Canonical
  */
 final class CanonicalTest extends TestCase {
 

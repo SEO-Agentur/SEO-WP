@@ -1,7 +1,7 @@
 <?php
 /**
- * Plugin Name:       Easy WordPress SEO
- * Plugin URI:        https://example.com/easy-wordpress-seo
+ * Plugin Name:       SEO-WP
+ * Plugin URI:        https://seo-wp.net
  * Description:       Leichtgewichtiges, seitentyp-agnostisches SEO-Plugin mit voller WPML-Kompatibilitaet: Meta-Tags, Social-Meta, Schema (JSON-LD), XML-Sitemaps und Crawl-Steuerung.
  * Version:           0.1.0
  * Requires at least: 6.4
@@ -9,15 +9,15 @@
  * Author:            Your Name
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:       easy-wordpress-seo
+ * Text Domain:       seo-wp
  * Domain Path:       /languages
  *
- * @package EasyWordpressSeo
+ * @package SeoWp
  */
 
 declare(strict_types=1);
 
-namespace EasyWordpressSeo;
+namespace SeoWp;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -26,7 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 const VERSION  = '0.1.0';
 const FILE     = __FILE__;
 const DIR      = __DIR__;
-const BASENAME = 'easy-wordpress-seo/easy-wordpress-seo.php';
+const BASENAME = 'seo-wp/seo-wp.php';
 
 require_once __DIR__ . '/src/Autoloader.php';
 Autoloader::register();

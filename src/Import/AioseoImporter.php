@@ -2,12 +2,12 @@
 /**
  * Imports object data written by AIOSEO v4.
  *
- * @package EasyWordpressSeo
+ * @package SeoWp
  */
 
 declare(strict_types=1);
 
-namespace EasyWordpressSeo\Import;
+namespace SeoWp\Import;
 
 /**
  * Reads AIOSEO's custom wp_aioseo_posts table (not postmeta) and maps it

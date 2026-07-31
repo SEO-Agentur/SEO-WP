@@ -2,12 +2,12 @@
 /**
  * Robots meta directive overrides.
  *
- * @package EasyWordpressSeo
+ * @package SeoWp
  */
 
 declare(strict_types=1);
 
-namespace EasyWordpressSeo\Meta;
+namespace SeoWp\Meta;
 
 use WP_Post;
 use WP_Term;
@@ -23,17 +23,17 @@ final class Robots {
 	/**
 	 * Post/term meta key for the noindex override ('1', '0' or unset).
 	 */
-	private const META_NOINDEX = '_ews_robots_noindex';
+	private const META_NOINDEX = '_seo_wp_robots_noindex';
 
 	/**
 	 * Post/term meta key for the nofollow override ('1', '0' or unset).
 	 */
-	private const META_NOFOLLOW = '_ews_robots_nofollow';
+	private const META_NOFOLLOW = '_seo_wp_robots_nofollow';
 
 	/**
 	 * Post/term meta key for extra directives (array of directive names).
 	 */
-	private const META_ADVANCED = '_ews_robots_advanced';
+	private const META_ADVANCED = '_seo_wp_robots_advanced';
 
 	/**
 	 * Advanced directives this plugin is allowed to add.

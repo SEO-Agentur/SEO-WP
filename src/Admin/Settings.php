@@ -2,12 +2,12 @@
 /**
  * Plugin settings screen.
  *
- * @package EasyWordpressSeo
+ * @package SeoWp
  */
 
 declare(strict_types=1);
 
-namespace EasyWordpressSeo\Admin;
+namespace SeoWp\Admin;
 
 /**
  * Registers the General, Content Types, Sitemaps and Crawl settings

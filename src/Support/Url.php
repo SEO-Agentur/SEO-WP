@@ -2,12 +2,12 @@
 /**
  * Shared URL normalisation helpers.
  *
- * @package EasyWordpressSeo
+ * @package SeoWp
  */
 
 declare(strict_types=1);
 
-namespace EasyWordpressSeo\Support;
+namespace SeoWp\Support;
 
 /**
  * Normalises trailing slashes and compares permalinks for equality. Also

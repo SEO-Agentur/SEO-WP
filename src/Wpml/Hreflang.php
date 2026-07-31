@@ -2,12 +2,12 @@
 /**
  * Hreflang alternates computation and rendering.
  *
- * @package EasyWordpressSeo
+ * @package SeoWp
  */
 
 declare(strict_types=1);
 
-namespace EasyWordpressSeo\Wpml;
+namespace SeoWp\Wpml;
 
 /**
  * Builds the hreflang alternates list from WPML, applies the

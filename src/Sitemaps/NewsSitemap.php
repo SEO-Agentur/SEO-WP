@@ -2,12 +2,12 @@
 /**
  * Adds the news:news sitemap extension.
  *
- * @package EasyWordpressSeo
+ * @package SeoWp
  */
 
 declare(strict_types=1);
 
-namespace EasyWordpressSeo\Sitemaps;
+namespace SeoWp\Sitemaps;
 
 /**
  * Renders a Google News sitemap limited to content published in the last

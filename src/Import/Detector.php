@@ -2,12 +2,12 @@
 /**
  * Detects which competing SEO plugins have data present.
  *
- * @package EasyWordpressSeo
+ * @package SeoWp
  */
 
 declare(strict_types=1);
 
-namespace EasyWordpressSeo\Import;
+namespace SeoWp\Import;
 
 /**
  * Detects Yoast, Rank Math and AIOSEO data available for import.

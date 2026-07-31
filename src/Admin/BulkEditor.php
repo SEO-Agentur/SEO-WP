@@ -2,12 +2,12 @@
 /**
  * Bulk-edit table for SEO fields across all objects.
  *
- * @package EasyWordpressSeo
+ * @package SeoWp
  */
 
 declare(strict_types=1);
 
-namespace EasyWordpressSeo\Admin;
+namespace SeoWp\Admin;
 
 /**
  * Renders an editable table of Title/Description/Robots/Canonical for

@@ -2,12 +2,12 @@
 /**
  * Organization schema node.
  *
- * @package EasyWordpressSeo
+ * @package SeoWp
  */
 
 declare(strict_types=1);
 
-namespace EasyWordpressSeo\Schema\Nodes;
+namespace SeoWp\Schema\Nodes;
 
 /**
  * Builds the Organization JSON-LD node.

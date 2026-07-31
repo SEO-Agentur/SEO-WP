@@ -2,12 +2,12 @@
 /**
  * Builds the deduplicated JSON-LD @graph for the current request.
  *
- * @package EasyWordpressSeo
+ * @package SeoWp
  */
 
 declare(strict_types=1);
 
-namespace EasyWordpressSeo\Schema;
+namespace SeoWp\Schema;
 
 /**
  * Collects schema nodes, deduplicates by @id and sets inLanguage.

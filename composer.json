@@ -1,5 +1,5 @@
 {
-    "name": "easy-wordpress-seo/easy-wordpress-seo",
+    "name": "seo-wp/seo-wp",
     "description": "Slim, page-type-agnostic WordPress SEO plugin with full WPML compatibility.",
     "type": "wordpress-plugin",
     "license": "GPL-2.0-or-later",

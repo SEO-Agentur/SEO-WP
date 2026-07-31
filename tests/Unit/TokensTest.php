@@ -2,18 +2,18 @@
 /**
  * Tests for internal token resolution and cross-plugin template conversion.
  *
- * @package EasyWordpressSeo
+ * @package SeoWp
  */
 
 declare(strict_types=1);
 
-namespace EasyWordpressSeo\Tests\Unit;
+namespace SeoWp\Tests\Unit;
 
-use EasyWordpressSeo\Templates\Tokens;
+use SeoWp\Templates\Tokens;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \EasyWordpressSeo\Templates\Tokens
+ * @covers \SeoWp\Templates\Tokens
  */
 final class TokensTest extends TestCase {
 

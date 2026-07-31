@@ -2,12 +2,12 @@
 /**
  * Guided import wizard UI.
  *
- * @package EasyWordpressSeo
+ * @package SeoWp
  */
 
 declare(strict_types=1);
 
-namespace EasyWordpressSeo\Admin;
+namespace SeoWp\Admin;
 
 /**
  * Walks the site owner through detecting, dry-running and running the

@@ -2,12 +2,12 @@
 /**
  * Sitemap index (/sitemap.xml).
  *
- * @package EasyWordpressSeo
+ * @package SeoWp
  */
 
 declare(strict_types=1);
 
-namespace EasyWordpressSeo\Sitemaps;
+namespace SeoWp\Sitemaps;
 
 /**
  * Renders the top-level sitemap index listing all sub-sitemaps.

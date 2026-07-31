@@ -2,12 +2,12 @@
 /**
  * Generic sitemap for a single public taxonomy.
  *
- * @package EasyWordpressSeo
+ * @package SeoWp
  */
 
 declare(strict_types=1);
 
-namespace EasyWordpressSeo\Sitemaps;
+namespace SeoWp\Sitemaps;
 
 /**
  * Renders a sitemap for any public taxonomy's terms.

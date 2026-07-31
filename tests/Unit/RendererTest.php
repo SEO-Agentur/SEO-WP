@@ -2,18 +2,18 @@
 /**
  * Tests for template rendering and separator cleanup.
  *
- * @package EasyWordpressSeo
+ * @package SeoWp
  */
 
 declare(strict_types=1);
 
-namespace EasyWordpressSeo\Tests\Unit;
+namespace SeoWp\Tests\Unit;
 
-use EasyWordpressSeo\Templates\Renderer;
+use SeoWp\Templates\Renderer;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \EasyWordpressSeo\Templates\Renderer
+ * @covers \SeoWp\Templates\Renderer
  */
 final class RendererTest extends TestCase {
 

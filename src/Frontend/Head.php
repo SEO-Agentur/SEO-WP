@@ -2,16 +2,16 @@
 /**
  * Collects and renders the plugin's wp_head output.
  *
- * @package EasyWordpressSeo
+ * @package SeoWp
  */
 
 declare(strict_types=1);
 
-namespace EasyWordpressSeo\Frontend;
+namespace SeoWp\Frontend;
 
-use EasyWordpressSeo\Meta\Canonical;
-use EasyWordpressSeo\Meta\Robots;
-use EasyWordpressSeo\Meta\TitleDescription;
+use SeoWp\Meta\Canonical;
+use SeoWp\Meta\Robots;
+use SeoWp\Meta\TitleDescription;
 
 /**
  * Registers the head-rendering modules. Social, schema and hreflang

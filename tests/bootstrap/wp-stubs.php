@@ -5,7 +5,7 @@
  * code that needs more than this is exercised as integration code, not
  * unit tested here.
  *
- * @package EasyWordpressSeo
+ * @package SeoWp
  */
 
 declare(strict_types=1);

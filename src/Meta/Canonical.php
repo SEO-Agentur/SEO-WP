@@ -2,14 +2,14 @@
 /**
  * Self-referencing canonical URL output.
  *
- * @package EasyWordpressSeo
+ * @package SeoWp
  */
 
 declare(strict_types=1);
 
-namespace EasyWordpressSeo\Meta;
+namespace SeoWp\Meta;
 
-use EasyWordpressSeo\Support\Url;
+use SeoWp\Support\Url;
 use WP_Post;
 use WP_Term;
 
@@ -26,7 +26,7 @@ final class Canonical {
 	/**
 	 * Post/term meta key for a per-object canonical override.
 	 */
-	private const META_CANONICAL = '_ews_canonical';
+	private const META_CANONICAL = '_seo_wp_canonical';
 
 	/**
 	 * Registers the singular filter and the non-singular wp_head output.

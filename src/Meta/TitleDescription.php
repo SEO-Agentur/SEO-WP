@@ -2,14 +2,14 @@
 /**
  * Document title and meta description output.
  *
- * @package EasyWordpressSeo
+ * @package SeoWp
  */
 
 declare(strict_types=1);
 
-namespace EasyWordpressSeo\Meta;
+namespace SeoWp\Meta;
 
-use EasyWordpressSeo\Templates\Renderer;
+use SeoWp\Templates\Renderer;
 use WP_Post;
 use WP_Term;
 
@@ -22,17 +22,17 @@ final class TitleDescription {
 	/**
 	 * Option key holding the plugin's settings array.
 	 */
-	private const OPTION_KEY = 'easy_wordpress_seo_settings';
+	private const OPTION_KEY = 'seo_wp_settings';
 
 	/**
 	 * Post/term meta key for a per-object title override.
 	 */
-	private const META_TITLE = '_ews_title';
+	private const META_TITLE = '_seo_wp_title';
 
 	/**
 	 * Post/term meta key for a per-object description override.
 	 */
-	private const META_DESCRIPTION = '_ews_description';
+	private const META_DESCRIPTION = '_seo_wp_description';
 
 	/**
 	 * Registers the document title filter and the meta description output.
@@ -134,12 +134,12 @@ final class TitleDescription {
 		} elseif ( is_search() ) {
 			$values['title'] = (string) get_search_query();
 		} elseif ( is_404() ) {
-			$values['title'] = __( 'Page not found', 'easy-wordpress-seo' );
+			$values['title'] = __( 'Page not found', 'seo-wp' );
 		}
 
 		$paged = max( (int) get_query_var( 'paged' ), (int) get_query_var( 'page' ) );
 		if ( $paged > 1 ) {
-			$values['page'] = sprintf( /* translators: %d: page number. */ __( 'Page %d', 'easy-wordpress-seo' ), $paged );
+			$values['page'] = sprintf( /* translators: %d: page number. */ __( 'Page %d', 'seo-wp' ), $paged );
 		}
 
 		return $values;

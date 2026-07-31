@@ -1,4 +1,4 @@
-=== Easy WordPress SEO ===
+=== SEO-WP ===
 Contributors: yourwpusername
 Tags: seo, wpml, sitemap, schema, hreflang
 Requires at least: 6.4
@@ -12,7 +12,7 @@ A slim, page-type-agnostic SEO plugin with full WPML compatibility: meta tags, s
 
 == Description ==
 
-Easy WordPress SEO covers the essentials of on-page and technical SEO without a scoring UI, nag screens or external tracking:
+SEO-WP covers the essentials of on-page and technical SEO without a scoring UI, nag screens or external tracking:
 
 * Title and meta description templates
 * Robots meta directives (layered on top of WordPress core's own `wp_robots` output)

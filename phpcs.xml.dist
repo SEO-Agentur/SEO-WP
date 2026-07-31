@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<ruleset name="EasyWordpressSeo">
-	<description>Coding standard for the Easy WordPress SEO plugin.</description>
+<ruleset name="SeoWp">
+	<description>Coding standard for the SEO-WP plugin.</description>
 
 	<file>.</file>
 	<exclude-pattern>/vendor/*</exclude-pattern>
@@ -25,7 +25,7 @@
 	<rule ref="WordPress.WP.I18n">
 		<properties>
 			<property name="text_domain" type="array">
-				<element value="easy-wordpress-seo"/>
+				<element value="seo-wp"/>
 			</property>
 		</properties>
 	</rule>
@@ -33,9 +33,9 @@
 	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
 		<properties>
 			<property name="prefixes" type="array">
-				<element value="easy_wordpress_seo"/>
-				<element value="EasyWordpressSeo"/>
-				<element value="EASY_WORDPRESS_SEO"/>
+				<element value="seo_wp"/>
+				<element value="SeoWp"/>
+				<element value="SEO_WP"/>
 			</property>
 		</properties>
 	</rule>
