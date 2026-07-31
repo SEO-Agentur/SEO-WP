@@ -2,12 +2,12 @@
 /**
  * Shared URL normalisation helpers.
  *
- * @package SlimSeoWpml
+ * @package EasyWordpressSeo
  */
 
 declare(strict_types=1);
 
-namespace SlimSeoWpml\Support;
+namespace EasyWordpressSeo\Support;
 
 /**
  * Normalises trailing slashes and compares permalinks for equality.

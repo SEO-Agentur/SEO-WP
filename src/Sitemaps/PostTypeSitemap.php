@@ -2,12 +2,12 @@
 /**
  * Generic sitemap for a single public post type.
  *
- * @package SlimSeoWpml
+ * @package EasyWordpressSeo
  */
 
 declare(strict_types=1);
 
-namespace SlimSeoWpml\Sitemaps;
+namespace EasyWordpressSeo\Sitemaps;
 
 /**
  * Renders a sitemap for any public post type, excluding noindex/private/

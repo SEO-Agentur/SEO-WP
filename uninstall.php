@@ -6,7 +6,7 @@
  * plugin is intentionally left in place, matching the non-destructive
  * import stance described in the plugin's requirements.
  *
- * @package SlimSeoWpml
+ * @package EasyWordpressSeo
  */
 
 declare(strict_types=1);

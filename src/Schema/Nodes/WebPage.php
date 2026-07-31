@@ -2,12 +2,12 @@
 /**
  * WebPage schema node.
  *
- * @package SlimSeoWpml
+ * @package EasyWordpressSeo
  */
 
 declare(strict_types=1);
 
-namespace SlimSeoWpml\Schema\Nodes;
+namespace EasyWordpressSeo\Schema\Nodes;
 
 /**
  * Builds the WebPage JSON-LD node.

@@ -2,12 +2,12 @@
 /**
  * Imports object meta written by Yoast SEO.
  *
- * @package SlimSeoWpml
+ * @package EasyWordpressSeo
  */
 
 declare(strict_types=1);
 
-namespace SlimSeoWpml\Import;
+namespace EasyWordpressSeo\Import;
 
 /**
  * Reads Yoast's _yoast_wpseo_* postmeta and maps it to this plugin's meta

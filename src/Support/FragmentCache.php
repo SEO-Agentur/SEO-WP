@@ -2,12 +2,12 @@
 /**
  * Object-cache fragment storage for rendered head output, keyed per object and language.
  *
- * @package SlimSeoWpml
+ * @package EasyWordpressSeo
  */
 
 declare(strict_types=1);
 
-namespace SlimSeoWpml\Support;
+namespace EasyWordpressSeo\Support;
 
 /**
  * Caches rendered fragments in the object cache and invalidates them on save_post.

@@ -2,12 +2,12 @@
 /**
  * Organization schema node.
  *
- * @package SlimSeoWpml
+ * @package EasyWordpressSeo
  */
 
 declare(strict_types=1);
 
-namespace SlimSeoWpml\Schema\Nodes;
+namespace EasyWordpressSeo\Schema\Nodes;
 
 /**
  * Builds the Organization JSON-LD node.

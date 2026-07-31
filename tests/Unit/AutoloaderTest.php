@@ -2,19 +2,19 @@
 /**
  * Tests for the plugin's PSR-4 style autoloader.
  *
- * @package SlimSeoWpml
+ * @package EasyWordpressSeo
  */
 
 declare(strict_types=1);
 
-namespace SlimSeoWpml\Tests\Unit;
+namespace EasyWordpressSeo\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
-use SlimSeoWpml\Templates\Tokens;
-use SlimSeoWpml\Schema\Nodes\WebPage;
+use EasyWordpressSeo\Templates\Tokens;
+use EasyWordpressSeo\Schema\Nodes\WebPage;
 
 /**
- * @covers \SlimSeoWpml\Autoloader
+ * @covers \EasyWordpressSeo\Autoloader
  */
 final class AutoloaderTest extends TestCase {
 

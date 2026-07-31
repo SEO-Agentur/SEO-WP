@@ -2,12 +2,12 @@
 /**
  * Plugin settings screen.
  *
- * @package SlimSeoWpml
+ * @package EasyWordpressSeo
  */
 
 declare(strict_types=1);
 
-namespace SlimSeoWpml\Admin;
+namespace EasyWordpressSeo\Admin;
 
 /**
  * Registers the General, Content Types, Sitemaps and Crawl settings

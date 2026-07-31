@@ -2,12 +2,12 @@
 /**
  * Imports taxonomy term SEO data from Yoast, Rank Math and AIOSEO.
  *
- * @package SlimSeoWpml
+ * @package EasyWordpressSeo
  */
 
 declare(strict_types=1);
 
-namespace SlimSeoWpml\Import;
+namespace EasyWordpressSeo\Import;
 
 /**
  * Reads Yoast's wpseo_taxonomy_meta option (taxonomy => term ID => fields,

@@ -2,12 +2,12 @@
 /**
  * Batched, cron/AJAX-driven import runner.
  *
- * @package SlimSeoWpml
+ * @package EasyWordpressSeo
  */
 
 declare(strict_types=1);
 
-namespace SlimSeoWpml\Import;
+namespace EasyWordpressSeo\Import;
 
 /**
  * Runs importers in batches with dry-run support and a log of what was

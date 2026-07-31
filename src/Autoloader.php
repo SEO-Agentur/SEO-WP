@@ -2,15 +2,15 @@
 /**
  * PSR-4 style autoloader for the plugin's own classes.
  *
- * @package SlimSeoWpml
+ * @package EasyWordpressSeo
  */
 
 declare(strict_types=1);
 
-namespace SlimSeoWpml;
+namespace EasyWordpressSeo;
 
 /**
- * Maps the SlimSeoWpml\ namespace prefix to the src/ directory.
+ * Maps the EasyWordpressSeo\ namespace prefix to the src/ directory.
  */
 final class Autoloader {
 

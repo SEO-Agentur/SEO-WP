@@ -2,12 +2,12 @@
 /**
  * Per-object SEO metabox (General/Social/Schema tabs).
  *
- * @package SlimSeoWpml
+ * @package EasyWordpressSeo
  */
 
 declare(strict_types=1);
 
-namespace SlimSeoWpml\Admin;
+namespace EasyWordpressSeo\Admin;
 
 /**
  * Renders the tabbed metabox shown on post types and taxonomy term screens.

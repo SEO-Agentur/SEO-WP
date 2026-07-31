@@ -2,12 +2,12 @@
 /**
  * Guided import wizard UI.
  *
- * @package SlimSeoWpml
+ * @package EasyWordpressSeo
  */
 
 declare(strict_types=1);
 
-namespace SlimSeoWpml\Admin;
+namespace EasyWordpressSeo\Admin;
 
 /**
  * Walks the site owner through detecting, dry-running and running the

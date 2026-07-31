@@ -2,12 +2,12 @@
 /**
  * Twitter Card meta tag output.
  *
- * @package SlimSeoWpml
+ * @package EasyWordpressSeo
  */
 
 declare(strict_types=1);
 
-namespace SlimSeoWpml\Social;
+namespace EasyWordpressSeo\Social;
 
 /**
  * Renders twitter: meta tags for the current object.

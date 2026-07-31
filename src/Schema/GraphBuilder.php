@@ -2,12 +2,12 @@
 /**
  * Builds the deduplicated JSON-LD @graph for the current request.
  *
- * @package SlimSeoWpml
+ * @package EasyWordpressSeo
  */
 
 declare(strict_types=1);
 
-namespace SlimSeoWpml\Schema;
+namespace EasyWordpressSeo\Schema;
 
 /**
  * Collects schema nodes, deduplicates by @id and sets inLanguage.

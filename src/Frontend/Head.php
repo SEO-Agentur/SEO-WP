@@ -2,12 +2,12 @@
 /**
  * Collects and renders the plugin's wp_head output.
  *
- * @package SlimSeoWpml
+ * @package EasyWordpressSeo
  */
 
 declare(strict_types=1);
 
-namespace SlimSeoWpml\Frontend;
+namespace EasyWordpressSeo\Frontend;
 
 /**
  * Gathers output from the meta/social/schema/hreflang modules and renders

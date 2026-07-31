@@ -2,12 +2,12 @@
 /**
  * Open Graph meta tag output.
  *
- * @package SlimSeoWpml
+ * @package EasyWordpressSeo
  */
 
 declare(strict_types=1);
 
-namespace SlimSeoWpml\Social;
+namespace EasyWordpressSeo\Social;
 
 /**
  * Renders og: meta tags for the current object.

@@ -2,12 +2,12 @@
 /**
  * Self-referencing canonical URL output.
  *
- * @package SlimSeoWpml
+ * @package EasyWordpressSeo
  */
 
 declare(strict_types=1);
 
-namespace SlimSeoWpml\Meta;
+namespace EasyWordpressSeo\Meta;
 
 /**
  * Renders a self-referencing canonical URL, correctly paginated, and

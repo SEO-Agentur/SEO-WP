@@ -2,12 +2,12 @@
 /**
  * Virtual, editable robots.txt output.
  *
- * @package SlimSeoWpml
+ * @package EasyWordpressSeo
  */
 
 declare(strict_types=1);
 
-namespace SlimSeoWpml\Crawl;
+namespace EasyWordpressSeo\Crawl;
 
 /**
  * Renders a virtual robots.txt with a sitemap line and an AI-crawler

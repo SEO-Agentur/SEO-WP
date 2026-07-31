@@ -2,12 +2,12 @@
 /**
  * Robots meta directive overrides.
  *
- * @package SlimSeoWpml
+ * @package EasyWordpressSeo
  */
 
 declare(strict_types=1);
 
-namespace SlimSeoWpml\Meta;
+namespace EasyWordpressSeo\Meta;
 
 /**
  * Adds noindex/nofollow/noarchive/nosnippet/noimageindex directives on top

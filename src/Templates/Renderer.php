@@ -2,12 +2,12 @@
 /**
  * Renders a token template into a final string.
  *
- * @package SlimSeoWpml
+ * @package EasyWordpressSeo
  */
 
 declare(strict_types=1);
 
-namespace SlimSeoWpml\Templates;
+namespace EasyWordpressSeo\Templates;
 
 /**
  * Turns a template into a string and cleans up duplicate separators.

@@ -2,12 +2,12 @@
 /**
  * Adds the image:image sitemap extension.
  *
- * @package SlimSeoWpml
+ * @package EasyWordpressSeo
  */
 
 declare(strict_types=1);
 
-namespace SlimSeoWpml\Sitemaps;
+namespace EasyWordpressSeo\Sitemaps;
 
 /**
  * Adds image:image entries for featured images and embedded media images.

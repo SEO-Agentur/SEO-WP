@@ -2,12 +2,12 @@
 /**
  * /llms.txt (and optional /llms-full.txt) output.
  *
- * @package SlimSeoWpml
+ * @package EasyWordpressSeo
  */
 
 declare(strict_types=1);
 
-namespace SlimSeoWpml\Crawl;
+namespace EasyWordpressSeo\Crawl;
 
 /**
  * Renders a virtual /llms.txt endpoint summarising the site for LLM

@@ -1,7 +1,7 @@
 <?php
 /**
- * Plugin Name:       Slim SEO WPML
- * Plugin URI:        https://example.com/slim-seo-wpml
+ * Plugin Name:       Easy WordPress SEO
+ * Plugin URI:        https://example.com/easy-wordpress-seo
  * Description:       Leichtgewichtiges, seitentyp-agnostisches SEO-Plugin mit voller WPML-Kompatibilitaet: Meta-Tags, Social-Meta, Schema (JSON-LD), XML-Sitemaps und Crawl-Steuerung.
  * Version:           0.1.0
  * Requires at least: 6.4
@@ -9,15 +9,15 @@
  * Author:            Your Name
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:       slim-seo-wpml
+ * Text Domain:       easy-wordpress-seo
  * Domain Path:       /languages
  *
- * @package SlimSeoWpml
+ * @package EasyWordpressSeo
  */
 
 declare(strict_types=1);
 
-namespace SlimSeoWpml;
+namespace EasyWordpressSeo;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -26,7 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 const VERSION  = '0.1.0';
 const FILE     = __FILE__;
 const DIR      = __DIR__;
-const BASENAME = 'slim-seo-wpml/slim-seo-wpml.php';
+const BASENAME = 'easy-wordpress-seo/easy-wordpress-seo.php';
 
 require_once __DIR__ . '/src/Autoloader.php';
 Autoloader::register();

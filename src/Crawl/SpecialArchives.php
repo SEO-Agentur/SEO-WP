@@ -2,12 +2,12 @@
 /**
  * Handling for author, date, search, 404 and attachment archives.
  *
- * @package SlimSeoWpml
+ * @package EasyWordpressSeo
  */
 
 declare(strict_types=1);
 
-namespace SlimSeoWpml\Crawl;
+namespace EasyWordpressSeo\Crawl;
 
 /**
  * Applies crawl/index rules to author, date, search, 404 and attachment

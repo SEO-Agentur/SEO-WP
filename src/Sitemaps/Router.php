@@ -2,12 +2,12 @@
 /**
  * Rewrite rules and request routing for the XML sitemaps.
  *
- * @package SlimSeoWpml
+ * @package EasyWordpressSeo
  */
 
 declare(strict_types=1);
 
-namespace SlimSeoWpml\Sitemaps;
+namespace EasyWordpressSeo\Sitemaps;
 
 /**
  * Registers dynamic rewrite rules for sitemap endpoints. No physical XML

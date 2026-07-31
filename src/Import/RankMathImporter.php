@@ -2,12 +2,12 @@
 /**
  * Imports object meta written by Rank Math.
  *
- * @package SlimSeoWpml
+ * @package EasyWordpressSeo
  */
 
 declare(strict_types=1);
 
-namespace SlimSeoWpml\Import;
+namespace EasyWordpressSeo\Import;
 
 /**
  * Reads Rank Math's rank_math_* postmeta (unserialising rank_math_robots)

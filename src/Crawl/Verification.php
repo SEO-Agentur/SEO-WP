@@ -2,12 +2,12 @@
 /**
  * Site verification meta tags.
  *
- * @package SlimSeoWpml
+ * @package EasyWordpressSeo
  */
 
 declare(strict_types=1);
 
-namespace SlimSeoWpml\Crawl;
+namespace EasyWordpressSeo\Crawl;
 
 /**
  * Renders google/bing/pinterest/yandex site verification meta tags.

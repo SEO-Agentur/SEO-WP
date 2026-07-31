@@ -2,12 +2,12 @@
 /**
  * Document title and meta description output.
  *
- * @package SlimSeoWpml
+ * @package EasyWordpressSeo
  */
 
 declare(strict_types=1);
 
-namespace SlimSeoWpml\Meta;
+namespace EasyWordpressSeo\Meta;
 
 /**
  * Filters pre_get_document_title / document_title_parts and renders the

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<ruleset name="SlimSeoWpml">
-	<description>Coding standard for the Slim SEO WPML plugin.</description>
+<ruleset name="EasyWordpressSeo">
+	<description>Coding standard for the Easy WordPress SEO plugin.</description>
 
 	<file>.</file>
 	<exclude-pattern>/vendor/*</exclude-pattern>
@@ -25,7 +25,7 @@
 	<rule ref="WordPress.WP.I18n">
 		<properties>
 			<property name="text_domain" type="array">
-				<element value="slim-seo-wpml"/>
+				<element value="easy-wordpress-seo"/>
 			</property>
 		</properties>
 	</rule>
@@ -33,9 +33,9 @@
 	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
 		<properties>
 			<property name="prefixes" type="array">
-				<element value="slim_seo_wpml"/>
-				<element value="SlimSeoWpml"/>
-				<element value="SLIM_SEO_WPML"/>
+				<element value="easy_wordpress_seo"/>
+				<element value="EasyWordpressSeo"/>
+				<element value="EASY_WORDPRESS_SEO"/>
 			</property>
 		</properties>
 	</rule>

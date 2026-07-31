@@ -2,12 +2,12 @@
 /**
  * Internal {token} syntax and conversion from/to %token%, %%token%%, #token.
  *
- * @package SlimSeoWpml
+ * @package EasyWordpressSeo
  */
 
 declare(strict_types=1);
 
-namespace SlimSeoWpml\Templates;
+namespace EasyWordpressSeo\Templates;
 
 /**
  * Resolves internal tokens and converts between the internal and external

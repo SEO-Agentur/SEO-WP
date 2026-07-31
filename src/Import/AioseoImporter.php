@@ -2,12 +2,12 @@
 /**
  * Imports object data written by AIOSEO v4.
  *
- * @package SlimSeoWpml
+ * @package EasyWordpressSeo
  */
 
 declare(strict_types=1);
 
-namespace SlimSeoWpml\Import;
+namespace EasyWordpressSeo\Import;
 
 /**
  * Reads AIOSEO's custom wp_aioseo_posts table (not postmeta) and maps it
