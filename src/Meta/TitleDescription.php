@@ -9,10 +9,220 @@ declare(strict_types=1);
 
 namespace EasyWordpressSeo\Meta;
 
+use EasyWordpressSeo\Templates\Renderer;
+use WP_Post;
+use WP_Term;
+
 /**
- * Filters pre_get_document_title / document_title_parts and renders the
- * meta description tag.
- * Implemented in milestone M1.
+ * Filters pre_get_document_title and renders the meta description tag,
+ * for any public post type or taxonomy without hardcoding type names.
  */
 final class TitleDescription {
+
+	/**
+	 * Option key holding the plugin's settings array.
+	 */
+	private const OPTION_KEY = 'easy_wordpress_seo_settings';
+
+	/**
+	 * Post/term meta key for a per-object title override.
+	 */
+	private const META_TITLE = '_ews_title';
+
+	/**
+	 * Post/term meta key for a per-object description override.
+	 */
+	private const META_DESCRIPTION = '_ews_description';
+
+	/**
+	 * Registers the document title filter and the meta description output.
+	 */
+	public function register(): void {
+		add_filter( 'pre_get_document_title', array( $this, 'filter_title' ), 15 );
+		add_action( 'wp_head', array( $this, 'output_meta_description' ), 1 );
+	}
+
+	/**
+	 * Supplies the full document title, short-circuiting core's own
+	 * title-part assembly.
+	 *
+	 * @param string $title Title computed so far by WordPress core.
+	 */
+	public function filter_title( string $title ): string {
+		if ( is_admin() ) {
+			return $title;
+		}
+
+		$rendered = $this->render_for_context( 'title', self::META_TITLE );
+
+		return '' !== $rendered ? $rendered : $title;
+	}
+
+	/**
+	 * Echoes the meta description tag when a description is available.
+	 */
+	public function output_meta_description(): void {
+		if ( is_admin() ) {
+			return;
+		}
+
+		$description = $this->render_for_context( 'description', self::META_DESCRIPTION );
+
+		if ( '' === $description ) {
+			return;
+		}
+
+		printf( '<meta name="description" content="%s" />' . "\n", esc_attr( $description ) );
+	}
+
+	/**
+	 * Renders either the per-object override or the configured template
+	 * for the current request.
+	 *
+	 * @param string $kind     'title' or 'description'.
+	 * @param string $meta_key Post/term meta key holding the override.
+	 */
+	private function render_for_context( string $kind, string $meta_key ): string {
+		$values    = $this->values_for_current_context();
+		$separator = (string) $this->option( 'separator', '-' );
+
+		$override = $this->override( $meta_key );
+		if ( '' !== $override ) {
+			return Renderer::render( $override, $values, $separator );
+		}
+
+		$template = $this->template_for_current_context( $kind );
+		if ( '' === $template ) {
+			return '';
+		}
+
+		return Renderer::render( $template, $values, $separator );
+	}
+
+	/**
+	 * Builds the {token} => value map for the current request.
+	 *
+	 * @return array<string,string>
+	 */
+	private function values_for_current_context(): array {
+		$values = array(
+			'sitename' => (string) get_bloginfo( 'name' ),
+			'sep'      => (string) $this->option( 'separator', '-' ),
+			'title'    => '',
+			'excerpt'  => '',
+			'category' => '',
+			'date'     => '',
+			'page'     => '',
+		);
+
+		if ( is_singular() ) {
+			$post = get_queried_object();
+			if ( $post instanceof WP_Post ) {
+				$values['title']   = get_the_title( $post );
+				$values['excerpt'] = wp_strip_all_tags( (string) get_the_excerpt( $post ) );
+				$values['date']    = (string) get_the_date( '', $post );
+			}
+		} elseif ( is_category() || is_tag() || is_tax() ) {
+			$term = get_queried_object();
+			if ( $term instanceof WP_Term ) {
+				$values['category'] = $term->name;
+			}
+		} elseif ( is_post_type_archive() ) {
+			$values['title'] = (string) post_type_archive_title( '', false );
+		} elseif ( is_author() ) {
+			$values['title'] = (string) get_the_author();
+		} elseif ( is_search() ) {
+			$values['title'] = (string) get_search_query();
+		} elseif ( is_404() ) {
+			$values['title'] = __( 'Page not found', 'easy-wordpress-seo' );
+		}
+
+		$paged = max( (int) get_query_var( 'paged' ), (int) get_query_var( 'page' ) );
+		if ( $paged > 1 ) {
+			$values['page'] = sprintf( /* translators: %d: page number. */ __( 'Page %d', 'easy-wordpress-seo' ), $paged );
+		}
+
+		return $values;
+	}
+
+	/**
+	 * Resolves the configured template for the current request type,
+	 * falling back to a sensible built-in default.
+	 *
+	 * @param string $kind 'title' or 'description'.
+	 */
+	private function template_for_current_context( string $kind ): string {
+		$defaults = self::defaults();
+
+		if ( is_front_page() ) {
+			return (string) $this->option( "{$kind}_template_home", $defaults[ "{$kind}_home" ] );
+		}
+
+		if ( is_singular() ) {
+			$post_type = get_post_type();
+			$post_type = false !== $post_type ? $post_type : 'post';
+			return (string) $this->option( "{$kind}_template_{$post_type}", $defaults[ "{$kind}_singular" ] );
+		}
+
+		if ( is_category() || is_tag() || is_tax() ) {
+			$term     = get_queried_object();
+			$taxonomy = $term instanceof WP_Term ? $term->taxonomy : 'category';
+			return (string) $this->option( "{$kind}_template_term_{$taxonomy}", $defaults[ "{$kind}_term" ] );
+		}
+
+		if ( is_post_type_archive() ) {
+			$post_type = get_query_var( 'post_type' );
+			$post_type = is_array( $post_type ) ? (string) reset( $post_type ) : (string) $post_type;
+			return (string) $this->option( "{$kind}_template_archive_{$post_type}", $defaults[ "{$kind}_singular" ] );
+		}
+
+		return (string) $defaults[ "{$kind}_singular" ];
+	}
+
+	/**
+	 * Reads a per-object title/description override.
+	 *
+	 * @param string $meta_key Post/term meta key.
+	 */
+	private function override( string $meta_key ): string {
+		if ( is_singular() ) {
+			$post = get_queried_object();
+			return $post instanceof WP_Post ? (string) get_post_meta( $post->ID, $meta_key, true ) : '';
+		}
+
+		if ( is_category() || is_tag() || is_tax() ) {
+			$term = get_queried_object();
+			return $term instanceof WP_Term ? (string) get_term_meta( $term->term_id, $meta_key, true ) : '';
+		}
+
+		return '';
+	}
+
+	/**
+	 * Reads a single key from the plugin's settings option.
+	 *
+	 * @param string $key      Settings key.
+	 * @param string $fallback Value to use when the key is not set.
+	 */
+	private function option( string $key, string $fallback ): string {
+		$settings = get_option( self::OPTION_KEY, array() );
+
+		return isset( $settings[ $key ] ) ? (string) $settings[ $key ] : $fallback;
+	}
+
+	/**
+	 * Built-in fallback templates, used until Settings (M7) stores its own.
+	 *
+	 * @return array<string,string>
+	 */
+	private static function defaults(): array {
+		return array(
+			'title_home'           => '{sitename}',
+			'title_singular'       => '{title} {sep} {sitename}',
+			'title_term'           => '{category} {sep} {sitename}',
+			'description_home'     => '',
+			'description_singular' => '{excerpt}',
+			'description_term'     => '',
+		);
+	}
 }

@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace EasyWordpressSeo;
 
+use EasyWordpressSeo\Frontend\Head;
+
 /**
  * Singleton container responsible for wiring up all plugin modules.
  */
@@ -42,6 +44,8 @@ final class Plugin {
 	 */
 	public function init(): void {
 		load_plugin_textdomain( 'easy-wordpress-seo', false, dirname( BASENAME ) . '/languages' );
+
+		( new Head() )->register();
 	}
 
 	/**

@@ -9,10 +9,23 @@ declare(strict_types=1);
 
 namespace EasyWordpressSeo\Frontend;
 
+use EasyWordpressSeo\Meta\Canonical;
+use EasyWordpressSeo\Meta\Robots;
+use EasyWordpressSeo\Meta\TitleDescription;
+
 /**
- * Gathers output from the meta/social/schema/hreflang modules and renders
- * it in wp_head, backed by the fragment cache.
- * Implemented in milestone M1.
+ * Registers the head-rendering modules. Social, schema and hreflang
+ * modules join this pipeline in milestones M2 and M4; fragment caching is
+ * added in M4.
  */
 final class Head {
+
+	/**
+	 * Registers every module that contributes to the document head.
+	 */
+	public function register(): void {
+		( new TitleDescription() )->register();
+		( new Robots() )->register();
+		( new Canonical() )->register();
+	}
 }
