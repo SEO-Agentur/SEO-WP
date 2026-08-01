@@ -22,7 +22,7 @@ final class UrlTest extends TestCase {
 	 */
 	protected function setUp(): void {
 		parent::setUp();
-		$GLOBALS['ews_test_filters'] = array();
+		$GLOBALS['seo_wp_test_filters'] = array();
 	}
 
 	/**

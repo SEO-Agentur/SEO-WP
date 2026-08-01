@@ -11,6 +11,7 @@ namespace SeoWp;
 
 use SeoWp\Frontend\Head;
 use SeoWp\Sitemaps\Router;
+use SeoWp\Wpml\StringTranslation;
 
 /**
  * Singleton container responsible for wiring up all plugin modules.
@@ -48,6 +49,7 @@ final class Plugin {
 
 		( new Head() )->register();
 		( new Router() )->register();
+		( new StringTranslation() )->register();
 	}
 
 	/**

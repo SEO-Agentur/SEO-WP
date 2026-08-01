@@ -15,10 +15,12 @@ use SeoWp\Meta\TitleDescription;
 use SeoWp\Schema\GraphBuilder;
 use SeoWp\Social\OpenGraph;
 use SeoWp\Social\TwitterCards;
+use SeoWp\Support\FragmentCache;
+use SeoWp\Wpml\Hreflang;
 
 /**
- * Registers the head-rendering modules. The hreflang module joins this
- * pipeline in milestone M4; fragment caching is added in M4.
+ * Registers every module that contributes to the document head, including
+ * the fragment cache the schema and hreflang modules are built on.
  */
 final class Head {
 
@@ -26,11 +28,14 @@ final class Head {
 	 * Registers every module that contributes to the document head.
 	 */
 	public function register(): void {
+		( new FragmentCache() )->register();
+
 		( new TitleDescription() )->register();
 		( new Robots() )->register();
 		( new Canonical() )->register();
 		( new OpenGraph() )->register();
 		( new TwitterCards() )->register();
 		( new GraphBuilder() )->register();
+		( new Hreflang() )->register();
 	}
 }

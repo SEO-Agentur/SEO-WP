@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace SeoWp\Meta;
 
 use SeoWp\Templates\Renderer;
+use SeoWp\Wpml\StringTranslation;
 use WP_Post;
 use WP_Term;
 
@@ -222,8 +223,9 @@ final class TitleDescription {
 	 */
 	private function option( string $key, string $fallback ): string {
 		$settings = get_option( self::OPTION_KEY, array() );
+		$value    = isset( $settings[ $key ] ) ? (string) $settings[ $key ] : $fallback;
 
-		return isset( $settings[ $key ] ) ? (string) $settings[ $key ] : $fallback;
+		return StringTranslation::translate( $key, $value );
 	}
 
 	/**

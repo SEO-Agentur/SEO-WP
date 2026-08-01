@@ -53,13 +53,19 @@ final class TaxonomySitemap {
 			return null;
 		}
 
-		$urls = array();
+		$hreflang = new HreflangAlternates();
+		$urls     = array();
+
 		foreach ( $slice as $term_id ) {
 			$link = get_term_link( $term_id, $taxonomy );
 			if ( is_wp_error( $link ) ) {
 				continue;
 			}
-			$urls[] = (string) $link;
+
+			$urls[] = array(
+				'loc'        => (string) $link,
+				'alternates' => $hreflang->for_term( $term_id, $taxonomy ),
+			);
 		}
 
 		return $this->xml( $urls );
@@ -96,16 +102,21 @@ final class TaxonomySitemap {
 	}
 
 	/**
-	 * Builds the urlset XML for a list of URLs.
+	 * Builds the urlset XML for a list of URL entries.
 	 *
-	 * @param string[] $urls Term permalinks.
+	 * @param array<int,array{loc: string, alternates: array<int,array{hreflang:string,href:string}>}> $urls URL entries.
 	 */
 	private function xml( array $urls ): string {
+		$hreflang_renderer = new HreflangAlternates();
+
 		$xml  = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
-		$xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
+		$xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">' . "\n";
 
 		foreach ( $urls as $url ) {
-			$xml .= '<url><loc>' . esc_url( $url ) . '</loc></url>' . "\n";
+			$xml .= '<url>' . "\n";
+			$xml .= '<loc>' . esc_url( $url['loc'] ) . '</loc>' . "\n";
+			$xml .= $hreflang_renderer->xml( $url['alternates'] );
+			$xml .= '</url>' . "\n";
 		}
 
 		$xml .= '</urlset>';

@@ -59,6 +59,7 @@ final class PostTypeSitemap {
 		}
 
 		$image_sitemap = new ImageSitemap();
+		$hreflang      = new HreflangAlternates();
 		$urls          = array();
 
 		foreach ( $query->posts as $post_id ) {
@@ -70,9 +71,10 @@ final class PostTypeSitemap {
 			}
 
 			$urls[] = array(
-				'loc'     => $permalink,
-				'lastmod' => (string) get_post_modified_time( DATE_W3C, true, $post_id ),
-				'images'  => $image_sitemap->images_for( $post_id ),
+				'loc'        => $permalink,
+				'lastmod'    => (string) get_post_modified_time( DATE_W3C, true, $post_id ),
+				'images'     => $image_sitemap->images_for( $post_id ),
+				'alternates' => $hreflang->for_post( $post_id ),
 			);
 		}
 
@@ -119,11 +121,13 @@ final class PostTypeSitemap {
 	/**
 	 * Builds the urlset XML for a list of URL entries.
 	 *
-	 * @param array<int,array{loc: string, lastmod: string, images: string[]}> $urls URL entries.
+	 * @param array<int,array{loc: string, lastmod: string, images: string[], alternates: array<int,array{hreflang:string,href:string}>}> $urls URL entries.
 	 */
 	private function xml( array $urls ): string {
+		$hreflang_renderer = new HreflangAlternates();
+
 		$xml  = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
-		$xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">' . "\n";
+		$xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:xhtml="http://www.w3.org/1999/xhtml">' . "\n";
 
 		foreach ( $urls as $url ) {
 			$xml .= '<url>' . "\n";
@@ -136,6 +140,8 @@ final class PostTypeSitemap {
 			foreach ( $url['images'] as $image_url ) {
 				$xml .= '<image:image><image:loc>' . esc_url( $image_url ) . '</image:loc></image:image>' . "\n";
 			}
+
+			$xml .= $hreflang_renderer->xml( $url['alternates'] );
 
 			$xml .= '</url>' . "\n";
 		}

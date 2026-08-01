@@ -17,6 +17,7 @@ use SeoWp\Schema\Nodes\Person;
 use SeoWp\Schema\Nodes\Product;
 use SeoWp\Schema\Nodes\WebPage;
 use SeoWp\Schema\Nodes\WebSite;
+use SeoWp\Support\FragmentCache;
 
 /**
  * Collects schema nodes from every registered builder, deduplicates them
@@ -33,17 +34,33 @@ final class GraphBuilder {
 
 	/**
 	 * Echoes the JSON-LD @graph for the current request, when there is
-	 * anything to say.
+	 * anything to say. Routed through the fragment cache since building
+	 * the graph (ancestors, attachment lookups) is the priciest part of
+	 * the plugin's head output.
 	 */
 	public function output(): void {
 		if ( is_admin() ) {
 			return;
 		}
 
+		$json = ( new FragmentCache() )->remember( 'schema', array( $this, 'render' ) );
+
+		if ( '' === $json ) {
+			return;
+		}
+
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render() returns wp_json_encode() output, already safe inside a script tag.
+		printf( '<script type="application/ld+json">%s</script>' . "\n", $json );
+	}
+
+	/**
+	 * Builds the JSON-encoded @graph for the current request.
+	 */
+	public function render(): string {
 		$nodes = self::deduplicate( $this->collect_nodes() );
 
 		if ( array() === $nodes ) {
-			return;
+			return '';
 		}
 
 		$graph = array(
@@ -51,7 +68,7 @@ final class GraphBuilder {
 			'@graph'   => array_values( $nodes ),
 		);
 
-		printf( '<script type="application/ld+json">%s</script>' . "\n", wp_json_encode( $graph ) );
+		return (string) wp_json_encode( $graph );
 	}
 
 	/**

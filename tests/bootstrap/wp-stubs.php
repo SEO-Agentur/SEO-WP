@@ -33,9 +33,22 @@ if ( ! function_exists( 'add_filter' ) ) {
 	 * @param int      $accepted_args Unused by this stub.
 	 */
 	function add_filter( string $hook_name, callable $callback, int $priority = 10, int $accepted_args = 1 ): bool {
-		$GLOBALS['ews_test_filters'][ $hook_name ][] = $callback;
+		$GLOBALS['seo_wp_test_filters'][ $hook_name ][] = $callback;
 
 		return true;
+	}
+}
+
+if ( ! function_exists( 'has_filter' ) ) {
+	/**
+	 * Reports whether any callback is registered for a hook.
+	 *
+	 * @param string        $hook_name Hook name.
+	 * @param callable|bool $callback  Unused by this stub.
+	 * @return bool
+	 */
+	function has_filter( string $hook_name, $callback = false ): bool {
+		return ! empty( $GLOBALS['seo_wp_test_filters'][ $hook_name ] );
 	}
 }
 
@@ -50,7 +63,7 @@ if ( ! function_exists( 'apply_filters' ) ) {
 	function apply_filters( string $hook_name, ...$args ) {
 		$value = $args[0] ?? null;
 
-		foreach ( $GLOBALS['ews_test_filters'][ $hook_name ] ?? array() as $callback ) {
+		foreach ( $GLOBALS['seo_wp_test_filters'][ $hook_name ] ?? array() as $callback ) {
 			$args[0] = $value;
 			$value   = $callback( ...$args );
 		}
