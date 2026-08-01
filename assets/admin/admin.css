@@ -1,0 +1,85 @@
+/*
+ * Shared admin styles for the SEO-WP metabox, settings, bulk editor and
+ * import wizard screens. Loaded only on this plugin's own admin pages.
+ */
+
+.seo-wp-metabox-tabs {
+	display: flex;
+	gap: 4px;
+	margin-bottom: 12px;
+	border-bottom: 1px solid #dcdcde;
+}
+
+.seo-wp-tab-button {
+	background: none;
+	border: 1px solid transparent;
+	border-bottom: none;
+	padding: 8px 12px;
+	cursor: pointer;
+	font-weight: 600;
+}
+
+.seo-wp-tab-button.seo-wp-tab-active {
+	border-color: #dcdcde;
+	background: #fff;
+}
+
+.seo-wp-tab-panel {
+	display: none;
+}
+
+.seo-wp-tab-panel.seo-wp-tab-active {
+	display: block;
+}
+
+.seo-wp-field {
+	margin-bottom: 12px;
+}
+
+.seo-wp-field label {
+	display: block;
+	font-weight: 600;
+	margin-bottom: 4px;
+}
+
+.seo-wp-faq-row {
+	display: grid;
+	grid-template-columns: 1fr 1fr auto;
+	gap: 8px;
+	align-items: start;
+	margin-bottom: 8px;
+}
+
+.seo-wp-bulk-table td {
+	vertical-align: top;
+	padding: 8px;
+}
+
+.seo-wp-bulk-table input[type='text'],
+.seo-wp-bulk-table textarea {
+	min-width: 100%;
+}
+
+.seo-wp-import-source {
+	background: #fff;
+	border: 1px solid #dcdcde;
+	padding: 16px;
+	margin-bottom: 16px;
+}
+
+.seo-wp-import-progress {
+	margin: 12px 0;
+}
+
+.seo-wp-import-log {
+	max-height: 240px;
+	overflow-y: auto;
+	font-family: monospace;
+	font-size: 12px;
+	background: #f6f7f7;
+	padding: 8px;
+}
+
+.seo-wp-import-log-entry {
+	padding: 2px 0;
+}

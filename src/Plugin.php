@@ -9,6 +9,10 @@ declare(strict_types=1);
 
 namespace SeoWp;
 
+use SeoWp\Admin\BulkEditor;
+use SeoWp\Admin\ImportWizard;
+use SeoWp\Admin\Metabox;
+use SeoWp\Admin\Settings;
 use SeoWp\Crawl\IndexNow;
 use SeoWp\Crawl\LlmsTxt;
 use SeoWp\Crawl\RobotsTxt;
@@ -61,6 +65,13 @@ final class Plugin {
 		( new Verification() )->register();
 		( new SpecialArchives() )->register();
 		( new IndexNow() )->register();
+
+		if ( is_admin() ) {
+			( new Metabox() )->register();
+			( new Settings() )->register();
+			( new BulkEditor() )->register();
+			( new ImportWizard() )->register();
+		}
 	}
 
 	/**
