@@ -24,17 +24,17 @@ final class OpenGraph {
 	/**
 	 * Post/term meta key for an og:title override.
 	 */
-	private const META_TITLE = '_seo_wp_og_title';
+	public const META_TITLE = '_seo_wp_og_title';
 
 	/**
 	 * Post/term meta key for an og:description override.
 	 */
-	private const META_DESCRIPTION = '_seo_wp_og_description';
+	public const META_DESCRIPTION = '_seo_wp_og_description';
 
 	/**
 	 * Post/term meta key for an og:image override (a plain URL).
 	 */
-	private const META_IMAGE = '_seo_wp_og_image';
+	public const META_IMAGE = '_seo_wp_og_image';
 
 	/**
 	 * Registers the wp_head output.

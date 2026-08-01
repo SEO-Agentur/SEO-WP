@@ -52,6 +52,29 @@ if ( ! function_exists( 'has_filter' ) ) {
 	}
 }
 
+if ( ! function_exists( 'maybe_unserialize' ) ) {
+	/**
+	 * Mirrors WordPress core's maybe_unserialize(): unserialises a value
+	 * that looks serialized, otherwise returns it unchanged.
+	 *
+	 * @param mixed $value Value to maybe unserialise.
+	 * @return mixed
+	 */
+	function maybe_unserialize( $value ) {
+		if ( ! is_string( $value ) || '' === $value ) {
+			return $value;
+		}
+
+		if ( 'N;' === $value ) {
+			return null;
+		}
+
+		$result = @unserialize( $value ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize -- test-only stub of a WP core function.
+
+		return false === $result ? $value : $result;
+	}
+}
+
 if ( ! function_exists( 'apply_filters' ) ) {
 	/**
 	 * Runs every callback registered for a hook through add_filter().

@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace SeoWp\Crawl;
 
+use SeoWp\Meta\Robots;
 use WP_Post;
 use WP_Post_Type;
 
@@ -37,11 +38,6 @@ final class IndexNow {
 	 * Shared IndexNow endpoint; fans out to every participating engine.
 	 */
 	private const ENDPOINT = 'https://api.indexnow.org/indexnow';
-
-	/**
-	 * Post meta key marking a post as excluded from indexing.
-	 */
-	private const META_NOINDEX = '_seo_wp_robots_noindex';
 
 	/**
 	 * Registers the key file endpoint and the publish/update/delete pings.
@@ -143,7 +139,7 @@ final class IndexNow {
 			return false;
 		}
 
-		return '1' !== get_post_meta( $post->ID, self::META_NOINDEX, true );
+		return '1' !== get_post_meta( $post->ID, Robots::META_NOINDEX, true );
 	}
 
 	/**

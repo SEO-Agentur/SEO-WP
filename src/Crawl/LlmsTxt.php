@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace SeoWp\Crawl;
 
+use SeoWp\Meta\Robots;
 use WP_Query;
 
 /**
@@ -22,11 +23,6 @@ final class LlmsTxt {
 	 * Option key holding the plugin's settings array.
 	 */
 	private const OPTION_KEY = 'seo_wp_settings';
-
-	/**
-	 * Post meta key marking a post as excluded from indexing.
-	 */
-	private const META_NOINDEX = '_seo_wp_robots_noindex';
 
 	/**
 	 * Maximum items listed per post type.
@@ -158,11 +154,11 @@ final class LlmsTxt {
 				'meta_query'             => array(
 					'relation' => 'OR',
 					array(
-						'key'     => self::META_NOINDEX,
+						'key'     => Robots::META_NOINDEX,
 						'compare' => 'NOT EXISTS',
 					),
 					array(
-						'key'     => self::META_NOINDEX,
+						'key'     => Robots::META_NOINDEX,
 						'value'   => '1',
 						'compare' => '!=',
 					),

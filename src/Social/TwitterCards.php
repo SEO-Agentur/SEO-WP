@@ -28,17 +28,17 @@ final class TwitterCards {
 	/**
 	 * Post/term meta key for a twitter:title override.
 	 */
-	private const META_TITLE = '_seo_wp_twitter_title';
+	public const META_TITLE = '_seo_wp_twitter_title';
 
 	/**
 	 * Post/term meta key for a twitter:description override.
 	 */
-	private const META_DESCRIPTION = '_seo_wp_twitter_description';
+	public const META_DESCRIPTION = '_seo_wp_twitter_description';
 
 	/**
 	 * Post/term meta key for a twitter:image override (a plain URL).
 	 */
-	private const META_IMAGE = '_seo_wp_twitter_image';
+	public const META_IMAGE = '_seo_wp_twitter_image';
 
 	/**
 	 * Registers the wp_head output.

@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace SeoWp\Sitemaps;
 
+use SeoWp\Meta\Robots;
 use WP_Query;
 
 /**
@@ -22,11 +23,6 @@ final class PostTypeSitemap {
 	 * own default.
 	 */
 	private const ITEMS_PER_PAGE = 2000;
-
-	/**
-	 * Post meta key marking a post as excluded from indexing.
-	 */
-	private const META_NOINDEX = '_seo_wp_robots_noindex';
 
 	/**
 	 * Number of sitemap pages a post type needs, given the exclusion
@@ -106,11 +102,11 @@ final class PostTypeSitemap {
 			'meta_query'             => array(
 				'relation' => 'OR',
 				array(
-					'key'     => self::META_NOINDEX,
+					'key'     => Robots::META_NOINDEX,
 					'compare' => 'NOT EXISTS',
 				),
 				array(
-					'key'     => self::META_NOINDEX,
+					'key'     => Robots::META_NOINDEX,
 					'value'   => '1',
 					'compare' => '!=',
 				),

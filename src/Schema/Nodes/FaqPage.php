@@ -20,7 +20,7 @@ final class FaqPage {
 	/**
 	 * Post meta key holding the array of { question, answer } pairs.
 	 */
-	private const META_FAQ = '_seo_wp_faq';
+	public const META_FAQ = '_seo_wp_faq';
 
 	/**
 	 * Builds the node, or null when the current object has no FAQ entries.

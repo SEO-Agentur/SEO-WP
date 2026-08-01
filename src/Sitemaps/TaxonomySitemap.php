@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace SeoWp\Sitemaps;
 
+use SeoWp\Meta\Robots;
+
 /**
  * Renders a sitemap for any public taxonomy's terms, excluding empty and
  * noindexed terms.
@@ -19,11 +21,6 @@ final class TaxonomySitemap {
 	 * Maximum number of URLs per sitemap page.
 	 */
 	private const ITEMS_PER_PAGE = 2000;
-
-	/**
-	 * Term meta key marking a term as excluded from indexing.
-	 */
-	private const META_NOINDEX = '_seo_wp_robots_noindex';
 
 	/**
 	 * Number of sitemap pages a taxonomy needs, given the exclusion rules.
@@ -86,11 +83,11 @@ final class TaxonomySitemap {
 				'meta_query' => array(
 					'relation' => 'OR',
 					array(
-						'key'     => self::META_NOINDEX,
+						'key'     => Robots::META_NOINDEX,
 						'compare' => 'NOT EXISTS',
 					),
 					array(
-						'key'     => self::META_NOINDEX,
+						'key'     => Robots::META_NOINDEX,
 						'value'   => '1',
 						'compare' => '!=',
 					),

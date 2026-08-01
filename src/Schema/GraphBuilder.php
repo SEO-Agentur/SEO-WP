@@ -26,6 +26,15 @@ use SeoWp\Support\FragmentCache;
 final class GraphBuilder {
 
 	/**
+	 * Post/term meta key for a per-object schema type override (e.g.
+	 * "Article", "Product", "FAQPage"). Reserved for a future per-object
+	 * schema type picker; not yet read by any node builder here — Import
+	 * (M6) already populates it from Yoast/Rank Math/AIOSEO so that data
+	 * isn't lost before that feature exists.
+	 */
+	public const META_SCHEMA_TYPE = '_seo_wp_schema_type';
+
+	/**
 	 * Registers the wp_head output.
 	 */
 	public function register(): void {

@@ -28,12 +28,12 @@ final class TitleDescription {
 	/**
 	 * Post/term meta key for a per-object title override.
 	 */
-	private const META_TITLE = '_seo_wp_title';
+	public const META_TITLE = '_seo_wp_title';
 
 	/**
 	 * Post/term meta key for a per-object description override.
 	 */
-	private const META_DESCRIPTION = '_seo_wp_description';
+	public const META_DESCRIPTION = '_seo_wp_description';
 
 	/**
 	 * Registers the document title filter and the meta description output.

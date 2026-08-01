@@ -26,7 +26,7 @@ final class Canonical {
 	/**
 	 * Post/term meta key for a per-object canonical override.
 	 */
-	private const META_CANONICAL = '_seo_wp_canonical';
+	public const META_CANONICAL = '_seo_wp_canonical';
 
 	/**
 	 * Registers the singular filter and the non-singular wp_head output.

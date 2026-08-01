@@ -23,17 +23,25 @@ final class Robots {
 	/**
 	 * Post/term meta key for the noindex override ('1', '0' or unset).
 	 */
-	private const META_NOINDEX = '_seo_wp_robots_noindex';
+	public const META_NOINDEX = '_seo_wp_robots_noindex';
 
 	/**
 	 * Post/term meta key for the nofollow override ('1', '0' or unset).
 	 */
-	private const META_NOFOLLOW = '_seo_wp_robots_nofollow';
+	public const META_NOFOLLOW = '_seo_wp_robots_nofollow';
 
 	/**
 	 * Post/term meta key for extra directives (array of directive names).
 	 */
-	private const META_ADVANCED = '_seo_wp_robots_advanced';
+	public const META_ADVANCED = '_seo_wp_robots_advanced';
+
+	/**
+	 * User meta key for a per-author "noindex this author's archive"
+	 * override ('1' or unset). Reserved for a future author-archive
+	 * setting; not yet read here — Import (M6) already populates it from
+	 * Yoast so that data isn't lost before that feature exists.
+	 */
+	public const META_AUTHOR_NOINDEX = '_seo_wp_author_noindex';
 
 	/**
 	 * Advanced directives this plugin is allowed to add.

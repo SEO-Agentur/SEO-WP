@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace SeoWp\Sitemaps;
 
+use SeoWp\Meta\Robots;
 use WP_Query;
 
 /**
@@ -23,11 +24,6 @@ final class NewsSitemap {
 	 * How far back to look for eligible content.
 	 */
 	private const WINDOW_HOURS = 48;
-
-	/**
-	 * Post meta key marking a post as excluded from indexing.
-	 */
-	private const META_NOINDEX = '_seo_wp_robots_noindex';
 
 	/**
 	 * Whether there is any content to list right now.
@@ -101,11 +97,11 @@ final class NewsSitemap {
 				'meta_query'             => array(
 					'relation' => 'OR',
 					array(
-						'key'     => self::META_NOINDEX,
+						'key'     => Robots::META_NOINDEX,
 						'compare' => 'NOT EXISTS',
 					),
 					array(
-						'key'     => self::META_NOINDEX,
+						'key'     => Robots::META_NOINDEX,
 						'value'   => '1',
 						'compare' => '!=',
 					),
