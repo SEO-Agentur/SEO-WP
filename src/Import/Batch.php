@@ -256,7 +256,7 @@ final class Batch {
 				array(
 					'type'   => 'redirects-skipped',
 					'source' => $source,
-					'note'   => 'Redirects were found but are not migrated by this plugin.',
+					'note'   => __( 'Redirects were found but are not migrated by this plugin.', 'seo-wp' ),
 				),
 			)
 		);

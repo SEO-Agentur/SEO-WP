@@ -36,6 +36,19 @@ final class TitleDescription {
 	public const META_DESCRIPTION = '_seo_wp_description';
 
 	/**
+	 * Per-request memoised resolve_title()/resolve_description() results,
+	 * shared across instances (Open Graph and Twitter Card each fall back
+	 * to these via their own instance) so the underlying template
+	 * rendering only ever runs once per request.
+	 *
+	 * @var array{title: ?string, description: ?string}
+	 */
+	private static array $resolved = array(
+		'title'       => null,
+		'description' => null,
+	);
+
+	/**
 	 * Registers the document title filter and the meta description output.
 	 */
 	public function register(): void {
@@ -78,18 +91,28 @@ final class TitleDescription {
 
 	/**
 	 * Resolves the title for the current request, for reuse by other
-	 * head modules (e.g. Open Graph) that fall back to it.
+	 * head modules (e.g. Open Graph) that fall back to it. Memoised per
+	 * request; see $resolved.
 	 */
 	public function resolve_title(): string {
-		return $this->render_for_context( 'title', self::META_TITLE );
+		if ( null === self::$resolved['title'] ) {
+			self::$resolved['title'] = $this->render_for_context( 'title', self::META_TITLE );
+		}
+
+		return self::$resolved['title'];
 	}
 
 	/**
 	 * Resolves the meta description for the current request, for reuse by
-	 * other head modules that fall back to it.
+	 * other head modules that fall back to it. Memoised per request; see
+	 * $resolved.
 	 */
 	public function resolve_description(): string {
-		return $this->render_for_context( 'description', self::META_DESCRIPTION );
+		if ( null === self::$resolved['description'] ) {
+			self::$resolved['description'] = $this->render_for_context( 'description', self::META_DESCRIPTION );
+		}
+
+		return self::$resolved['description'];
 	}
 
 	/**

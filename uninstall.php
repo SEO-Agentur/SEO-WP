@@ -2,9 +2,11 @@
 /**
  * Fired when the plugin is uninstalled via the WordPress admin.
  *
- * Removes plugin options and transients. Post/term meta written by this
- * plugin is intentionally left in place, matching the non-destructive
- * import stance described in the plugin's requirements.
+ * Removes the plugin's own options. Post/term meta written by this
+ * plugin (title/description/robots/canonical/social/FAQ overrides) is
+ * intentionally left in place, matching the non-destructive stance
+ * described in the plugin's requirements — reinstalling the plugin
+ * should not lose per-object SEO data.
  *
  * @package SeoWp
  */
@@ -15,5 +17,6 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
 }
 
-// Options and transients are registered by later milestones; nothing to
-// clean up yet in the M0 scaffold.
+delete_option( 'seo_wp_settings' );
+delete_option( 'seo_wp_indexnow_key' );
+delete_option( 'seo_wp_import_log' );

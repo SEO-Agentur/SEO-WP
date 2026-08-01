@@ -37,6 +37,16 @@ final class OpenGraph {
 	public const META_IMAGE = '_seo_wp_og_image';
 
 	/**
+	 * Per-request memoised result of resolve_image(), shared across
+	 * instances (Twitter Cards falls back to this same image) so the
+	 * attachment metadata lookup it needs — not preloaded by the main
+	 * query — only ever runs once per request.
+	 *
+	 * @var array{url: string, width: int, height: int}|null
+	 */
+	private static ?array $resolved_image = null;
+
+	/**
 	 * Registers the wp_head output.
 	 */
 	public function register(): void {
@@ -88,11 +98,24 @@ final class OpenGraph {
 
 	/**
 	 * Resolves the image used for both og:image and, as a fallback, the
-	 * Twitter Card image.
+	 * Twitter Card image. Memoised per request; see $resolved_image.
 	 *
 	 * @return array{url: string, width: int, height: int}
 	 */
 	public function image(): array {
+		if ( null === self::$resolved_image ) {
+			self::$resolved_image = $this->resolve_image();
+		}
+
+		return self::$resolved_image;
+	}
+
+	/**
+	 * Computes the image, uncached.
+	 *
+	 * @return array{url: string, width: int, height: int}
+	 */
+	private function resolve_image(): array {
 		$override = $this->override( self::META_IMAGE );
 		if ( '' !== $override ) {
 			return array(

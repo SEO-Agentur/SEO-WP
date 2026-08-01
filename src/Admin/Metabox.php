@@ -38,15 +38,26 @@ final class Metabox {
 	private const NONCE_NAME = 'seo_wp_metabox_nonce';
 
 	/**
-	 * Advanced robots directives editable here.
+	 * Advanced robots directive keys editable here.
 	 *
-	 * @var array<string,string>
+	 * @var string[]
 	 */
-	private const ADVANCED_DIRECTIVES = array(
-		'noarchive'    => 'No archive',
-		'nosnippet'    => 'No snippet',
-		'noimageindex' => 'No image index',
-	);
+	private const ADVANCED_DIRECTIVE_KEYS = array( 'noarchive', 'nosnippet', 'noimageindex' );
+
+	/**
+	 * Translated labels for the advanced robots directives. A method
+	 * rather than a class constant, since constant expressions can't
+	 * call __().
+	 *
+	 * @return array<string,string>
+	 */
+	private static function advanced_directive_labels(): array {
+		return array(
+			'noarchive'    => __( 'No archive', 'seo-wp' ),
+			'nosnippet'    => __( 'No snippet', 'seo-wp' ),
+			'noimageindex' => __( 'No image index', 'seo-wp' ),
+		);
+	}
 
 	/**
 	 * Registers the post metabox, the term fields for every public
@@ -254,7 +265,7 @@ final class Metabox {
 		$advanced_raw = isset( $_POST[ Robots::META_ADVANCED ] ) && is_array( $_POST[ Robots::META_ADVANCED ] )
 			? array_map( 'sanitize_key', wp_unslash( $_POST[ Robots::META_ADVANCED ] ) )
 			: array();
-		$this->update_meta( $object_id, $is_post, Robots::META_ADVANCED, array_values( array_intersect( array_keys( self::ADVANCED_DIRECTIVES ), $advanced_raw ) ) );
+		$this->update_meta( $object_id, $is_post, Robots::META_ADVANCED, array_values( array_intersect( self::ADVANCED_DIRECTIVE_KEYS, $advanced_raw ) ) );
 		// phpcs:enable
 	}
 
@@ -415,7 +426,7 @@ final class Metabox {
 
 		$advanced = (array) $values[ Robots::META_ADVANCED ];
 		echo '<p class="seo-wp-field">';
-		foreach ( self::ADVANCED_DIRECTIVES as $directive => $directive_label ) {
+		foreach ( self::advanced_directive_labels() as $directive => $directive_label ) {
 			printf(
 				'<label><input type="checkbox" name="%1$s[]" value="%2$s" %3$s /> %4$s</label> ',
 				esc_attr( Robots::META_ADVANCED ),
