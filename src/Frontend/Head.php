@@ -12,11 +12,13 @@ namespace SeoWp\Frontend;
 use SeoWp\Meta\Canonical;
 use SeoWp\Meta\Robots;
 use SeoWp\Meta\TitleDescription;
+use SeoWp\Schema\GraphBuilder;
+use SeoWp\Social\OpenGraph;
+use SeoWp\Social\TwitterCards;
 
 /**
- * Registers the head-rendering modules. Social, schema and hreflang
- * modules join this pipeline in milestones M2 and M4; fragment caching is
- * added in M4.
+ * Registers the head-rendering modules. The hreflang module joins this
+ * pipeline in milestone M4; fragment caching is added in M4.
  */
 final class Head {
 
@@ -27,5 +29,8 @@ final class Head {
 		( new TitleDescription() )->register();
 		( new Robots() )->register();
 		( new Canonical() )->register();
+		( new OpenGraph() )->register();
+		( new TwitterCards() )->register();
+		( new GraphBuilder() )->register();
 	}
 }

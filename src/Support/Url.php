@@ -57,6 +57,22 @@ final class Url {
 	}
 
 	/**
+	 * Builds the current request's front-end URL from the main query,
+	 * without relying on any particular request type. Falls back to the
+	 * site's home URL when called outside of a parsed request (e.g. before
+	 * the main query has run).
+	 */
+	public static function current(): string {
+		global $wp;
+
+		if ( isset( $wp ) && is_object( $wp ) && isset( $wp->request ) ) {
+			return home_url( add_query_arg( array(), $wp->request ) );
+		}
+
+		return home_url( '/' );
+	}
+
+	/**
 	 * Routes a permalink through WPML's wpml_permalink filter instead of
 	 * building a translated URL by hand. A no-op when WPML (or any other
 	 * listener) is not present.

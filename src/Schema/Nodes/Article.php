@@ -9,9 +9,90 @@ declare(strict_types=1);
 
 namespace SeoWp\Schema\Nodes;
 
+use WP_Post;
+use WP_Post_Type;
+
 /**
- * Builds the Article JSON-LD node for singular content.
- * Implemented in milestone M2.
+ * Builds the Article JSON-LD node for singular content on non-hierarchical
+ * post types (posts and article-like custom post types). Hierarchical
+ * types (pages and page-like custom post types) get a WebPage node only,
+ * without hardcoding any post type name.
  */
 final class Article {
+
+	/**
+	 * Option key holding the plugin's settings array.
+	 */
+	private const OPTION_KEY = 'seo_wp_settings';
+
+	/**
+	 * Builds the node, or null when the current request is not a singular,
+	 * non-hierarchical post type.
+	 *
+	 * @return array<string,mixed>|null
+	 */
+	public function build(): ?array {
+		if ( ! is_singular() ) {
+			return null;
+		}
+
+		$post = get_queried_object();
+		if ( ! $post instanceof WP_Post ) {
+			return null;
+		}
+
+		$type_object = get_post_type_object( $post->post_type );
+		if ( ! $type_object instanceof WP_Post_Type || $type_object->hierarchical ) {
+			return null;
+		}
+
+		$url = get_permalink( $post );
+		if ( ! is_string( $url ) || '' === $url ) {
+			return null;
+		}
+
+		$node = array(
+			'@type'            => 'Article',
+			'@id'              => $url . '#article',
+			'headline'         => get_the_title( $post ),
+			'url'              => $url,
+			'datePublished'    => get_the_date( DATE_W3C, $post ),
+			'dateModified'     => get_the_modified_date( DATE_W3C, $post ),
+			'mainEntityOfPage' => array( '@id' => $url . '#webpage' ),
+			'isPartOf'         => array( '@id' => home_url( '/#website' ) ),
+			'inLanguage'       => str_replace( '_', '-', get_locale() ),
+		);
+
+		$author_name = get_the_author_meta( 'display_name', (int) $post->post_author );
+		if ( '' !== $author_name ) {
+			$node['author'] = array(
+				'@type' => 'Person',
+				'name'  => $author_name,
+			);
+		}
+
+		$excerpt = wp_strip_all_tags( (string) get_the_excerpt( $post ) );
+		if ( '' !== $excerpt ) {
+			$node['description'] = $excerpt;
+		}
+
+		if ( has_post_thumbnail( $post ) ) {
+			$src = wp_get_attachment_image_src( (int) get_post_thumbnail_id( $post ), 'full' );
+			if ( is_array( $src ) ) {
+				$node['image'] = array(
+					'@type'  => 'ImageObject',
+					'url'    => (string) $src[0],
+					'width'  => (int) $src[1],
+					'height' => (int) $src[2],
+				);
+			}
+		}
+
+		$settings = get_option( self::OPTION_KEY, array() );
+		if ( 'person' !== ( $settings['identity_type'] ?? 'organization' ) ) {
+			$node['publisher'] = array( '@id' => home_url( '/#identity' ) );
+		}
+
+		return $node;
+	}
 }

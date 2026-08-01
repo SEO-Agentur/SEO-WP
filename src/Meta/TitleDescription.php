@@ -53,7 +53,7 @@ final class TitleDescription {
 			return $title;
 		}
 
-		$rendered = $this->render_for_context( 'title', self::META_TITLE );
+		$rendered = $this->resolve_title();
 
 		return '' !== $rendered ? $rendered : $title;
 	}
@@ -66,13 +66,29 @@ final class TitleDescription {
 			return;
 		}
 
-		$description = $this->render_for_context( 'description', self::META_DESCRIPTION );
+		$description = $this->resolve_description();
 
 		if ( '' === $description ) {
 			return;
 		}
 
 		printf( '<meta name="description" content="%s" />' . "\n", esc_attr( $description ) );
+	}
+
+	/**
+	 * Resolves the title for the current request, for reuse by other
+	 * head modules (e.g. Open Graph) that fall back to it.
+	 */
+	public function resolve_title(): string {
+		return $this->render_for_context( 'title', self::META_TITLE );
+	}
+
+	/**
+	 * Resolves the meta description for the current request, for reuse by
+	 * other head modules that fall back to it.
+	 */
+	public function resolve_description(): string {
+		return $this->render_for_context( 'description', self::META_DESCRIPTION );
 	}
 
 	/**
