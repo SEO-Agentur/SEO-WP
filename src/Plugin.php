@@ -9,6 +9,11 @@ declare(strict_types=1);
 
 namespace SeoWp;
 
+use SeoWp\Crawl\IndexNow;
+use SeoWp\Crawl\LlmsTxt;
+use SeoWp\Crawl\RobotsTxt;
+use SeoWp\Crawl\SpecialArchives;
+use SeoWp\Crawl\Verification;
 use SeoWp\Frontend\Head;
 use SeoWp\Sitemaps\Router;
 use SeoWp\Wpml\StringTranslation;
@@ -50,6 +55,12 @@ final class Plugin {
 		( new Head() )->register();
 		( new Router() )->register();
 		( new StringTranslation() )->register();
+
+		( new RobotsTxt() )->register();
+		( new LlmsTxt() )->register();
+		( new Verification() )->register();
+		( new SpecialArchives() )->register();
+		( new IndexNow() )->register();
 	}
 
 	/**
