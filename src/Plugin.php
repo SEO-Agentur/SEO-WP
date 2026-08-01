@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace SeoWp;
 
 use SeoWp\Frontend\Head;
+use SeoWp\Sitemaps\Router;
 
 /**
  * Singleton container responsible for wiring up all plugin modules.
@@ -46,6 +47,7 @@ final class Plugin {
 		load_plugin_textdomain( 'seo-wp', false, dirname( BASENAME ) . '/languages' );
 
 		( new Head() )->register();
+		( new Router() )->register();
 	}
 
 	/**
