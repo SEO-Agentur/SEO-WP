@@ -263,6 +263,67 @@ final class Batch {
 	}
 
 	/**
+	 * Imports a source's site-wide settings (title templates, separator,
+	 * social handles — see Import\SettingsImporter) in a single step; not
+	 * paginated, since it's a handful of option reads rather than a query
+	 * across many objects. Only Yoast and Rank Math are covered; AIOSEO's
+	 * settings schema isn't imported (see SettingsImporter's docblock).
+	 *
+	 * @param string $source  'yoast', 'rank_math' or 'aioseo'.
+	 * @param bool   $dry_run When true, computes but does not write.
+	 * @return array{processed:int,has_more:bool,log:array<int,array<string,mixed>>}
+	 */
+	public function run_settings( string $source, bool $dry_run = false ): array {
+		if ( ! in_array( $source, array( 'yoast', 'rank_math' ), true ) ) {
+			return array(
+				'processed' => 0,
+				'has_more'  => false,
+				'log'       => array(),
+			);
+		}
+
+		$importer = new SettingsImporter();
+		$mapped   = ErrorLog::capture(
+			"import:{$source}:settings",
+			static function () use ( $importer, $source ) {
+				return 'yoast' === $source ? $importer->map_yoast() : $importer->map_rank_math();
+			}
+		);
+		$mapped   = is_array( $mapped ) ? $mapped : array();
+
+		if ( array() === $mapped ) {
+			return array(
+				'processed' => 0,
+				'has_more'  => false,
+				'log'       => array(),
+			);
+		}
+
+		if ( ! $dry_run ) {
+			$existing = get_option( 'seo_wp_settings', array() );
+			$existing = is_array( $existing ) ? $existing : array();
+			update_option( 'seo_wp_settings', array_merge( $existing, $mapped ), 'yes' );
+		}
+
+		$entries = array(
+			array(
+				'type'    => 'settings',
+				'source'  => $source,
+				'fields'  => array_keys( $mapped ),
+				'dry_run' => $dry_run,
+			),
+		);
+
+		$this->append_log( $entries );
+
+		return array(
+			'processed' => 1,
+			'has_more'  => false,
+			'log'       => $entries,
+		);
+	}
+
+	/**
 	 * Logs a "redirects were found but not migrated" entry when a source
 	 * has any redirect data. Call once per import run, not per page.
 	 *

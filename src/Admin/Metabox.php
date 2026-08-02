@@ -39,6 +39,12 @@ final class Metabox {
 	private const NONCE_NAME = 'seo_wp_metabox_nonce';
 
 	/**
+	 * Capability (granted per role via RoleManager) required to see or
+	 * save any field this metabox renders.
+	 */
+	private const EDIT_META_CAP = 'seo_wp_edit_meta';
+
+	/**
 	 * Advanced robots directive keys editable here.
 	 *
 	 * @var string[]
@@ -85,6 +91,10 @@ final class Metabox {
 	 * Registers the metabox on every public post type.
 	 */
 	public function add_post_metabox(): void {
+		if ( ! current_user_can( self::EDIT_META_CAP ) ) {
+			return;
+		}
+
 		foreach ( get_post_types( array( 'public' => true ), 'names' ) as $post_type ) {
 			add_meta_box(
 				'seo_wp_metabox',
@@ -115,13 +125,29 @@ final class Metabox {
 			'seo-wp-metabox',
 			'seoWpMetabox',
 			array(
-				'i18n' => array(
+				'i18n'    => array(
 					'question' => __( 'Question', 'seo-wp' ),
 					'answer'   => __( 'Answer', 'seo-wp' ),
 					'remove'   => __( 'Remove', 'seo-wp' ),
+					'noImage'  => __( 'No image set', 'seo-wp' ),
+				),
+				'preview' => array(
+					'siteName'  => (string) get_bloginfo( 'name' ),
+					'separator' => (string) $this->separator_setting(),
+					'domain'    => (string) wp_parse_url( home_url(), PHP_URL_HOST ),
 				),
 			)
 		);
+	}
+
+	/**
+	 * Reads the configured title separator for the live preview, without
+	 * pulling in the full Settings class just for one field.
+	 */
+	private function separator_setting(): string {
+		$settings = get_option( 'seo_wp_settings', array() );
+
+		return isset( $settings['separator'] ) && '' !== $settings['separator'] ? (string) $settings['separator'] : '-';
 	}
 
 	/**
@@ -143,6 +169,10 @@ final class Metabox {
 	 * @param WP_Term $term Term being edited.
 	 */
 	public function render_term_fields( WP_Term $term ): void {
+		if ( ! current_user_can( self::EDIT_META_CAP ) ) {
+			return;
+		}
+
 		wp_nonce_field( self::NONCE_ACTION, self::NONCE_NAME );
 
 		echo '<tr class="form-field"><th scope="row">' . esc_html__( 'SEO-WP', 'seo-wp' ) . '</th><td>';
@@ -160,7 +190,7 @@ final class Metabox {
 			return;
 		}
 
-		if ( ! current_user_can( 'edit_post', $post_id ) ) {
+		if ( ! current_user_can( 'edit_post', $post_id ) || ! current_user_can( self::EDIT_META_CAP ) ) {
 			return;
 		}
 
@@ -181,7 +211,7 @@ final class Metabox {
 	 * @param WP_Taxonomy $taxonomy Taxonomy the term belongs to.
 	 */
 	private function save_term( int $term_id, WP_Taxonomy $taxonomy ): void {
-		if ( ! $this->has_valid_nonce() || ! current_user_can( $taxonomy->cap->edit_terms ) ) {
+		if ( ! $this->has_valid_nonce() || ! current_user_can( $taxonomy->cap->edit_terms ) || ! current_user_can( self::EDIT_META_CAP ) ) {
 			return;
 		}
 
@@ -347,6 +377,7 @@ final class Metabox {
 		$this->field_textarea( TitleDescription::META_DESCRIPTION, __( 'Meta description', 'seo-wp' ), (string) $values[ TitleDescription::META_DESCRIPTION ] );
 		$this->field_text( Canonical::META_CANONICAL, __( 'Canonical URL', 'seo-wp' ), (string) $values[ Canonical::META_CANONICAL ] );
 		$this->field_robots( $values );
+		$this->render_serp_preview();
 		echo '</div>';
 
 		echo '<div class="seo-wp-tab-panel" data-seo-wp-panel="social">';
@@ -356,6 +387,7 @@ final class Metabox {
 		$this->field_text( TwitterCards::META_TITLE, __( 'Twitter title', 'seo-wp' ), (string) $values[ TwitterCards::META_TITLE ] );
 		$this->field_textarea( TwitterCards::META_DESCRIPTION, __( 'Twitter description', 'seo-wp' ), (string) $values[ TwitterCards::META_DESCRIPTION ] );
 		$this->field_text( TwitterCards::META_IMAGE, __( 'Twitter image URL', 'seo-wp' ), (string) $values[ TwitterCards::META_IMAGE ] );
+		$this->render_social_preview();
 		echo '</div>';
 
 		echo '<div class="seo-wp-tab-panel" data-seo-wp-panel="schema">';
@@ -398,6 +430,43 @@ final class Metabox {
 			esc_html( $label ),
 			esc_textarea( $value )
 		);
+	}
+
+	/**
+	 * Renders the container for the live Google search-result preview.
+	 * Content is filled in and kept in sync by metabox.js as the title/
+	 * description fields (or their fallbacks — the post title/excerpt) are
+	 * typed; there is nothing to render server-side since it must react to
+	 * unsaved edits.
+	 */
+	private function render_serp_preview(): void {
+		echo '<div class="seo-wp-field seo-wp-serp-preview">';
+		echo '<span class="seo-wp-preview-label">' . esc_html__( 'Search result preview', 'seo-wp' ) . '</span>';
+		echo '<div class="seo-wp-serp-box">';
+		echo '<div class="seo-wp-serp-url" data-seo-wp-serp-url></div>';
+		echo '<div class="seo-wp-serp-title" data-seo-wp-serp-title></div>';
+		echo '<div class="seo-wp-serp-description" data-seo-wp-serp-description></div>';
+		echo '</div>';
+		echo '</div>';
+	}
+
+	/**
+	 * Renders the container for the live social-card preview (Facebook/
+	 * Twitter/LinkedIn all render an Open Graph card the same basic way).
+	 * Kept in sync by metabox.js; see render_serp_preview().
+	 */
+	private function render_social_preview(): void {
+		echo '<div class="seo-wp-field seo-wp-social-preview">';
+		echo '<span class="seo-wp-preview-label">' . esc_html__( 'Social share preview', 'seo-wp' ) . '</span>';
+		echo '<div class="seo-wp-social-card">';
+		echo '<div class="seo-wp-social-image" data-seo-wp-social-image></div>';
+		echo '<div class="seo-wp-social-body">';
+		echo '<div class="seo-wp-social-domain" data-seo-wp-social-domain></div>';
+		echo '<div class="seo-wp-social-title" data-seo-wp-social-title></div>';
+		echo '<div class="seo-wp-social-description" data-seo-wp-social-description></div>';
+		echo '</div>';
+		echo '</div>';
+		echo '</div>';
 	}
 
 	/**

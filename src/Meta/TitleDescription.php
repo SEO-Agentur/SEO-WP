@@ -153,6 +153,9 @@ final class TitleDescription {
 			'category' => '',
 			'date'     => '',
 			'page'     => '',
+			// Always today's year (an evergreen "{title} {year}" pattern),
+			// not the post's publish year — {date} already covers that.
+			'year'     => gmdate( 'Y' ),
 		);
 
 		if ( is_singular() ) {

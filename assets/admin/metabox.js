@@ -43,6 +43,92 @@
 		container.appendChild( row );
 	}
 
+	function fieldValue( id ) {
+		var el = document.getElementById( id );
+		return el ? el.value.trim() : '';
+	}
+
+	function truncate( text, max ) {
+		if ( text.length <= max ) {
+			return text;
+		}
+		return text.slice( 0, max - 1 ).trim() + '…';
+	}
+
+	function updateSerpPreview() {
+		var box = document.querySelector( '.seo-wp-serp-preview' );
+		if ( ! box ) {
+			return;
+		}
+
+		var prefs = ( window.seoWpMetabox && window.seoWpMetabox.preview ) || {};
+		var titleField = fieldValue( 'seo-wp-_seo_wp_title' ) || fieldValue( 'title' );
+		var descriptionField = fieldValue( 'seo-wp-_seo_wp_description' ) || fieldValue( 'excerpt' );
+
+		var title = titleField
+			? titleField + ' ' + ( prefs.separator || '-' ) + ' ' + ( prefs.siteName || '' )
+			: ( prefs.siteName || '' );
+
+		box.querySelector( '[data-seo-wp-serp-url]' ).textContent = prefs.domain || '';
+		box.querySelector( '[data-seo-wp-serp-title]' ).textContent = truncate( title, 60 );
+		box.querySelector( '[data-seo-wp-serp-description]' ).textContent = truncate( descriptionField, 155 );
+	}
+
+	function updateSocialPreview() {
+		var box = document.querySelector( '.seo-wp-social-preview' );
+		if ( ! box ) {
+			return;
+		}
+
+		var i18n = ( window.seoWpMetabox && window.seoWpMetabox.i18n ) || {};
+		var prefs = ( window.seoWpMetabox && window.seoWpMetabox.preview ) || {};
+
+		var title = fieldValue( 'seo-wp-_seo_wp_og_title' ) || fieldValue( 'seo-wp-_seo_wp_title' ) || fieldValue( 'title' );
+		var description = fieldValue( 'seo-wp-_seo_wp_og_description' ) || fieldValue( 'seo-wp-_seo_wp_description' ) || fieldValue( 'excerpt' );
+		var image = fieldValue( 'seo-wp-_seo_wp_og_image' );
+
+		var imageBox = box.querySelector( '[data-seo-wp-social-image]' );
+		if ( image ) {
+			imageBox.style.backgroundImage = 'url(' + image.replace( /["'\\]/g, '' ) + ')';
+			imageBox.textContent = '';
+		} else {
+			imageBox.style.backgroundImage = '';
+			imageBox.textContent = i18n.noImage || 'No image set';
+		}
+
+		box.querySelector( '[data-seo-wp-social-domain]' ).textContent = prefs.domain || '';
+		box.querySelector( '[data-seo-wp-social-title]' ).textContent = truncate( title, 90 );
+		box.querySelector( '[data-seo-wp-social-description]' ).textContent = truncate( description, 200 );
+	}
+
+	function updatePreviews() {
+		updateSerpPreview();
+		updateSocialPreview();
+	}
+
+	document.addEventListener( 'DOMContentLoaded', function () {
+		if ( ! document.querySelector( '.seo-wp-metabox' ) ) {
+			return;
+		}
+
+		updatePreviews();
+
+		[
+			'seo-wp-_seo_wp_title',
+			'seo-wp-_seo_wp_description',
+			'seo-wp-_seo_wp_og_title',
+			'seo-wp-_seo_wp_og_description',
+			'seo-wp-_seo_wp_og_image',
+			'title',
+			'excerpt',
+		].forEach( function ( id ) {
+			var el = document.getElementById( id );
+			if ( el ) {
+				el.addEventListener( 'input', updatePreviews );
+			}
+		} );
+	} );
+
 	document.addEventListener( 'click', function ( event ) {
 		var tabButton = event.target.closest( '.seo-wp-tab-button' );
 		if ( tabButton ) {

@@ -30,7 +30,7 @@ final class Settings {
 	/**
 	 * Capability required to view or change settings.
 	 */
-	private const CAPABILITY = 'manage_options';
+	private const CAPABILITY = 'seo_wp_manage_settings';
 
 	/**
 	 * Checkbox fields belonging to each tab, used to correctly turn off
@@ -49,7 +49,7 @@ final class Settings {
 			'enable_llms_full_txt',
 			'disable_author_archives',
 			'disable_date_archives',
-			'redirect_attachment_pages',
+			'strip_attachment_links',
 			'enable_indexnow',
 		),
 	);
@@ -66,6 +66,7 @@ final class Settings {
 		'twitter_creator',
 		'verification_google',
 		'verification_bing',
+		'verification_baidu',
 		'verification_pinterest',
 		'verification_yandex',
 	);
@@ -177,14 +178,46 @@ final class Settings {
 			$clean['robots_txt_custom'] = sanitize_textarea_field( wp_unslash( (string) $input['robots_txt_custom'] ) );
 		}
 
-		$tab = isset( $input['_tab'] ) ? (string) $input['_tab'] : '';
-		if ( isset( self::CHECKBOX_FIELDS_BY_TAB[ $tab ] ) ) {
-			foreach ( self::CHECKBOX_FIELDS_BY_TAB[ $tab ] as $checkbox_key ) {
-				$clean[ $checkbox_key ] = ! empty( $input[ $checkbox_key ] );
-			}
+		if ( array_key_exists( 'llms_txt_custom', $input ) ) {
+			$clean['llms_txt_custom'] = sanitize_textarea_field( wp_unslash( (string) $input['llms_txt_custom'] ) );
+		}
+
+		if ( array_key_exists( 'attachment_handling', $input ) ) {
+			$clean['attachment_handling'] = in_array( $input['attachment_handling'], array( 'redirect', 'noindex', 'off' ), true )
+				? $input['attachment_handling']
+				: 'redirect';
+		}
+
+		$tab           = isset( $input['_tab'] ) ? (string) $input['_tab'] : '';
+		$checkbox_keys = 'sitemaps' === $tab ? $this->sitemap_checkbox_keys() : ( self::CHECKBOX_FIELDS_BY_TAB[ $tab ] ?? array() );
+
+		foreach ( $checkbox_keys as $checkbox_key ) {
+			$clean[ $checkbox_key ] = ! empty( $input[ $checkbox_key ] );
 		}
 
 		return $clean;
+	}
+
+	/**
+	 * Checkbox keys for the Sitemaps tab: the static core-sitemap toggle
+	 * plus one per-post-type and per-taxonomy inclusion toggle, discovered
+	 * dynamically so WooCommerce's product/product_cat (and any other
+	 * public post type or taxonomy) get one automatically.
+	 *
+	 * @return string[]
+	 */
+	private function sitemap_checkbox_keys(): array {
+		$keys = self::CHECKBOX_FIELDS_BY_TAB['sitemaps'];
+
+		foreach ( get_post_types( array( 'public' => true ), 'names' ) as $post_type ) {
+			$keys[] = "sitemap_include_{$post_type}";
+		}
+
+		foreach ( get_taxonomies( array( 'public' => true ), 'names' ) as $taxonomy ) {
+			$keys[] = "sitemap_include_tax_{$taxonomy}";
+		}
+
+		return $keys;
 	}
 
 	/**
@@ -282,6 +315,10 @@ final class Settings {
 	 * every public post type and taxonomy, discovered dynamically.
 	 */
 	private function render_content_types_tab(): void {
+		$this->render_content_types_overview();
+
+		echo '<tr><td colspan="2"><hr /></td></tr>';
+
 		foreach ( get_post_types( array( 'public' => true ), 'objects' ) as $post_type ) {
 			$this->template_field(
 				"title_template_{$post_type->name}",
@@ -308,6 +345,68 @@ final class Settings {
 	}
 
 	/**
+	 * Renders a compact, read-only summary of every currently configured
+	 * title/description template across every level (post types, taxonomy
+	 * terms), so the full picture is visible without scrolling through the
+	 * editable fields below.
+	 */
+	private function render_content_types_overview(): void {
+		echo '<tr><td colspan="2"><table class="widefat striped seo-wp-content-types-overview">';
+		echo '<thead><tr>';
+		echo '<th>' . esc_html__( 'Type', 'seo-wp' ) . '</th>';
+		echo '<th>' . esc_html__( 'Title template', 'seo-wp' ) . '</th>';
+		echo '<th>' . esc_html__( 'Description template', 'seo-wp' ) . '</th>';
+		echo '</tr></thead><tbody>';
+
+		foreach ( get_post_types( array( 'public' => true ), 'objects' ) as $post_type ) {
+			$this->render_overview_row(
+				$post_type->labels->name,
+				$this->overview_value( "title_template_{$post_type->name}", '%title% %sep% %sitename%' ),
+				$this->overview_value( "description_template_{$post_type->name}", '%excerpt%' )
+			);
+		}
+
+		foreach ( get_taxonomies( array( 'public' => true ), 'objects' ) as $taxonomy ) {
+			$this->render_overview_row(
+				$taxonomy->labels->name,
+				$this->overview_value( "title_template_term_{$taxonomy->name}", '%category% %sep% %sitename%' ),
+				'—'
+			);
+		}
+
+		echo '</tbody></table></td></tr>';
+	}
+
+	/**
+	 * Reads a template setting and converts it to the %token% syntax shown
+	 * in the UI, falling back to the built-in default when never saved.
+	 *
+	 * @param string $key      Settings key.
+	 * @param string $fallback Default shown when the setting has never been saved.
+	 */
+	private function overview_value( string $key, string $fallback ): string {
+		$stored = $this->option( $key );
+
+		return '' !== $stored ? Tokens::to_ui( $stored ) : $fallback;
+	}
+
+	/**
+	 * Renders one overview row.
+	 *
+	 * @param string $label                 Post type/taxonomy label.
+	 * @param string $title_template        Title template, in %token% syntax.
+	 * @param string $description_template Description template, in %token% syntax, or '—'.
+	 */
+	private function render_overview_row( string $label, string $title_template, string $description_template ): void {
+		printf(
+			'<tr><td>%s</td><td><code>%s</code></td><td><code>%s</code></td></tr>',
+			esc_html( $label ),
+			esc_html( $title_template ),
+			esc_html( $description_template )
+		);
+	}
+
+	/**
 	 * Renders the Sitemaps tab.
 	 */
 	private function render_sitemaps_tab(): void {
@@ -316,6 +415,24 @@ final class Settings {
 			__( 'Disable WordPress core\'s own /wp-sitemap.xml', 'seo-wp' ),
 			true
 		);
+
+		foreach ( get_post_types( array( 'public' => true ), 'objects' ) as $post_type ) {
+			$this->checkbox_field(
+				"sitemap_include_{$post_type->name}",
+				/* translators: %s: post type label, e.g. "Products". */
+				sprintf( __( 'Include %s in the XML sitemap', 'seo-wp' ), $post_type->labels->name ),
+				true
+			);
+		}
+
+		foreach ( get_taxonomies( array( 'public' => true ), 'objects' ) as $taxonomy ) {
+			$this->checkbox_field(
+				"sitemap_include_tax_{$taxonomy->name}",
+				/* translators: %s: taxonomy label, e.g. "Product categories". */
+				sprintf( __( 'Include %s in the XML sitemap', 'seo-wp' ), $taxonomy->labels->name ),
+				true
+			);
+		}
 	}
 
 	/**
@@ -327,13 +444,29 @@ final class Settings {
 		$this->checkbox_field( 'block_ai_crawlers', __( 'Block known AI training crawlers', 'seo-wp' ), false );
 		$this->checkbox_field( 'enable_llms_txt', __( 'Enable /llms.txt', 'seo-wp' ), true );
 		$this->checkbox_field( 'enable_llms_full_txt', __( 'Enable /llms-full.txt', 'seo-wp' ), false );
+		$this->textarea_field( 'llms_txt_custom', __( 'Custom llms.txt content (appended after the generated list)', 'seo-wp' ) );
 		$this->text_field( 'verification_google', __( 'Google verification code', 'seo-wp' ), '' );
 		$this->text_field( 'verification_bing', __( 'Bing verification code', 'seo-wp' ), '' );
+		$this->text_field( 'verification_baidu', __( 'Baidu verification code', 'seo-wp' ), '' );
 		$this->text_field( 'verification_pinterest', __( 'Pinterest verification code', 'seo-wp' ), '' );
 		$this->text_field( 'verification_yandex', __( 'Yandex verification code', 'seo-wp' ), '' );
 		$this->checkbox_field( 'disable_author_archives', __( 'Disable author archives', 'seo-wp' ), false );
 		$this->checkbox_field( 'disable_date_archives', __( 'Disable date archives', 'seo-wp' ), false );
-		$this->checkbox_field( 'redirect_attachment_pages', __( 'Redirect attachment pages to their parent', 'seo-wp' ), true );
+		$this->checkbox_field(
+			'strip_attachment_links',
+			__( 'Don\'t link inserted images to their attachment page', 'seo-wp' ),
+			false
+		);
+		$this->select_field(
+			'attachment_handling',
+			__( 'Attachment pages', 'seo-wp' ),
+			array(
+				'redirect' => __( 'Redirect to the parent post (recommended)', 'seo-wp' ),
+				'noindex'  => __( 'Keep accessible, but noindex them', 'seo-wp' ),
+				'off'      => __( 'Leave to WordPress core', 'seo-wp' ),
+			),
+			'redirect'
+		);
 		$this->checkbox_field( 'enable_indexnow', __( 'Enable IndexNow (Bing, Yandex, Seznam, Naver)', 'seo-wp' ), true );
 		$this->select_field(
 			'hreflang_x_default',

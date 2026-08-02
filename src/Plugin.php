@@ -11,11 +11,19 @@ namespace SeoWp;
 
 use SeoWp\Admin\BulkEditor;
 use SeoWp\Admin\Diagnostics;
+use SeoWp\Admin\GoogleIndexingPage;
 use SeoWp\Admin\ImportWizard;
 use SeoWp\Admin\Metabox;
+use SeoWp\Admin\NotFoundMonitorPage;
+use SeoWp\Admin\RedirectsPage;
+use SeoWp\Admin\RoleManager;
 use SeoWp\Admin\Settings;
+use SeoWp\Crawl\GoogleIndexing;
+use SeoWp\Crawl\ImageLinks;
 use SeoWp\Crawl\IndexNow;
 use SeoWp\Crawl\LlmsTxt;
+use SeoWp\Crawl\NotFoundMonitor;
+use SeoWp\Crawl\Redirects;
 use SeoWp\Crawl\RobotsTxt;
 use SeoWp\Crawl\SpecialArchives;
 use SeoWp\Crawl\Verification;
@@ -60,12 +68,20 @@ final class Plugin {
 		( new Head() )->register();
 		( new Router() )->register();
 		( new StringTranslation() )->register();
+		// Registered unconditionally (not only under is_admin()): the
+		// user_has_cap filter it adds must be active for any capability
+		// check anywhere, not just while rendering wp-admin screens.
+		( new RoleManager() )->register();
 
 		( new RobotsTxt() )->register();
 		( new LlmsTxt() )->register();
 		( new Verification() )->register();
 		( new SpecialArchives() )->register();
 		( new IndexNow() )->register();
+		( new ImageLinks() )->register();
+		( new Redirects() )->register();
+		( new NotFoundMonitor() )->register();
+		( new GoogleIndexing() )->register();
 
 		if ( is_admin() ) {
 			( new Metabox() )->register();
@@ -73,6 +89,9 @@ final class Plugin {
 			( new BulkEditor() )->register();
 			( new ImportWizard() )->register();
 			( new Diagnostics() )->register();
+			( new RedirectsPage() )->register();
+			( new NotFoundMonitorPage() )->register();
+			( new GoogleIndexingPage() )->register();
 		}
 	}
 

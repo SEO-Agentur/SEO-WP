@@ -32,7 +32,7 @@ final class BulkEditor {
 	/**
 	 * Capability required to use the bulk editor.
 	 */
-	private const CAPABILITY = 'edit_posts';
+	private const CAPABILITY = 'seo_wp_bulk_edit';
 
 	/**
 	 * Rows shown per page.

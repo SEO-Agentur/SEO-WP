@@ -6,13 +6,13 @@
 ( function () {
 	'use strict';
 
-	function post( body ) {
+	function post( body, action ) {
 		var params = new URLSearchParams();
 
 		Object.keys( body ).forEach( function ( key ) {
 			params.append( key, body[ key ] );
 		} );
-		params.append( 'action', window.seoWpImport.action );
+		params.append( 'action', action || window.seoWpImport.action );
 		params.append( 'nonce', window.seoWpImport.nonce );
 
 		return fetch( window.seoWpImport.ajaxUrl, {
@@ -23,6 +23,36 @@
 		} ).then( function ( response ) {
 			return response.json();
 		} );
+	}
+
+	function deactivateSource( sourceEl ) {
+		var i18n = window.seoWpImport.i18n;
+		if ( ! window.confirm( i18n.confirmDeactivate ) ) { // eslint-disable-line no-alert
+			return;
+		}
+
+		var source = sourceEl.getAttribute( 'data-seo-wp-source' );
+		var button = sourceEl.querySelector( '.seo-wp-import-deactivate' );
+		var status = sourceEl.querySelector( '.seo-wp-import-deactivate-status' );
+
+		button.disabled = true;
+		status.textContent = i18n.deactivating;
+
+		post( { source: source }, window.seoWpImport.deactivateAction )
+			.then( function ( response ) {
+				if ( response && response.success ) {
+					status.textContent = i18n.deactivated;
+					button.remove();
+					return;
+				}
+
+				status.textContent = ( response && response.data && response.data.message ) || i18n.deactivateFailed;
+				button.disabled = false;
+			} )
+			.catch( function () {
+				status.textContent = i18n.deactivateFailed;
+				button.disabled = false;
+			} );
 	}
 
 	function describeEntry( entry ) {
@@ -79,6 +109,14 @@
 						buttons.forEach( function ( button ) {
 							button.disabled = false;
 						} );
+
+						if ( ! dryRun ) {
+							var deactivateWrap = sourceEl.querySelector( '.seo-wp-import-deactivate-wrap' );
+							if ( deactivateWrap ) {
+								deactivateWrap.hidden = false;
+							}
+						}
+
 						return;
 					}
 
@@ -97,15 +135,23 @@
 	}
 
 	document.addEventListener( 'click', function ( event ) {
-		var button = event.target.closest( '.seo-wp-import-run' );
-		if ( ! button ) {
+		var runButton = event.target.closest( '.seo-wp-import-run' );
+		if ( runButton ) {
+			event.preventDefault();
+			var runSourceEl = runButton.closest( '[data-seo-wp-source]' );
+			if ( runSourceEl ) {
+				run( runSourceEl, '1' === runButton.getAttribute( 'data-seo-wp-dry-run' ) );
+			}
 			return;
 		}
 
-		event.preventDefault();
-		var sourceEl = button.closest( '[data-seo-wp-source]' );
-		if ( sourceEl ) {
-			run( sourceEl, '1' === button.getAttribute( 'data-seo-wp-dry-run' ) );
+		var deactivateButton = event.target.closest( '.seo-wp-import-deactivate' );
+		if ( deactivateButton ) {
+			event.preventDefault();
+			var deactivateSourceEl = deactivateButton.closest( '[data-seo-wp-source]' );
+			if ( deactivateSourceEl ) {
+				deactivateSource( deactivateSourceEl );
+			}
 		}
 	} );
 } )();

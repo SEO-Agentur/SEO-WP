@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace SeoWp\Schema\Nodes;
 
 use SeoWp\Schema\GraphBuilder;
+use SeoWp\Social\OpenGraph;
 use WC_Product;
 use WP_Post;
 
@@ -56,12 +57,12 @@ final class Product {
 			$node['sku'] = $sku;
 		}
 
-		$image_id = (int) $product->get_image_id();
-		if ( $image_id > 0 ) {
-			$src = wp_get_attachment_image_src( $image_id, 'full' );
-			if ( is_array( $src ) ) {
-				$node['image'] = (string) $src[0];
-			}
+		// Same resolution as Open Graph (override -> featured/product image
+		// -> site logo -> site icon), memoised there per request — so the
+		// og:image override field also controls the schema image here.
+		$image = ( new OpenGraph() )->image();
+		if ( '' !== $image['url'] ) {
+			$node['image'] = $image['url'];
 		}
 
 		$node['offers'] = array(
@@ -71,6 +72,15 @@ final class Product {
 			'price'         => (string) $product->get_price(),
 			'availability'  => $product->is_in_stock() ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
 		);
+
+		$review_count = (int) $product->get_review_count();
+		if ( $review_count > 0 ) {
+			$node['aggregateRating'] = array(
+				'@type'       => 'AggregateRating',
+				'ratingValue' => (string) $product->get_average_rating(),
+				'reviewCount' => $review_count,
+			);
+		}
 
 		$type_override = GraphBuilder::schema_type_override( $post );
 		if ( '' !== $type_override ) {

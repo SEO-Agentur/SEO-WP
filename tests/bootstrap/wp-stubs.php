@@ -35,6 +35,45 @@ if ( ! function_exists( 'wp_parse_url' ) ) {
 	}
 }
 
+if ( ! function_exists( 'esc_url_raw' ) ) {
+	/**
+	 * Minimal stand-in for WordPress core's esc_url_raw(): rejects
+	 * disallowed protocols (e.g. javascript:), otherwise returns the URL
+	 * trimmed but unchanged. Real core also entity-encodes ampersands for
+	 * database storage; no test here depends on that.
+	 *
+	 * @param string $url URL to sanitise.
+	 */
+	function esc_url_raw( string $url ): string {
+		$url = trim( $url );
+
+		if ( '' === $url ) {
+			return '';
+		}
+
+		$scheme = strtolower( (string) parse_url( $url, PHP_URL_SCHEME ) );
+		if ( '' !== $scheme && ! in_array( $scheme, array( 'http', 'https' ), true ) ) {
+			return '';
+		}
+
+		return $url;
+	}
+}
+
+if ( ! function_exists( 'wp_json_encode' ) ) {
+	/**
+	 * Thin mirror of WordPress core's wp_json_encode(): core adds UTF-8
+	 * sanitisation and a few default flags on top of json_encode(); no
+	 * test here depends on that, only on valid JSON output.
+	 *
+	 * @param mixed $data Data to encode.
+	 * @return string|false
+	 */
+	function wp_json_encode( $data ) {
+		return json_encode( $data ); // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- test-only stub of a WP core function.
+	}
+}
+
 if ( ! function_exists( 'add_filter' ) ) {
 	/**
 	 * Records a callback for a hook so apply_filters() can call it back.
@@ -97,6 +136,28 @@ if ( ! function_exists( 'get_option' ) ) {
 	 */
 	function get_option( string $option, $default_value = false ) {
 		return $GLOBALS['seo_wp_test_options'][ $option ] ?? $default_value;
+	}
+}
+
+if ( ! function_exists( 'is_multisite' ) ) {
+	/**
+	 * In-memory stand-in for WordPress core's is_multisite().
+	 */
+	function is_multisite(): bool {
+		return ! empty( $GLOBALS['seo_wp_test_multisite'] );
+	}
+}
+
+if ( ! function_exists( 'get_site_option' ) ) {
+	/**
+	 * In-memory stand-in for WordPress core's network-wide option storage.
+	 *
+	 * @param string $option        Option name.
+	 * @param mixed  $default_value Fallback when unset.
+	 * @return mixed
+	 */
+	function get_site_option( string $option, $default_value = false ) {
+		return $GLOBALS['seo_wp_test_site_options'][ $option ] ?? $default_value;
 	}
 }
 

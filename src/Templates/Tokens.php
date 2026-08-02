@@ -26,13 +26,14 @@ final class Tokens {
 	 * @var array<string,string>
 	 */
 	private const YOAST_MAP = array(
-		'%%title%%'    => 'title',
-		'%%sitename%%' => 'sitename',
-		'%%sep%%'      => 'sep',
-		'%%excerpt%%'  => 'excerpt',
-		'%%category%%' => 'category',
-		'%%date%%'     => 'date',
-		'%%page%%'     => 'page',
+		'%%title%%'       => 'title',
+		'%%sitename%%'    => 'sitename',
+		'%%sep%%'         => 'sep',
+		'%%excerpt%%'     => 'excerpt',
+		'%%category%%'    => 'category',
+		'%%date%%'        => 'date',
+		'%%page%%'        => 'page',
+		'%%currentyear%%' => 'year',
 	);
 
 	/**
@@ -48,6 +49,7 @@ final class Tokens {
 		'%category%' => 'category',
 		'%date%'     => 'date',
 		'%page%'     => 'page',
+		'%year%'     => 'year',
 	);
 
 	/**
@@ -63,6 +65,7 @@ final class Tokens {
 		'#taxonomy_title' => 'category',
 		'#post_date'      => 'date',
 		'#page_number'    => 'page',
+		'#current_year'   => 'year',
 	);
 
 	/**

@@ -11,6 +11,7 @@ namespace SeoWp\Admin;
 
 use SeoWp\Import\Batch;
 use SeoWp\Import\Detector;
+use SeoWp\Import\PluginRegistry;
 
 /**
  * Walks the site owner through detecting, dry-running and running the
@@ -28,7 +29,7 @@ final class ImportWizard {
 	/**
 	 * Capability required to run an import.
 	 */
-	private const CAPABILITY = 'manage_options';
+	private const CAPABILITY = 'seo_wp_import';
 
 	/**
 	 * Nonce action shared by the AJAX endpoint.
@@ -36,9 +37,15 @@ final class ImportWizard {
 	private const NONCE_ACTION = 'seo_wp_import';
 
 	/**
-	 * AJAX action name.
+	 * AJAX action name for a batch step.
 	 */
 	private const AJAX_ACTION = 'seo_wp_import_batch';
+
+	/**
+	 * AJAX action name for the explicit "deactivate the source plugin"
+	 * click.
+	 */
+	private const DEACTIVATE_AJAX_ACTION = 'seo_wp_import_deactivate';
 
 	/**
 	 * Sources this wizard knows how to import from, with their display
@@ -59,6 +66,7 @@ final class ImportWizard {
 		add_action( 'admin_menu', array( $this, 'add_menu' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'maybe_enqueue_assets' ) );
 		add_action( 'wp_ajax_' . self::AJAX_ACTION, array( $this, 'handle_ajax' ) );
+		add_action( 'wp_ajax_' . self::DEACTIVATE_AJAX_ACTION, array( $this, 'handle_deactivate_ajax' ) );
 	}
 
 	/**
@@ -93,13 +101,18 @@ final class ImportWizard {
 			'seo-wp-import-wizard',
 			'seoWpImport',
 			array(
-				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
-				'nonce'   => wp_create_nonce( self::NONCE_ACTION ),
-				'action'  => self::AJAX_ACTION,
-				'i18n'    => array(
-					'processing' => __( 'Processing…', 'seo-wp' ),
-					'done'       => __( 'Done.', 'seo-wp' ),
-					'error'      => __( 'Something went wrong.', 'seo-wp' ),
+				'ajaxUrl'          => admin_url( 'admin-ajax.php' ),
+				'nonce'            => wp_create_nonce( self::NONCE_ACTION ),
+				'action'           => self::AJAX_ACTION,
+				'deactivateAction' => self::DEACTIVATE_AJAX_ACTION,
+				'i18n'             => array(
+					'processing'        => __( 'Processing…', 'seo-wp' ),
+					'done'              => __( 'Done.', 'seo-wp' ),
+					'error'             => __( 'Something went wrong.', 'seo-wp' ),
+					'deactivating'      => __( 'Deactivating…', 'seo-wp' ),
+					'deactivated'       => __( 'Deactivated.', 'seo-wp' ),
+					'deactivateFailed'  => __( 'Could not deactivate it automatically — deactivate it from the Plugins screen.', 'seo-wp' ),
+					'confirmDeactivate' => __( 'Deactivate this plugin now?', 'seo-wp' ),
 				),
 			)
 		);
@@ -124,7 +137,7 @@ final class ImportWizard {
 			return;
 		}
 
-		echo '<p>' . esc_html__( 'Data was found from the plugins below. Redirects are never migrated by this import.', 'seo-wp' ) . '</p>';
+		echo '<p>' . esc_html__( 'Data was found from the plugins below. Object meta, term meta and (Yoast/Rank Math) global settings are imported; redirects are never migrated.', 'seo-wp' ) . '</p>';
 
 		foreach ( $detected as $source ) {
 			$this->render_source_section( $source, $detector->redirects_present( $source ) );
@@ -153,6 +166,20 @@ final class ImportWizard {
 		echo '</p>';
 		echo '<div class="seo-wp-import-progress" hidden><progress max="100" value="0"></progress> <span class="seo-wp-import-status"></span></div>';
 		echo '<div class="seo-wp-import-log"></div>';
+
+		if ( '' !== PluginRegistry::active_plugin_file( $source ) ) {
+			printf(
+				'<p class="seo-wp-import-deactivate-wrap" hidden><button type="button" class="button seo-wp-import-deactivate">%s</button> <span class="seo-wp-import-deactivate-status"></span></p>',
+				esc_html(
+					sprintf(
+						/* translators: %s: plugin name, e.g. "Yoast SEO". */
+						__( 'Deactivate %s now', 'seo-wp' ),
+						PluginRegistry::label( $source )
+					)
+				)
+			);
+		}
+
 		echo '</div>';
 	}
 
@@ -190,7 +217,11 @@ final class ImportWizard {
 				break;
 			case 'authors':
 				$result     = $batch->run_authors_page( $source, $page, $dry_run );
-				$next_stage = $result['has_more'] ? 'authors' : 'done';
+				$next_stage = $result['has_more'] ? 'authors' : 'settings';
+				break;
+			case 'settings':
+				$result     = $batch->run_settings( $source, $dry_run );
+				$next_stage = 'done';
 				break;
 			case 'posts':
 			default:
@@ -210,5 +241,32 @@ final class ImportWizard {
 				'entries'   => $result['log'],
 			)
 		);
+	}
+
+	/**
+	 * Handles the explicit "Deactivate {plugin} now" button click. Never
+	 * triggered by anything other than that click — no import step
+	 * deactivates a source plugin on its own. Requires both this wizard's
+	 * own capability and WordPress core's own activate_plugins capability,
+	 * since deactivating another plugin is a more sensitive action than
+	 * running this plugin's own import.
+	 */
+	public function handle_deactivate_ajax(): void {
+		check_ajax_referer( self::NONCE_ACTION, 'nonce' );
+
+		if ( ! current_user_can( self::CAPABILITY ) || ! current_user_can( 'activate_plugins' ) ) {
+			wp_send_json_error( array( 'message' => __( 'You are not allowed to do this.', 'seo-wp' ) ), 403 );
+		}
+
+		$source = isset( $_POST['source'] ) ? sanitize_key( wp_unslash( $_POST['source'] ) ) : '';
+		if ( ! isset( self::SOURCES[ $source ] ) ) {
+			wp_send_json_error( array( 'message' => __( 'Unknown source.', 'seo-wp' ) ), 400 );
+		}
+
+		if ( ! PluginRegistry::deactivate( $source ) ) {
+			wp_send_json_error( array( 'message' => __( 'Could not deactivate it automatically — deactivate it from the Plugins screen.', 'seo-wp' ) ), 500 );
+		}
+
+		wp_send_json_success( array( 'message' => __( 'Deactivated.', 'seo-wp' ) ) );
 	}
 }

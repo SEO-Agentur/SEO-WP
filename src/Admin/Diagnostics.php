@@ -26,7 +26,7 @@ final class Diagnostics {
 	/**
 	 * Capability required to view or clear diagnostics.
 	 */
-	private const CAPABILITY = 'manage_options';
+	private const CAPABILITY = 'seo_wp_view_diagnostics';
 
 	/**
 	 * Nonce action/field name for the clear-log action.

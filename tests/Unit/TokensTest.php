@@ -87,6 +87,18 @@ final class TokensTest extends TestCase {
 	}
 
 	/**
+	 * Every source's own "current year" placeholder converts to the same
+	 * internal {year} token.
+	 */
+	public function test_year_token_converts_from_every_source(): void {
+		$this->assertSame( '{year}', Tokens::from_yoast( '%%currentyear%%' ) );
+		$this->assertSame( '{year}', Tokens::from_rank_math( '%year%' ) );
+		$this->assertSame( '{year}', Tokens::from_aioseo( '#current_year' ) );
+		$this->assertSame( '%year%', Tokens::to_ui( '{year}' ) );
+		$this->assertSame( '{year}', Tokens::from_ui( '%year%' ) );
+	}
+
+	/**
 	 * Internal {token} syntax round-trips through the UI's %token% syntax.
 	 */
 	public function test_ui_round_trip(): void {
