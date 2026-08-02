@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace SeoWp;
 
 use SeoWp\Admin\BulkEditor;
+use SeoWp\Admin\Diagnostics;
 use SeoWp\Admin\ImportWizard;
 use SeoWp\Admin\Metabox;
 use SeoWp\Admin\Settings;
@@ -71,6 +72,7 @@ final class Plugin {
 			( new Settings() )->register();
 			( new BulkEditor() )->register();
 			( new ImportWizard() )->register();
+			( new Diagnostics() )->register();
 		}
 	}
 

@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace SeoWp\Import;
 
+use SeoWp\Support\ErrorLog;
+
 /**
  * Detects Yoast SEO, Rank Math and AIOSEO data available for import,
  * including whether any redirect data exists (redirects are never
@@ -114,7 +116,11 @@ final class Detector {
 		global $wpdb;
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-off detection, no WP API exists for "does any row use this meta key".
-		return (bool) $wpdb->get_var( $wpdb->prepare( "SELECT 1 FROM {$wpdb->postmeta} WHERE meta_key = %s LIMIT 1", $meta_key ) );
+		$result = $wpdb->get_var( $wpdb->prepare( "SELECT 1 FROM {$wpdb->postmeta} WHERE meta_key = %s LIMIT 1", $meta_key ) );
+
+		$this->maybe_record_db_error( "detector:postmeta_key_exists:{$meta_key}" );
+
+		return (bool) $result;
 	}
 
 	/**
@@ -136,6 +142,25 @@ final class Detector {
 		}
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared -- table name already validated to exist just above, not user input.
-		return (bool) $wpdb->get_var( "SELECT 1 FROM `{$table}` LIMIT 1" );
+		$result = $wpdb->get_var( "SELECT 1 FROM `{$table}` LIMIT 1" );
+
+		$this->maybe_record_db_error( "detector:table_has_rows:{$table_suffix}" );
+
+		return (bool) $result;
+	}
+
+	/**
+	 * Records $wpdb's last error, if any, so a broken/unexpected table
+	 * schema surfaces in the error log instead of just quietly detecting
+	 * "not present".
+	 *
+	 * @param string $context Identifies which query this was.
+	 */
+	private function maybe_record_db_error( string $context ): void {
+		global $wpdb;
+
+		if ( '' !== $wpdb->last_error ) {
+			ErrorLog::record( $context, $wpdb->last_error );
+		}
 	}
 }

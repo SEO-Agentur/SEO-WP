@@ -15,6 +15,7 @@ use SeoWp\Meta\TitleDescription;
 use SeoWp\Schema\GraphBuilder;
 use SeoWp\Social\OpenGraph;
 use SeoWp\Social\TwitterCards;
+use SeoWp\Support\ErrorLog;
 use SeoWp\Templates\Tokens;
 
 /**
@@ -44,6 +45,10 @@ final class AioseoImporter {
 		$table = $wpdb->prefix . 'aioseo_posts';
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- AIOSEO's own custom table, no WP API exists for it; $table is a fixed prefix + literal suffix, not user input.
 		$row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM `{$table}` WHERE post_id = %d", $post_id ), ARRAY_A );
+
+		if ( '' !== $wpdb->last_error ) {
+			ErrorLog::record( "import:aioseo:post:{$post_id}", $wpdb->last_error );
+		}
 
 		if ( ! is_array( $row ) ) {
 			return null;

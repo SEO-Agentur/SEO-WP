@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace SeoWp\Import;
 
+use SeoWp\Support\ErrorLog;
 use WP_Query;
 
 /**
@@ -74,7 +75,13 @@ final class Batch {
 
 		foreach ( $query->posts as $post_id ) {
 			$post_id = (int) $post_id;
-			$mapped  = $this->map_post( $source, $post_id );
+			$mapped  = ErrorLog::capture(
+				"import:{$source}:post:{$post_id}",
+				function () use ( $source, $post_id ) {
+					return $this->map_post( $source, $post_id );
+				}
+			);
+			$mapped  = is_array( $mapped ) ? $mapped : array();
 
 			if ( array() === $mapped ) {
 				continue;
@@ -144,7 +151,14 @@ final class Batch {
 		$entries = array();
 
 		foreach ( $terms as $term ) {
-			$mapped = $this->map_term( $source, (int) $term->term_id, (string) $term->taxonomy );
+			$term_id = (int) $term->term_id;
+			$mapped  = ErrorLog::capture(
+				"import:{$source}:term:{$term_id}",
+				function () use ( $source, $term_id, $term ) {
+					return $this->map_term( $source, $term_id, (string) $term->taxonomy );
+				}
+			);
+			$mapped  = is_array( $mapped ) ? $mapped : array();
 
 			if ( array() === $mapped ) {
 				continue;
@@ -152,13 +166,13 @@ final class Batch {
 
 			if ( ! $dry_run ) {
 				foreach ( $mapped as $meta_key => $value ) {
-					update_term_meta( (int) $term->term_id, $meta_key, $value );
+					update_term_meta( $term_id, $meta_key, $value );
 				}
 			}
 
 			$entries[] = array(
 				'type'     => 'term',
-				'id'       => (int) $term->term_id,
+				'id'       => $term_id,
 				'taxonomy' => (string) $term->taxonomy,
 				'source'   => $source,
 				'fields'   => array_keys( $mapped ),
@@ -212,7 +226,13 @@ final class Batch {
 
 		foreach ( $users as $user_id ) {
 			$user_id = (int) $user_id;
-			$mapped  = $importer->map_author( $user_id );
+			$mapped  = ErrorLog::capture(
+				"import:{$source}:author:{$user_id}",
+				static function () use ( $importer, $user_id ) {
+					return $importer->map_author( $user_id );
+				}
+			);
+			$mapped  = is_array( $mapped ) ? $mapped : array();
 
 			if ( array() === $mapped ) {
 				continue;

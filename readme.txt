@@ -56,6 +56,7 @@ SEO-WP covers the essentials of on-page and technical SEO without a scoring UI, 
 * A single settings screen (General/Content Types/Sitemaps/Crawl) — the Content Types tab is generated from your site's actual registered post types and taxonomies
 * A bulk editor for Title/Description/Canonical/Robots across every public post type
 * A guided import wizard with a live progress log
+* A Diagnostics page recording anything that went wrong during detection or import (a database error, an unexpected data shape), with a site-wide admin notice when something needs attention
 
 == Installation ==
 
