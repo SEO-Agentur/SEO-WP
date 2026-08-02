@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace SeoWp\Schema\Nodes;
 
 use SeoWp\Schema\GraphBuilder;
+use SeoWp\Social\OpenGraph;
 use WP_Post;
 use WP_Post_Type;
 
@@ -83,16 +84,18 @@ final class Article {
 			$node['description'] = $excerpt;
 		}
 
-		if ( has_post_thumbnail( $post ) ) {
-			$src = wp_get_attachment_image_src( (int) get_post_thumbnail_id( $post ), 'full' );
-			if ( is_array( $src ) ) {
-				$node['image'] = array(
-					'@type'  => 'ImageObject',
-					'url'    => (string) $src[0],
-					'width'  => (int) $src[1],
-					'height' => (int) $src[2],
-				);
-			}
+		// Same resolution as Open Graph (override -> featured image -> site
+		// logo -> site icon), memoised there per request — so the schema
+		// image and the social image are always the same, and the same
+		// og:image override field controls both.
+		$image = ( new OpenGraph() )->image();
+		if ( '' !== $image['url'] ) {
+			$node['image'] = array(
+				'@type'  => 'ImageObject',
+				'url'    => $image['url'],
+				'width'  => $image['width'],
+				'height' => $image['height'],
+			);
 		}
 
 		$settings = get_option( self::OPTION_KEY, array() );

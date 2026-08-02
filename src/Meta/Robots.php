@@ -42,6 +42,11 @@ final class Robots {
 	public const META_AUTHOR_NOINDEX = '_seo_wp_author_noindex';
 
 	/**
+	 * Option key holding the plugin's settings array.
+	 */
+	private const OPTION_KEY = 'seo_wp_settings';
+
+	/**
 	 * Advanced directives this plugin is allowed to add.
 	 *
 	 * @var string[]
@@ -100,6 +105,10 @@ final class Robots {
 			return array();
 		}
 
+		if ( is_attachment() ) {
+			return $this->attachment_overrides();
+		}
+
 		if ( is_singular() ) {
 			$post = get_queried_object();
 			if ( ! $post instanceof WP_Post ) {
@@ -140,5 +149,33 @@ final class Robots {
 		}
 
 		return array();
+	}
+
+	/**
+	 * Robots overrides for an attachment page: a per-object override
+	 * always wins, otherwise the "attachment_handling" setting applies a
+	 * blanket noindex when set to noindex mode (redirect mode never
+	 * reaches this — Crawl\SpecialArchives redirects away before wp_head
+	 * runs; off mode leaves attachments alone, like core).
+	 */
+	private function attachment_overrides(): array {
+		$post = get_queried_object();
+		if ( ! $post instanceof WP_Post ) {
+			return array();
+		}
+
+		$manual_noindex = (string) get_post_meta( $post->ID, self::META_NOINDEX, true );
+
+		if ( '' === $manual_noindex ) {
+			$settings       = get_option( self::OPTION_KEY, array() );
+			$handling       = isset( $settings['attachment_handling'] ) ? (string) $settings['attachment_handling'] : 'redirect';
+			$manual_noindex = 'noindex' === $handling ? '1' : '';
+		}
+
+		return array(
+			'noindex'  => $manual_noindex,
+			'nofollow' => (string) get_post_meta( $post->ID, self::META_NOFOLLOW, true ),
+			'advanced' => (array) get_post_meta( $post->ID, self::META_ADVANCED, true ),
+		);
 	}
 }

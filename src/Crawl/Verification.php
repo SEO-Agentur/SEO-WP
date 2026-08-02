@@ -10,8 +10,8 @@ declare(strict_types=1);
 namespace SeoWp\Crawl;
 
 /**
- * Renders google/bing/pinterest/yandex site verification meta tags from
- * settings.
+ * Renders google/bing/baidu/pinterest/yandex site verification meta tags
+ * from settings.
  */
 final class Verification {
 
@@ -28,6 +28,7 @@ final class Verification {
 	private const PROVIDERS = array(
 		'verification_google'    => 'google-site-verification',
 		'verification_bing'      => 'msvalidate.01',
+		'verification_baidu'     => 'baidu-site-verification',
 		'verification_pinterest' => 'p:domain_verify',
 		'verification_yandex'    => 'yandex-verification',
 	);

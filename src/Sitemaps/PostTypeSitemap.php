@@ -31,6 +31,10 @@ final class PostTypeSitemap {
 	 * @param string $post_type Post type slug.
 	 */
 	public function max_pages( string $post_type ): int {
+		if ( ! Inclusion::post_type( $post_type ) ) {
+			return 0;
+		}
+
 		$query = new WP_Query( $this->query_args( $post_type, 1 ) );
 
 		return (int) $query->max_num_pages;
@@ -45,6 +49,10 @@ final class PostTypeSitemap {
 	 */
 	public function render( string $post_type, int $page ): ?string {
 		if ( ! in_array( $post_type, get_post_types( array( 'public' => true ), 'names' ), true ) ) {
+			return null;
+		}
+
+		if ( ! Inclusion::post_type( $post_type ) ) {
 			return null;
 		}
 

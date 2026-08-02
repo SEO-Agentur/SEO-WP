@@ -28,6 +28,10 @@ final class TaxonomySitemap {
 	 * @param string $taxonomy Taxonomy slug.
 	 */
 	public function max_pages( string $taxonomy ): int {
+		if ( ! Inclusion::taxonomy( $taxonomy ) ) {
+			return 0;
+		}
+
 		return (int) ceil( count( $this->eligible_term_ids( $taxonomy ) ) / self::ITEMS_PER_PAGE );
 	}
 
@@ -40,6 +44,10 @@ final class TaxonomySitemap {
 	 */
 	public function render( string $taxonomy, int $page ): ?string {
 		if ( ! in_array( $taxonomy, get_taxonomies( array( 'public' => true ), 'names' ), true ) ) {
+			return null;
+		}
+
+		if ( ! Inclusion::taxonomy( $taxonomy ) ) {
 			return null;
 		}
 

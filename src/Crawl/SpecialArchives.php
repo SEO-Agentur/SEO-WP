@@ -14,9 +14,10 @@ use WP_Post;
 /**
  * Search and 404 are already noindexed by WordPress core (see Meta\Robots)
  * and need nothing extra here. This class covers what core leaves open:
- * optionally disabling thin author/date archives, and redirecting
- * attachment pages to their parent (on by default, matching common SEO
- * practice) since standalone attachment pages are rarely worth indexing.
+ * optionally disabling thin author/date archives, and — per the
+ * "attachment_handling" setting — either redirecting attachment pages to
+ * their parent (default) or leaving them reachable but noindexed
+ * (Meta\Robots reads the same setting).
  */
 final class SpecialArchives {
 
@@ -33,7 +34,8 @@ final class SpecialArchives {
 	}
 
 	/**
-	 * Redirects away from a disabled archive type, or an attachment page.
+	 * Redirects away from a disabled archive type, or (when configured)
+	 * an attachment page.
 	 */
 	public function maybe_redirect(): void {
 		$settings = get_option( self::OPTION_KEY, array() );
@@ -48,7 +50,9 @@ final class SpecialArchives {
 			return;
 		}
 
-		if ( is_attachment() && ( ! isset( $settings['redirect_attachment_pages'] ) || ! empty( $settings['redirect_attachment_pages'] ) ) ) {
+		$attachment_handling = isset( $settings['attachment_handling'] ) ? (string) $settings['attachment_handling'] : 'redirect';
+
+		if ( is_attachment() && 'redirect' === $attachment_handling ) {
 			$this->redirect_attachment();
 		}
 	}

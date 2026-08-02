@@ -129,7 +129,24 @@ final class LlmsTxt {
 			}
 		}
 
+		$custom = $this->custom_content();
+		if ( '' !== $custom ) {
+			$lines[] = '';
+			$lines[] = $custom;
+		}
+
 		return implode( "\n", $lines ) . "\n";
+	}
+
+	/**
+	 * Reads the freely-editable custom content appended after the
+	 * auto-generated list, so site owners aren't limited to what this
+	 * plugin can infer on its own.
+	 */
+	private function custom_content(): string {
+		$settings = get_option( self::OPTION_KEY, array() );
+
+		return isset( $settings['llms_txt_custom'] ) ? trim( (string) $settings['llms_txt_custom'] ) : '';
 	}
 
 	/**
