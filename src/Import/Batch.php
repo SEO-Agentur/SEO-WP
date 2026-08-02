@@ -176,10 +176,12 @@ final class Batch {
 	}
 
 	/**
-	 * Imports author-level settings for a source. Currently only Yoast's
-	 * per-author noindex flag is understood; Rank Math and AIOSEO author
-	 * settings are not imported (their storage was not confirmed against
-	 * a live install, so nothing is guessed).
+	 * Imports author-level settings for a source. Only Yoast's and Rank
+	 * Math's per-author noindex flag is understood; AIOSEO does not
+	 * appear to expose any per-author SEO settings (unlike Yoast/Rank
+	 * Math, it has no SEO fields on the user-edit screen — its author
+	 * archive handling is a site-wide template setting, not a per-user
+	 * one), so there is nothing to import for it.
 	 *
 	 * @param string $source  'yoast', 'rank_math' or 'aioseo'.
 	 * @param int    $page    Page number, starting at 1.
@@ -187,7 +189,7 @@ final class Batch {
 	 * @return array{processed:int,has_more:bool,log:array<int,array<string,mixed>>}
 	 */
 	public function run_authors_page( string $source, int $page, bool $dry_run = false ): array {
-		if ( 'yoast' !== $source ) {
+		if ( ! in_array( $source, array( 'yoast', 'rank_math' ), true ) ) {
 			return array(
 				'processed' => 0,
 				'has_more'  => false,
@@ -205,7 +207,7 @@ final class Batch {
 			)
 		);
 
-		$importer = new YoastImporter();
+		$importer = 'yoast' === $source ? new YoastImporter() : new RankMathImporter();
 		$entries  = array();
 
 		foreach ( $users as $user_id ) {

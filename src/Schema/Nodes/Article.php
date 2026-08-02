@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace SeoWp\Schema\Nodes;
 
+use SeoWp\Schema\GraphBuilder;
 use WP_Post;
 use WP_Post_Type;
 
@@ -91,6 +92,11 @@ final class Article {
 		$settings = get_option( self::OPTION_KEY, array() );
 		if ( 'person' !== ( $settings['identity_type'] ?? 'organization' ) ) {
 			$node['publisher'] = array( '@id' => home_url( '/#identity' ) );
+		}
+
+		$type_override = GraphBuilder::schema_type_override( $post );
+		if ( '' !== $type_override ) {
+			$node['@type'] = $type_override;
 		}
 
 		return $node;

@@ -37,9 +37,7 @@ final class Robots {
 
 	/**
 	 * User meta key for a per-author "noindex this author's archive"
-	 * override ('1' or unset). Reserved for a future author-archive
-	 * setting; not yet read here — Import (M6) already populates it from
-	 * Yoast so that data isn't lost before that feature exists.
+	 * override ('1' or unset).
 	 */
 	public const META_AUTHOR_NOINDEX = '_seo_wp_author_noindex';
 
@@ -125,6 +123,19 @@ final class Robots {
 				'noindex'  => (string) get_term_meta( $term->term_id, self::META_NOINDEX, true ),
 				'nofollow' => (string) get_term_meta( $term->term_id, self::META_NOFOLLOW, true ),
 				'advanced' => (array) get_term_meta( $term->term_id, self::META_ADVANCED, true ),
+			);
+		}
+
+		if ( is_author() ) {
+			$author_id = (int) get_query_var( 'author' );
+			if ( $author_id <= 0 ) {
+				return array();
+			}
+
+			return array(
+				'noindex'  => '1' === (string) get_user_meta( $author_id, self::META_AUTHOR_NOINDEX, true ) ? '1' : '',
+				'nofollow' => '',
+				'advanced' => array(),
 			);
 		}
 

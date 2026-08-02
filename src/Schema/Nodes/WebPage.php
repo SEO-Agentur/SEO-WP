@@ -9,7 +9,10 @@ declare(strict_types=1);
 
 namespace SeoWp\Schema\Nodes;
 
+use SeoWp\Schema\GraphBuilder;
 use SeoWp\Support\Url;
+use WP_Post;
+use WP_Post_Type;
 
 /**
  * Builds the WebPage JSON-LD node for any indexable front-end request.
@@ -31,7 +34,7 @@ final class WebPage {
 			return null;
 		}
 
-		return array(
+		$node = array(
 			'@type'      => 'WebPage',
 			'@id'        => $url . '#webpage',
 			'url'        => $url,
@@ -39,6 +42,36 @@ final class WebPage {
 			'isPartOf'   => array( '@id' => home_url( '/#website' ) ),
 			'inLanguage' => str_replace( '_', '-', get_locale() ),
 		);
+
+		if ( is_singular() && $this->is_primary_content_node() ) {
+			$post = get_queried_object();
+			if ( $post instanceof WP_Post ) {
+				$type_override = GraphBuilder::schema_type_override( $post );
+				if ( '' !== $type_override ) {
+					$node['@type'] = $type_override;
+				}
+			}
+		}
+
+		return $node;
+	}
+
+	/**
+	 * Whether this WebPage node is the primary content node for the
+	 * current singular request — true only for hierarchical post types,
+	 * where Article never builds a node. Non-hierarchical types get both
+	 * an Article and a WebPage node; the schema type override belongs on
+	 * Article there, not on both nodes at once.
+	 */
+	private function is_primary_content_node(): bool {
+		$post = get_queried_object();
+		if ( ! $post instanceof WP_Post ) {
+			return false;
+		}
+
+		$type_object = get_post_type_object( $post->post_type );
+
+		return $type_object instanceof WP_Post_Type && $type_object->hierarchical;
 	}
 
 	/**

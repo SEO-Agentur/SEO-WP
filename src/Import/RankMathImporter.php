@@ -32,6 +32,34 @@ final class RankMathImporter {
 	private const ADVANCED_DIRECTIVES = array( 'noarchive', 'nosnippet', 'noimageindex' );
 
 	/**
+	 * Rank Math's rich_snippet option stores a lowercase, hyphenated slug
+	 * rather than a Schema.org type name (e.g. "job-posting", not
+	 * "JobPosting") — translated here on import. Best-effort: based on
+	 * Rank Math's documented snippet type list, not verified against a
+	 * live install. An unrecognised slug is left untranslated, and
+	 * GraphBuilder::is_valid_schema_type() rejects it at render time
+	 * rather than emitting invalid @type markup.
+	 *
+	 * @var array<string,string>
+	 */
+	private const SCHEMA_TYPES = array(
+		'article'     => 'Article',
+		'book'        => 'Book',
+		'course'      => 'Course',
+		'event'       => 'Event',
+		'job-posting' => 'JobPosting',
+		'local'       => 'LocalBusiness',
+		'music'       => 'MusicGroup',
+		'person'      => 'Person',
+		'product'     => 'Product',
+		'recipe'      => 'Recipe',
+		'restaurant'  => 'Restaurant',
+		'review'      => 'Review',
+		'software'    => 'SoftwareApplication',
+		'video'       => 'VideoObject',
+	);
+
+	/**
 	 * Maps a single post's Rank Math meta to this plugin's target meta
 	 * keys. Only fields with a non-empty Rank Math value are included, so
 	 * an import never clears an already-configured SEO-WP field.
@@ -101,10 +129,29 @@ final class RankMathImporter {
 
 		$schema_type = (string) get_post_meta( $post_id, 'rank_math_rich_snippet', true );
 		if ( '' !== $schema_type && 'off' !== $schema_type ) {
-			$target[ GraphBuilder::META_SCHEMA_TYPE ] = $schema_type;
+			$target[ GraphBuilder::META_SCHEMA_TYPE ] = self::SCHEMA_TYPES[ $schema_type ] ?? $schema_type;
 		}
 
 		return $target;
+	}
+
+	/**
+	 * Maps a single author's Rank Math "noindex this author's archive"
+	 * setting. Rank Math reuses the exact same rank_math_robots key and
+	 * serialised-array format for users as it does for posts and terms,
+	 * so this reads it via usermeta and the same unserialize_robots().
+	 *
+	 * @param int $user_id User ID.
+	 * @return array<string,mixed>
+	 */
+	public function map_author( int $user_id ): array {
+		$robots = self::unserialize_robots( get_user_meta( $user_id, 'rank_math_robots', true ) );
+
+		if ( ! in_array( 'noindex', $robots, true ) ) {
+			return array();
+		}
+
+		return array( Robots::META_AUTHOR_NOINDEX => '1' );
 	}
 
 	/**

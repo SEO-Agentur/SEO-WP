@@ -47,7 +47,7 @@ SEO-WP covers the essentials of on-page and technical SEO without a scoring UI, 
 
 **Import**
 
-* Non-destructive, dry-run capable, paginated import from Yoast SEO, Rank Math and All in One SEO — object meta, term meta, and (Yoast only) author archive settings
+* Non-destructive, dry-run capable, paginated import from Yoast SEO, Rank Math and All in One SEO — object meta, term meta, and (Yoast and Rank Math) author archive noindex settings; AIOSEO has no per-author SEO settings to import
 * Redirects are never migrated; the import wizard flags when a source has redirect data it won't touch
 
 **Admin**

@@ -14,8 +14,9 @@ use SeoWp\Import\Detector;
 
 /**
  * Walks the site owner through detecting, dry-running and running the
- * import batches (posts, then terms, then Yoast author settings) via
- * admin-ajax, one small page at a time so large sites never time out.
+ * import batches (posts, then terms, then author settings for Yoast/Rank
+ * Math) via admin-ajax, one small page at a time so large sites never
+ * time out.
  */
 final class ImportWizard {
 

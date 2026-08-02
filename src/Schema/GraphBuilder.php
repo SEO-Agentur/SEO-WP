@@ -18,6 +18,7 @@ use SeoWp\Schema\Nodes\Product;
 use SeoWp\Schema\Nodes\WebPage;
 use SeoWp\Schema\Nodes\WebSite;
 use SeoWp\Support\FragmentCache;
+use WP_Post;
 
 /**
  * Collects schema nodes from every registered builder, deduplicates them
@@ -26,13 +27,39 @@ use SeoWp\Support\FragmentCache;
 final class GraphBuilder {
 
 	/**
-	 * Post/term meta key for a per-object schema type override (e.g.
-	 * "Article", "Product", "FAQPage"). Reserved for a future per-object
-	 * schema type picker; not yet read by any node builder here — Import
-	 * (M6) already populates it from Yoast/Rank Math/AIOSEO so that data
-	 * isn't lost before that feature exists.
+	 * Post meta key for a per-object schema type override (e.g. "Article",
+	 * "AboutPage"), applied to the @type of the Article or WebPage node by
+	 * those classes themselves. Populated by Import from Yoast/Rank Math/
+	 * AIOSEO.
 	 */
 	public const META_SCHEMA_TYPE = '_seo_wp_schema_type';
+
+	/**
+	 * Resolves a post's schema type override, or '' when there is none or
+	 * it doesn't look like a valid Schema.org type name. The validity
+	 * check matters because not every source's raw value is one: Rank
+	 * Math's are translated on import (RankMathImporter), but an
+	 * unrecognised or untranslated value must never reach @type as-is —
+	 * emitting invalid markup would be worse than not overriding at all.
+	 *
+	 * @param WP_Post $post Post to check.
+	 */
+	public static function schema_type_override( WP_Post $post ): string {
+		$value = (string) get_post_meta( $post->ID, self::META_SCHEMA_TYPE, true );
+
+		return self::is_valid_schema_type( $value ) ? $value : '';
+	}
+
+	/**
+	 * Whether a string looks like a valid Schema.org type name: letters
+	 * only, starting with a capital (e.g. "Article", "JobPosting"). Pure
+	 * string logic, independent of WordPress, for easy unit testing.
+	 *
+	 * @param string $type Candidate type name.
+	 */
+	public static function is_valid_schema_type( string $type ): bool {
+		return 1 === preg_match( '/^[A-Z][A-Za-z]*$/', $type );
+	}
 
 	/**
 	 * Registers the wp_head output.
