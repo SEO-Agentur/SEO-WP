@@ -23,7 +23,8 @@ SEO-WP covers the essentials of on-page and technical SEO without a scoring UI, 
 **Social & structured data**
 
 * Open Graph and Twitter Card meta, with a shared image fallback (featured image → site logo → site icon)
-* A single deduplicated JSON-LD `@graph`: WebSite, Organization or Person, WebPage, Article (for non-hierarchical post types), BreadcrumbList, FAQPage, and Product when WooCommerce is active
+* A single deduplicated JSON-LD `@graph`: WebSite, Organization or Person, WebPage, Article (for non-hierarchical post types), BreadcrumbList, FAQPage, and Product when WooCommerce is active — exactly one primary content node per URL, never Article and Product stacked on the same page
+* The schema type of that primary content node is freely overridable per post *and* per taxonomy term (with autocomplete suggestions, but any Schema.org type name is accepted) — a specific article, product, product category, or plain category page can each be set independently
 
 **Sitemaps**
 
@@ -52,7 +53,7 @@ SEO-WP covers the essentials of on-page and technical SEO without a scoring UI, 
 
 **Admin**
 
-* A tabbed metabox (General/Social/Schema) on every public post type's edit screen, and the same General/Social fields on taxonomy term edit screens
+* A tabbed metabox (General/Social/Schema) on every public post type's edit screen, and the same General/Social/Schema fields on taxonomy term edit screens (the FAQ repeater is post-only)
 * A single settings screen (General/Content Types/Sitemaps/Crawl) — the Content Types tab is generated from your site's actual registered post types and taxonomies
 * A bulk editor for Title/Description/Canonical/Robots across every public post type
 * A guided import wizard with a live progress log

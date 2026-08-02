@@ -80,6 +80,12 @@ final class Plugin {
 	 * Runs on plugin activation.
 	 */
 	public static function activate(): void {
+		// Read on nearly every front-end request across many classes;
+		// guaranteeing it's autoloaded (a no-op if it already exists,
+		// preserving whatever autoload state it already has) means every
+		// one of those reads is an in-memory array lookup, never a query.
+		add_option( 'seo_wp_settings', array(), '', 'yes' );
+
 		flush_rewrite_rules();
 	}
 

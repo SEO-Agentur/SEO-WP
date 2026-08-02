@@ -19,6 +19,7 @@ use SeoWp\Schema\Nodes\WebPage;
 use SeoWp\Schema\Nodes\WebSite;
 use SeoWp\Support\FragmentCache;
 use WP_Post;
+use WP_Term;
 
 /**
  * Collects schema nodes from every registered builder, deduplicates them
@@ -27,12 +28,43 @@ use WP_Post;
 final class GraphBuilder {
 
 	/**
-	 * Post meta key for a per-object schema type override (e.g. "Article",
-	 * "AboutPage"), applied to the @type of the Article or WebPage node by
-	 * those classes themselves. Populated by Import from Yoast/Rank Math/
-	 * AIOSEO.
+	 * Post/term meta key for a per-object schema type override (e.g.
+	 * "Article", "AboutPage"), applied to the @type of the Article or
+	 * WebPage node by those classes themselves. Freely editable from the
+	 * metabox (Admin\Metabox) on both post and term edit screens, and
+	 * populated by Import from Yoast/Rank Math/AIOSEO for posts.
 	 */
 	public const META_SCHEMA_TYPE = '_seo_wp_schema_type';
+
+	/**
+	 * Common Schema.org type names offered as autocomplete suggestions in
+	 * the metabox; any value passing is_valid_schema_type() is accepted,
+	 * this list exists purely to help admins discover options, not to
+	 * restrict them.
+	 *
+	 * @var string[]
+	 */
+	public const SUGGESTED_TYPES = array(
+		'Article',
+		'BlogPosting',
+		'NewsArticle',
+		'WebPage',
+		'AboutPage',
+		'ContactPage',
+		'CollectionPage',
+		'ProfilePage',
+		'Product',
+		'Event',
+		'Recipe',
+		'JobPosting',
+		'LocalBusiness',
+		'Review',
+		'VideoObject',
+		'SoftwareApplication',
+		'Book',
+		'Course',
+		'Person',
+	);
 
 	/**
 	 * Resolves a post's schema type override, or '' when there is none or
@@ -45,8 +77,25 @@ final class GraphBuilder {
 	 * @param WP_Post $post Post to check.
 	 */
 	public static function schema_type_override( WP_Post $post ): string {
-		$value = (string) get_post_meta( $post->ID, self::META_SCHEMA_TYPE, true );
+		return self::valid_or_empty( (string) get_post_meta( $post->ID, self::META_SCHEMA_TYPE, true ) );
+	}
 
+	/**
+	 * Resolves a term's schema type override, applied to the WebPage node
+	 * built for its archive. Same validity rule as the post variant.
+	 *
+	 * @param WP_Term $term Term to check.
+	 */
+	public static function schema_type_override_for_term( WP_Term $term ): string {
+		return self::valid_or_empty( (string) get_term_meta( $term->term_id, self::META_SCHEMA_TYPE, true ) );
+	}
+
+	/**
+	 * Returns $value when it's a valid Schema.org type name, else ''.
+	 *
+	 * @param string $value Candidate type name.
+	 */
+	private static function valid_or_empty( string $value ): string {
 		return self::is_valid_schema_type( $value ) ? $value : '';
 	}
 

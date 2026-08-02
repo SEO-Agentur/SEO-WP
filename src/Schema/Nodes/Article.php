@@ -17,7 +17,9 @@ use WP_Post_Type;
  * Builds the Article JSON-LD node for singular content on non-hierarchical
  * post types (posts and article-like custom post types). Hierarchical
  * types (pages and page-like custom post types) get a WebPage node only,
- * without hardcoding any post type name.
+ * without hardcoding any post type name. WooCommerce products are Product's
+ * job, not Article's — a product page gets exactly one primary content
+ * node, never both.
  */
 final class Article {
 
@@ -34,6 +36,10 @@ final class Article {
 	 */
 	public function build(): ?array {
 		if ( ! is_singular() ) {
+			return null;
+		}
+
+		if ( function_exists( 'is_product' ) && is_product() ) {
 			return null;
 		}
 

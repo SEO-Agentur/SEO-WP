@@ -12,6 +12,7 @@ namespace SeoWp\Admin;
 use SeoWp\Meta\Canonical;
 use SeoWp\Meta\Robots;
 use SeoWp\Meta\TitleDescription;
+use SeoWp\Schema\GraphBuilder;
 use SeoWp\Schema\Nodes\FaqPage;
 use SeoWp\Social\OpenGraph;
 use SeoWp\Social\TwitterCards;
@@ -215,6 +216,7 @@ final class Metabox {
 			TwitterCards::META_TITLE,
 			TwitterCards::META_DESCRIPTION,
 			TwitterCards::META_IMAGE,
+			GraphBuilder::META_SCHEMA_TYPE,
 		);
 
 		$values = array();
@@ -266,6 +268,9 @@ final class Metabox {
 			? array_map( 'sanitize_key', wp_unslash( $_POST[ Robots::META_ADVANCED ] ) )
 			: array();
 		$this->update_meta( $object_id, $is_post, Robots::META_ADVANCED, array_values( array_intersect( self::ADVANCED_DIRECTIVE_KEYS, $advanced_raw ) ) );
+
+		$schema_type = isset( $_POST[ GraphBuilder::META_SCHEMA_TYPE ] ) ? sanitize_text_field( wp_unslash( $_POST[ GraphBuilder::META_SCHEMA_TYPE ] ) ) : '';
+		$this->update_meta( $object_id, $is_post, GraphBuilder::META_SCHEMA_TYPE, GraphBuilder::is_valid_schema_type( $schema_type ) ? $schema_type : '' );
 		// phpcs:enable
 	}
 
@@ -319,21 +324,22 @@ final class Metabox {
 	}
 
 	/**
-	 * Renders the tab navigation and panels.
+	 * Renders the tab navigation and panels. The Schema tab (type override)
+	 * is shown for both posts and terms; the FAQ repeater within it is
+	 * posts-only, since FaqPage only ever builds a node for singular
+	 * content.
 	 *
-	 * @param array<string,mixed>                             $values          Field values, keyed by meta key.
-	 * @param array<int,array{question:string,answer:string}> $faq FAQ entries (posts only).
-	 * @param bool                                            $show_schema_tab Whether to render the Schema tab (posts only).
+	 * @param array<string,mixed>                             $values   Field values, keyed by meta key.
+	 * @param array<int,array{question:string,answer:string}> $faq      FAQ entries (posts only, empty for terms).
+	 * @param bool                                            $show_faq Whether to render the FAQ repeater (posts only).
 	 */
-	private function render_tabs( array $values, array $faq, bool $show_schema_tab ): void {
+	private function render_tabs( array $values, array $faq, bool $show_faq ): void {
 		echo '<div class="seo-wp-metabox">';
 
 		echo '<div class="seo-wp-metabox-tabs">';
 		echo '<button type="button" class="seo-wp-tab-button seo-wp-tab-active" data-seo-wp-tab="general">' . esc_html__( 'General', 'seo-wp' ) . '</button>';
 		echo '<button type="button" class="seo-wp-tab-button" data-seo-wp-tab="social">' . esc_html__( 'Social', 'seo-wp' ) . '</button>';
-		if ( $show_schema_tab ) {
-			echo '<button type="button" class="seo-wp-tab-button" data-seo-wp-tab="schema">' . esc_html__( 'Schema', 'seo-wp' ) . '</button>';
-		}
+		echo '<button type="button" class="seo-wp-tab-button" data-seo-wp-tab="schema">' . esc_html__( 'Schema', 'seo-wp' ) . '</button>';
 		echo '</div>';
 
 		echo '<div class="seo-wp-tab-panel seo-wp-tab-active" data-seo-wp-panel="general">';
@@ -352,11 +358,12 @@ final class Metabox {
 		$this->field_text( TwitterCards::META_IMAGE, __( 'Twitter image URL', 'seo-wp' ), (string) $values[ TwitterCards::META_IMAGE ] );
 		echo '</div>';
 
-		if ( $show_schema_tab ) {
-			echo '<div class="seo-wp-tab-panel" data-seo-wp-panel="schema">';
+		echo '<div class="seo-wp-tab-panel" data-seo-wp-panel="schema">';
+		$this->field_schema_type( (string) $values[ GraphBuilder::META_SCHEMA_TYPE ] );
+		if ( $show_faq ) {
 			$this->field_faq( $faq );
-			echo '</div>';
 		}
+		echo '</div>';
 
 		echo '</div>';
 	}
@@ -435,6 +442,40 @@ final class Metabox {
 				esc_html( $directive_label )
 			);
 		}
+		echo '</p>';
+	}
+
+	/**
+	 * Renders the schema type override field: a text input with an
+	 * autocomplete list of common Schema.org type names. Any value is
+	 * accepted here — GraphBuilder::is_valid_schema_type() is the actual
+	 * gate, both on save (invalid values are silently dropped) and again
+	 * at render time as a second safety net.
+	 *
+	 * @param string $value Current value.
+	 */
+	private function field_schema_type( string $value ): void {
+		echo '<p class="seo-wp-field">';
+		printf(
+			'<label for="seo-wp-%1$s">%2$s</label>',
+			esc_attr( GraphBuilder::META_SCHEMA_TYPE ),
+			esc_html__( 'Schema type', 'seo-wp' )
+		);
+		printf(
+			'<input type="text" id="seo-wp-%1$s" name="%1$s" value="%2$s" list="seo-wp-schema-type-suggestions" placeholder="%3$s" class="widefat" />',
+			esc_attr( GraphBuilder::META_SCHEMA_TYPE ),
+			esc_attr( $value ),
+			esc_attr__( 'Automatic', 'seo-wp' )
+		);
+		echo '<datalist id="seo-wp-schema-type-suggestions">';
+		foreach ( GraphBuilder::SUGGESTED_TYPES as $suggested_type ) {
+			printf( '<option value="%s"></option>', esc_attr( $suggested_type ) );
+		}
+		echo '</datalist>';
+		printf(
+			'<span class="description">%s</span>',
+			esc_html__( 'Leave empty to use the automatic type (Article or WebPage). Any Schema.org type name works, not just the suggestions.', 'seo-wp' )
+		);
 		echo '</p>';
 	}
 

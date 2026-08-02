@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace SeoWp\Schema\Nodes;
 
+use SeoWp\Schema\GraphBuilder;
 use WC_Product;
 use WP_Post;
 
@@ -70,6 +71,11 @@ final class Product {
 			'price'         => (string) $product->get_price(),
 			'availability'  => $product->is_in_stock() ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
 		);
+
+		$type_override = GraphBuilder::schema_type_override( $post );
+		if ( '' !== $type_override ) {
+			$node['@type'] = $type_override;
+		}
 
 		return $node;
 	}

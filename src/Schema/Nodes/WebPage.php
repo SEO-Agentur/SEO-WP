@@ -13,6 +13,7 @@ use SeoWp\Schema\GraphBuilder;
 use SeoWp\Support\Url;
 use WP_Post;
 use WP_Post_Type;
+use WP_Term;
 
 /**
  * Builds the WebPage JSON-LD node for any indexable front-end request.
@@ -43,17 +44,33 @@ final class WebPage {
 			'inLanguage' => str_replace( '_', '-', get_locale() ),
 		);
 
-		if ( is_singular() && $this->is_primary_content_node() ) {
-			$post = get_queried_object();
-			if ( $post instanceof WP_Post ) {
-				$type_override = GraphBuilder::schema_type_override( $post );
-				if ( '' !== $type_override ) {
-					$node['@type'] = $type_override;
-				}
-			}
+		$type_override = $this->type_override();
+		if ( '' !== $type_override ) {
+			$node['@type'] = $type_override;
 		}
 
 		return $node;
+	}
+
+	/**
+	 * Resolves the schema type override for the current request: a term
+	 * override on a taxonomy archive, or a post override when this WebPage
+	 * node is the primary content node (hierarchical post types only —
+	 * non-hierarchical types get both an Article and a WebPage node, and
+	 * the override belongs on Article there, not on both at once).
+	 */
+	private function type_override(): string {
+		if ( is_category() || is_tag() || is_tax() ) {
+			$term = get_queried_object();
+			return $term instanceof WP_Term ? GraphBuilder::schema_type_override_for_term( $term ) : '';
+		}
+
+		if ( is_singular() && $this->is_primary_content_node() ) {
+			$post = get_queried_object();
+			return $post instanceof WP_Post ? GraphBuilder::schema_type_override( $post ) : '';
+		}
+
+		return '';
 	}
 
 	/**
