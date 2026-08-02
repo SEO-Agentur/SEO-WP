@@ -4,7 +4,7 @@ Tags: seo, wpml, sitemap, schema, hreflang
 Requires at least: 6.4
 Tested up to: 6.6
 Requires PHP: 8.1
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -93,8 +93,8 @@ Yes. Every WPML-specific feature (hreflang, per-language templates) is a no-op w
 
 == Changelog ==
 
-= 1.0.0 =
-* Import: site-wide settings import from Yoast/Rank Math (object/term meta import already existed); an explicit, admin-clicked "Deactivate now" button after a completed import.
+= 1.1.0 =
+* Import: site-wide settings import from Yoast/Rank Math (object/term meta import already existed); an explicit, admin-clicked "Deactivate now" button after a completed import; fixed a display bug ("#undefined") in the import log for settings entries.
 * Schema: Product gained an aggregateRating node from WooCommerce's own review data.
 * Meta: added the %year% token; a read-only overview table on the Content Types tab.
 * Admin: a live Google search-result and social share-card preview in the metabox; a Role Manager for per-role access control across every SEO-WP admin screen.
@@ -103,6 +103,8 @@ Yes. Every WPML-specific feature (hreflang, per-language templates) is a no-op w
 * Crawl: llms.txt gained a free-text field for manually written content; added Baidu site verification.
 * Crawl: attachment pages are now a tri-state setting (redirect/noindex/off), and inserted images can optionally have their attachment-page link stripped.
 * Sitemaps: added per-post-type/per-taxonomy inclusion toggles; image sitemap entries now come from fully rendered content, so builder-generated (Divi, WPBakery, etc.) images are included, not just Gutenberg block markup.
+
+= 1.0.0 =
 * Meta: title/description templates, robots directives, self-referencing canonical URLs.
 * Social: Open Graph and Twitter Card meta.
 * Schema: a single deduplicated JSON-LD graph across WebSite, Organization/Person, WebPage, Article, BreadcrumbList, FAQPage and Product.
