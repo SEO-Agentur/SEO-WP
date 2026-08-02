@@ -63,6 +63,12 @@
 		var fields = ( entry.fields || [] ).join( ', ' );
 		var suffix = entry.dry_run ? ' (preview)' : '';
 
+		// The "settings" entry (Batch::run_settings()) is a single global
+		// import step, not tied to one object, so it carries no id.
+		if ( 'settings' === entry.type ) {
+			return 'settings' + suffix + ( fields ? ': ' + fields : ' — no changes' );
+		}
+
 		return entry.type + ' #' + entry.id + suffix + ( fields ? ': ' + fields : ' — no changes' );
 	}
 
