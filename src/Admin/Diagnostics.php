@@ -142,12 +142,42 @@ final class Diagnostics {
 		$time    = isset( $entry['time'] ) ? (int) $entry['time'] : 0;
 		$context = isset( $entry['context'] ) ? (string) $entry['context'] : '';
 		$message = isset( $entry['message'] ) ? (string) $entry['message'] : '';
+		$data    = isset( $entry['data'] ) && is_array( $entry['data'] ) ? $entry['data'] : array();
 
 		printf(
-			'<tr><td>%s</td><td><code>%s</code></td><td>%s</td></tr>',
+			'<tr><td>%s</td><td><code>%s</code></td><td>%s%s</td></tr>',
 			esc_html( $time > 0 ? gmdate( 'Y-m-d H:i:s', $time ) : '' ),
 			esc_html( $context ),
-			esc_html( $message )
+			esc_html( $message ),
+			$this->render_entry_data( $data ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render_entry_data() escapes every value it outputs.
+		);
+	}
+
+	/**
+	 * Renders any extra detail an entry carries (a caught exception's
+	 * class/location, or captured stray AJAX output) in a collapsible
+	 * block, so it's available without cluttering rows that have none.
+	 *
+	 * @param array<string,mixed> $data Extra detail from the log entry.
+	 */
+	private function render_entry_data( array $data ): string {
+		if ( array() === $data ) {
+			return '';
+		}
+
+		$lines = '';
+		foreach ( $data as $key => $value ) {
+			$lines .= sprintf(
+				'<div><strong>%s:</strong> <code>%s</code></div>',
+				esc_html( (string) $key ),
+				esc_html( is_scalar( $value ) ? (string) $value : wp_json_encode( $value ) )
+			);
+		}
+
+		return sprintf(
+			'<details class="seo-wp-diagnostics-detail"><summary>%s</summary>%s</details>',
+			esc_html__( 'Details', 'seo-wp' ),
+			$lines // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built entirely from esc_html()/esc_html__() above.
 		);
 	}
 

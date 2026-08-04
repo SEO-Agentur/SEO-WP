@@ -12,6 +12,7 @@ namespace SeoWp\Admin;
 use SeoWp\Import\Batch;
 use SeoWp\Import\Detector;
 use SeoWp\Import\PluginRegistry;
+use SeoWp\Support\Ajax;
 
 /**
  * Walks the site owner through detecting, dry-running and running the
@@ -113,6 +114,8 @@ final class ImportWizard {
 					'deactivated'       => __( 'Deactivated.', 'seo-wp' ),
 					'deactivateFailed'  => __( 'Could not deactivate it automatically — deactivate it from the Plugins screen.', 'seo-wp' ),
 					'confirmDeactivate' => __( 'Deactivate this plugin now?', 'seo-wp' ),
+					/* translators: {{processed}} and {{found}} are placeholders filled in by JavaScript, not sprintf() — keep them exactly as-is. */
+					'progressSummary'   => __( '{{processed}} checked, {{found}} with data', 'seo-wp' ),
 				),
 			)
 		);
@@ -137,7 +140,7 @@ final class ImportWizard {
 			return;
 		}
 
-		echo '<p>' . esc_html__( 'Data was found from the plugins below. Object meta, term meta and (Yoast/Rank Math) global settings are imported; redirects are never migrated.', 'seo-wp' ) . '</p>';
+		echo '<p>' . esc_html__( 'Data was found from the plugins below. Object meta, term meta and (Yoast/Rank Math) global settings are imported; redirects are never migrated. Safe to re-run: a field already set in SEO-WP — whether from a previous import or edited by hand — is never overwritten, so running this again only picks up new or previously-empty content.', 'seo-wp' ) . '</p>';
 
 		foreach ( $detected as $source ) {
 			$this->render_source_section( $source, $detector->redirects_present( $source ) );
@@ -188,10 +191,11 @@ final class ImportWizard {
 	 * source and reports what to call next.
 	 */
 	public function handle_ajax(): void {
+		Ajax::begin( 'import:batch' );
 		check_ajax_referer( self::NONCE_ACTION, 'nonce' );
 
 		if ( ! current_user_can( self::CAPABILITY ) ) {
-			wp_send_json_error( array( 'message' => __( 'You are not allowed to do this.', 'seo-wp' ) ), 403 );
+			Ajax::error( array( 'message' => __( 'You are not allowed to do this.', 'seo-wp' ) ), 403 );
 		}
 
 		$source  = isset( $_POST['source'] ) ? sanitize_key( wp_unslash( $_POST['source'] ) ) : '';
@@ -200,7 +204,7 @@ final class ImportWizard {
 		$dry_run = ! empty( $_POST['dry_run'] );
 
 		if ( ! isset( self::SOURCES[ $source ] ) ) {
-			wp_send_json_error( array( 'message' => __( 'Unknown source.', 'seo-wp' ) ), 400 );
+			Ajax::error( array( 'message' => __( 'Unknown source.', 'seo-wp' ) ), 400 );
 		}
 
 		$batch = new Batch();
@@ -232,7 +236,7 @@ final class ImportWizard {
 
 		$next_page = $next_stage === $stage ? $page + 1 : 1;
 
-		wp_send_json_success(
+		Ajax::success(
 			array(
 				'done'      => 'done' === $next_stage,
 				'stage'     => $next_stage,
@@ -252,21 +256,22 @@ final class ImportWizard {
 	 * running this plugin's own import.
 	 */
 	public function handle_deactivate_ajax(): void {
+		Ajax::begin( 'import:deactivate' );
 		check_ajax_referer( self::NONCE_ACTION, 'nonce' );
 
 		if ( ! current_user_can( self::CAPABILITY ) || ! current_user_can( 'activate_plugins' ) ) {
-			wp_send_json_error( array( 'message' => __( 'You are not allowed to do this.', 'seo-wp' ) ), 403 );
+			Ajax::error( array( 'message' => __( 'You are not allowed to do this.', 'seo-wp' ) ), 403 );
 		}
 
 		$source = isset( $_POST['source'] ) ? sanitize_key( wp_unslash( $_POST['source'] ) ) : '';
 		if ( ! isset( self::SOURCES[ $source ] ) ) {
-			wp_send_json_error( array( 'message' => __( 'Unknown source.', 'seo-wp' ) ), 400 );
+			Ajax::error( array( 'message' => __( 'Unknown source.', 'seo-wp' ) ), 400 );
 		}
 
 		if ( ! PluginRegistry::deactivate( $source ) ) {
-			wp_send_json_error( array( 'message' => __( 'Could not deactivate it automatically — deactivate it from the Plugins screen.', 'seo-wp' ) ), 500 );
+			Ajax::error( array( 'message' => __( 'Could not deactivate it automatically — deactivate it from the Plugins screen.', 'seo-wp' ) ), 500 );
 		}
 
-		wp_send_json_success( array( 'message' => __( 'Deactivated.', 'seo-wp' ) ) );
+		Ajax::success( array( 'message' => __( 'Deactivated.', 'seo-wp' ) ) );
 	}
 }

@@ -9,10 +9,13 @@ declare(strict_types=1);
 
 namespace SeoWp;
 
+use SeoWp\Admin\AiSettings;
 use SeoWp\Admin\BulkEditor;
 use SeoWp\Admin\Diagnostics;
+use SeoWp\Admin\DuplicateChecker;
 use SeoWp\Admin\GoogleIndexingPage;
 use SeoWp\Admin\ImportWizard;
+use SeoWp\Admin\LinkAudit;
 use SeoWp\Admin\Metabox;
 use SeoWp\Admin\NotFoundMonitorPage;
 use SeoWp\Admin\RedirectsPage;
@@ -72,6 +75,9 @@ final class Plugin {
 		// user_has_cap filter it adds must be active for any capability
 		// check anywhere, not just while rendering wp-admin screens.
 		( new RoleManager() )->register();
+		// Also unconditional: its WP-Cron hook must fire on wp-cron.php
+		// requests, which are never is_admin().
+		( new LinkAudit() )->register();
 
 		( new RobotsTxt() )->register();
 		( new LlmsTxt() )->register();
@@ -92,6 +98,8 @@ final class Plugin {
 			( new RedirectsPage() )->register();
 			( new NotFoundMonitorPage() )->register();
 			( new GoogleIndexingPage() )->register();
+			( new DuplicateChecker() )->register();
+			( new AiSettings() )->register();
 		}
 	}
 
@@ -112,6 +120,8 @@ final class Plugin {
 	 * Runs on plugin deactivation.
 	 */
 	public static function deactivate(): void {
+		wp_clear_scheduled_hook( 'seo_wp_check_links_batch' );
+
 		flush_rewrite_rules();
 	}
 }

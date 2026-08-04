@@ -37,5 +37,6 @@ final class Head {
 		( new TwitterCards() )->register();
 		( new GraphBuilder() )->register();
 		( new Hreflang() )->register();
+		( new CriticalCss() )->register();
 	}
 }

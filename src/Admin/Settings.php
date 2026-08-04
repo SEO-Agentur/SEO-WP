@@ -40,10 +40,10 @@ final class Settings {
 	 * @var array<string,string[]>
 	 */
 	private const CHECKBOX_FIELDS_BY_TAB = array(
-		'general'  => array(),
-		'content'  => array(),
-		'sitemaps' => array( 'disable_core_sitemap' ),
-		'crawl'    => array(
+		'general'     => array(),
+		'content'     => array(),
+		'sitemaps'    => array( 'disable_core_sitemap' ),
+		'crawl'       => array(
 			'block_ai_crawlers',
 			'enable_llms_txt',
 			'enable_llms_full_txt',
@@ -52,6 +52,7 @@ final class Settings {
 			'strip_attachment_links',
 			'enable_indexnow',
 		),
+		'performance' => array( 'defer_noncritical_css' ),
 	);
 
 	/**
@@ -182,6 +183,10 @@ final class Settings {
 			$clean['llms_txt_custom'] = sanitize_textarea_field( wp_unslash( (string) $input['llms_txt_custom'] ) );
 		}
 
+		if ( array_key_exists( 'critical_css', $input ) ) {
+			$clean['critical_css'] = sanitize_textarea_field( wp_unslash( (string) $input['critical_css'] ) );
+		}
+
 		if ( array_key_exists( 'attachment_handling', $input ) ) {
 			$clean['attachment_handling'] = in_array( $input['attachment_handling'], array( 'redirect', 'noindex', 'off' ), true )
 				? $input['attachment_handling']
@@ -230,10 +235,11 @@ final class Settings {
 		}
 
 		$tabs = array(
-			'general'  => __( 'General', 'seo-wp' ),
-			'content'  => __( 'Content Types', 'seo-wp' ),
-			'sitemaps' => __( 'Sitemaps', 'seo-wp' ),
-			'crawl'    => __( 'Crawl', 'seo-wp' ),
+			'general'     => __( 'General', 'seo-wp' ),
+			'content'     => __( 'Content Types', 'seo-wp' ),
+			'sitemaps'    => __( 'Sitemaps', 'seo-wp' ),
+			'crawl'       => __( 'Crawl', 'seo-wp' ),
+			'performance' => __( 'Performance', 'seo-wp' ),
 		);
 
 		$active_tab = isset( $_GET['tab'] ) && isset( $tabs[ sanitize_key( wp_unslash( $_GET['tab'] ) ) ] ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only tab selector, not a state-changing action.
@@ -276,6 +282,9 @@ final class Settings {
 				break;
 			case 'crawl':
 				$this->render_crawl_tab();
+				break;
+			case 'performance':
+				$this->render_performance_tab();
 				break;
 			default:
 				$this->render_general_tab();
@@ -477,6 +486,24 @@ final class Settings {
 			),
 			'default'
 		);
+	}
+
+	/**
+	 * Renders the Performance tab: manually-supplied critical CSS and an
+	 * independent toggle to load every other stylesheet non-blocking.
+	 */
+	private function render_performance_tab(): void {
+		echo '<tr><td colspan="2"><p class="description">';
+		echo esc_html__( 'This plugin cannot auto-detect critical CSS — that requires actually rendering the page (real layout, real box positions), which no CSS parsing pass can do. Paste critical CSS from a tool of your choice, or write it by hand.', 'seo-wp' );
+		echo '</p></td></tr>';
+
+		$this->textarea_field( 'critical_css', __( 'Critical CSS (inlined in <head>)', 'seo-wp' ) );
+
+		echo '<tr><td colspan="2"><p class="description">';
+		echo esc_html__( 'Independent of the above: without critical CSS in place, deferring every other stylesheet will show a flash of unstyled content until they finish loading — enable this once you have critical CSS covering what visitors see immediately, or if you\'ve decided that tradeoff is acceptable for your site.', 'seo-wp' );
+		echo '</p></td></tr>';
+
+		$this->checkbox_field( 'defer_noncritical_css', __( 'Load all other stylesheets non-blocking', 'seo-wp' ), false );
 	}
 
 	/**

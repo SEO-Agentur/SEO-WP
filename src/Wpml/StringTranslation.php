@@ -32,7 +32,7 @@ final class StringTranslation {
 	 * Registers strings whenever the settings are added or updated.
 	 */
 	public function register(): void {
-		add_action( 'add_option_' . self::OPTION_KEY, array( $this, 'register_strings_on_add' ) );
+		add_action( 'add_option_' . self::OPTION_KEY, array( $this, 'register_strings_on_add' ), 10, 2 );
 		add_action( 'update_option_' . self::OPTION_KEY, array( $this, 'register_strings_on_update' ), 10, 2 );
 	}
 

@@ -63,6 +63,8 @@ final class RoleManager {
 		'diagnostics'  => 'seo_wp_view_diagnostics',
 		'redirects'    => 'seo_wp_manage_redirects',
 		'404_monitor'  => 'seo_wp_view_404_monitor',
+		'duplicates'   => 'seo_wp_view_duplicates',
+		'link_audit'   => 'seo_wp_view_link_audit',
 		'role_manager' => self::MANAGE_ROLES_CAP,
 	);
 
@@ -93,6 +95,23 @@ final class RoleManager {
 			return $allcaps;
 		}
 
+		// Anyone who can manage_options can never lose access to this page
+		// itself, full stop — not even via a matrix saved before this
+		// capability existed (see matrix()'s own backfill for the general
+		// version of that problem), one explicitly saved as off before
+		// that backfill existed, or any future bug in how it's stored.
+		// Checked against the real capability rather than the literal
+		// "administrator" role slug, since a site can grant manage_options
+		// to a differently-named role too — losing every such user's way
+		// to fix role settings is the one failure mode this feature must
+		// never have. $allcaps is what user_has_cap() already resolved
+		// for this exact user before this filter ran, so reading
+		// 'manage_options' from it here can't recurse.
+		if ( self::MANAGE_ROLES_CAP === $requested && ! empty( $allcaps['manage_options'] ) ) {
+			$allcaps[ $requested ] = true;
+			return $allcaps;
+		}
+
 		$matrix = self::matrix();
 
 		foreach ( (array) $user->roles as $role ) {
@@ -106,15 +125,35 @@ final class RoleManager {
 	}
 
 	/**
-	 * The currently effective matrix: the stored one, or a default derived
-	 * from each role's real capabilities when nothing has been saved yet.
+	 * The currently effective matrix: the stored one, backfilled with the
+	 * derived default for any role/area it doesn't have an entry for.
+	 * That backfill matters beyond first install — every time this plugin
+	 * adds a new controllable area (as it did for Duplicate Content and
+	 * Link Audit after some sites had already saved a matrix), a
+	 * previously-saved matrix predates that area entirely. Without the
+	 * backfill, a missing entry reads as `false` — silently locking every
+	 * role, including Administrator, out of a page that never existed
+	 * when they last saved this screen.
 	 *
 	 * @return array<string,array<string,bool>>
 	 */
 	public static function matrix(): array {
-		$stored = get_option( self::OPTION_KEY, null );
+		$stored  = get_option( self::OPTION_KEY, null );
+		$default = self::default_matrix();
 
-		return is_array( $stored ) ? $stored : self::default_matrix();
+		if ( ! is_array( $stored ) ) {
+			return $default;
+		}
+
+		foreach ( $default as $role_slug => $caps ) {
+			foreach ( $caps as $cap => $default_value ) {
+				if ( ! isset( $stored[ $role_slug ][ $cap ] ) ) {
+					$stored[ $role_slug ][ $cap ] = $default_value;
+				}
+			}
+		}
+
+		return $stored;
 	}
 
 	/**
@@ -140,6 +179,8 @@ final class RoleManager {
 				self::AREAS['diagnostics']  => $has_manage_options,
 				self::AREAS['redirects']    => $has_manage_options,
 				self::AREAS['404_monitor']  => $has_manage_options,
+				self::AREAS['duplicates']   => $has_manage_options,
+				self::AREAS['link_audit']   => $has_manage_options,
 				self::AREAS['role_manager'] => $has_manage_options,
 			);
 		}
@@ -188,6 +229,8 @@ final class RoleManager {
 			'diagnostics'  => __( 'Diagnostics', 'seo-wp' ),
 			'redirects'    => __( 'Redirects', 'seo-wp' ),
 			'404_monitor'  => __( '404 Monitor', 'seo-wp' ),
+			'duplicates'   => __( 'Duplicate Content Checker', 'seo-wp' ),
+			'link_audit'   => __( 'Link Audit (Broken Links / Orphan Pages)', 'seo-wp' ),
 			'role_manager' => __( 'Role Manager', 'seo-wp' ),
 		);
 	}

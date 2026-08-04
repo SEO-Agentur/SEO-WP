@@ -1,10 +1,11 @@
 === SEO-WP ===
 Contributors: yourwpusername
+Donate link: https://buymeacoffee.com/cyrusbadde
 Tags: seo, wpml, sitemap, schema, hreflang
 Requires at least: 6.4
-Tested up to: 6.6
+Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.1.0
+Stable tag: 1.2.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -13,6 +14,8 @@ A slim, page-type-agnostic SEO plugin with full WPML compatibility: meta tags, s
 == Description ==
 
 SEO-WP covers the essentials of on-page and technical SEO without a scoring UI, nag screens or external tracking. It works out of the box with sensible defaults, and stays out of the way for any public post type or taxonomy your site adds — nothing here is hardcoded to "post" or "page".
+
+Built and maintained by [Cyrus Badde](https://seo-wp.net). If it saves you time, you can [buy me a coffee](https://buymeacoffee.com/cyrusbadde) — entirely optional, the plugin stays fully free either way.
 
 **Meta**
 
@@ -61,15 +64,19 @@ SEO-WP covers the essentials of on-page and technical SEO without a scoring UI, 
 * Site-wide settings (title/description templates, separator, Twitter handle) are also imported from Yoast (high confidence — a stable option layout) and Rank Math (moderate confidence — flag any surprising result and adjust by hand); AIOSEO's settings format isn't imported, since it was never verified with enough confidence to map safely
 * Existing redirect rules from another plugin are never migrated automatically; the import wizard flags when a source has redirect data so you can recreate it in SEO-WP's own Redirects screen
 * An explicit "Deactivate {plugin} now" button appears after a real (non-dry-run) import completes — never automatic, and only shown when that plugin is actually confirmed active
+* Safe to re-run at any time: a field already set in SEO-WP — whether from an earlier import or edited by hand — is never overwritten, so running the import again only fills in what's still empty
 
 **Admin**
 
-* A tabbed metabox (General/Social/Schema) on every public post type's edit screen, and the same General/Social/Schema fields on taxonomy term edit screens (the FAQ repeater is post-only)
+* A tabbed metabox (General/Social/Schema) on every public post type's edit screen, and the same General/Social/Schema fields on taxonomy term edit screens (the FAQ repeater is post-only) — the General tab also has an optional focus keyword field, used as a hint by the AI bulk-edit suggestions below, not for any scoring feature
 * A single settings screen (General/Content Types/Sitemaps/Crawl) — the Content Types tab is generated from your site's actual registered post types and taxonomies
 * A bulk editor for Title/Description/Canonical/Robots across every public post type
+* Bring-your-own-key AI in the Bulk Editor: Claude or OpenAI generate a title/description pair in a "{keyword}: {USP} | {USP} > {CTA}" template from the page's URL, content and focus keyword — written straight into the row's fields for review, never saved until you click "Save changes"; a one-click action offers suggestions for every still-empty field on the page. DeepL translates a row's title/description into every other WPML-linked translation of that post. Every provider is entirely optional, configured with your own API key on the new AI Settings page, and never called except on an explicit click — no proxying, no markup on your usage
+* A Duplicate Content Checker finding posts that share the exact same *effective* title or meta description — the value actually used on the front end, whether from a manual override or a rendered template
+* A Link Audit finding orphan pages (published content nothing links to, checking both post content and every navigation menu) and broken links (checked in the background via WP-Cron, a handful every fifteen minutes)
 * A guided import wizard with a live progress log
 * A Diagnostics page recording anything that went wrong during detection or import (a database error, an unexpected data shape), with a site-wide admin notice when something needs attention
-* A Role Manager controlling which WordPress roles can access which parts of the plugin (settings, metabox editing, bulk editor, import, diagnostics, redirects, 404 monitor), via virtual capabilities rather than rewriting your roles — safe to enable/disable at any time, and a no-op until you actively configure it
+* A Role Manager controlling which WordPress roles can access which parts of the plugin (settings, metabox editing, bulk editor, import, diagnostics, redirects, 404 monitor, duplicate checker, link audit), via virtual capabilities rather than rewriting your roles — safe to enable/disable at any time, and a no-op until you actively configure it
 
 == Installation ==
 
@@ -92,6 +99,11 @@ No. Existing redirect *rules* from another plugin aren't migrated automatically 
 Yes. Every WPML-specific feature (hreflang, per-language templates) is a no-op when WPML isn't active — nothing here is a hard dependency.
 
 == Changelog ==
+
+= 1.2.0 =
+* Admin: bring-your-own-key AI title/description suggestions (Claude/OpenAI) and translation (DeepL) in the Bulk Editor; a new optional focus-keyword metabox field; a Duplicate Content Checker; a Link Audit (orphan pages + background broken-link checking).
+* Import: re-running an import (or one of its stages) is now idempotent — an already-set SEO-WP field, from any source, is never overwritten again.
+* Fixed a real production bug: a missing accepted_args on an add_option_* hook caused a fatal ArgumentCountError when the settings option didn't already exist.
 
 = 1.1.0 =
 * Import: site-wide settings import from Yoast/Rank Math (object/term meta import already existed); an explicit, admin-clicked "Deactivate now" button after a completed import; fixed a display bug ("#undefined") in the import log for settings entries.

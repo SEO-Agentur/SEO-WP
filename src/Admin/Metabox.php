@@ -45,6 +45,15 @@ final class Metabox {
 	private const EDIT_META_CAP = 'seo_wp_edit_meta';
 
 	/**
+	 * Post meta key for the optional focus keyword hint. Not a scoring
+	 * input — this plugin deliberately has no SEO-score feature — only a
+	 * strong hint the Bulk Editor's AI title/description suggestions use
+	 * when present, falling back to inferring one from the URL and
+	 * content when it's empty.
+	 */
+	public const META_FOCUS_KEYWORD = '_seo_wp_focus_keyword';
+
+	/**
 	 * Advanced robots directive keys editable here.
 	 *
 	 * @var string[]
@@ -237,6 +246,7 @@ final class Metabox {
 		$keys = array(
 			TitleDescription::META_TITLE,
 			TitleDescription::META_DESCRIPTION,
+			self::META_FOCUS_KEYWORD,
 			Canonical::META_CANONICAL,
 			Robots::META_NOINDEX,
 			Robots::META_NOFOLLOW,
@@ -275,6 +285,7 @@ final class Metabox {
 		$text_keys = array(
 			TitleDescription::META_TITLE,
 			TitleDescription::META_DESCRIPTION,
+			self::META_FOCUS_KEYWORD,
 			Canonical::META_CANONICAL,
 			OpenGraph::META_TITLE,
 			OpenGraph::META_DESCRIPTION,
@@ -375,6 +386,7 @@ final class Metabox {
 		echo '<div class="seo-wp-tab-panel seo-wp-tab-active" data-seo-wp-panel="general">';
 		$this->field_text( TitleDescription::META_TITLE, __( 'Title', 'seo-wp' ), (string) $values[ TitleDescription::META_TITLE ] );
 		$this->field_textarea( TitleDescription::META_DESCRIPTION, __( 'Meta description', 'seo-wp' ), (string) $values[ TitleDescription::META_DESCRIPTION ] );
+		$this->field_text( self::META_FOCUS_KEYWORD, __( 'Focus keyword (optional)', 'seo-wp' ), (string) $values[ self::META_FOCUS_KEYWORD ] );
 		$this->field_text( Canonical::META_CANONICAL, __( 'Canonical URL', 'seo-wp' ), (string) $values[ Canonical::META_CANONICAL ] );
 		$this->field_robots( $values );
 		$this->render_serp_preview();

@@ -75,31 +75,23 @@ final class Batch {
 
 		foreach ( $query->posts as $post_id ) {
 			$post_id = (int) $post_id;
-			$mapped  = ErrorLog::capture(
+
+			// The whole per-post pipeline (mapping, the idempotency
+			// filter, and the actual writes) runs inside capture(), not
+			// just the mapping call — a Throwable from any of those
+			// three for one unusual post must not abort the whole batch
+			// (and every later page/stage after it) for the rest of the
+			// site's content.
+			$entry = ErrorLog::capture(
 				"import:{$source}:post:{$post_id}",
-				function () use ( $source, $post_id ) {
-					return $this->map_post( $source, $post_id );
+				function () use ( $source, $post_id, $dry_run ) {
+					return $this->import_one_post( $source, $post_id, $dry_run );
 				}
 			);
-			$mapped  = is_array( $mapped ) ? $mapped : array();
 
-			if ( array() === $mapped ) {
-				continue;
+			if ( is_array( $entry ) ) {
+				$entries[] = $entry;
 			}
-
-			if ( ! $dry_run ) {
-				foreach ( $mapped as $meta_key => $value ) {
-					update_post_meta( $post_id, $meta_key, $value );
-				}
-			}
-
-			$entries[] = array(
-				'type'    => 'post',
-				'id'      => $post_id,
-				'source'  => $source,
-				'fields'  => array_keys( $mapped ),
-				'dry_run' => $dry_run,
-			);
 		}
 
 		$this->append_log( $entries );
@@ -151,33 +143,19 @@ final class Batch {
 		$entries = array();
 
 		foreach ( $terms as $term ) {
-			$term_id = (int) $term->term_id;
-			$mapped  = ErrorLog::capture(
+			$term_id  = (int) $term->term_id;
+			$taxonomy = (string) $term->taxonomy;
+
+			$entry = ErrorLog::capture(
 				"import:{$source}:term:{$term_id}",
-				function () use ( $source, $term_id, $term ) {
-					return $this->map_term( $source, $term_id, (string) $term->taxonomy );
+				function () use ( $source, $term_id, $taxonomy, $dry_run ) {
+					return $this->import_one_term( $source, $term_id, $taxonomy, $dry_run );
 				}
 			);
-			$mapped  = is_array( $mapped ) ? $mapped : array();
 
-			if ( array() === $mapped ) {
-				continue;
+			if ( is_array( $entry ) ) {
+				$entries[] = $entry;
 			}
-
-			if ( ! $dry_run ) {
-				foreach ( $mapped as $meta_key => $value ) {
-					update_term_meta( $term_id, $meta_key, $value );
-				}
-			}
-
-			$entries[] = array(
-				'type'     => 'term',
-				'id'       => $term_id,
-				'taxonomy' => (string) $term->taxonomy,
-				'source'   => $source,
-				'fields'   => array_keys( $mapped ),
-				'dry_run'  => $dry_run,
-			);
 		}
 
 		$this->append_log( $entries );
@@ -226,31 +204,39 @@ final class Batch {
 
 		foreach ( $users as $user_id ) {
 			$user_id = (int) $user_id;
-			$mapped  = ErrorLog::capture(
+
+			$entry = ErrorLog::capture(
 				"import:{$source}:author:{$user_id}",
-				static function () use ( $importer, $user_id ) {
-					return $importer->map_author( $user_id );
+				static function () use ( $importer, $source, $user_id, $dry_run ) {
+					$mapped = $importer->map_author( $user_id );
+					$mapped = self::filter_to_empty_fields(
+						$mapped,
+						static fn ( string $meta_key ) => get_user_meta( $user_id, $meta_key, true )
+					);
+
+					if ( array() === $mapped ) {
+						return null;
+					}
+
+					if ( ! $dry_run ) {
+						foreach ( $mapped as $meta_key => $value ) {
+							update_user_meta( $user_id, $meta_key, $value );
+						}
+					}
+
+					return array(
+						'type'    => 'author',
+						'id'      => $user_id,
+						'source'  => $source,
+						'fields'  => array_keys( $mapped ),
+						'dry_run' => $dry_run,
+					);
 				}
 			);
-			$mapped  = is_array( $mapped ) ? $mapped : array();
 
-			if ( array() === $mapped ) {
-				continue;
+			if ( is_array( $entry ) ) {
+				$entries[] = $entry;
 			}
-
-			if ( ! $dry_run ) {
-				foreach ( $mapped as $meta_key => $value ) {
-					update_user_meta( $user_id, $meta_key, $value );
-				}
-			}
-
-			$entries[] = array(
-				'type'    => 'author',
-				'id'      => $user_id,
-				'source'  => $source,
-				'fields'  => array_keys( $mapped ),
-				'dry_run' => $dry_run,
-			);
 		}
 
 		$this->append_log( $entries );
@@ -291,6 +277,13 @@ final class Batch {
 		);
 		$mapped   = is_array( $mapped ) ? $mapped : array();
 
+		$existing = get_option( 'seo_wp_settings', array() );
+		$existing = is_array( $existing ) ? $existing : array();
+		$mapped   = self::filter_to_empty_fields(
+			$mapped,
+			static fn ( string $key ) => $existing[ $key ] ?? ''
+		);
+
 		if ( array() === $mapped ) {
 			return array(
 				'processed' => 0,
@@ -300,8 +293,6 @@ final class Batch {
 		}
 
 		if ( ! $dry_run ) {
-			$existing = get_option( 'seo_wp_settings', array() );
-			$existing = is_array( $existing ) ? $existing : array();
 			update_option( 'seo_wp_settings', array_merge( $existing, $mapped ), 'yes' );
 		}
 
@@ -365,6 +356,76 @@ final class Batch {
 	}
 
 	/**
+	 * Drops any field a target already has a non-empty value for, so a
+	 * re-run of the import (or one that picks up newly-added source data)
+	 * never overwrites data that was already imported, or that a site
+	 * owner has since edited by hand in SEO-WP itself — an existing
+	 * value, from wherever it came, always wins over the source plugin's.
+	 *
+	 * @param array<string,mixed> $mapped       Fields this import would otherwise write.
+	 * @param callable            $get_existing Given a field's key, returns its current value in SEO-WP.
+	 * @return array<string,mixed>
+	 */
+	public static function filter_to_empty_fields( array $mapped, callable $get_existing ): array {
+		foreach ( $mapped as $key => $value ) {
+			if ( ! self::is_empty_value( $get_existing( (string) $key ) ) ) {
+				unset( $mapped[ $key ] );
+			}
+		}
+
+		return $mapped;
+	}
+
+	/**
+	 * Whether an existing SEO-WP value counts as "not set yet" — an empty
+	 * string or an empty array. A meaningful falsy-looking value like the
+	 * string '0' (e.g. Robots::META_NOINDEX explicitly forcing "indexed")
+	 * is not empty.
+	 *
+	 * @param mixed $value Existing value to check.
+	 */
+	public static function is_empty_value( $value ): bool {
+		return is_array( $value ) ? array() === $value : '' === (string) $value;
+	}
+
+	/**
+	 * Maps, filters and (unless dry-running) writes one post's fields,
+	 * returning the log entry for it, or null when there was nothing to
+	 * import. The whole thing is one unit for ErrorLog::capture() to wrap
+	 * in run_posts_page() — see the comment there.
+	 *
+	 * @param string $source  Source key.
+	 * @param int    $post_id Post ID.
+	 * @param bool   $dry_run When true, computes but does not write.
+	 * @return array<string,mixed>|null
+	 */
+	private function import_one_post( string $source, int $post_id, bool $dry_run ): ?array {
+		$mapped = $this->map_post( $source, $post_id );
+		$mapped = self::filter_to_empty_fields(
+			$mapped,
+			static fn ( string $meta_key ) => get_post_meta( $post_id, $meta_key, true )
+		);
+
+		if ( array() === $mapped ) {
+			return null;
+		}
+
+		if ( ! $dry_run ) {
+			foreach ( $mapped as $meta_key => $value ) {
+				update_post_meta( $post_id, $meta_key, $value );
+			}
+		}
+
+		return array(
+			'type'    => 'post',
+			'id'      => $post_id,
+			'source'  => $source,
+			'fields'  => array_keys( $mapped ),
+			'dry_run' => $dry_run,
+		);
+	}
+
+	/**
 	 * Dispatches to the right post importer for a source.
 	 *
 	 * @param string $source  Source key.
@@ -382,6 +443,43 @@ final class Batch {
 			default:
 				return array();
 		}
+	}
+
+	/**
+	 * Maps, filters and (unless dry-running) writes one term's fields;
+	 * see import_one_post() for why this is one unit for capture() to wrap.
+	 *
+	 * @param string $source   Source key.
+	 * @param int    $term_id  Term ID.
+	 * @param string $taxonomy Taxonomy slug.
+	 * @param bool   $dry_run  When true, computes but does not write.
+	 * @return array<string,mixed>|null
+	 */
+	private function import_one_term( string $source, int $term_id, string $taxonomy, bool $dry_run ): ?array {
+		$mapped = $this->map_term( $source, $term_id, $taxonomy );
+		$mapped = self::filter_to_empty_fields(
+			$mapped,
+			static fn ( string $meta_key ) => get_term_meta( $term_id, $meta_key, true )
+		);
+
+		if ( array() === $mapped ) {
+			return null;
+		}
+
+		if ( ! $dry_run ) {
+			foreach ( $mapped as $meta_key => $value ) {
+				update_term_meta( $term_id, $meta_key, $value );
+			}
+		}
+
+		return array(
+			'type'     => 'term',
+			'id'       => $term_id,
+			'taxonomy' => $taxonomy,
+			'source'   => $source,
+			'fields'   => array_keys( $mapped ),
+			'dry_run'  => $dry_run,
+		);
 	}
 
 	/**

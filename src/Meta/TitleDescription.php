@@ -116,6 +116,74 @@ final class TitleDescription {
 	}
 
 	/**
+	 * Resolves the title for an arbitrary post, independent of the current
+	 * request/global query — e.g. for an admin tool that needs every
+	 * post's *effective* title (override or rendered template) at once,
+	 * not just the one being viewed on the front end right now.
+	 *
+	 * @param WP_Post $post Post to resolve the title for.
+	 */
+	public function resolve_title_for_post( WP_Post $post ): string {
+		return $this->render_for_post( $post, 'title', self::META_TITLE );
+	}
+
+	/**
+	 * Resolves the meta description for an arbitrary post; see
+	 * resolve_title_for_post().
+	 *
+	 * @param WP_Post $post Post to resolve the description for.
+	 */
+	public function resolve_description_for_post( WP_Post $post ): string {
+		return $this->render_for_post( $post, 'description', self::META_DESCRIPTION );
+	}
+
+	/**
+	 * Renders either the per-object override or the configured
+	 * per-post-type template for a specific post. Deliberately simpler
+	 * than render_for_context()/template_for_current_context(): those
+	 * cover every request type (front page, archives, taxonomy terms) by
+	 * reading the global query; a single post is always the "singular"
+	 * case, so this skips straight to it.
+	 *
+	 * @param WP_Post $post     Post to render for.
+	 * @param string  $kind     'title' or 'description'.
+	 * @param string  $meta_key Post meta key holding the override.
+	 */
+	private function render_for_post( WP_Post $post, string $kind, string $meta_key ): string {
+		$values    = $this->values_for_post( $post );
+		$separator = (string) $this->option( 'separator', '-' );
+
+		$override = (string) get_post_meta( $post->ID, $meta_key, true );
+		if ( '' !== $override ) {
+			return Renderer::render( $override, $values, $separator );
+		}
+
+		$defaults = self::defaults();
+		$template = (string) $this->option( "{$kind}_template_{$post->post_type}", $defaults[ "{$kind}_singular" ] );
+
+		return Renderer::render( $template, $values, $separator );
+	}
+
+	/**
+	 * Builds the {token} => value map for a specific post.
+	 *
+	 * @param WP_Post $post Post to build values for.
+	 * @return array<string,string>
+	 */
+	private function values_for_post( WP_Post $post ): array {
+		return array(
+			'sitename' => (string) get_bloginfo( 'name' ),
+			'sep'      => (string) $this->option( 'separator', '-' ),
+			'title'    => get_the_title( $post ),
+			'excerpt'  => wp_strip_all_tags( (string) get_the_excerpt( $post ) ),
+			'category' => '',
+			'date'     => (string) get_the_date( '', $post ),
+			'page'     => '',
+			'year'     => gmdate( 'Y' ),
+		);
+	}
+
+	/**
 	 * Renders either the per-object override or the configured template
 	 * for the current request.
 	 *

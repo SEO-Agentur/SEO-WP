@@ -165,3 +165,18 @@
 	font-size: 12px;
 	overflow-wrap: break-word;
 }
+
+.seo-wp-bulk-ai-cell {
+	white-space: nowrap;
+}
+
+.seo-wp-bulk-ai-provider {
+	max-width: 90px;
+}
+
+.seo-wp-bulk-ai-status {
+	font-size: 12px;
+	color: #646970;
+	margin-top: 4px;
+	white-space: normal;
+}
