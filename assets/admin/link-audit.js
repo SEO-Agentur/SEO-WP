@@ -84,6 +84,39 @@
 			} );
 	}
 
+	function recheck( button ) {
+		var url = button.getAttribute( 'data-url' );
+		var row = button.closest( 'tr' );
+		var i18n = window.seoWpLinkAudit.i18n;
+
+		if ( ! url ) {
+			return;
+		}
+
+		button.disabled = true;
+		button.textContent = i18n.rechecking;
+
+		post( { url: url }, window.seoWpLinkAudit.recheckAction )
+			.then( function ( response ) {
+				if ( ! response || ! response.success ) {
+					button.disabled = false;
+					button.textContent = i18n.error;
+					return;
+				}
+
+				if ( response.data.fixed && row ) {
+					row.parentNode.removeChild( row );
+					return;
+				}
+
+				window.location.reload();
+			} )
+			.catch( function () {
+				button.disabled = false;
+				button.textContent = i18n.error;
+			} );
+	}
+
 	document.addEventListener( 'click', function ( event ) {
 		if ( event.target.closest( '.seo-wp-link-audit-scan' ) ) {
 			event.preventDefault();
@@ -94,6 +127,13 @@
 		if ( event.target.closest( '.seo-wp-link-audit-check-now' ) ) {
 			event.preventDefault();
 			checkNow();
+			return;
+		}
+
+		var recheckButton = event.target.closest( '.seo-wp-link-audit-recheck' );
+		if ( recheckButton ) {
+			event.preventDefault();
+			recheck( recheckButton );
 		}
 	} );
 } )();

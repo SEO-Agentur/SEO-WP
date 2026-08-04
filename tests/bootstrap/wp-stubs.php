@@ -60,6 +60,18 @@ if ( ! function_exists( 'esc_url_raw' ) ) {
 	}
 }
 
+if ( ! function_exists( 'trailingslashit' ) ) {
+	/**
+	 * Mirrors WordPress core's trailingslashit(): strips any existing
+	 * trailing slash(es), then adds exactly one.
+	 *
+	 * @param string $string String to add a trailing slash to.
+	 */
+	function trailingslashit( string $string ): string {
+		return rtrim( $string, '/\\' ) . '/';
+	}
+}
+
 if ( ! function_exists( 'wp_json_encode' ) ) {
 	/**
 	 * Thin mirror of WordPress core's wp_json_encode(): core adds UTF-8

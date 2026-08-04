@@ -180,3 +180,17 @@
 	margin-top: 4px;
 	white-space: normal;
 }
+
+.seo-wp-link-issue-broken {
+	color: #b32d2e;
+	font-weight: 600;
+}
+
+.seo-wp-link-issue-redirect {
+	color: #996800;
+	font-weight: 600;
+}
+
+.seo-wp-link-issues-table td {
+	vertical-align: top;
+}
