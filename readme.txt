@@ -5,7 +5,7 @@ Tags: seo, wpml, sitemap, schema, hreflang
 Requires at least: 6.4
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.2.5
+Stable tag: 1.2.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -100,7 +100,7 @@ Yes. Every WPML-specific feature (hreflang, per-language templates) is a no-op w
 
 == Changelog ==
 
-= 1.2.5 =
+= 1.2.6 =
 * Link Audit: the "Linked from" column now shows readable page titles/menu items/widget names (each tagged Content/Menu/Widget and linked to where it's edited) instead of a wall of raw post IDs, capped at 5 sources per row with the rest collapsed into "and N more".
 * Link Audit: the content scan now also walks every navigation menu item's URL (not just links to a post/page) and every Custom HTML/Text widget's content, so hand-written and menu-only links get checked too.
 * Link Audit: broken-link checks now follow redirects themselves and report a link that only resolves via one or more redirect hops as its own "redirect" issue (with the full chain shown), instead of silently following it and reporting nothing.
