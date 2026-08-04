@@ -95,19 +95,24 @@ final class RoleManager {
 			return $allcaps;
 		}
 
-		// Anyone who can manage_options can never lose access to this page
-		// itself, full stop — not even via a matrix saved before this
-		// capability existed (see matrix()'s own backfill for the general
-		// version of that problem), one explicitly saved as off before
-		// that backfill existed, or any future bug in how it's stored.
-		// Checked against the real capability rather than the literal
-		// "administrator" role slug, since a site can grant manage_options
-		// to a differently-named role too — losing every such user's way
-		// to fix role settings is the one failure mode this feature must
-		// never have. $allcaps is what user_has_cap() already resolved
-		// for this exact user before this filter ran, so reading
-		// 'manage_options' from it here can't recurse.
-		if ( self::MANAGE_ROLES_CAP === $requested && ! empty( $allcaps['manage_options'] ) ) {
+		// Anyone who can manage_options always gets these three areas —
+		// full stop, no matrix lookup. Role Manager itself is the one
+		// page that must never be lockable (it's the only way to fix a
+		// mistaken save), and the newest two areas (Link Audit, Duplicate
+		// Checker) are exactly the ones a matrix saved before they
+		// existed could have on-disk as an *explicit* `false`: the
+		// original bug rendered their checkbox unchecked (missing key
+		// read as falsy) for every role, and a save made *at that time*
+		// persists that false permanently — matrix()'s backfill only
+		// fills in a truly *missing* key, so it can't undo an explicit
+		// one. Checked against the real capability rather than the
+		// literal "administrator" role slug, since a site can grant
+		// manage_options to a differently-named role too. $allcaps is
+		// what user_has_cap() already resolved for this exact user
+		// before this filter ran, so reading 'manage_options' from it
+		// here can't recurse.
+		$always_follows_manage_options = array( self::MANAGE_ROLES_CAP, self::AREAS['link_audit'], self::AREAS['duplicates'] );
+		if ( in_array( $requested, $always_follows_manage_options, true ) && ! empty( $allcaps['manage_options'] ) ) {
 			$allcaps[ $requested ] = true;
 			return $allcaps;
 		}

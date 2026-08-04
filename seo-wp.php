@@ -3,7 +3,7 @@
  * Plugin Name:       SEO-WP
  * Plugin URI:        https://seo-wp.net
  * Description:       Leichtgewichtiges, seitentyp-agnostisches SEO-Plugin mit voller WPML-Kompatibilitaet: Meta-Tags, Social-Meta, Schema (JSON-LD), XML-Sitemaps und Crawl-Steuerung.
- * Version:           1.2.1
+ * Version:           1.2.2
  * Requires at least: 6.4
  * Requires PHP:      8.1
  * Author:            Cyrus Badde
@@ -24,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-const VERSION  = '1.2.1';
+const VERSION  = '1.2.2';
 const FILE     = __FILE__;
 const DIR      = __DIR__;
 const BASENAME = 'seo-wp/seo-wp.php';

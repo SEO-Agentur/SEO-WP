@@ -5,7 +5,7 @@ Tags: seo, wpml, sitemap, schema, hreflang
 Requires at least: 6.4
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.2.1
+Stable tag: 1.2.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -99,6 +99,12 @@ No. Existing redirect *rules* from another plugin aren't migrated automatically 
 Yes. Every WPML-specific feature (hreflang, per-language templates) is a no-op when WPML isn't active — nothing here is a hard dependency.
 
 == Changelog ==
+
+= 1.2.2 =
+* Fixed AJAX batch loops (import, duplicate scan, link audit, bulk-edit AI) silently stopping partway through when stray PHP output corrupted the JSON response — now captured and routed to the Diagnostics page instead of corrupting or being discarded.
+* Fixed import aborting entirely on one unusual post/term/author instead of skipping it and continuing.
+* Fixed Role Manager, Link Audit and Duplicate Content Checker becoming unreachable — even for administrators — on a site where the role matrix was saved before those areas existed in the plugin, or during the window the bug above was live. Anyone who can manage_options now always has access to these three regardless of what's stored.
+* Fixed a fatal ArgumentCountError on add_option_seo_wp_settings when the settings option didn't already exist.
 
 = 1.2.0 =
 * Admin: bring-your-own-key AI title/description suggestions (Claude/OpenAI) and translation (DeepL) in the Bulk Editor; a new optional focus-keyword metabox field; a Duplicate Content Checker; a Link Audit (orphan pages + background broken-link checking).
