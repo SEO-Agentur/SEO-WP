@@ -5,7 +5,7 @@ Tags: seo, wpml, sitemap, schema, hreflang
 Requires at least: 6.4
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.2.3
+Stable tag: 1.2.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -99,6 +99,9 @@ No. Existing redirect *rules* from another plugin aren't migrated automatically 
 Yes. Every WPML-specific feature (hreflang, per-language templates) is a no-op when WPML isn't active — nothing here is a hard dependency.
 
 == Changelog ==
+
+= 1.2.4 =
+* Role Manager, Link Audit and Duplicate Content Checker are registered with their virtual capability again (1.2.3's switch to the real manage_options capability actively broke access for a role managed entirely through this plugin's own system, with no real manage_options at all — exactly the case Role Manager exists for). RoleManager's capability filter now grants all three to any role already trusted with Settings, in addition to real manage_options — covering both a genuine WordPress Administrator and a custom, plugin-managed role.
 
 = 1.2.3 =
 * Fixed Role Manager, Link Audit and Duplicate Content Checker being unreachable (registered with a virtual capability that itself depended on this exact feature's own data/filter — circular by construction). All three are now registered with WordPress's real manage_options capability, so they're never gated on anything that could itself be broken; the finer-grained virtual capability is still checked once inside each page.

@@ -66,18 +66,16 @@ final class DuplicateChecker {
 	}
 
 	/**
-	 * Adds the Duplicate Content submenu page. Registered with the real
-	 * manage_options capability, not the virtual seo_wp_view_duplicates
-	 * one — see RoleManager::add_menu()'s docblock for why. The finer-
-	 * grained virtual capability is still checked inside render_page()
-	 * and handle_ajax().
+	 * Adds the Duplicate Content submenu page. Registered with the
+	 * virtual seo_wp_view_duplicates capability — see
+	 * RoleManager::add_menu()'s docblock for why it has to stay virtual.
 	 */
 	public function add_menu(): void {
 		add_submenu_page(
 			Settings::PAGE_SLUG,
 			__( 'Duplicate Content', 'seo-wp' ),
 			__( 'Duplicate Content', 'seo-wp' ),
-			'manage_options',
+			self::CAPABILITY,
 			self::PAGE_SLUG,
 			array( $this, 'render_page' )
 		);

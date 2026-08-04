@@ -95,29 +95,40 @@ final class RoleManager {
 			return $allcaps;
 		}
 
-		// Anyone who can manage_options always gets these three areas —
-		// full stop, no matrix lookup. Role Manager itself is the one
-		// page that must never be lockable (it's the only way to fix a
-		// mistaken save), and the newest two areas (Link Audit, Duplicate
-		// Checker) are exactly the ones a matrix saved before they
-		// existed could have on-disk as an *explicit* `false`: the
-		// original bug rendered their checkbox unchecked (missing key
-		// read as falsy) for every role, and a save made *at that time*
-		// persists that false permanently — matrix()'s backfill only
-		// fills in a truly *missing* key, so it can't undo an explicit
-		// one. Checked against the real capability rather than the
-		// literal "administrator" role slug, since a site can grant
-		// manage_options to a differently-named role too. $allcaps is
-		// what user_has_cap() already resolved for this exact user
-		// before this filter ran, so reading 'manage_options' from it
-		// here can't recurse.
-		$always_follows_manage_options = array( self::MANAGE_ROLES_CAP, self::AREAS['link_audit'], self::AREAS['duplicates'] );
-		if ( in_array( $requested, $always_follows_manage_options, true ) && ! empty( $allcaps['manage_options'] ) ) {
-			$allcaps[ $requested ] = true;
-			return $allcaps;
-		}
-
 		$matrix = self::matrix();
+
+		// Role Manager itself, and the two newest areas (Link Audit,
+		// Duplicate Checker), always follow whichever of these a role
+		// already has: real manage_options, OR — just as trusted, and
+		// the one that actually matters for a role managed entirely
+		// through this plugin's own virtual system rather than real WP
+		// capabilities — this plugin's own Settings area. A role a site
+		// owner already trusts to configure SEO-WP is trusted with these
+		// three too, full stop, without a per-area matrix lookup for
+		// them specifically. That matters beyond first install: these
+		// three are exactly the areas a matrix saved before they existed
+		// in the UI could have on-disk as an *explicit* `false` (the
+		// original bug rendered an unchecked box for a missing key, and
+		// a save made *at that time* persists that false permanently —
+		// matrix()'s own backfill only fills in a truly *missing* key,
+		// so it can't undo an explicit one). $allcaps is what
+		// user_has_cap() already resolved for this exact user before
+		// this filter ran, so reading 'manage_options' from it here
+		// can't recurse.
+		$always_trusted_areas = array( self::MANAGE_ROLES_CAP, self::AREAS['link_audit'], self::AREAS['duplicates'] );
+		if ( in_array( $requested, $always_trusted_areas, true ) ) {
+			if ( ! empty( $allcaps['manage_options'] ) ) {
+				$allcaps[ $requested ] = true;
+				return $allcaps;
+			}
+
+			foreach ( (array) $user->roles as $role ) {
+				if ( ! empty( $matrix[ $role ][ self::AREAS['settings'] ] ) ) {
+					$allcaps[ $requested ] = true;
+					return $allcaps;
+				}
+			}
+		}
 
 		foreach ( (array) $user->roles as $role ) {
 			if ( ! empty( $matrix[ $role ][ $requested ] ) ) {
@@ -194,25 +205,26 @@ final class RoleManager {
 	}
 
 	/**
-	 * Adds the Role Manager submenu page. Registered with the real
-	 * manage_options capability, not the virtual seo_wp_manage_roles one
-	 * — WordPress's own menu system uses this same parameter to decide
-	 * whether the page is reachable at all (add_submenu_page() itself
-	 * skips registering the hook name into $_registered_pages when the
-	 * current user lacks it, which surfaces as the page simply not
-	 * existing). Gating that on a virtual capability that itself depends
-	 * on this exact page's data (the role matrix) is circular by
-	 * construction: anything that goes wrong with the matrix, the
-	 * grant_capabilities() filter, or its timing would make the one page
-	 * meant to fix it unreachable too. The finer-grained virtual
-	 * capability is still checked inside render_page()/handle_save().
+	 * Adds the Role Manager submenu page. Registered with the virtual
+	 * seo_wp_manage_roles capability — WordPress's own menu system uses
+	 * this same parameter to decide whether the page is reachable at all
+	 * (add_submenu_page() skips registering the hook name into
+	 * $_registered_pages when the current user lacks it, which surfaces
+	 * as the page simply not existing), so it has to go through
+	 * grant_capabilities() the same way every other check here does.
+	 * That filter's own "always trusted" rule (real manage_options, OR
+	 * this role already trusted with Settings) is what actually
+	 * guarantees this page is never lockable — not the capability string
+	 * used here, which must stay virtual for a role managed entirely
+	 * through this plugin's own system (no real manage_options at all)
+	 * to reach it.
 	 */
 	public function add_menu(): void {
 		add_submenu_page(
 			Settings::PAGE_SLUG,
 			__( 'Role Manager', 'seo-wp' ),
 			__( 'Role Manager', 'seo-wp' ),
-			'manage_options',
+			self::MANAGE_ROLES_CAP,
 			self::PAGE_SLUG,
 			array( $this, 'render_page' )
 		);

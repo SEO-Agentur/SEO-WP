@@ -235,22 +235,21 @@ final class LinkAudit {
 	}
 
 	/**
-	 * Adds the Link Audit submenu page. Registered with the real
-	 * manage_options capability, not the virtual seo_wp_view_link_audit
-	 * one — see RoleManager::add_menu()'s docblock for why: gating
-	 * whether the page is reachable at all on a virtual capability that
-	 * itself depends on RoleManager's stored data/filter is circular, and
-	 * a manage_options user must always be able to reach every page here
-	 * regardless of that filter's state. The finer-grained virtual
-	 * capability is still checked inside render_page() and both AJAX
-	 * handlers.
+	 * Adds the Link Audit submenu page. Registered with the virtual
+	 * seo_wp_view_link_audit capability — see RoleManager::add_menu()'s
+	 * docblock for why it has to stay virtual (a role managed entirely
+	 * through this plugin's own system, with no real manage_options, must
+	 * still reach every page it's trusted with). RoleManager's own
+	 * grant_capabilities() is what actually guarantees this is never
+	 * lockable for such a role, via its "already trusted with Settings"
+	 * rule.
 	 */
 	public function add_menu(): void {
 		add_submenu_page(
 			Settings::PAGE_SLUG,
 			__( 'Link Audit', 'seo-wp' ),
 			__( 'Link Audit', 'seo-wp' ),
-			'manage_options',
+			self::CAPABILITY,
 			self::PAGE_SLUG,
 			array( $this, 'render_page' )
 		);
