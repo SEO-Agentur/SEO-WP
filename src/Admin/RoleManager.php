@@ -74,7 +74,7 @@ final class RoleManager {
 	 */
 	public function register(): void {
 		add_filter( 'user_has_cap', array( $this, 'grant_capabilities' ), 10, 4 );
-		add_action( 'admin_menu', array( $this, 'add_menu' ) );
+		add_action( 'admin_menu', array( $this, 'add_menu' ), 20 );
 		add_action( 'admin_post_seo_wp_role_manager_save', array( $this, 'handle_save' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'maybe_enqueue_assets' ) );
 	}
@@ -220,11 +220,20 @@ final class RoleManager {
 	 * to reach it.
 	 */
 	public function add_menu(): void {
+		// Register the page only for authorised users, but use the stable
+		// primitive `read` capability for WordPress' page registry. Custom
+		// virtual capabilities can otherwise cause admin.php to treat the
+		// page as unregistered and return "not allowed"/404 before our
+		// callback gets a chance to run.
+		if ( ! current_user_can( self::MANAGE_ROLES_CAP ) && ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
 		add_submenu_page(
 			Settings::PAGE_SLUG,
 			__( 'Role Manager', 'seo-wp' ),
 			__( 'Role Manager', 'seo-wp' ),
-			self::MANAGE_ROLES_CAP,
+			'read',
 			self::PAGE_SLUG,
 			array( $this, 'render_page' )
 		);

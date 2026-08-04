@@ -5,7 +5,7 @@ Tags: seo, wpml, sitemap, schema, hreflang
 Requires at least: 6.4
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.2.6
+Stable tag: 1.2.9
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -73,7 +73,7 @@ Built and maintained by [Cyrus Badde](https://seo-wp.net). If it saves you time,
 * A bulk editor for Title/Description/Canonical/Robots across every public post type
 * Bring-your-own-key AI in the Bulk Editor: Claude or OpenAI generate a title/description pair in a "{keyword}: {USP} | {USP} > {CTA}" template from the page's URL, content and focus keyword — written straight into the row's fields for review, never saved until you click "Save changes"; a one-click action offers suggestions for every still-empty field on the page. DeepL translates a row's title/description into every other WPML-linked translation of that post. Every provider is entirely optional, configured with your own API key on the new AI Settings page, and never called except on an explicit click — no proxying, no markup on your usage
 * A Duplicate Content Checker finding posts that share the exact same *effective* title or meta description — the value actually used on the front end, whether from a manual override or a rendered template
-* A Link Audit finding orphan pages (published content nothing links to, checking both post content and every navigation menu) and broken links (checked in the background via WP-Cron, a handful every fifteen minutes)
+* A persistent Link Audit finding orphan pages, broken links and redirect chains across content, rendered templates, menus and widgets; large audits continue server-side after the browser tab is closed
 * A guided import wizard with a live progress log
 * A Diagnostics page recording anything that went wrong during detection or import (a database error, an unexpected data shape), with a site-wide admin notice when something needs attention
 * A Role Manager controlling which WordPress roles can access which parts of the plugin (settings, metabox editing, bulk editor, import, diagnostics, redirects, 404 monitor, duplicate checker, link audit), via virtual capabilities rather than rewriting your roles — safe to enable/disable at any time, and a no-op until you actively configure it
@@ -98,48 +98,33 @@ No. Existing redirect *rules* from another plugin aren't migrated automatically 
 
 Yes. Every WPML-specific feature (hreflang, per-language templates) is a no-op when WPML isn't active — nothing here is a hard dependency.
 
+
 == Changelog ==
 
+= 1.2.9 =
+* Rebuilt Link Audit as a persistent server-side background job that continues after the browser tab is closed.
+* Added automatic recovery when a worker is interrupted or a hosting loopback request is delayed.
+* Increased content batches dynamically to up to 25 posts while retaining a conservative PHP runtime budget.
+* Valid internal WordPress permalinks are resolved locally and no longer require a slow HTTP request.
+* Unique URLs remain deduplicated while all individual source pages and source areas are preserved.
+* Added persistent progress reporting for pages scanned, unique URLs checked, current item, elapsed time, and last activity.
+* Reduced external request timeout and updated plugin/readme version metadata.
+
+= 1.2.8 =
+* Link Audit now shows the currently processed page or URL together with continuously updated elapsed time.
+* Split large audits into small AJAX batches so the interface remains responsive and progress stays visible.
+* Added a conservative runtime budget for link-check batches to avoid PHP max-execution-time failures on large sites or slow external servers.
+* Reduced content-scan batch size for safer processing of shortcode- and page-builder-heavy pages.
+* Updated plugin and readme version metadata.
+
+= 1.2.7 =
+* Combined content scanning and queued URL checking into one complete Link Audit action.
+* Removed the redundant second manual link-check button.
+
 = 1.2.6 =
-* Link Audit: the "Linked from" column now shows readable page titles/menu items/widget names (each tagged Content/Menu/Widget and linked to where it's edited) instead of a wall of raw post IDs, capped at 5 sources per row with the rest collapsed into "and N more".
-* Link Audit: the content scan now also walks every navigation menu item's URL (not just links to a post/page) and every Custom HTML/Text widget's content, so hand-written and menu-only links get checked too.
-* Link Audit: broken-link checks now follow redirects themselves and report a link that only resolves via one or more redirect hops as its own "redirect" issue (with the full chain shown), instead of silently following it and reporting nothing.
-* Link Audit: added a per-row "Recheck" button that verifies one link immediately and removes it from the list as soon as it's confirmed fixed, instead of a link staying listed as broken until the next full scan.
+* Added redirect, redirect-chain and redirect-loop reporting.
+* Added source-page titles and source areas such as content, menu, widget and rendered template elements.
+* Cleared stale findings during a fresh audit so repaired links disappear from the results.
 
-= 1.2.4 =
-* Role Manager, Link Audit and Duplicate Content Checker are registered with their virtual capability again (1.2.3's switch to the real manage_options capability actively broke access for a role managed entirely through this plugin's own system, with no real manage_options at all — exactly the case Role Manager exists for). RoleManager's capability filter now grants all three to any role already trusted with Settings, in addition to real manage_options — covering both a genuine WordPress Administrator and a custom, plugin-managed role.
-
-= 1.2.3 =
-* Fixed Role Manager, Link Audit and Duplicate Content Checker being unreachable (registered with a virtual capability that itself depended on this exact feature's own data/filter — circular by construction). All three are now registered with WordPress's real manage_options capability, so they're never gated on anything that could itself be broken; the finer-grained virtual capability is still checked once inside each page.
-
-= 1.2.2 =
-* Fixed AJAX batch loops (import, duplicate scan, link audit, bulk-edit AI) silently stopping partway through when stray PHP output corrupted the JSON response — now captured and routed to the Diagnostics page instead of corrupting or being discarded.
-* Fixed import aborting entirely on one unusual post/term/author instead of skipping it and continuing.
-* Fixed Role Manager, Link Audit and Duplicate Content Checker becoming unreachable — even for administrators — on a site where the role matrix was saved before those areas existed in the plugin, or during the window the bug above was live. Anyone who can manage_options now always has access to these three regardless of what's stored.
-* Fixed a fatal ArgumentCountError on add_option_seo_wp_settings when the settings option didn't already exist.
-
-= 1.2.0 =
-* Admin: bring-your-own-key AI title/description suggestions (Claude/OpenAI) and translation (DeepL) in the Bulk Editor; a new optional focus-keyword metabox field; a Duplicate Content Checker; a Link Audit (orphan pages + background broken-link checking).
-* Import: re-running an import (or one of its stages) is now idempotent — an already-set SEO-WP field, from any source, is never overwritten again.
-* Fixed a real production bug: a missing accepted_args on an add_option_* hook caused a fatal ArgumentCountError when the settings option didn't already exist.
-
-= 1.1.0 =
-* Import: site-wide settings import from Yoast/Rank Math (object/term meta import already existed); an explicit, admin-clicked "Deactivate now" button after a completed import; fixed a display bug ("#undefined") in the import log for settings entries.
-* Schema: Product gained an aggregateRating node from WooCommerce's own review data.
-* Meta: added the %year% token; a read-only overview table on the Content Types tab.
-* Admin: a live Google search-result and social share-card preview in the metabox; a Role Manager for per-role access control across every SEO-WP admin screen.
-* Crawl: Google Instant Indexing (Indexing API, service-account JWT/OAuth2) alongside IndexNow; a redirect manager (301/302/307/410/451) and a 404 monitor with a one-click "create redirect" action.
-* Social/Schema: the og:image override field now also supplies the Article/Product schema image, so social and structured data never disagree.
-* Crawl: llms.txt gained a free-text field for manually written content; added Baidu site verification.
-* Crawl: attachment pages are now a tri-state setting (redirect/noindex/off), and inserted images can optionally have their attachment-page link stripped.
-* Sitemaps: added per-post-type/per-taxonomy inclusion toggles; image sitemap entries now come from fully rendered content, so builder-generated (Divi, WPBakery, etc.) images are included, not just Gutenberg block markup.
-
-= 1.0.0 =
-* Meta: title/description templates, robots directives, self-referencing canonical URLs.
-* Social: Open Graph and Twitter Card meta.
-* Schema: a single deduplicated JSON-LD graph across WebSite, Organization/Person, WebPage, Article, BreadcrumbList, FAQPage and Product.
-* Sitemaps: dynamic XML sitemaps for any public post type/taxonomy, with images and news.
-* WPML: hreflang in the head and in sitemaps via the shared slim-hreflang compatibility contract; translatable templates.
-* Crawl: robots.txt, llms.txt, site verification, archive controls, IndexNow.
-* Import: non-destructive, dry-run capable import from Yoast SEO, Rank Math and All in One SEO.
-* Admin: metabox, settings, bulk editor, import wizard.
+= 1.2.5 =
+* Fixed Link Audit and Role Manager admin-page registration order and capability handling.

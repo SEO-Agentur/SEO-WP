@@ -16,18 +16,14 @@ use WP_Query;
 
 /**
  * Two related tools sharing one content scan: a "Scan content" pass walks
- * every published post's fully rendered content, every nav menu item's
- * URL, and the two core widget types that commonly hold hand-written
- * links (Custom HTML, Text) — building the set of post IDs something on
- * the site actually links to (anything public and published but NOT in
- * that set is an orphan page), and queuing every other link (external, or
- * an internal one that doesn't resolve to a real post) for a check.
- * Checks run in the background via WP-Cron (wp_remote_head/get, a
- * handful per run) rather than synchronously, since checking hundreds or
- * thousands of URLs in one admin-ajax request would time out; results
- * fill in gradually, not instantly. Each queued/checked link remembers
- * exactly where it was found (post, nav menu, or widget) so a broken
- * link can actually be tracked down and fixed, not just reported.
+ * every published post's fully rendered content (and every nav menu),
+ * building the set of post IDs something on the site actually links to —
+ * anything public and published but NOT in that set is an orphan page.
+ * Links that don't resolve to a known post (broken internal links, or any
+ * external one) are queued and checked in the background via WP-Cron
+ * (wp_remote_head/get, a handful per run) rather than synchronously,
+ * since checking hundreds or thousands of URLs in one admin-ajax request
+ * would time out. Results fill in gradually, not instantly.
  */
 final class LinkAudit {
 
@@ -71,10 +67,23 @@ final class LinkAudit {
 	 */
 	private const CHECK_NOW_AJAX_ACTION = 'seo_wp_link_audit_check_now';
 
-	/**
-	 * AJAX action for re-checking one specific link immediately.
-	 */
-	private const RECHECK_AJAX_ACTION = 'seo_wp_link_audit_recheck';
+	/** AJAX action that starts a persistent background audit. */
+	private const START_AJAX_ACTION = 'seo_wp_link_audit_start';
+
+	/** AJAX action used by the admin page to poll audit progress. */
+	private const STATUS_AJAX_ACTION = 'seo_wp_link_audit_status';
+
+	/** Internal loopback action that advances the persistent job. */
+	private const WORKER_AJAX_ACTION = 'seo_wp_link_audit_worker';
+
+	/** Option containing the persistent background-job state. */
+	private const JOB_OPTION = 'seo_wp_link_audit_job';
+
+	/** Transient used to prevent overlapping workers. */
+	private const WORKER_LOCK = 'seo_wp_link_audit_worker_lock';
+
+	/** WP-Cron fallback hook when loopback requests are unavailable. */
+	private const JOB_CRON_HOOK = 'seo_wp_link_audit_job_tick';
 
 	/**
 	 * The recurring background check's cron hook name.
@@ -122,24 +131,19 @@ final class LinkAudit {
 	/**
 	 * Posts examined per content-scan AJAX call.
 	 */
-	private const SCAN_BATCH_SIZE = 50;
+	private const SCAN_BATCH_SIZE = 25;
 
 	/**
 	 * Queued URLs checked per background run (cron tick or manual
 	 * "Check now" click).
 	 */
-	private const CHECK_BATCH_SIZE = 15;
+	private const CHECK_BATCH_SIZE = 20;
 
 	/**
-	 * Oldest link-issue results are dropped once the log exceeds this
+	 * Oldest broken-link results are dropped once the log exceeds this
 	 * size.
 	 */
 	private const MAX_RESULTS = 500;
-
-	/**
-	 * Sources listed per row before collapsing the rest into "and N more".
-	 */
-	private const MAX_SOURCES_SHOWN = 5;
 
 	/**
 	 * Registers the cron schedules/hook (unconditionally — WP-Cron
@@ -150,13 +154,17 @@ final class LinkAudit {
 	public function register(): void {
 		add_filter( 'cron_schedules', array( $this, 'add_cron_schedules' ) ); // phpcs:ignore WordPress.WP.CronInterval.ChangeDetected -- interval is admin-configurable (daily/weekly/monthly), not a fixed value this sniff can evaluate.
 		add_action( self::CRON_HOOK, array( $this, 'check_links_batch' ) );
+		add_action( self::JOB_CRON_HOOK, array( $this, 'handle_cron_worker' ), 10, 1 );
 		$this->sync_cron_schedule();
 
-		add_action( 'admin_menu', array( $this, 'add_menu' ) );
+		add_action( 'admin_menu', array( $this, 'add_menu' ), 20 );
 		add_action( 'admin_enqueue_scripts', array( $this, 'maybe_enqueue_assets' ) );
 		add_action( 'wp_ajax_' . self::SCAN_AJAX_ACTION, array( $this, 'handle_scan_ajax' ) );
 		add_action( 'wp_ajax_' . self::CHECK_NOW_AJAX_ACTION, array( $this, 'handle_check_now_ajax' ) );
-		add_action( 'wp_ajax_' . self::RECHECK_AJAX_ACTION, array( $this, 'handle_recheck_ajax' ) );
+		add_action( 'wp_ajax_' . self::START_AJAX_ACTION, array( $this, 'handle_start_ajax' ) );
+		add_action( 'wp_ajax_' . self::STATUS_AJAX_ACTION, array( $this, 'handle_status_ajax' ) );
+		add_action( 'wp_ajax_' . self::WORKER_AJAX_ACTION, array( $this, 'handle_worker_ajax' ) );
+		add_action( 'wp_ajax_nopriv_' . self::WORKER_AJAX_ACTION, array( $this, 'handle_worker_ajax' ) );
 		add_action( 'admin_post_seo_wp_link_audit_frequency_save', array( $this, 'handle_frequency_save' ) );
 	}
 
@@ -183,7 +191,7 @@ final class LinkAudit {
 	/**
 	 * Reads the configured frequency and makes the real WP-Cron schedule
 	 * match it: cleared entirely when set to "off" (checks then only run
-	 * via the "Check queued links now" button), (re)scheduled at the
+	 * as part of a manual full scan), (re)scheduled at the
 	 * right recurrence otherwise — including when the admin changes from
 	 * one recurrence to another, which needs the old event cleared first
 	 * since wp_schedule_event() would otherwise leave the original
@@ -260,11 +268,19 @@ final class LinkAudit {
 	 * rule.
 	 */
 	public function add_menu(): void {
+		// Register the page only for authorised users, but use the stable
+		// primitive `read` capability for WordPress' page registry. Custom
+		// virtual capabilities can otherwise make admin.php report a 404
+		// because the page hook was never registered.
+		if ( ! current_user_can( self::CAPABILITY ) && ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
 		add_submenu_page(
 			Settings::PAGE_SLUG,
 			__( 'Link Audit', 'seo-wp' ),
 			__( 'Link Audit', 'seo-wp' ),
-			self::CAPABILITY,
+			'read',
 			self::PAGE_SLUG,
 			array( $this, 'render_page' )
 		);
@@ -292,14 +308,16 @@ final class LinkAudit {
 				'nonce'          => wp_create_nonce( self::NONCE_ACTION ),
 				'scanAction'     => self::SCAN_AJAX_ACTION,
 				'checkNowAction' => self::CHECK_NOW_AJAX_ACTION,
-				'recheckAction'  => self::RECHECK_AJAX_ACTION,
+				'startAction'    => self::START_AJAX_ACTION,
+				'statusAction'   => self::STATUS_AJAX_ACTION,
 				'i18n'           => array(
-					'scanning'   => __( 'Scanning…', 'seo-wp' ),
-					'checking'   => __( 'Checking…', 'seo-wp' ),
-					'rechecking' => __( 'Rechecking…', 'seo-wp' ),
-					'done'       => __( 'Done.', 'seo-wp' ),
-					'fixed'      => __( 'Fixed — no longer an issue.', 'seo-wp' ),
-					'error'      => __( 'Something went wrong.', 'seo-wp' ),
+					'scanning'      => __( 'Scanning', 'seo-wp' ),
+					'checking'      => __( 'Checking link', 'seo-wp' ),
+					'preparing'     => __( 'Preparing scan…', 'seo-wp' ),
+					'elapsed'       => __( 'elapsed', 'seo-wp' ),
+					'done'          => __( 'Done.', 'seo-wp' ),
+					'runningBackground' => __( 'The audit continues in the background. You may leave this page.', 'seo-wp' ),
+					'error'    => __( 'Something went wrong.', 'seo-wp' ),
 				),
 			)
 		);
@@ -314,18 +332,20 @@ final class LinkAudit {
 			return;
 		}
 
-		$scan  = self::scan_data();
-		$queue = self::queue();
+		$scan   = self::scan_data();
+		$queue  = self::queue();
+		$broken = self::broken_links();
+		$job    = self::job_data();
 
 		echo '<div class="wrap seo-wp-link-audit">';
 		echo '<h1>' . esc_html__( 'SEO-WP Link Audit', 'seo-wp' ) . '</h1>';
 		echo '<p>' . esc_html__( 'Scans every published page\'s content and every navigation menu to find pages nothing links to (orphans), and queues every other link for a broken-link check — checked on demand with the button below, or automatically on whatever schedule you choose.', 'seo-wp' ) . '</p>';
 
 		echo '<p>';
-		echo '<button type="button" class="button button-primary seo-wp-link-audit-scan">' . esc_html__( 'Scan content now', 'seo-wp' ) . '</button> ';
-		echo '<button type="button" class="button seo-wp-link-audit-check-now">' . esc_html__( 'Check queued links now', 'seo-wp' ) . '</button> ';
-		echo '<span class="seo-wp-link-audit-status"></span>';
+		echo '<button type="button" class="button button-primary seo-wp-link-audit-scan">' . esc_html__( 'Run full link audit', 'seo-wp' ) . '</button> ';
+		echo '<span class="seo-wp-link-audit-status" data-job-status="' . esc_attr( (string) ( $job['status'] ?? 'idle' ) ) . '"></span>';
 		echo '</p>';
+		echo '<p class="description">' . esc_html__( 'The audit is stored as a persistent background job. It continues after this tab is closed and resumes automatically after short interruptions.', 'seo-wp' ) . '</p>';
 
 		$this->render_frequency_form();
 
@@ -357,7 +377,7 @@ final class LinkAudit {
 			$this->render_orphans( $scan );
 		}
 
-		$this->render_link_issues( self::link_issues() );
+		$this->render_broken_links( $broken );
 
 		echo '</div>';
 	}
@@ -368,7 +388,7 @@ final class LinkAudit {
 	private function render_frequency_form(): void {
 		$current = $this->configured_frequency();
 		$labels  = array(
-			'off'     => __( 'Manual only (recommended) — no automatic schedule', 'seo-wp' ),
+			'off'     => __( 'Only when a full audit is started manually', 'seo-wp' ),
 			'daily'   => __( 'Daily', 'seo-wp' ),
 			'weekly'  => __( 'Weekly', 'seo-wp' ),
 			'monthly' => __( 'Monthly', 'seo-wp' ),
@@ -421,131 +441,34 @@ final class LinkAudit {
 	}
 
 	/**
-	 * Renders the link-issues table: confirmed-broken links, and internal
-	 * links that resolve only via a redirect (or a redirect chain).
+	 * Renders the broken-links table.
 	 *
-	 * @param array<string,array{sources:array<array{type:string,id:int|string,label:string,edit_url:string}>,kind:string,status:string,chain:array<array{url:string,to:string,code:int}>,checked_at:int}> $issues Link-issue results.
+	 * @param array<string,array{sources:int[],status:string,checked_at:int}> $broken Broken-link results.
 	 */
-	private function render_link_issues( array $issues ): void {
-		echo '<h2>' . esc_html__( 'Link issues', 'seo-wp' ) . '</h2>';
-		echo '<p class="description">' . esc_html__( 'Broken links and redirects found in page content, navigation menus, and Custom HTML/Text widgets. Use "Recheck" after fixing one to confirm it\'s cleared — a full content scan isn\'t needed just to verify a single fix.', 'seo-wp' ) . '</p>';
-
-		if ( array() === $issues ) {
-			echo '<p>' . esc_html__( 'No broken links or redirect issues found yet.', 'seo-wp' ) . '</p>';
+	private function render_broken_links( array $broken ): void {
+		echo '<h2>' . esc_html__( 'Link findings', 'seo-wp' ) . '</h2>';
+		if ( array() === $broken ) {
+			echo '<p>' . esc_html__( 'No broken links or redirects found yet.', 'seo-wp' ) . '</p>';
 			return;
 		}
-
-		echo '<table class="widefat striped seo-wp-link-issues-table">';
-		echo '<thead><tr>';
-		echo '<th>' . esc_html__( 'URL', 'seo-wp' ) . '</th>';
-		echo '<th>' . esc_html__( 'Issue', 'seo-wp' ) . '</th>';
-		echo '<th>' . esc_html__( 'Linked from', 'seo-wp' ) . '</th>';
-		echo '<th>' . esc_html__( 'Checked', 'seo-wp' ) . '</th>';
-		echo '<th></th>';
-		echo '</tr></thead><tbody>';
-
-		foreach ( $issues as $url => $entry ) {
-			echo '<tr data-seo-wp-link-issue-url="' . esc_attr( (string) $url ) . '">';
+		echo '<table class="widefat striped seo-wp-broken-links-table"><thead><tr>';
+		echo '<th>' . esc_html__( 'URL', 'seo-wp' ) . '</th><th>' . esc_html__( 'Finding', 'seo-wp' ) . '</th><th>' . esc_html__( 'Destination / chain', 'seo-wp' ) . '</th><th>' . esc_html__( 'Linked from', 'seo-wp' ) . '</th><th>' . esc_html__( 'Source area', 'seo-wp' ) . '</th><th>' . esc_html__( 'Checked', 'seo-wp' ) . '</th></tr></thead><tbody>';
+		foreach ( $broken as $url => $entry ) {
+			$sources = self::normalise_sources( (array) ( $entry['sources'] ?? array() ) );
+			$source_links = array(); $source_areas = array();
+			foreach ( $sources as $source ) { $source_links[] = self::source_link_html( $source ); $source_areas[] = esc_html( self::source_area_label( $source ) ); }
+			$chain = array_values( array_filter( array_map( 'strval', (array) ( $entry['chain'] ?? array() ) ) ) );
+			$chain_html = array() !== $chain ? implode( '<br><span aria-hidden="true">↳</span> ', array_map( static fn ( string $item ): string => '<code>' . esc_html( $item ) . '</code>', $chain ) ) : ( ! empty( $entry['final_url'] ) ? '<code>' . esc_html( (string) $entry['final_url'] ) . '</code>' : '' );
+			echo '<tr>';
 			printf( '<td><code>%s</code></td>', esc_html( (string) $url ) );
-			echo '<td>' . $this->render_issue_status( (array) $entry ) . '</td>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render_issue_status() escapes every value it outputs.
-			echo '<td>' . $this->render_issue_sources( (array) ( $entry['sources'] ?? array() ) ) . '</td>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render_issue_sources() escapes every value it outputs.
-			printf( '<td>%s</td>', esc_html( gmdate( 'Y-m-d H:i:s', (int) ( $entry['checked_at'] ?? 0 ) ) ) );
-			echo '<td><button type="button" class="button button-small seo-wp-link-audit-recheck" data-url="' . esc_attr( (string) $url ) . '">' . esc_html__( 'Recheck', 'seo-wp' ) . '</button></td>';
+			printf( '<td><strong>%1$s</strong><br><span class="description">%2$s</span></td>', esc_html( ucfirst( (string) ( $entry['type'] ?? 'broken' ) ) ), esc_html( (string) ( $entry['status'] ?? '' ) ) );
+			echo '<td>' . $chain_html . '</td>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo '<td>' . implode( '<br>', $source_links ) . '</td>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo '<td>' . implode( '<br>', array_unique( $source_areas ) ) . '</td>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			printf( '<td>%s</td>', esc_html( wp_date( 'Y-m-d H:i:s', (int) ( $entry['checked_at'] ?? 0 ) ) ) );
 			echo '</tr>';
 		}
-
 		echo '</tbody></table>';
-	}
-
-	/**
-	 * Renders one issue's Status cell: the plain broken status, or — for a
-	 * link that only resolves via a redirect — the redirect target and,
-	 * when there's more than one hop, the full chain.
-	 *
-	 * @param array{kind?:string,status?:string,chain?:array<array{url:string,to:string,code:int}>} $entry One link-issue entry.
-	 */
-	private function render_issue_status( array $entry ): string {
-		$kind   = (string) ( $entry['kind'] ?? 'broken' );
-		$status = (string) ( $entry['status'] ?? '' );
-
-		if ( 'redirect' !== $kind ) {
-			return sprintf(
-				'<span class="seo-wp-link-issue-broken">%s</span>',
-				esc_html( '' !== $status ? $status : __( 'Broken', 'seo-wp' ) )
-			);
-		}
-
-		$chain = (array) ( $entry['chain'] ?? array() );
-		$hops  = array();
-		foreach ( $chain as $hop ) {
-			$hops[] = sprintf(
-				'%1$s → %2$s (%3$s)',
-				esc_html( (string) ( $hop['url'] ?? '' ) ),
-				esc_html( (string) ( $hop['to'] ?? '' ) ),
-				esc_html( (string) ( $hop['code'] ?? '' ) )
-			);
-		}
-
-		$label = count( $chain ) > 1
-			? sprintf(
-				/* translators: %d: number of redirect hops. */
-				__( 'Redirect chain (%d hops)', 'seo-wp' ),
-				count( $chain )
-			)
-			: __( 'Redirects', 'seo-wp' );
-
-		return sprintf(
-			'<span class="seo-wp-link-issue-redirect">%1$s</span><br><span class="description">%2$s</span>',
-			esc_html( $label ),
-			implode( '<br>', $hops ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- every $hop entry is already esc_html()'d above.
-		);
-	}
-
-	/**
-	 * Renders one issue's "Linked from" cell: readable, edit-linked source
-	 * labels tagged with where the link was found (Content/Menu/Widget),
-	 * capped at MAX_SOURCES_SHOWN with the rest collapsed into "and N more"
-	 * instead of a wall of raw IDs.
-	 *
-	 * @param array<array{type:string,id:int|string,label:string,edit_url:string}> $sources Sources the link was found in.
-	 */
-	private function render_issue_sources( array $sources ): string {
-		if ( array() === $sources ) {
-			return '';
-		}
-
-		$type_labels = array(
-			'content' => __( 'Content', 'seo-wp' ),
-			'menu'    => __( 'Menu', 'seo-wp' ),
-			'widget'  => __( 'Widget', 'seo-wp' ),
-		);
-
-		$shown   = array_slice( $sources, 0, self::MAX_SOURCES_SHOWN );
-		$extra   = count( $sources ) - count( $shown );
-		$entries = array();
-
-		foreach ( $shown as $source ) {
-			$type       = (string) ( $source['type'] ?? '' );
-			$type_label = $type_labels[ $type ] ?? ucfirst( $type );
-			$label      = (string) ( $source['label'] ?? '' );
-			$edit_url   = (string) ( $source['edit_url'] ?? '' );
-
-			$entries[] = '' !== $edit_url
-				? sprintf( '<a href="%1$s">%2$s</a> <span class="description">(%3$s)</span>', esc_url( $edit_url ), esc_html( $label ), esc_html( $type_label ) )
-				: sprintf( '%1$s <span class="description">(%2$s)</span>', esc_html( $label ), esc_html( $type_label ) );
-		}
-
-		$html = implode( ', ', $entries );
-
-		if ( $extra > 0 ) {
-			$html .= ' ' . sprintf(
-				/* translators: %d: number of additional sources not individually listed. */
-				esc_html__( 'and %d more', 'seo-wp' ),
-				$extra
-			);
-		}
-
-		return $html;
 	}
 
 	/**
@@ -583,242 +506,274 @@ final class LinkAudit {
 		return $orphans;
 	}
 
+	/** Starts a fresh persistent background audit. */
+	public function handle_start_ajax(): void {
+		Ajax::begin( 'link-audit:start' );
+		check_ajax_referer( self::NONCE_ACTION, 'nonce' );
+		if ( ! current_user_can( self::CAPABILITY ) && ! current_user_can( 'manage_options' ) ) {
+			Ajax::error( array( 'message' => __( 'You are not allowed to do this.', 'seo-wp' ) ), 403 );
+		}
+
+		delete_option( self::SCAN_OPTION );
+		delete_option( self::QUEUE_OPTION );
+		delete_option( self::RESULTS_OPTION );
+		delete_transient( self::WORKER_LOCK );
+
+		$total = (int) wp_count_posts( 'page' )->publish;
+		$query = new WP_Query( array(
+			'post_type' => get_post_types( array( 'public' => true ), 'names' ),
+			'post_status' => 'publish',
+			'posts_per_page' => 1,
+			'fields' => 'ids',
+			'no_found_rows' => false,
+		) );
+		$total = (int) $query->found_posts;
+		$token = wp_generate_password( 32, false, false );
+		$job = array(
+			'token' => $token,
+			'status' => 'scanning',
+			'started_at' => time(),
+			'updated_at' => time(),
+			'total_posts' => $total,
+			'processed_posts' => 0,
+			'total_links' => 0,
+			'checked_links' => 0,
+			'current' => __( 'Preparing content scan…', 'seo-wp' ),
+			'error' => '',
+		);
+		update_option( self::JOB_OPTION, $job, false );
+		$this->dispatch_worker( $token );
+		Ajax::success( $this->public_job_data( $job ) );
+	}
+
+	/** Returns the current persistent audit status. */
+	public function handle_status_ajax(): void {
+		Ajax::begin( 'link-audit:status' );
+		check_ajax_referer( self::NONCE_ACTION, 'nonce' );
+		if ( ! current_user_can( self::CAPABILITY ) && ! current_user_can( 'manage_options' ) ) {
+			Ajax::error( array( 'message' => __( 'You are not allowed to do this.', 'seo-wp' ) ), 403 );
+		}
+		$job = self::job_data();
+		if ( in_array( (string) ( $job['status'] ?? '' ), array( 'scanning', 'checking' ), true ) && time() - (int) ( $job['updated_at'] ?? 0 ) > 45 ) {
+			$this->dispatch_worker( (string) ( $job['token'] ?? '' ) );
+		}
+		Ajax::success( $this->public_job_data( $job ) );
+	}
+
+	/** Advances the background job through an authenticated loopback request. */
+	public function handle_worker_ajax(): void {
+		$token = isset( $_POST['token'] ) ? sanitize_text_field( wp_unslash( $_POST['token'] ) ) : '';
+		$job = self::job_data();
+		if ( '' === $token || ! hash_equals( (string) ( $job['token'] ?? '' ), $token ) ) {
+			wp_die( 'Invalid worker token', '', array( 'response' => 403 ) );
+		}
+		if ( get_transient( self::WORKER_LOCK ) ) {
+			wp_die( 'Worker already active' );
+		}
+		set_transient( self::WORKER_LOCK, 1, 45 );
+		try {
+			$this->run_job_slice( $job );
+		} catch ( \Throwable $e ) {
+			$job['status'] = 'error';
+			$job['error'] = $e->getMessage();
+			$job['updated_at'] = time();
+			update_option( self::JOB_OPTION, $job, false );
+		}
+		delete_transient( self::WORKER_LOCK );
+		wp_die( 'OK' );
+	}
+
+	/** WP-Cron fallback for hosts that reject non-blocking loopback requests. */
+	public function handle_cron_worker( string $token ): void {
+		$job = self::job_data();
+		if ( '' === $token || ! hash_equals( (string) ( $job['token'] ?? '' ), $token ) || ! in_array( (string) ( $job['status'] ?? '' ), array( 'scanning', 'checking' ), true ) ) {
+			return;
+		}
+		if ( get_transient( self::WORKER_LOCK ) ) {
+			return;
+		}
+		set_transient( self::WORKER_LOCK, 1, 45 );
+		try {
+			$this->run_job_slice( $job );
+		} catch ( \Throwable $e ) {
+			$job['status'] = 'error';
+			$job['error'] = $e->getMessage();
+			$job['updated_at'] = time();
+			update_option( self::JOB_OPTION, $job, false );
+		}
+		delete_transient( self::WORKER_LOCK );
+	}
+
+	/** Processes one time-bounded slice and dispatches the next one. */
+	private function run_job_slice( array $job ): void {
+		$status = (string) ( $job['status'] ?? '' );
+		if ( 'scanning' === $status ) {
+			$this->run_scan_slice( $job );
+		} elseif ( 'checking' === $status ) {
+			$before = count( self::queue() );
+			$progress = $this->check_links_batch();
+			$after = count( self::queue() );
+			$job['checked_links'] = (int) ( $job['checked_links'] ?? 0 ) + max( 0, $before - $after );
+			$job['current'] = (string) ( $progress['current'] ?? '' );
+			$job['updated_at'] = time();
+			if ( 0 === $after ) {
+				$job['status'] = 'completed';
+				$job['completed_at'] = time();
+				wp_clear_scheduled_hook( self::JOB_CRON_HOOK, array( (string) ( $job['token'] ?? '' ) ) );
+			}
+			update_option( self::JOB_OPTION, $job, false );
+		}
+		if ( in_array( (string) ( $job['status'] ?? '' ), array( 'scanning', 'checking' ), true ) ) {
+			$this->dispatch_worker( (string) $job['token'] );
+		}
+	}
+
+	/** Scans a dynamic batch of posts within a conservative runtime budget. */
+	private function run_scan_slice( array &$job ): void {
+		$offset = (int) ( $job['processed_posts'] ?? 0 );
+		$query = new WP_Query( array(
+			'post_type' => get_post_types( array( 'public' => true ), 'names' ),
+			'post_status' => 'publish',
+			'posts_per_page' => self::SCAN_BATCH_SIZE,
+			'offset' => $offset,
+			'orderby' => 'ID',
+			'order' => 'ASC',
+			'fields' => 'ids',
+			'no_found_rows' => true,
+			'update_post_meta_cache' => false,
+			'update_post_term_cache' => false,
+		) );
+		$scan = self::scan_data();
+		$queue = self::queue();
+		$host = (string) wp_parse_url( home_url(), PHP_URL_HOST );
+		$deadline = self::runtime_deadline();
+		$processed = 0;
+		foreach ( $query->posts as $post_id ) {
+			if ( $processed > 0 && microtime( true ) >= $deadline ) { break; }
+			$post = get_post( (int) $post_id );
+			if ( ! $post instanceof WP_Post ) { continue; }
+			$title = get_the_title( $post );
+			$job['current'] = sprintf( '%s (#%d)', '' !== $title ? $title : __( '(no title)', 'seo-wp' ), (int) $post_id );
+			$raw_links = self::extract_links( (string) $post->post_content );
+			$rendered_links = self::extract_links( ContentRenderer::render( $post ) );
+			foreach ( $raw_links as $link ) { $this->process_link( $link, array( 'type' => 'content', 'post_id' => (int) $post_id ), $host, $scan, $queue ); }
+			foreach ( array_diff( $rendered_links, $raw_links ) as $link ) { $this->process_link( $link, array( 'type' => 'template', 'post_id' => (int) $post_id ), $host, $scan, $queue ); }
+			$processed++;
+		}
+		$job['processed_posts'] = $offset + $processed;
+		$job['updated_at'] = time();
+		update_option( self::SCAN_OPTION, $scan, false );
+		update_option( self::QUEUE_OPTION, $queue, false );
+		if ( $job['processed_posts'] >= (int) ( $job['total_posts'] ?? 0 ) || 0 === count( $query->posts ) ) {
+			$this->scan_navigation_menus( $host, $scan, $queue );
+			$this->scan_widgets( $host, $scan, $queue );
+			$scan['scanned_at'] = time();
+			update_option( self::SCAN_OPTION, $scan, false );
+			update_option( self::QUEUE_OPTION, $queue, false );
+			$job['status'] = 'checking';
+			$job['total_links'] = count( $queue );
+			$job['checked_links'] = 0;
+			$job['current'] = __( 'Preparing link checks…', 'seo-wp' );
+			if ( 0 === count( $queue ) ) {
+				$job['status'] = 'completed';
+				$job['completed_at'] = time();
+				wp_clear_scheduled_hook( self::JOB_CRON_HOOK, array( (string) ( $job['token'] ?? '' ) ) );
+			}
+		}
+		update_option( self::JOB_OPTION, $job, false );
+	}
+
+	/** Sends a non-blocking loopback request; status polling can revive it if hosting blocks loopbacks. */
+	private function dispatch_worker( string $token ): void {
+		if ( '' === $token ) { return; }
+		if ( false === wp_next_scheduled( self::JOB_CRON_HOOK, array( $token ) ) ) {
+			wp_schedule_single_event( time() + 60, self::JOB_CRON_HOOK, array( $token ) );
+		}
+		wp_remote_post( admin_url( 'admin-ajax.php' ), array(
+			'timeout' => 0.01,
+			'blocking' => false,
+			'sslverify' => apply_filters( 'https_local_ssl_verify', false ),
+			'body' => array( 'action' => self::WORKER_AJAX_ACTION, 'token' => $token ),
+		) );
+	}
+
+	private static function job_data(): array {
+		$job = get_option( self::JOB_OPTION, array() );
+		return is_array( $job ) ? $job : array( 'status' => 'idle' );
+	}
+
+	private function public_job_data( array $job ): array {
+		return array(
+			'status' => (string) ( $job['status'] ?? 'idle' ),
+			'current' => (string) ( $job['current'] ?? '' ),
+			'total_posts' => (int) ( $job['total_posts'] ?? 0 ),
+			'processed_posts' => (int) ( $job['processed_posts'] ?? 0 ),
+			'total_links' => (int) ( $job['total_links'] ?? 0 ),
+			'checked_links' => (int) ( $job['checked_links'] ?? 0 ),
+			'started_at' => (int) ( $job['started_at'] ?? 0 ),
+			'updated_at' => (int) ( $job['updated_at'] ?? 0 ),
+			'completed_at' => (int) ( $job['completed_at'] ?? 0 ),
+			'error' => (string) ( $job['error'] ?? '' ),
+		);
+	}
+
 	/**
 	 * Handles one content-scan AJAX batch step.
 	 */
 	public function handle_scan_ajax(): void {
 		Ajax::begin( 'link-audit:scan' );
 		check_ajax_referer( self::NONCE_ACTION, 'nonce' );
-
-		if ( ! current_user_can( self::CAPABILITY ) && ! current_user_can( 'manage_options' ) ) {
-			Ajax::error( array( 'message' => __( 'You are not allowed to do this.', 'seo-wp' ) ), 403 );
-		}
-
+		if ( ! current_user_can( self::CAPABILITY ) && ! current_user_can( 'manage_options' ) ) { Ajax::error( array( 'message' => __( 'You are not allowed to do this.', 'seo-wp' ) ), 403 ); }
 		$page = isset( $_POST['page'] ) ? max( 1, (int) $_POST['page'] ) : 1;
-
-		if ( 1 === $page ) {
-			delete_option( self::SCAN_OPTION );
-			delete_option( self::QUEUE_OPTION );
-		}
-
-		$query = new WP_Query(
-			array(
-				'post_type'              => get_post_types( array( 'public' => true ), 'names' ),
-				'post_status'            => 'publish',
-				'posts_per_page'         => self::SCAN_BATCH_SIZE,
-				'paged'                  => $page,
-				'orderby'                => 'ID',
-				'order'                  => 'ASC',
-				'fields'                 => 'ids',
-				'no_found_rows'          => false,
-				'update_post_meta_cache' => false,
-				'update_post_term_cache' => false,
-			)
-		);
-
-		$scan  = self::scan_data();
-		$queue = self::queue();
-		$host  = (string) wp_parse_url( home_url(), PHP_URL_HOST );
-
+		if ( 1 === $page ) { delete_option( self::SCAN_OPTION ); delete_option( self::QUEUE_OPTION ); delete_option( self::RESULTS_OPTION ); }
+		$query = new WP_Query( array( 'post_type' => get_post_types( array( 'public' => true ), 'names' ), 'post_status' => 'publish', 'posts_per_page' => self::SCAN_BATCH_SIZE, 'paged' => $page, 'orderby' => 'ID', 'order' => 'ASC', 'fields' => 'ids', 'no_found_rows' => false, 'update_post_meta_cache' => false, 'update_post_term_cache' => false ) );
+		$scan = self::scan_data(); $queue = self::queue(); $host = (string) wp_parse_url( home_url(), PHP_URL_HOST );
+		$last_item = '';
 		foreach ( $query->posts as $post_id ) {
-			$post = get_post( (int) $post_id );
-			if ( ! $post instanceof WP_Post ) {
-				continue;
-			}
-
-			$source = self::content_source( $post );
-			foreach ( self::extract_links( ContentRenderer::render( $post ) ) as $link ) {
-				$this->process_link( $link, $source, $host, $scan, $queue );
-			}
+			$post = get_post( (int) $post_id ); if ( ! $post instanceof WP_Post ) { continue; }
+			$title = get_the_title( $post );
+			$last_item = sprintf( '%s (#%d)', '' !== $title ? $title : __( '(no title)', 'seo-wp' ), (int) $post_id );
+			$raw_links = self::extract_links( (string) $post->post_content );
+			$rendered_links = self::extract_links( ContentRenderer::render( $post ) );
+			foreach ( $raw_links as $link ) { $this->process_link( $link, array( 'type' => 'content', 'post_id' => (int) $post_id ), $host, $scan, $queue ); }
+			foreach ( array_diff( $rendered_links, $raw_links ) as $link ) { $this->process_link( $link, array( 'type' => 'template', 'post_id' => (int) $post_id ), $host, $scan, $queue ); }
 		}
-
 		$has_more = $page < (int) $query->max_num_pages;
-
-		if ( ! $has_more ) {
-			foreach ( self::nav_menu_linked_post_ids() as $id ) {
-				$scan['linked_post_ids'][ $id ] = true;
-			}
-
-			foreach ( self::menu_link_sources() as $found ) {
-				$this->process_link( $found['url'], $found['source'], $host, $scan, $queue );
-			}
-
-			foreach ( self::widget_link_sources() as $found ) {
-				$this->process_link( $found['url'], $found['source'], $host, $scan, $queue );
-			}
-
-			$scan['scanned_at'] = time();
-		}
-
-		update_option( self::SCAN_OPTION, $scan, false );
-		update_option( self::QUEUE_OPTION, $queue, false );
-
-		Ajax::success(
-			array(
-				'done'      => ! $has_more,
-				'page'      => $page + 1,
-				'processed' => count( $query->posts ),
-			)
-		);
+		if ( ! $has_more ) { $this->scan_navigation_menus( $host, $scan, $queue ); $this->scan_widgets( $host, $scan, $queue ); $scan['scanned_at'] = time(); }
+		update_option( self::SCAN_OPTION, $scan, false ); update_option( self::QUEUE_OPTION, $queue, false );
+		Ajax::success( array( 'done' => ! $has_more, 'page' => $page + 1, 'processed' => count( $query->posts ), 'current' => $last_item, 'total_pages' => (int) $query->max_num_pages ) );
 	}
 
 	/**
 	 * Classifies one extracted link: a resolvable internal link marks its
 	 * target post as linked-to; anything else (external, or an internal
-	 * link that doesn't resolve to a real post) is queued for a check,
-	 * remembering exactly where it was found.
+	 * link that doesn't resolve to a real post) is queued for a broken-
+	 * link check.
 	 *
-	 * @param string                                                        $link  Raw href/URL value.
-	 * @param array{type:string,id:int|string,label:string,edit_url:string} $source Where the link was found.
-	 * @param string                                                        $host  This site's own host, for internal/external classification.
-	 * @param array{linked_post_ids: array<int,bool>}                       $scan  Scan data, modified by reference.
-	 * @param array<string,array{sources:array}>                            $queue Link queue, modified by reference.
+	 * @param string                                  $link    Raw href value.
+	 * @param int                                     $post_id Post the link was found in.
+	 * @param string                                  $host    This site's own host, for internal/external classification.
+	 * @param array{linked_post_ids: array<int,bool>} $scan  Scan data, modified by reference.
+	 * @param array<string,array{sources:int[]}>      $queue Link queue, modified by reference.
 	 */
 	private function process_link( string $link, array $source, string $host, array &$scan, array &$queue ): void {
 		$target_host = (string) wp_parse_url( $link, PHP_URL_HOST );
 		$is_internal = '' === $target_host || 0 === strcasecmp( $target_host, $host );
-		$absolute    = '' === $target_host ? home_url( $link ) : $link;
-
+		$absolute = '' === $target_host ? home_url( '/' . ltrim( $link, '/' ) ) : $link;
 		if ( $is_internal ) {
 			$resolved_id = url_to_postid( $absolute );
 			if ( $resolved_id > 0 ) {
 				$scan['linked_post_ids'][ $resolved_id ] = true;
-				return;
+				$canonical = get_permalink( $resolved_id );
+				if ( is_string( $canonical ) && untrailingslashit( strtok( $canonical, '#' ) ) === untrailingslashit( strtok( $absolute, '#' ) ) ) {
+					return;
+				}
 			}
 		}
-
-		if ( ! isset( $queue[ $absolute ] ) ) {
-			$queue[ $absolute ] = array( 'sources' => array() );
-		}
-
-		foreach ( $queue[ $absolute ]['sources'] as $existing ) {
-			if ( ( $existing['type'] ?? '' ) === $source['type'] && ( $existing['id'] ?? null ) === $source['id'] ) {
-				return;
-			}
-		}
-
+		if ( ! isset( $queue[ $absolute ] ) || ! is_array( $queue[ $absolute ] ) ) { $queue[ $absolute ] = array( 'sources' => array() ); }
+		$queue[ $absolute ]['sources'] = self::normalise_sources( (array) ( $queue[ $absolute ]['sources'] ?? array() ) );
+		$key = wp_json_encode( $source ); foreach ( $queue[ $absolute ]['sources'] as $existing ) { if ( wp_json_encode( $existing ) === $key ) { return; } }
 		$queue[ $absolute ]['sources'][] = $source;
-	}
-
-	/**
-	 * Builds the source descriptor for a link found in a post's rendered
-	 * content.
-	 *
-	 * @param WP_Post $post Post the link was found in.
-	 */
-	private static function content_source( WP_Post $post ): array {
-		$edit_link = get_edit_post_link( $post->ID, 'raw' );
-
-		return array(
-			'type'     => 'content',
-			'id'       => $post->ID,
-			'label'    => get_the_title( $post ),
-			'edit_url' => is_string( $edit_link ) ? $edit_link : '',
-		);
-	}
-
-	/**
-	 * Every navigation-menu item's URL, tagged as a "menu" source —
-	 * including custom links and links to external sites, not just links
-	 * to a post/page/category (nav_menu_linked_post_ids() already handles
-	 * marking those as non-orphans; this additionally queues the actual
-	 * URL for a check, which that simpler pass doesn't do).
-	 *
-	 * @return array<array{url:string,source:array{type:string,id:int|string,label:string,edit_url:string}}>
-	 */
-	private static function menu_link_sources(): array {
-		$found = array();
-		$menus = wp_get_nav_menus();
-
-		if ( ! is_array( $menus ) ) {
-			return $found;
-		}
-
-		foreach ( $menus as $menu ) {
-			$items = wp_get_nav_menu_items( $menu );
-			if ( ! is_array( $items ) ) {
-				continue;
-			}
-
-			foreach ( $items as $item ) {
-				$url = isset( $item->url ) ? (string) $item->url : '';
-				if ( '' === $url || '#' === $url ) {
-					continue;
-				}
-
-				$scheme = strtolower( (string) wp_parse_url( $url, PHP_URL_SCHEME ) );
-				if ( '' !== $scheme && ! in_array( $scheme, array( 'http', 'https' ), true ) ) {
-					continue;
-				}
-
-				$title = isset( $item->title ) ? (string) $item->title : '';
-
-				$found[] = array(
-					'url'    => $url,
-					'source' => array(
-						'type'     => 'menu',
-						'id'       => (int) $item->ID,
-						'label'    => sprintf( '%1$s (%2$s)', '' !== $title ? $title : $url, $menu->name ),
-						'edit_url' => admin_url( 'nav-menus.php?action=edit&menu=' . (int) $menu->term_id ),
-					),
-				);
-			}
-		}
-
-		return $found;
-	}
-
-	/**
-	 * Every link found inside a Custom HTML or Text widget instance,
-	 * tagged as a "widget" source. These two widget types are the ones
-	 * that commonly hold hand-written links WordPress otherwise has no
-	 * structured way to discover.
-	 *
-	 * @return array<array{url:string,source:array{type:string,id:int|string,label:string,edit_url:string}}>
-	 */
-	private static function widget_link_sources(): array {
-		$found = array();
-
-		foreach ( array( 'widget_custom_html', 'widget_text' ) as $option_name ) {
-			$instances = get_option( $option_name, array() );
-			if ( ! is_array( $instances ) ) {
-				continue;
-			}
-
-			foreach ( $instances as $number => $instance ) {
-				if ( ! is_array( $instance ) ) {
-					continue;
-				}
-
-				$content = (string) ( $instance['content'] ?? '' );
-				if ( '' === $content ) {
-					continue;
-				}
-
-				$title = (string) ( $instance['title'] ?? '' );
-				$label = '' !== $title
-					? $title
-					: sprintf(
-						/* translators: %d: widget instance number. */
-						__( 'Widget #%d', 'seo-wp' ),
-						(int) $number
-					);
-
-				foreach ( self::extract_links( $content ) as $url ) {
-					$found[] = array(
-						'url'    => $url,
-						'source' => array(
-							'type'     => 'widget',
-							'id'       => $option_name . ':' . $number,
-							'label'    => $label,
-							'edit_url' => admin_url( 'widgets.php' ),
-						),
-					);
-				}
-			}
-		}
-
-		return $found;
 	}
 
 	/**
@@ -831,28 +786,38 @@ final class LinkAudit {
 	 *
 	 * @return int[]
 	 */
-	private static function nav_menu_linked_post_ids(): array {
-		$ids   = array();
-		$menus = wp_get_nav_menus();
-
-		if ( ! is_array( $menus ) ) {
-			return $ids;
-		}
-
-		foreach ( $menus as $menu ) {
-			$items = wp_get_nav_menu_items( $menu );
-			if ( ! is_array( $items ) ) {
-				continue;
-			}
-
-			foreach ( $items as $item ) {
-				if ( 'post_type' === ( $item->object ?? '' ) && (int) $item->object_id > 0 ) {
-					$ids[] = (int) $item->object_id;
-				}
+	private function scan_navigation_menus( string $host, array &$scan, array &$queue ): void {
+		$menus = wp_get_nav_menus(); if ( ! is_array( $menus ) ) { return; }
+		foreach ( $menus as $menu ) { $items = wp_get_nav_menu_items( $menu ); if ( ! is_array( $items ) ) { continue; }
+			foreach ( $items as $item ) { $url = isset( $item->url ) ? (string) $item->url : ''; if ( '' === $url ) { continue; }
+				$this->process_link( $url, array( 'type' => 'menu', 'menu_id' => (int) $menu->term_id, 'label' => (string) $menu->name ), $host, $scan, $queue );
 			}
 		}
+	}
 
-		return array_values( array_unique( $ids ) );
+
+	private function scan_widgets( string $host, array &$scan, array &$queue ): void {
+		$sidebars = wp_get_sidebars_widgets(); if ( ! is_array( $sidebars ) ) { return; }
+		foreach ( $sidebars as $sidebar_id => $widget_ids ) { if ( 'wp_inactive_widgets' === $sidebar_id || ! is_array( $widget_ids ) ) { continue; }
+			foreach ( $widget_ids as $widget_id ) { if ( ! preg_match( '/^(.+)-([0-9]+)$/', (string) $widget_id, $matches ) ) { continue; }
+				$option = get_option( 'widget_' . $matches[1], array() ); $data = is_array( $option ) ? ( $option[ (int) $matches[2] ] ?? array() ) : array();
+				foreach ( self::extract_links( self::flatten_widget_value( $data ) ) as $link ) { $this->process_link( $link, array( 'type' => 'widget', 'widget_id' => (string) $widget_id, 'label' => (string) $sidebar_id ), $host, $scan, $queue ); }
+			}
+		}
+	}
+
+	private static function flatten_widget_value( mixed $value ): string { if ( is_string( $value ) ) { return $value; } if ( ! is_array( $value ) ) { return ''; } $parts = array(); foreach ( $value as $item ) { $parts[] = self::flatten_widget_value( $item ); } return implode( "\n", $parts ); }
+
+	private static function normalise_sources( array $sources ): array { $normalised = array(); foreach ( $sources as $source ) { if ( is_numeric( $source ) ) { $source = array( 'type' => 'content', 'post_id' => (int) $source ); } if ( is_array( $source ) ) { $normalised[] = $source; } } return $normalised; }
+
+	private static function source_area_label( array $source ): string { $type = (string) ( $source['type'] ?? 'content' ); $labels = array( 'content' => __( 'Content', 'seo-wp' ), 'template' => __( 'Template / rendered element', 'seo-wp' ), 'menu' => __( 'Navigation menu', 'seo-wp' ), 'widget' => __( 'Widget', 'seo-wp' ) ); return $labels[ $type ] ?? ucfirst( $type ); }
+
+	private static function source_link_html( array $source ): string {
+		$type = (string) ( $source['type'] ?? 'content' );
+		if ( isset( $source['post_id'] ) ) { $post_id = (int) $source['post_id']; $edit_link = get_edit_post_link( $post_id, 'raw' ); $title = get_the_title( $post_id ); return sprintf( '<a href="%1$s">%2$s</a> <span class="description">#%3$d</span>', esc_url( is_string( $edit_link ) ? $edit_link : '' ), esc_html( '' !== $title ? $title : __( '(no title)', 'seo-wp' ) ), $post_id ); }
+		if ( 'menu' === $type ) { return sprintf( '<a href="%1$s">%2$s</a>', esc_url( admin_url( 'nav-menus.php?action=edit&menu=' . (int) ( $source['menu_id'] ?? 0 ) ) ), esc_html( (string) ( $source['label'] ?? __( 'Menu', 'seo-wp' ) ) ) ); }
+		if ( 'widget' === $type ) { return sprintf( '<a href="%1$s">%2$s</a> <span class="description">%3$s</span>', esc_url( admin_url( 'widgets.php' ) ), esc_html( (string) ( $source['widget_id'] ?? __( 'Widget', 'seo-wp' ) ) ), esc_html( (string) ( $source['label'] ?? '' ) ) ); }
+		return esc_html( self::source_area_label( $source ) );
 	}
 
 	/**
@@ -867,223 +832,109 @@ final class LinkAudit {
 			Ajax::error( array( 'message' => __( 'You are not allowed to do this.', 'seo-wp' ) ), 403 );
 		}
 
-		$this->check_links_batch();
+		$progress = $this->check_links_batch();
 
-		Ajax::success( array( 'remaining' => count( self::queue() ) ) );
+		Ajax::success(
+			array(
+				'remaining' => count( self::queue() ),
+				'current'   => (string) ( $progress['current'] ?? '' ),
+				'processed' => (int) ( $progress['processed'] ?? 0 ),
+			)
+		);
 	}
 
 	/**
-	 * Handles a per-row "Recheck" click: checks exactly one URL
-	 * immediately (instead of waiting for its turn in the batch queue) and
-	 * reports whether it's now fixed, so a link the admin just corrected
-	 * can be confirmed and cleared without a full content scan.
+	 * Checks a batch of queued URLs and records any that are broken.
+	 * Runs on the fifteen-minute cron schedule, or on demand via
+	 * handle_check_now_ajax().
 	 */
-	public function handle_recheck_ajax(): void {
-		Ajax::begin( 'link-audit:recheck' );
-		check_ajax_referer( self::NONCE_ACTION, 'nonce' );
-
-		if ( ! current_user_can( self::CAPABILITY ) && ! current_user_can( 'manage_options' ) ) {
-			Ajax::error( array( 'message' => __( 'You are not allowed to do this.', 'seo-wp' ) ), 403 );
-		}
-
-		$url = isset( $_POST['url'] ) ? esc_url_raw( wp_unslash( $_POST['url'] ) ) : '';
-		if ( '' === $url ) {
-			Ajax::error( array( 'message' => __( 'Missing URL.', 'seo-wp' ) ), 400 );
-		}
-
-		$sources = (array) ( self::link_issues()[ $url ]['sources'] ?? array() );
-
-		self::apply_check_result( $url, $sources );
-
-		Ajax::success( array( 'fixed' => ! isset( self::link_issues()[ $url ] ) ) );
-	}
-
-	/**
-	 * Checks a batch of queued URLs and records any that are broken or
-	 * only resolve via a redirect. Runs on the configured cron schedule,
-	 * or on demand via handle_check_now_ajax().
-	 */
-	public function check_links_batch(): void {
+	public function check_links_batch(): array {
 		$queue = self::queue();
 		if ( array() === $queue ) {
-			return;
+			return array( 'processed' => 0, 'current' => '' );
 		}
 
-		$batch = array_slice( $queue, 0, self::CHECK_BATCH_SIZE, true );
+		// Each AJAX/cron request intentionally handles only a bounded slice.
+		// This prevents large sites or slow external hosts from exhausting the
+		// PHP max_execution_time. The browser immediately requests the next
+		// slice until the queue is empty.
+		$deadline = self::runtime_deadline();
+		$batch    = array_slice( $queue, 0, self::CHECK_BATCH_SIZE, true );
+		$results  = self::broken_links();
+		$processed = 0;
+		$current   = '';
 
 		foreach ( $batch as $url => $data ) {
+			if ( $processed > 0 && microtime( true ) >= $deadline ) {
+				break;
+			}
+
+			$current = (string) $url;
 			unset( $queue[ $url ] );
-			self::apply_check_result( (string) $url, (array) ( $data['sources'] ?? array() ) );
+			$finding = self::check_url( $current );
+			if ( null !== $finding ) {
+				$finding['sources']    = self::normalise_sources( (array) ( $data['sources'] ?? array() ) );
+				$finding['checked_at'] = time();
+				$results[ $url ]       = $finding;
+			} else {
+				unset( $results[ $url ] );
+			}
+			$processed++;
 		}
 
+		if ( count( $results ) > self::MAX_RESULTS ) {
+			uasort( $results, static fn ( array $a, array $b ): int => ( $a['checked_at'] ?? 0 ) <=> ( $b['checked_at'] ?? 0 ) );
+			$results = array_slice( $results, -self::MAX_RESULTS, null, true );
+		}
 		update_option( self::QUEUE_OPTION, $queue, false );
+		update_option( self::RESULTS_OPTION, $results, false );
+
+		return array( 'processed' => $processed, 'current' => $current );
 	}
 
 	/**
-	 * Checks one URL and writes (or clears) its stored link-issue entry —
-	 * the shared step behind both the batch check and a single-URL
-	 * recheck, so a link fixed since the last scan is actually removed
-	 * from the list instead of lingering until the next full scan.
-	 *
-	 * @param string                                                               $url     URL to check.
-	 * @param array<array{type:string,id:int|string,label:string,edit_url:string}> $sources Where this link was found.
+	 * Calculates a conservative deadline for one link-check request.
+	 * Unlimited runtimes still use a short slice so progress remains visible.
 	 */
-	private static function apply_check_result( string $url, array $sources ): void {
-		$result = self::check_url( $url );
-		$issues = self::link_issues();
-
-		if ( null === $result ) {
-			unset( $issues[ $url ] );
-		} else {
-			$issues[ $url ] = array(
-				'sources'    => $sources,
-				'kind'       => $result['kind'],
-				'status'     => $result['status'],
-				'chain'      => $result['chain'] ?? array(),
-				'checked_at' => time(),
-			);
-		}
-
-		if ( count( $issues ) > self::MAX_RESULTS ) {
-			uasort( $issues, static fn ( array $a, array $b ): int => ( $a['checked_at'] ?? 0 ) <=> ( $b['checked_at'] ?? 0 ) );
-			$issues = array_slice( $issues, -self::MAX_RESULTS, null, true );
-		}
-
-		update_option( self::RESULTS_OPTION, $issues, false );
+	private static function runtime_deadline(): float {
+		$limit = (int) ini_get( 'max_execution_time' );
+		$budget = $limit > 0 ? max( 5, min( 20, (int) floor( $limit * 0.6 ) ) ) : 15;
+		return microtime( true ) + $budget;
 	}
 
 	/**
-	 * Checks a single URL, following redirects itself (rather than letting
-	 * wp_remote_*() auto-follow them) so a redirect chain is visible
-	 * instead of invisibly resolved. Returns null when the link is healthy
-	 * (a direct 2xx response, no redirect at all); otherwise a result
-	 * describing whether it's broken outright or only reachable via one or
-	 * more redirect hops.
+	 * Checks a single URL, returning a human-readable status/error when
+	 * it's broken, or null when it's fine. Tries HEAD first (cheaper),
+	 * falling back to GET since some servers reject HEAD requests outright.
 	 *
 	 * @param string $url URL to check.
-	 * @return array{kind:string,status:string,chain:array<array{url:string,to:string,code:int}>}|null
 	 */
 	private static function check_url( string $url ): ?array {
-		$chain   = array();
-		$current = $url;
-		$args    = array(
-			'timeout'     => 5,
-			'redirection' => 0,
-		);
-
-		for ( $hop = 0; $hop < 6; $hop++ ) {
-			$response = wp_remote_head( $current, $args );
-			$code     = is_wp_error( $response ) ? 0 : (int) wp_remote_retrieve_response_code( $response );
-
-			if ( is_wp_error( $response ) || 0 === $code || $code >= 400 ) {
-				$response = wp_remote_get( $current, $args );
-				$code     = is_wp_error( $response ) ? 0 : (int) wp_remote_retrieve_response_code( $response );
+		$current = $url; $chain = array(); $codes = array();
+		for ( $step = 0; $step < 10; $step++ ) {
+			$args = array( 'timeout' => 5, 'redirection' => 0, 'user-agent' => 'SEO-WP Link Audit/' . \SeoWp\VERSION ); $response = wp_remote_head( $current, $args ); $code = is_wp_error( $response ) ? 0 : (int) wp_remote_retrieve_response_code( $response );
+			if ( is_wp_error( $response ) || 0 === $code || in_array( $code, array( 403, 405 ), true ) ) { $response = wp_remote_get( $current, $args ); }
+			if ( is_wp_error( $response ) ) { return array( 'type' => 'broken', 'status' => $response->get_error_message(), 'final_url' => $current, 'chain' => $chain ); }
+			$code = (int) wp_remote_retrieve_response_code( $response );
+			if ( $code >= 300 && $code < 400 ) { $location = wp_remote_retrieve_header( $response, 'location' ); if ( ! is_string( $location ) || '' === $location ) { return array( 'type' => 'broken', 'status' => $code . ' without Location header', 'final_url' => $current, 'chain' => $chain ); }
+				$next = self::resolve_redirect_url( $current, $location ); $codes[] = (string) $code; $chain[] = $next;
+				if ( in_array( $next, array_merge( array( $url ), array_slice( $chain, 0, -1 ) ), true ) ) { return array( 'type' => 'redirect loop', 'status' => implode( ' → ', $codes ), 'final_url' => $next, 'chain' => $chain ); }
+				$current = $next; continue;
 			}
-
-			if ( is_wp_error( $response ) ) {
-				return array(
-					'kind'   => 'broken',
-					'status' => $response->get_error_message(),
-					'chain'  => $chain,
-				);
-			}
-
-			if ( $code >= 300 && $code < 400 ) {
-				$location = wp_remote_retrieve_header( $response, 'location' );
-				$location = is_string( $location ) ? $location : '';
-
-				if ( '' === $location ) {
-					return array(
-						'kind'   => 'broken',
-						'status' => (string) $code,
-						'chain'  => $chain,
-					);
-				}
-
-				$next = self::resolve_relative_url( $location, $current );
-
-				if ( $next === $current || in_array( $next, wp_list_pluck( $chain, 'url' ), true ) ) {
-					return array(
-						'kind'   => 'broken',
-						'status' => __( 'Redirect loop', 'seo-wp' ),
-						'chain'  => $chain,
-					);
-				}
-
-				$chain[] = array(
-					'url'  => $current,
-					'to'   => $next,
-					'code' => $code,
-				);
-
-				$current = $next;
-				continue;
-			}
-
-			if ( $code >= 400 || 0 === $code ) {
-				return array(
-					'kind'   => 'broken',
-					'status' => (string) $code,
-					'chain'  => $chain,
-				);
-			}
-
-			// A healthy final response — but if it took one or more
-			// redirect hops to get here, that's still worth surfacing:
-			// the source link should point straight at the real target.
-			if ( array() !== $chain ) {
-				return array(
-					'kind'   => 'redirect',
-					'status' => (string) $code,
-					'chain'  => $chain,
-				);
-			}
-
+			if ( $code >= 400 || 0 === $code ) { return array( 'type' => 'broken', 'status' => (string) $code, 'final_url' => $current, 'chain' => $chain ); }
+			if ( array() !== $chain ) { $codes[] = (string) $code; return array( 'type' => count( $chain ) > 1 ? 'redirect chain' : 'redirect', 'status' => implode( ' → ', $codes ), 'final_url' => $current, 'chain' => $chain ); }
 			return null;
 		}
-
-		return array(
-			'kind'   => 'broken',
-			'status' => __( 'Too many redirects', 'seo-wp' ),
-			'chain'  => $chain,
-		);
+		return array( 'type' => 'redirect chain', 'status' => __( 'More than 10 redirects', 'seo-wp' ), 'final_url' => $current, 'chain' => $chain );
 	}
 
-	/**
-	 * Resolves a Location header value (which may be relative) against the
-	 * URL it was returned for, into an absolute URL. Public (and pure, no
-	 * WordPress I/O) so it's directly unit-testable — see check_url()'s
-	 * use of it, where a resolution bug would silently corrupt an entire
-	 * redirect chain.
-	 *
-	 * @param string $location Raw Location header value.
-	 * @param string $base     The URL that produced this redirect.
-	 */
-	public static function resolve_relative_url( string $location, string $base ): string {
-		$location = trim( $location );
-		if ( '' === $location ) {
-			return $base;
-		}
 
-		if ( 0 === strpos( $location, '//' ) ) {
-			$scheme = (string) wp_parse_url( $base, PHP_URL_SCHEME );
-			return ( '' !== $scheme ? $scheme : 'https' ) . ':' . $location;
-		}
-
-		if ( '' !== (string) wp_parse_url( $location, PHP_URL_HOST ) ) {
-			return $location;
-		}
-
-		$scheme = (string) wp_parse_url( $base, PHP_URL_SCHEME );
-		$host   = (string) wp_parse_url( $base, PHP_URL_HOST );
-
-		if ( isset( $location[0] ) && '/' === $location[0] ) {
-			return $scheme . '://' . $host . $location;
-		}
-
-		$base_dir = trailingslashit( dirname( (string) wp_parse_url( $base, PHP_URL_PATH ) ) );
-
-		return $scheme . '://' . $host . $base_dir . $location;
+	private static function resolve_redirect_url( string $base, string $location ): string {
+		if ( preg_match( '#^https?://#i', $location ) ) { return $location; }
+		$parts = wp_parse_url( $base ); $scheme = (string) ( $parts['scheme'] ?? 'https' ); $host = (string) ( $parts['host'] ?? '' ); $port = isset( $parts['port'] ) ? ':' . (int) $parts['port'] : '';
+		if ( str_starts_with( $location, '//' ) ) { return $scheme . ':' . $location; }
+		if ( str_starts_with( $location, '/' ) ) { return $scheme . '://' . $host . $port . $location; }
+		$path = (string) ( $parts['path'] ?? '/' ); return $scheme . '://' . $host . $port . trailingslashit( dirname( $path ) ) . $location;
 	}
 
 	/**
@@ -1139,7 +990,7 @@ final class LinkAudit {
 	/**
 	 * The current not-yet-checked link queue.
 	 *
-	 * @return array<string,array{sources:array<array{type:string,id:int|string,label:string,edit_url:string}>}>
+	 * @return array<string,array{sources:int[]}>
 	 */
 	private static function queue(): array {
 		$queue = get_option( self::QUEUE_OPTION, array() );
@@ -1148,14 +999,13 @@ final class LinkAudit {
 	}
 
 	/**
-	 * The current confirmed link-issue results (broken links and
-	 * redirects), keyed by URL.
+	 * The current confirmed-broken-link results.
 	 *
-	 * @return array<string,array{sources:array<array{type:string,id:int|string,label:string,edit_url:string}>,kind:string,status:string,chain:array<array{url:string,to:string,code:int}>,checked_at:int}>
+	 * @return array<string,array{sources:int[],status:string,checked_at:int}>
 	 */
-	private static function link_issues(): array {
-		$issues = get_option( self::RESULTS_OPTION, array() );
+	private static function broken_links(): array {
+		$broken = get_option( self::RESULTS_OPTION, array() );
 
-		return is_array( $issues ) ? $issues : array();
+		return is_array( $broken ) ? $broken : array();
 	}
 }

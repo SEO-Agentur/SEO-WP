@@ -76,7 +76,7 @@ final class Settings {
 	 * Registers the admin menu and the settings option.
 	 */
 	public function register(): void {
-		add_action( 'admin_menu', array( $this, 'add_menu' ) );
+		add_action( 'admin_menu', array( $this, 'add_menu' ), 5 );
 		add_action( 'admin_init', array( $this, 'register_setting' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'maybe_enqueue_assets' ) );
 	}

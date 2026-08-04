@@ -1,139 +1,94 @@
 /**
- * Drives the Link Audit's two admin-ajax actions: the content-scan batch
- * loop, and an on-demand "check queued links now" click. Vanilla JS, no
- * dependencies; loaded only on the SEO-WP > Link Audit screen.
+ * Starts and monitors the persistent Link Audit background job. The server
+ * owns the job; this page only polls progress, so closing the tab does not
+ * stop the audit.
  */
 ( function () {
 	'use strict';
 
-	function post( body, action ) {
+	var config = window.seoWpLinkAudit;
+	var button = document.querySelector( '.seo-wp-link-audit-scan' );
+	var status = document.querySelector( '.seo-wp-link-audit-status' );
+	var pollTimer = null;
+	var reloaded = false;
+
+	if ( ! button || ! status || ! config ) { return; }
+
+	function post( action ) {
 		var params = new URLSearchParams();
-
-		Object.keys( body ).forEach( function ( key ) {
-			params.append( key, body[ key ] );
-		} );
 		params.append( 'action', action );
-		params.append( 'nonce', window.seoWpLinkAudit.nonce );
-
-		return fetch( window.seoWpLinkAudit.ajaxUrl, {
+		params.append( 'nonce', config.nonce );
+		return fetch( config.ajaxUrl, {
 			method: 'POST',
 			credentials: 'same-origin',
 			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 			body: params.toString(),
-		} ).then( function ( response ) {
-			return response.json();
+		} ).then( function ( response ) { return response.json(); } );
+	}
+
+	function elapsed( startedAt ) {
+		if ( ! startedAt ) { return '0:00'; }
+		var seconds = Math.max( 0, Math.floor( Date.now() / 1000 ) - Number( startedAt ) );
+		var hours = Math.floor( seconds / 3600 );
+		var minutes = Math.floor( ( seconds % 3600 ) / 60 );
+		seconds = seconds % 60;
+		return ( hours ? hours + ':' + String( minutes ).padStart( 2, '0' ) : minutes ) + ':' + String( seconds ).padStart( 2, '0' );
+	}
+
+	function paint( job ) {
+		var state = job.status || 'idle';
+		var text = '';
+		if ( state === 'scanning' ) {
+			text = config.i18n.scanning + ': ' + ( job.current || '' ) + ' · ' + Number( job.processed_posts || 0 ) + '/' + Number( job.total_posts || 0 ) + ' pages';
+		} else if ( state === 'checking' ) {
+			text = config.i18n.checking + ': ' + ( job.current || '' ) + ' · ' + Number( job.checked_links || 0 ) + '/' + Number( job.total_links || 0 ) + ' unique URLs';
+		} else if ( state === 'completed' ) {
+			text = config.i18n.done;
+		} else if ( state === 'error' ) {
+			text = config.i18n.error + ( job.error ? ' ' + job.error : '' );
+		}
+		if ( text && job.started_at ) { text += ' · ' + config.i18n.elapsed + ' ' + elapsed( job.started_at ); }
+		if ( state === 'scanning' || state === 'checking' ) { text += ' · ' + config.i18n.runningBackground; }
+		status.textContent = text;
+		status.dataset.jobStatus = state;
+		button.disabled = state === 'scanning' || state === 'checking';
+	}
+
+	function poll() {
+		post( config.statusAction ).then( function ( response ) {
+			if ( ! response || ! response.success ) { throw new Error(); }
+			paint( response.data );
+			var state = response.data.status;
+			if ( state === 'scanning' || state === 'checking' ) {
+				pollTimer = window.setTimeout( poll, 2000 );
+			} else if ( state === 'completed' && ! reloaded ) {
+				reloaded = true;
+				window.setTimeout( function () { window.location.reload(); }, 800 );
+			}
+		} ).catch( function () {
+			status.textContent = config.i18n.error;
+			button.disabled = false;
+			pollTimer = window.setTimeout( poll, 5000 );
 		} );
 	}
 
-	function scan() {
-		var scanButton = document.querySelector( '.seo-wp-link-audit-scan' );
-		var status = document.querySelector( '.seo-wp-link-audit-status' );
-		var i18n = window.seoWpLinkAudit.i18n;
-
-		scanButton.disabled = true;
-		status.textContent = i18n.scanning;
-
-		function step( page ) {
-			post( { page: page }, window.seoWpLinkAudit.scanAction )
-				.then( function ( response ) {
-					if ( ! response || ! response.success ) {
-						status.textContent = i18n.error;
-						scanButton.disabled = false;
-						return;
-					}
-
-					if ( response.data.done ) {
-						status.textContent = i18n.done;
-						window.location.reload();
-						return;
-					}
-
-					status.textContent = i18n.scanning + ' (' + response.data.page + ')';
-					step( response.data.page );
-				} )
-				.catch( function () {
-					status.textContent = i18n.error;
-					scanButton.disabled = false;
-				} );
-		}
-
-		step( 1 );
-	}
-
-	function checkNow() {
-		var checkButton = document.querySelector( '.seo-wp-link-audit-check-now' );
-		var status = document.querySelector( '.seo-wp-link-audit-status' );
-		var i18n = window.seoWpLinkAudit.i18n;
-
-		checkButton.disabled = true;
-		status.textContent = i18n.checking;
-
-		post( {}, window.seoWpLinkAudit.checkNowAction )
-			.then( function ( response ) {
-				if ( ! response || ! response.success ) {
-					status.textContent = i18n.error;
-					checkButton.disabled = false;
-					return;
-				}
-
-				window.location.reload();
-			} )
-			.catch( function () {
-				status.textContent = i18n.error;
-				checkButton.disabled = false;
-			} );
-	}
-
-	function recheck( button ) {
-		var url = button.getAttribute( 'data-url' );
-		var row = button.closest( 'tr' );
-		var i18n = window.seoWpLinkAudit.i18n;
-
-		if ( ! url ) {
-			return;
-		}
-
+	button.addEventListener( 'click', function ( event ) {
+		event.preventDefault();
 		button.disabled = true;
-		button.textContent = i18n.rechecking;
-
-		post( { url: url }, window.seoWpLinkAudit.recheckAction )
-			.then( function ( response ) {
-				if ( ! response || ! response.success ) {
-					button.disabled = false;
-					button.textContent = i18n.error;
-					return;
-				}
-
-				if ( response.data.fixed && row ) {
-					row.parentNode.removeChild( row );
-					return;
-				}
-
-				window.location.reload();
-			} )
-			.catch( function () {
-				button.disabled = false;
-				button.textContent = i18n.error;
-			} );
-	}
-
-	document.addEventListener( 'click', function ( event ) {
-		if ( event.target.closest( '.seo-wp-link-audit-scan' ) ) {
-			event.preventDefault();
-			scan();
-			return;
-		}
-
-		if ( event.target.closest( '.seo-wp-link-audit-check-now' ) ) {
-			event.preventDefault();
-			checkNow();
-			return;
-		}
-
-		var recheckButton = event.target.closest( '.seo-wp-link-audit-recheck' );
-		if ( recheckButton ) {
-			event.preventDefault();
-			recheck( recheckButton );
-		}
+		status.textContent = config.i18n.preparing;
+		post( config.startAction ).then( function ( response ) {
+			if ( ! response || ! response.success ) { throw new Error(); }
+			paint( response.data );
+			if ( pollTimer ) { window.clearTimeout( pollTimer ); }
+			pollTimer = window.setTimeout( poll, 750 );
+		} ).catch( function () {
+			status.textContent = config.i18n.error;
+			button.disabled = false;
+		} );
 	} );
+
+	if ( status.dataset.jobStatus === 'scanning' || status.dataset.jobStatus === 'checking' ) {
+		button.disabled = true;
+		poll();
+	}
 } )();
