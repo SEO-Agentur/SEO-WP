@@ -194,14 +194,25 @@ final class RoleManager {
 	}
 
 	/**
-	 * Adds the Role Manager submenu page.
+	 * Adds the Role Manager submenu page. Registered with the real
+	 * manage_options capability, not the virtual seo_wp_manage_roles one
+	 * — WordPress's own menu system uses this same parameter to decide
+	 * whether the page is reachable at all (add_submenu_page() itself
+	 * skips registering the hook name into $_registered_pages when the
+	 * current user lacks it, which surfaces as the page simply not
+	 * existing). Gating that on a virtual capability that itself depends
+	 * on this exact page's data (the role matrix) is circular by
+	 * construction: anything that goes wrong with the matrix, the
+	 * grant_capabilities() filter, or its timing would make the one page
+	 * meant to fix it unreachable too. The finer-grained virtual
+	 * capability is still checked inside render_page()/handle_save().
 	 */
 	public function add_menu(): void {
 		add_submenu_page(
 			Settings::PAGE_SLUG,
 			__( 'Role Manager', 'seo-wp' ),
 			__( 'Role Manager', 'seo-wp' ),
-			self::MANAGE_ROLES_CAP,
+			'manage_options',
 			self::PAGE_SLUG,
 			array( $this, 'render_page' )
 		);
@@ -244,7 +255,12 @@ final class RoleManager {
 	 * Renders the role manager page: one checkbox grid per role.
 	 */
 	public function render_page(): void {
-		if ( ! current_user_can( self::MANAGE_ROLES_CAP ) ) {
+		// Belt and suspenders: current_user_can( self::MANAGE_ROLES_CAP )
+		// alone already resolves true for a manage_options user via
+		// grant_capabilities()'s own bypass, but checking manage_options
+		// again here directly means this check still passes even if that
+		// filter somehow isn't registered or didn't run for this request.
+		if ( ! current_user_can( self::MANAGE_ROLES_CAP ) && ! current_user_can( 'manage_options' ) ) {
 			return;
 		}
 
@@ -293,7 +309,7 @@ final class RoleManager {
 	 * Handles the save form submission.
 	 */
 	public function handle_save(): void {
-		if ( ! current_user_can( self::MANAGE_ROLES_CAP ) ) {
+		if ( ! current_user_can( self::MANAGE_ROLES_CAP ) && ! current_user_can( 'manage_options' ) ) {
 			wp_die( esc_html__( 'You are not allowed to do this.', 'seo-wp' ) );
 		}
 

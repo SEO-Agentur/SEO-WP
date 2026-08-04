@@ -66,14 +66,18 @@ final class DuplicateChecker {
 	}
 
 	/**
-	 * Adds the Duplicate Content submenu page.
+	 * Adds the Duplicate Content submenu page. Registered with the real
+	 * manage_options capability, not the virtual seo_wp_view_duplicates
+	 * one — see RoleManager::add_menu()'s docblock for why. The finer-
+	 * grained virtual capability is still checked inside render_page()
+	 * and handle_ajax().
 	 */
 	public function add_menu(): void {
 		add_submenu_page(
 			Settings::PAGE_SLUG,
 			__( 'Duplicate Content', 'seo-wp' ),
 			__( 'Duplicate Content', 'seo-wp' ),
-			self::CAPABILITY,
+			'manage_options',
 			self::PAGE_SLUG,
 			array( $this, 'render_page' )
 		);
@@ -114,7 +118,7 @@ final class DuplicateChecker {
 	 * completed, the duplicate groups it found.
 	 */
 	public function render_page(): void {
-		if ( ! current_user_can( self::CAPABILITY ) ) {
+		if ( ! current_user_can( self::CAPABILITY ) && ! current_user_can( 'manage_options' ) ) {
 			return;
 		}
 
@@ -193,7 +197,7 @@ final class DuplicateChecker {
 		Ajax::begin( 'duplicate-checker:scan' );
 		check_ajax_referer( self::NONCE_ACTION, 'nonce' );
 
-		if ( ! current_user_can( self::CAPABILITY ) ) {
+		if ( ! current_user_can( self::CAPABILITY ) && ! current_user_can( 'manage_options' ) ) {
 			Ajax::error( array( 'message' => __( 'You are not allowed to do this.', 'seo-wp' ) ), 403 );
 		}
 

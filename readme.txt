@@ -5,7 +5,7 @@ Tags: seo, wpml, sitemap, schema, hreflang
 Requires at least: 6.4
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.2.2
+Stable tag: 1.2.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -99,6 +99,9 @@ No. Existing redirect *rules* from another plugin aren't migrated automatically 
 Yes. Every WPML-specific feature (hreflang, per-language templates) is a no-op when WPML isn't active — nothing here is a hard dependency.
 
 == Changelog ==
+
+= 1.2.3 =
+* Fixed Role Manager, Link Audit and Duplicate Content Checker being unreachable (registered with a virtual capability that itself depended on this exact feature's own data/filter — circular by construction). All three are now registered with WordPress's real manage_options capability, so they're never gated on anything that could itself be broken; the finer-grained virtual capability is still checked once inside each page.
 
 = 1.2.2 =
 * Fixed AJAX batch loops (import, duplicate scan, link audit, bulk-edit AI) silently stopping partway through when stray PHP output corrupted the JSON response — now captured and routed to the Diagnostics page instead of corrupting or being discarded.

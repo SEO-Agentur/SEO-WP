@@ -206,7 +206,7 @@ final class LinkAudit {
 	 * Handles the frequency-select form submission.
 	 */
 	public function handle_frequency_save(): void {
-		if ( ! current_user_can( self::CAPABILITY ) ) {
+		if ( ! current_user_can( self::CAPABILITY ) && ! current_user_can( 'manage_options' ) ) {
 			wp_die( esc_html__( 'You are not allowed to do this.', 'seo-wp' ) );
 		}
 
@@ -235,14 +235,22 @@ final class LinkAudit {
 	}
 
 	/**
-	 * Adds the Link Audit submenu page.
+	 * Adds the Link Audit submenu page. Registered with the real
+	 * manage_options capability, not the virtual seo_wp_view_link_audit
+	 * one — see RoleManager::add_menu()'s docblock for why: gating
+	 * whether the page is reachable at all on a virtual capability that
+	 * itself depends on RoleManager's stored data/filter is circular, and
+	 * a manage_options user must always be able to reach every page here
+	 * regardless of that filter's state. The finer-grained virtual
+	 * capability is still checked inside render_page() and both AJAX
+	 * handlers.
 	 */
 	public function add_menu(): void {
 		add_submenu_page(
 			Settings::PAGE_SLUG,
 			__( 'Link Audit', 'seo-wp' ),
 			__( 'Link Audit', 'seo-wp' ),
-			self::CAPABILITY,
+			'manage_options',
 			self::PAGE_SLUG,
 			array( $this, 'render_page' )
 		);
@@ -285,7 +293,7 @@ final class LinkAudit {
 	 * links once a scan has completed.
 	 */
 	public function render_page(): void {
-		if ( ! current_user_can( self::CAPABILITY ) ) {
+		if ( ! current_user_can( self::CAPABILITY ) && ! current_user_can( 'manage_options' ) ) {
 			return;
 		}
 
@@ -476,7 +484,7 @@ final class LinkAudit {
 		Ajax::begin( 'link-audit:scan' );
 		check_ajax_referer( self::NONCE_ACTION, 'nonce' );
 
-		if ( ! current_user_can( self::CAPABILITY ) ) {
+		if ( ! current_user_can( self::CAPABILITY ) && ! current_user_can( 'manage_options' ) ) {
 			Ajax::error( array( 'message' => __( 'You are not allowed to do this.', 'seo-wp' ) ), 403 );
 		}
 
@@ -613,7 +621,7 @@ final class LinkAudit {
 		Ajax::begin( 'link-audit:check-now' );
 		check_ajax_referer( self::NONCE_ACTION, 'nonce' );
 
-		if ( ! current_user_can( self::CAPABILITY ) ) {
+		if ( ! current_user_can( self::CAPABILITY ) && ! current_user_can( 'manage_options' ) ) {
 			Ajax::error( array( 'message' => __( 'You are not allowed to do this.', 'seo-wp' ) ), 403 );
 		}
 
