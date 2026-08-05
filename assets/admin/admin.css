@@ -84,6 +84,23 @@
 	padding: 2px 0;
 }
 
+.seo-wp-indexnow-progress {
+	margin: 12px 0;
+}
+
+.seo-wp-indexnow-log {
+	max-height: 240px;
+	overflow-y: auto;
+	font-family: monospace;
+	font-size: 12px;
+	background: #f6f7f7;
+	padding: 8px;
+}
+
+.seo-wp-indexnow-log-entry {
+	padding: 2px 0;
+}
+
 .seo-wp-preview-label {
 	display: block;
 	font-weight: 600;

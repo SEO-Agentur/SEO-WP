@@ -16,14 +16,18 @@ use SeoWp\Crawl\GoogleIndexing;
  * types) plus the submission history log, on one page — mirroring
  * Diagnostics' log display, but with its own settings section since this
  * feature needs a large, sensitive text field that doesn't belong on the
- * general Settings screen.
+ * general Settings screen. Deliberately kept on its own submenu page,
+ * separate from IndexNowPage's "Instant Indexing" screen: Google's
+ * Indexing API and the IndexNow protocol (Bing/Yandex/Seznam/Naver) are
+ * unrelated services with unrelated credentials, and conflating them
+ * under one page is what "Instant Indexing" used to do before this split.
  */
 final class GoogleIndexingPage {
 
 	/**
 	 * Submenu page slug.
 	 */
-	private const PAGE_SLUG = 'seo-wp-instant-indexing';
+	private const PAGE_SLUG = 'seo-wp-google-indexing';
 
 	/**
 	 * Option key holding the plugin's settings array.
@@ -71,8 +75,8 @@ final class GoogleIndexingPage {
 	public function add_menu(): void {
 		add_submenu_page(
 			Settings::PAGE_SLUG,
-			__( 'Instant Indexing', 'seo-wp' ),
-			__( 'Instant Indexing', 'seo-wp' ),
+			__( 'Google Indexing API', 'seo-wp' ),
+			__( 'Google Indexing API', 'seo-wp' ),
 			self::CAPABILITY,
 			self::PAGE_SLUG,
 			array( $this, 'render_page' )
@@ -103,8 +107,8 @@ final class GoogleIndexingPage {
 		$settings = get_option( self::OPTION_KEY, array() );
 
 		echo '<div class="wrap seo-wp-google-indexing">';
-		echo '<h1>' . esc_html__( 'SEO-WP Instant Indexing', 'seo-wp' ) . '</h1>';
-		echo '<p>' . esc_html__( 'Pings Google\'s Indexing API on publish, update and delete using a Google Cloud service account. Google officially scopes this API to job posting and livestream pages, but accepts submissions for any URL.', 'seo-wp' ) . '</p>';
+		echo '<h1>' . esc_html__( 'SEO-WP Google Indexing API', 'seo-wp' ) . '</h1>';
+		echo '<p>' . esc_html__( 'Pings Google\'s Indexing API on publish, update and delete using a Google Cloud service account. Google officially scopes this API to job posting and livestream pages, but accepts submissions for any URL. For Bing, Yandex, Seznam and Naver, see the separate Instant Indexing (IndexNow) page instead — Google does not participate in IndexNow.', 'seo-wp' ) . '</p>';
 
 		if ( isset( $_GET['updated'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only success banner, not a state-changing action.
 			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Settings saved.', 'seo-wp' ) . '</p></div>';

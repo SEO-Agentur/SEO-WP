@@ -5,7 +5,7 @@ Tags: seo, wpml, sitemap, schema, hreflang
 Requires at least: 6.4
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.2.9
+Stable tag: 1.3.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -100,6 +100,14 @@ Yes. Every WPML-specific feature (hreflang, per-language templates) is a no-op w
 
 
 == Changelog ==
+
+= 1.3.0 =
+* Instant Indexing is now actually IndexNow (Bing, Yandex, Seznam, Naver): an optional custom API key, a manual "paste a URL list" submission form, one-click bulk indexing of every post type and taxonomy (all pre-selected, individually deselectable), and a submission history log. Google's Indexing API moved to its own "Google Indexing API" page so the two unrelated services are no longer conflated on one screen.
+* Fixed the IndexNow key generator to always produce a key matching its own verification-file rewrite rule (previously could generate characters the rule didn't accept).
+* Added an optional Google News sitemap toggle (Settings > Sitemaps): a dedicated, spec-compliant /news-sitemap.xml (last 48 hours, 1000 URL cap) for sites that publish news content; off leaves it out of the sitemap index entirely.
+* Added a large set of opt-in performance toggles (Settings > Performance): disable emojis/embeds/Dashicons, limit or disable post revisions, override the autosave interval, control the Heartbeat API, disable comments sitewide, block Google Maps scripts, trim WooCommerce assets outside shop pages, disable XML-RPC, remove jQuery Migrate, remove the WP version/RSD link/shortlink, disable or trim RSS feeds, disable self-pingbacks, and restrict the REST API to logged-in users.
+* Added a manual resource-hints textarea (Settings > Performance): preconnect/dns-prefetch/preload/prefetch/prerender entries, one per line, output early in <head>.
+* Added a new Server settings tab: HTTP→HTTPS, WWW↔non-WWW and trailing-slash redirects, duplicate-slash canonicalization, security headers, HSTS, CORS, modern upload MIME types, and — applied via an explicit "Apply to .htaccess" button, never automatically — Gzip, Brotli, browser caching, hotlink protection and disabling directory browsing, each wrapped in <IfModule> so an unsupported module is simply skipped.
 
 = 1.2.9 =
 * Rebuilt Link Audit as a persistent server-side background job that continues after the browser tab is closed.

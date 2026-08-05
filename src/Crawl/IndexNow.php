@@ -16,11 +16,13 @@ use WP_Post_Type;
 /**
  * Implements the IndexNow protocol (supported by Bing, Yandex, Seznam and
  * Naver — Google does not participate): serves the required key
- * verification file at /{key}.txt, and pings the shared endpoint on
- * publish, update and delete of any public, indexable post, without
- * hardcoding a post type name. Not part of the classic sitemap ping
- * (Google/Bing retired those endpoints); this is a separate, still-active
- * protocol.
+ * verification file at /{key}.txt, pings the shared endpoint on publish,
+ * update and delete of any public, indexable post without hardcoding a
+ * post type name, and additionally exposes submit_urls() so the admin
+ * screen (SeoWp\Admin\IndexNowPage) can trigger a manual or one-click bulk
+ * submission for arbitrary URLs, post types and taxonomies. Not part of
+ * the classic sitemap ping (Google/Bing retired those endpoints); this is
+ * a separate, still-active protocol.
  */
 final class IndexNow {
 
@@ -30,14 +32,31 @@ final class IndexNow {
 	private const OPTION_KEY = 'seo_wp_settings';
 
 	/**
-	 * Option key holding the generated IndexNow key.
+	 * Option key holding the auto-generated IndexNow key (used unless a
+	 * custom key is set in the settings array).
 	 */
 	private const KEY_OPTION = 'seo_wp_indexnow_key';
+
+	/**
+	 * Option key holding the submission history log.
+	 */
+	private const LOG_OPTION = 'seo_wp_indexnow_log';
+
+	/**
+	 * Oldest log entries are dropped once the log exceeds this size.
+	 */
+	private const MAX_LOG_ENTRIES = 200;
 
 	/**
 	 * Shared IndexNow endpoint; fans out to every participating engine.
 	 */
 	private const ENDPOINT = 'https://api.indexnow.org/indexnow';
+
+	/**
+	 * Maximum URLs accepted in a single IndexNow request; larger lists are
+	 * split into chunks of this size.
+	 */
+	private const MAX_URLS_PER_REQUEST = 10000;
 
 	/**
 	 * Registers the key file endpoint and the publish/update/delete pings.
@@ -94,14 +113,14 @@ final class IndexNow {
 	 * @param string  $old_status Previous post status (unused).
 	 * @param WP_Post $post       The post being saved.
 	 */
-	public function maybe_ping_on_publish( string $new_status, string $old_status, WP_Post $post ): void {
-		if ( 'publish' !== $new_status || ! $this->is_eligible( $post ) ) {
+	public function maybe_ping_on_publish( string $new_status, string $old_status, WP_Post $post ): void { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- $old_status is part of the transition_post_status hook signature.
+		if ( 'publish' !== $new_status || ! $this->enabled() || ! self::is_indexable( $post ) ) {
 			return;
 		}
 
 		$permalink = get_permalink( $post );
 		if ( is_string( $permalink ) && '' !== $permalink ) {
-			$this->submit( array( $permalink ) );
+			$this->submit_fire_and_forget( array( $permalink ), __( 'Publish/update', 'seo-wp' ) );
 		}
 	}
 
@@ -113,24 +132,28 @@ final class IndexNow {
 	 */
 	public function ping_before_delete( int $post_id ): void {
 		$post = get_post( $post_id );
-		if ( ! $post instanceof WP_Post || 'publish' !== $post->post_status || ! $this->is_eligible( $post ) ) {
+		if ( ! $post instanceof WP_Post || 'publish' !== $post->post_status || ! $this->enabled() || ! self::is_indexable( $post ) ) {
 			return;
 		}
 
 		$permalink = get_permalink( $post );
 		if ( is_string( $permalink ) && '' !== $permalink ) {
-			$this->submit( array( $permalink ) );
+			$this->submit_fire_and_forget( array( $permalink ), __( 'Delete', 'seo-wp' ) );
 		}
 	}
 
 	/**
-	 * Whether a post should trigger a ping: not a revision/autosave, a
-	 * public post type, and not marked noindex.
+	 * Whether a post is a candidate for submission at all: not a
+	 * revision/autosave, a public post type, and not marked noindex. Used
+	 * both by the automatic hooks above (further gated by enabled()) and
+	 * by the admin screen's one-click bulk submission (which intentionally
+	 * ignores the "enable automatic pings" toggle — a manual action should
+	 * always be able to run).
 	 *
 	 * @param WP_Post $post Post to check.
 	 */
-	private function is_eligible( WP_Post $post ): bool {
-		if ( ! $this->enabled() || wp_is_post_revision( $post ) || wp_is_post_autosave( $post ) ) {
+	public static function is_indexable( WP_Post $post ): bool {
+		if ( wp_is_post_revision( $post ) || wp_is_post_autosave( $post ) ) {
 			return false;
 		}
 
@@ -143,25 +166,98 @@ final class IndexNow {
 	}
 
 	/**
-	 * Whether IndexNow pings are enabled (on by default).
+	 * Whether automatic IndexNow pings are enabled (on by default). Does
+	 * not gate manual submission via submit_urls().
 	 */
-	private function enabled(): bool {
+	public function enabled(): bool {
 		$settings = get_option( self::OPTION_KEY, array() );
 
 		return ! isset( $settings['enable_indexnow'] ) || ! empty( $settings['enable_indexnow'] );
 	}
 
 	/**
-	 * Submits a list of URLs to the IndexNow endpoint, fire-and-forget so
-	 * the current request is never slowed down by a third-party API call.
+	 * Submits a list of URLs for the automatic publish/update/delete
+	 * hooks, fire-and-forget so the current request is never slowed down
+	 * by a third-party API call. Since the response is never read, the
+	 * log entry records that a submission was sent, not that it was
+	 * confirmed accepted — see submit_urls() for a confirmed result.
 	 *
-	 * @param string[] $urls URLs to submit.
+	 * @param string[] $urls   URLs to submit.
+	 * @param string   $source Short label recorded in the history log.
 	 */
-	private function submit( array $urls ): void {
+	private function submit_fire_and_forget( array $urls, string $source ): void {
 		if ( array() === $urls ) {
 			return;
 		}
 
+		$this->send_chunk( $urls, false );
+		self::log( $source, count( $urls ), true, '' );
+	}
+
+	/**
+	 * Submits a list of URLs to IndexNow, blocking so the caller can
+	 * report a real result — used by the admin screen's manual paste-box
+	 * and one-click bulk submission, never by the automatic hooks (which
+	 * must never slow down a wp-admin save). Lists longer than
+	 * MAX_URLS_PER_REQUEST are split into multiple requests, each logged
+	 * and reported separately.
+	 *
+	 * @param string[] $urls   URLs to submit.
+	 * @param string   $source Short label recorded in the history log.
+	 * @return array{submitted:int,ok:bool,error:string}
+	 */
+	public function submit_urls( array $urls, string $source ): array {
+		$urls = array_values( array_unique( array_filter( array_map( 'trim', $urls ) ) ) );
+		if ( array() === $urls ) {
+			return array(
+				'submitted' => 0,
+				'ok'        => true,
+				'error'     => '',
+			);
+		}
+
+		$submitted = 0;
+		$ok        = true;
+		$error     = '';
+
+		foreach ( array_chunk( $urls, self::MAX_URLS_PER_REQUEST ) as $chunk ) {
+			$response = $this->send_chunk( $chunk, true );
+
+			if ( is_wp_error( $response ) ) {
+				$ok    = false;
+				$error = $response->get_error_message();
+				self::log( $source, count( $chunk ), false, $error );
+				continue;
+			}
+
+			$code     = (int) wp_remote_retrieve_response_code( $response );
+			$chunk_ok = $code >= 200 && $code < 300;
+
+			if ( ! $chunk_ok ) {
+				$ok = false;
+				/* translators: %d: HTTP status code returned by the IndexNow endpoint. */
+				$error = sprintf( __( 'IndexNow responded with HTTP %d.', 'seo-wp' ), $code );
+			}
+
+			self::log( $source, count( $chunk ), $chunk_ok, $chunk_ok ? '' : $error );
+			$submitted += count( $chunk );
+		}
+
+		return array(
+			'submitted' => $submitted,
+			'ok'        => $ok,
+			'error'     => $error,
+		);
+	}
+
+	/**
+	 * Sends one IndexNow request for up to MAX_URLS_PER_REQUEST URLs.
+	 *
+	 * @param string[] $urls     URLs to submit (already chunked by the caller).
+	 * @param bool     $blocking Whether to wait for and return the response.
+	 * @return array<string,mixed>|\WP_Error wp_remote_post()'s return value.
+	 */
+	private function send_chunk( array $urls, bool $blocking ) {
 		$key  = $this->key();
 		$host = wp_parse_url( home_url(), PHP_URL_HOST );
 
@@ -172,11 +268,11 @@ final class IndexNow {
 			'urlList'     => array_values( $urls ),
 		);
 
-		wp_remote_post(
+		return wp_remote_post(
 			self::ENDPOINT,
 			array(
-				'timeout'  => 3,
-				'blocking' => false,
+				'timeout'  => $blocking ? 15 : 3,
+				'blocking' => $blocking,
 				'headers'  => array( 'Content-Type' => 'application/json; charset=utf-8' ),
 				'body'     => wp_json_encode( $body ),
 			)
@@ -184,18 +280,87 @@ final class IndexNow {
 	}
 
 	/**
-	 * Resolves this site's IndexNow key, generating and persisting one on
-	 * first use.
+	 * Resolves this site's IndexNow key: a custom key set on the admin
+	 * screen takes precedence, otherwise one is generated and persisted on
+	 * first use. Public so the admin screen can display the effective key
+	 * and its verification file URL.
 	 */
-	private function key(): string {
+	public function key(): string {
+		$settings = get_option( self::OPTION_KEY, array() );
+		$custom   = isset( $settings['indexnow_key'] ) ? (string) $settings['indexnow_key'] : '';
+		if ( '' !== $custom ) {
+			return $custom;
+		}
+
 		$key = get_option( self::KEY_OPTION, '' );
 		if ( is_string( $key ) && '' !== $key ) {
 			return $key;
 		}
 
-		$key = wp_generate_password( 32, false, false );
+		$key = bin2hex( random_bytes( 16 ) );
 		update_option( self::KEY_OPTION, $key, true );
 
 		return $key;
+	}
+
+	/**
+	 * Validates and normalizes a custom key entered on the admin screen:
+	 * lowercased, and only accepted if it matches the rewrite rule
+	 * registered in add_rewrite_rules() (16-64 hex characters) — a key
+	 * that doesn't match would never be reachable at /{key}.txt, breaking
+	 * IndexNow's verification.
+	 *
+	 * @param string $raw Raw input from the settings form.
+	 * @return string The normalized key, or '' if invalid/empty.
+	 */
+	public static function sanitize_key( string $raw ): string {
+		$key = strtolower( trim( $raw ) );
+
+		return 1 === preg_match( '/^[a-f0-9]{16,64}$/', $key ) ? $key : '';
+	}
+
+	/**
+	 * Records a submission attempt in the capped history log. One entry
+	 * per request sent (not per URL) — a bulk submission of thousands of
+	 * URLs logs one row per chunk, not one per URL.
+	 *
+	 * @param string $source Short label, e.g. "Manual paste", "Bulk: Products", "Publish/update".
+	 * @param int    $count  Number of URLs in this submission.
+	 * @param bool   $ok     Whether the submission succeeded (or, for fire-and-forget pings, was sent).
+	 * @param string $detail Error detail, if any.
+	 */
+	public static function log( string $source, int $count, bool $ok, string $detail = '' ): void {
+		$entries   = self::log_entries();
+		$entries[] = array(
+			'time'   => time(),
+			'source' => $source,
+			'count'  => $count,
+			'ok'     => $ok,
+			'detail' => $detail,
+		);
+
+		if ( count( $entries ) > self::MAX_LOG_ENTRIES ) {
+			$entries = array_slice( $entries, -self::MAX_LOG_ENTRIES );
+		}
+
+		update_option( self::LOG_OPTION, $entries, false );
+	}
+
+	/**
+	 * Every recorded submission, oldest first.
+	 *
+	 * @return array<int,array{time:int,source:string,count:int,ok:bool,detail:string}>
+	 */
+	public static function log_entries(): array {
+		$entries = get_option( self::LOG_OPTION, array() );
+
+		return is_array( $entries ) ? $entries : array();
+	}
+
+	/**
+	 * Clears the submission history log.
+	 */
+	public static function clear_log(): void {
+		delete_option( self::LOG_OPTION );
 	}
 }

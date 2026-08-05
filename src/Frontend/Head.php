@@ -30,6 +30,7 @@ final class Head {
 	public function register(): void {
 		( new FragmentCache() )->register();
 
+		( new ResourceHints() )->register();
 		( new TitleDescription() )->register();
 		( new Robots() )->register();
 		( new Canonical() )->register();

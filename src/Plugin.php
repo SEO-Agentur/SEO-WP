@@ -15,6 +15,7 @@ use SeoWp\Admin\Diagnostics;
 use SeoWp\Admin\DuplicateChecker;
 use SeoWp\Admin\GoogleIndexingPage;
 use SeoWp\Admin\ImportWizard;
+use SeoWp\Admin\IndexNowPage;
 use SeoWp\Admin\LinkAudit;
 use SeoWp\Admin\Metabox;
 use SeoWp\Admin\NotFoundMonitorPage;
@@ -31,6 +32,8 @@ use SeoWp\Crawl\RobotsTxt;
 use SeoWp\Crawl\SpecialArchives;
 use SeoWp\Crawl\Verification;
 use SeoWp\Frontend\Head;
+use SeoWp\Performance\Optimizations;
+use SeoWp\Performance\ServerHeaders;
 use SeoWp\Sitemaps\Router;
 use SeoWp\Wpml\StringTranslation;
 
@@ -88,6 +91,8 @@ final class Plugin {
 		( new Redirects() )->register();
 		( new NotFoundMonitor() )->register();
 		( new GoogleIndexing() )->register();
+		( new ServerHeaders() )->register();
+		( new Optimizations() )->register();
 
 		if ( is_admin() ) {
 			( new Metabox() )->register();
@@ -98,6 +103,7 @@ final class Plugin {
 			( new RedirectsPage() )->register();
 			( new NotFoundMonitorPage() )->register();
 			( new GoogleIndexingPage() )->register();
+			( new IndexNowPage() )->register();
 			( new DuplicateChecker() )->register();
 			( new AiSettings() )->register();
 		}

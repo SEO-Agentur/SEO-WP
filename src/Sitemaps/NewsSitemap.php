@@ -16,26 +16,52 @@ use WP_Query;
  * Renders a Google News sitemap limited to content published in the last
  * 48 hours, across any public, non-hierarchical post type (the same
  * "article-like" heuristic used for the Article schema node), without
- * hardcoding a post type name.
+ * hardcoding a post type name. Follows Google's News sitemap guidelines
+ * (https://developers.google.com/search/docs/crawling-indexing/sitemaps/news-sitemap):
+ * a dedicated file, only <news:news>-tagged <url> entries (no mixing with
+ * the regular sitemaps), only content from the last 48 hours, and at most
+ * 1000 URLs. Opt-in via the "Enable Google News sitemap" setting — most
+ * sites don't publish news content, so it doesn't ship on unconditionally.
  */
 final class NewsSitemap {
 
 	/**
-	 * How far back to look for eligible content.
+	 * Option key holding the plugin's settings array.
+	 */
+	private const OPTION_KEY = 'seo_wp_settings';
+
+	/**
+	 * How far back to look for eligible content, per Google's News
+	 * sitemap guidelines.
 	 */
 	private const WINDOW_HOURS = 48;
+
+	/**
+	 * Whether the site owner has enabled the news sitemap (on by default,
+	 * matching this feature's behavior before the setting existed).
+	 */
+	private function enabled(): bool {
+		$settings = get_option( self::OPTION_KEY, array() );
+
+		return ! isset( $settings['enable_news_sitemap'] ) || ! empty( $settings['enable_news_sitemap'] );
+	}
 
 	/**
 	 * Whether there is any content to list right now.
 	 */
 	public function has_entries(): bool {
-		return array() !== $this->query()->posts;
+		return $this->enabled() && array() !== $this->query()->posts;
 	}
 
 	/**
-	 * Renders the news sitemap, or null when there is nothing to show.
+	 * Renders the news sitemap, or null when disabled or there is nothing
+	 * to show.
 	 */
 	public function render(): ?string {
+		if ( ! $this->enabled() ) {
+			return null;
+		}
+
 		$query = $this->query();
 
 		if ( array() === $query->posts ) {
