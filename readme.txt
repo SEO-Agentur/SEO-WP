@@ -5,7 +5,7 @@ Tags: seo, wpml, sitemap, schema, hreflang
 Requires at least: 6.4
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.3.0
+Stable tag: 1.3.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -100,6 +100,13 @@ Yes. Every WPML-specific feature (hreflang, per-language templates) is a no-op w
 
 
 == Changelog ==
+
+= 1.3.1 =
+* Fixed the Yoast/Rank Math/AIOSEO import not showing up: writes went through update_post_meta()/update_term_meta()/update_option(), none of which invalidate the schema/hreflang fragment cache — a page rendered (and cached) before an import could keep serving its pre-import JSON-LD for up to 24 hours afterwards. The import now flushes that cache itself.
+* The import log now distinguishes "the source plugin had nothing here" from "the source plugin had a value, but SEO-WP already had one too, so it was left alone" — previously both looked identical ("no changes"), making it impossible to tell why a field stayed empty. Confirmed Product schema is generated live from WooCommerce's own data (not imported), and that OpenGraph/Twitter already fall back to the resolved title/description when their own fields are empty — both already worked correctly, no gap found there.
+* Bulk Editor: nicer pagination (item-count summary, per-page selector up to 200 rows, a "go to page" jump alongside the page-number links, above and below the table) for sites with many more than a handful of pages.
+* Bulk Editor: a traffic-light character-count badge next to Title and Description — red/amber/green against the same length guidance a Google search result truncates to, updating live as you type.
+* Fixed 5 failing unit tests and a large block of code-style debt in Link Audit, left over from the 1.2.9 rewrite (a test suite calling a method that had been renamed, not removed).
 
 = 1.3.0 =
 * Instant Indexing is now actually IndexNow (Bing, Yandex, Seznam, Naver): an optional custom API key, a manual "paste a URL list" submission form, one-click bulk indexing of every post type and taxonomy (all pre-selected, individually deselectable), and a submission history log. Google's Indexing API moved to its own "Google Indexing API" page so the two unrelated services are no longer conflated on one screen.

@@ -78,6 +78,11 @@
 
 				fields.title.value = response.data.title;
 				fields.description.value = response.data.description;
+				// Dispatched so bulk-editor-ux.js's length badges pick up
+				// the new values — setting .value directly doesn't fire
+				// its own 'input' listener.
+				fields.title.dispatchEvent( new Event( 'input', { bubbles: true } ) );
+				fields.description.dispatchEvent( new Event( 'input', { bubbles: true } ) );
 				fields.status.textContent = i18n.done;
 			} )
 			.catch( function () {

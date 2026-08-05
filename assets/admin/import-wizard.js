@@ -61,15 +61,27 @@
 		}
 
 		var fields = ( entry.fields || [] ).join( ', ' );
+		var skipped = ( entry.skipped || [] ).join( ', ' );
 		var suffix = entry.dry_run ? ' (preview)' : '';
+
+		var detail = fields ? ': ' + fields : '';
+		if ( skipped ) {
+			// Present in the source plugin but SEO-WP already had a value
+			// there (from a previous import or a manual edit) — never
+			// overwritten, so this is expected, not a failure.
+			detail += ( fields ? '; ' : ': ' ) + 'already set, left alone: ' + skipped;
+		}
+		if ( ! detail ) {
+			detail = ' — no changes';
+		}
 
 		// The "settings" entry (Batch::run_settings()) is a single global
 		// import step, not tied to one object, so it carries no id.
 		if ( 'settings' === entry.type ) {
-			return 'settings' + suffix + ( fields ? ': ' + fields : ' — no changes' );
+			return 'settings' + suffix + detail;
 		}
 
-		return entry.type + ' #' + entry.id + suffix + ( fields ? ': ' + fields : ' — no changes' );
+		return entry.type + ' #' + entry.id + suffix + detail;
 	}
 
 	function appendLog( container, entries ) {

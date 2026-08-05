@@ -89,10 +89,10 @@ final class LinkAuditTest extends TestCase {
 	/**
 	 * A fully-qualified Location header is returned as-is.
 	 */
-	public function test_resolve_relative_url_keeps_absolute_url(): void {
+	public function test_resolve_redirect_url_keeps_absolute_url(): void {
 		$this->assertSame(
 			'https://other.example/target',
-			LinkAudit::resolve_relative_url( 'https://other.example/target', 'https://example.com/page' )
+			LinkAudit::resolve_redirect_url( 'https://example.com/page', 'https://other.example/target' )
 		);
 	}
 
@@ -100,10 +100,10 @@ final class LinkAuditTest extends TestCase {
 	 * An absolute-path Location header is resolved against the base URL's
 	 * scheme and host.
 	 */
-	public function test_resolve_relative_url_resolves_absolute_path(): void {
+	public function test_resolve_redirect_url_resolves_absolute_path(): void {
 		$this->assertSame(
 			'https://example.com/new-page/',
-			LinkAudit::resolve_relative_url( '/new-page/', 'https://example.com/old-page/' )
+			LinkAudit::resolve_redirect_url( 'https://example.com/old-page/', '/new-page/' )
 		);
 	}
 
@@ -111,10 +111,10 @@ final class LinkAuditTest extends TestCase {
 	 * A path-relative Location header is resolved against the base URL's
 	 * directory.
 	 */
-	public function test_resolve_relative_url_resolves_relative_path(): void {
+	public function test_resolve_redirect_url_resolves_relative_path(): void {
 		$this->assertSame(
 			'https://example.com/blog/new-page',
-			LinkAudit::resolve_relative_url( 'new-page', 'https://example.com/blog/old-page' )
+			LinkAudit::resolve_redirect_url( 'https://example.com/blog/old-page', 'new-page' )
 		);
 	}
 
@@ -122,21 +122,25 @@ final class LinkAuditTest extends TestCase {
 	 * A protocol-relative Location header ("//host/path") inherits the
 	 * base URL's scheme.
 	 */
-	public function test_resolve_relative_url_resolves_protocol_relative_url(): void {
+	public function test_resolve_redirect_url_resolves_protocol_relative_url(): void {
 		$this->assertSame(
 			'https://cdn.example.com/asset',
-			LinkAudit::resolve_relative_url( '//cdn.example.com/asset', 'https://example.com/page' )
+			LinkAudit::resolve_redirect_url( 'https://example.com/page', '//cdn.example.com/asset' )
 		);
 	}
 
 	/**
 	 * An empty Location header falls back to the original base URL rather
-	 * than resolving to something nonsensical.
+	 * than resolving to something nonsensical (check_url() already treats
+	 * a redirect response with no Location header as broken before ever
+	 * calling this method, so this is a defensive guard, not a reachable
+	 * production path — but it keeps the pure function safe to call on
+	 * its own).
 	 */
-	public function test_resolve_relative_url_falls_back_to_base_when_empty(): void {
+	public function test_resolve_redirect_url_falls_back_to_base_when_empty(): void {
 		$this->assertSame(
 			'https://example.com/page',
-			LinkAudit::resolve_relative_url( '', 'https://example.com/page' )
+			LinkAudit::resolve_redirect_url( 'https://example.com/page', '' )
 		);
 	}
 }

@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace SeoWp\Import;
 
 use SeoWp\Support\ErrorLog;
+use SeoWp\Support\FragmentCache;
 use WP_Query;
 
 /**
@@ -18,6 +19,17 @@ use WP_Query;
  * without timing out on a large site), with dry-run support and a log of
  * what was imported or skipped. Never touches a source plugin's own data
  * — only ever reads it.
+ *
+ * Writes go straight through update_post_meta()/update_term_meta()/
+ * update_user_meta()/update_option() rather than wp_insert_post() or
+ * similar — none of which fire save_post/edited_term, the only hooks
+ * FragmentCache listens to. Left alone, a schema/hreflang fragment
+ * already cached for a page (e.g. from a visit before the import ran)
+ * would keep serving its pre-import content for up to FragmentCache::TTL
+ * regardless of what this class just wrote. Each run_*_page()/
+ * run_settings() call below flushes it once per page after a real
+ * (non-dry-run) write, so newly-imported schema/social data shows up on
+ * the very next request instead of silently waiting out the cache.
  */
 final class Batch {
 
@@ -95,6 +107,7 @@ final class Batch {
 		}
 
 		$this->append_log( $entries );
+		$this->maybe_invalidate_fragment_cache( $dry_run, $entries );
 
 		return array(
 			'processed' => count( $query->posts ),
@@ -159,6 +172,7 @@ final class Batch {
 		}
 
 		$this->append_log( $entries );
+		$this->maybe_invalidate_fragment_cache( $dry_run, $entries );
 
 		return array(
 			'processed' => count( $terms ),
@@ -240,6 +254,7 @@ final class Batch {
 		}
 
 		$this->append_log( $entries );
+		$this->maybe_invalidate_fragment_cache( $dry_run, $entries );
 
 		return array(
 			'processed' => count( $users ),
@@ -306,6 +321,7 @@ final class Batch {
 		);
 
 		$this->append_log( $entries );
+		$this->maybe_invalidate_fragment_cache( $dry_run, $entries );
 
 		return array(
 			'processed' => 1,
@@ -390,9 +406,20 @@ final class Batch {
 
 	/**
 	 * Maps, filters and (unless dry-running) writes one post's fields,
-	 * returning the log entry for it, or null when there was nothing to
-	 * import. The whole thing is one unit for ErrorLog::capture() to wrap
-	 * in run_posts_page() — see the comment there.
+	 * returning the log entry for it, or null when the source had nothing
+	 * at all for this post. The whole thing is one unit for
+	 * ErrorLog::capture() to wrap in run_posts_page() — see the comment
+	 * there.
+	 *
+	 * Distinguishes, in the returned entry's 'skipped' field, "the source
+	 * plugin had a value here but SEO-WP already had one too, so it was
+	 * left alone" from "the source plugin had nothing here" (the latter
+	 * never even reaches this method — see the early return below): a
+	 * social/schema field reading empty in RankMath's or Yoast's own admin
+	 * (relying on their dynamic preview/placeholder rather than an actual
+	 * saved override) has nothing to import, which is correct, not a bug;
+	 * this makes that distinction visible in the import log instead of
+	 * both cases looking identical ("nothing changed").
 	 *
 	 * @param string $source  Source key.
 	 * @param int    $post_id Post ID.
@@ -400,15 +427,15 @@ final class Batch {
 	 * @return array<string,mixed>|null
 	 */
 	private function import_one_post( string $source, int $post_id, bool $dry_run ): ?array {
-		$mapped = $this->map_post( $source, $post_id );
-		$mapped = self::filter_to_empty_fields(
-			$mapped,
-			static fn ( string $meta_key ) => get_post_meta( $post_id, $meta_key, true )
-		);
-
-		if ( array() === $mapped ) {
+		$raw_mapped = $this->map_post( $source, $post_id );
+		if ( array() === $raw_mapped ) {
 			return null;
 		}
+
+		$mapped = self::filter_to_empty_fields(
+			$raw_mapped,
+			static fn ( string $meta_key ) => get_post_meta( $post_id, $meta_key, true )
+		);
 
 		if ( ! $dry_run ) {
 			foreach ( $mapped as $meta_key => $value ) {
@@ -421,6 +448,7 @@ final class Batch {
 			'id'      => $post_id,
 			'source'  => $source,
 			'fields'  => array_keys( $mapped ),
+			'skipped' => array_values( array_diff( array_keys( $raw_mapped ), array_keys( $mapped ) ) ),
 			'dry_run' => $dry_run,
 		);
 	}
@@ -446,8 +474,9 @@ final class Batch {
 	}
 
 	/**
-	 * Maps, filters and (unless dry-running) writes one term's fields;
-	 * see import_one_post() for why this is one unit for capture() to wrap.
+	 * Maps, filters and (unless dry-running) writes one term's fields; see
+	 * import_one_post() for why this is one unit for capture() to wrap,
+	 * and for the 'skipped' vs "source had nothing" distinction.
 	 *
 	 * @param string $source   Source key.
 	 * @param int    $term_id  Term ID.
@@ -456,15 +485,15 @@ final class Batch {
 	 * @return array<string,mixed>|null
 	 */
 	private function import_one_term( string $source, int $term_id, string $taxonomy, bool $dry_run ): ?array {
-		$mapped = $this->map_term( $source, $term_id, $taxonomy );
-		$mapped = self::filter_to_empty_fields(
-			$mapped,
-			static fn ( string $meta_key ) => get_term_meta( $term_id, $meta_key, true )
-		);
-
-		if ( array() === $mapped ) {
+		$raw_mapped = $this->map_term( $source, $term_id, $taxonomy );
+		if ( array() === $raw_mapped ) {
 			return null;
 		}
+
+		$mapped = self::filter_to_empty_fields(
+			$raw_mapped,
+			static fn ( string $meta_key ) => get_term_meta( $term_id, $meta_key, true )
+		);
 
 		if ( ! $dry_run ) {
 			foreach ( $mapped as $meta_key => $value ) {
@@ -478,6 +507,7 @@ final class Batch {
 			'taxonomy' => $taxonomy,
 			'source'   => $source,
 			'fields'   => array_keys( $mapped ),
+			'skipped'  => array_values( array_diff( array_keys( $raw_mapped ), array_keys( $mapped ) ) ),
 			'dry_run'  => $dry_run,
 		);
 	}
@@ -516,5 +546,24 @@ final class Batch {
 		}
 
 		update_option( self::LOG_OPTION, array_merge( $this->log(), $entries ), false );
+	}
+
+	/**
+	 * Flushes the schema/hreflang fragment cache after a real write, so
+	 * newly-imported data appears on the very next request instead of a
+	 * stale, pre-import fragment continuing to serve for up to
+	 * FragmentCache::TTL — see the class docblock for why this is needed
+	 * at all (update_*_meta()/update_option() don't fire the hooks
+	 * FragmentCache invalidates on).
+	 *
+	 * @param bool                           $dry_run A dry run never wrote anything, so there is nothing stale to clear.
+	 * @param array<int,array<string,mixed>> $entries This call's log entries; nothing to invalidate if none were written.
+	 */
+	private function maybe_invalidate_fragment_cache( bool $dry_run, array $entries ): void {
+		if ( $dry_run || array() === $entries ) {
+			return;
+		}
+
+		( new FragmentCache() )->invalidate();
 	}
 }

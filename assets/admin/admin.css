@@ -60,6 +60,49 @@
 	min-width: 100%;
 }
 
+.seo-wp-bulk-length-wrap {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.seo-wp-bulk-length {
+	align-self: flex-end;
+	font-size: 11px;
+	font-weight: 600;
+	line-height: 1.6;
+	padding: 0 6px;
+	border-radius: 10px;
+	color: #fff;
+	background: #787c82;
+}
+
+.seo-wp-bulk-length.is-short {
+	background: #dba617;
+}
+
+.seo-wp-bulk-length.is-good {
+	background: #008a20;
+}
+
+.seo-wp-bulk-length.is-long {
+	background: #d63638;
+}
+
+.seo-wp-bulk-pagination .tablenav-pages {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 8px;
+	float: none;
+	height: auto;
+}
+
+.seo-wp-bulk-page-input {
+	width: 3.5em;
+	text-align: center;
+}
+
 .seo-wp-import-source {
 	background: #fff;
 	border: 1px solid #dcdcde;

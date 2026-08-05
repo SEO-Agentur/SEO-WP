@@ -39,9 +39,36 @@ final class BulkEditor {
 	private const CAPABILITY = 'seo_wp_bulk_edit';
 
 	/**
-	 * Rows shown per page.
+	 * Rows shown per page, when the site owner hasn't picked a different
+	 * size via the per-page selector.
 	 */
-	private const PER_PAGE = 20;
+	private const DEFAULT_PER_PAGE = 20;
+
+	/**
+	 * Page sizes offered by the per-page selector.
+	 *
+	 * @var int[]
+	 */
+	private const PER_PAGE_OPTIONS = array( 20, 50, 100, 200 );
+
+	/**
+	 * Title/description length bands (in characters) the traffic-light
+	 * indicator is drawn from: below 'min' is too short, above 'max' is
+	 * too long, in between is good — the same rough guidance a Google
+	 * search result truncates to.
+	 *
+	 * @var array<string,array{min:int,max:int}>
+	 */
+	private const LENGTH_BANDS = array(
+		'title'       => array(
+			'min' => 30,
+			'max' => 60,
+		),
+		'description' => array(
+			'min' => 70,
+			'max' => 155,
+		),
+	);
 
 	/**
 	 * Nonce action/field name.
@@ -90,6 +117,7 @@ final class BulkEditor {
 
 		wp_enqueue_style( 'seo-wp-admin', plugins_url( 'assets/admin/admin.css', \SeoWp\FILE ), array(), \SeoWp\VERSION );
 		wp_enqueue_script( 'seo-wp-bulk-editor-ai', plugins_url( 'assets/admin/bulk-editor-ai.js', \SeoWp\FILE ), array(), \SeoWp\VERSION, true );
+		wp_enqueue_script( 'seo-wp-bulk-editor-ux', plugins_url( 'assets/admin/bulk-editor-ux.js', \SeoWp\FILE ), array(), \SeoWp\VERSION, true );
 
 		$settings = get_option( 'seo_wp_settings', array() );
 		$settings = is_array( $settings ) ? $settings : array();
@@ -134,13 +162,14 @@ final class BulkEditor {
 			return;
 		}
 
-		$paged = isset( $_GET['paged'] ) ? max( 1, (int) $_GET['paged'] ) : 1; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only pagination, not a state-changing action.
+		$paged    = isset( $_GET['paged'] ) ? max( 1, (int) $_GET['paged'] ) : 1; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only pagination, not a state-changing action.
+		$per_page = $this->per_page();
 
 		$query = new WP_Query(
 			array(
 				'post_type'      => get_post_types( array( 'public' => true ), 'names' ),
 				'post_status'    => 'publish',
-				'posts_per_page' => self::PER_PAGE,
+				'posts_per_page' => $per_page,
 				'paged'          => $paged,
 				'orderby'        => 'modified',
 				'order'          => 'DESC',
@@ -160,14 +189,20 @@ final class BulkEditor {
 			return;
 		}
 
+		$total_pages = (int) $query->max_num_pages;
+		$total_items = (int) $query->found_posts;
+
 		echo '<p>';
 		echo '<button type="button" class="button seo-wp-bulk-ai-suggest-empty">' . esc_html__( 'Suggest AI titles/descriptions for empty fields on this page', 'seo-wp' ) . '</button> ';
 		echo '<span class="seo-wp-bulk-ai-suggest-empty-status"></span>';
 		echo '</p>';
 
+		$this->render_pagination( $paged, $total_pages, $total_items, $per_page, 'top' );
+
 		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
 		echo '<input type="hidden" name="action" value="seo_wp_bulk_editor_save" />';
 		printf( '<input type="hidden" name="paged" value="%d" />', (int) $paged );
+		printf( '<input type="hidden" name="per_page" value="%d" />', (int) $per_page );
 		wp_nonce_field( self::NONCE_ACTION, self::NONCE_NAME );
 
 		echo '<table class="widefat seo-wp-bulk-table">';
@@ -191,9 +226,20 @@ final class BulkEditor {
 		submit_button( __( 'Save changes', 'seo-wp' ) );
 		echo '</form>';
 
-		$this->render_pagination( $paged, (int) $query->max_num_pages );
+		$this->render_pagination( $paged, $total_pages, $total_items, $per_page, 'bottom' );
 
 		echo '</div>';
+	}
+
+	/**
+	 * The configured page size from the per-page selector, clamped to
+	 * PER_PAGE_OPTIONS; anything else (never set, tampered with, a
+	 * removed option) falls back to DEFAULT_PER_PAGE.
+	 */
+	private function per_page(): int {
+		$requested = isset( $_GET['per_page'] ) ? (int) $_GET['per_page'] : self::DEFAULT_PER_PAGE; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only page-size selector, not a state-changing action.
+
+		return in_array( $requested, self::PER_PAGE_OPTIONS, true ) ? $requested : self::DEFAULT_PER_PAGE;
 	}
 
 	/**
@@ -216,8 +262,18 @@ final class BulkEditor {
 			esc_html( get_the_title( $post ) ),
 			esc_html( null !== $post_type ? $post_type->labels->singular_name : $post->post_type )
 		);
-		printf( '<td><input type="text" name="seo_wp_bulk[%1$d][title]" value="%2$s" class="widefat seo-wp-bulk-ai-title" /></td>', (int) $post->ID, esc_attr( $title ) );
-		printf( '<td><textarea name="seo_wp_bulk[%1$d][description]" rows="2" class="widefat seo-wp-bulk-ai-description">%2$s</textarea></td>', (int) $post->ID, esc_textarea( $description ) );
+		printf(
+			'<td><div class="seo-wp-bulk-length-wrap"><input type="text" name="seo_wp_bulk[%1$d][title]" value="%2$s" class="widefat seo-wp-bulk-ai-title seo-wp-bulk-length-input" data-seo-wp-length-field="title" />%3$s</div></td>',
+			(int) $post->ID,
+			esc_attr( $title ),
+			$this->length_badge( 'title', mb_strlen( $title ) ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- length_badge() escapes every attribute itself.
+		);
+		printf(
+			'<td><div class="seo-wp-bulk-length-wrap"><textarea name="seo_wp_bulk[%1$d][description]" rows="2" class="widefat seo-wp-bulk-ai-description seo-wp-bulk-length-input" data-seo-wp-length-field="description">%2$s</textarea>%3$s</div></td>',
+			(int) $post->ID,
+			esc_textarea( $description ),
+			$this->length_badge( 'description', mb_strlen( $description ) ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- length_badge() escapes every attribute itself.
+		);
 		printf( '<td><input type="text" name="seo_wp_bulk[%1$d][canonical]" value="%2$s" class="widefat" /></td>', (int) $post->ID, esc_attr( $canonical ) );
 
 		echo '<td>';
@@ -241,6 +297,37 @@ final class BulkEditor {
 		echo '</td>';
 
 		echo '</tr>';
+	}
+
+	/**
+	 * Renders the traffic-light character-count badge next to a title/
+	 * description field: red when too long (a Google search result would
+	 * truncate it), amber when too short (probably not saying enough),
+	 * green in between. bulk-editor-ux.js re-renders this live as the
+	 * field is typed into; this is only the pre-JS/initial state.
+	 *
+	 * @param string $field  'title' or 'description', a LENGTH_BANDS key.
+	 * @param int    $length Current character count.
+	 */
+	private function length_badge( string $field, int $length ): string {
+		$band = self::LENGTH_BANDS[ $field ];
+
+		if ( 0 === $length ) {
+			$status = 'empty';
+		} elseif ( $length < $band['min'] ) {
+			$status = 'short';
+		} elseif ( $length > $band['max'] ) {
+			$status = 'long';
+		} else {
+			$status = 'good';
+		}
+
+		return sprintf(
+			'<span class="seo-wp-bulk-length is-%1$s" data-seo-wp-length-field="%2$s">%3$d</span>',
+			esc_attr( $status ),
+			esc_attr( $field ),
+			(int) $length
+		);
 	}
 
 	/**
@@ -269,14 +356,18 @@ final class BulkEditor {
 			$this->save_field( $post_id, Robots::META_NOINDEX, in_array( $noindex, array( '0', '1' ), true ) ? $noindex : '' );
 		}
 
-		$paged = isset( $_POST['paged'] ) ? max( 1, (int) $_POST['paged'] ) : 1;
+		$paged    = isset( $_POST['paged'] ) ? max( 1, (int) $_POST['paged'] ) : 1;
+		$per_page = isset( $_POST['per_page'] ) && in_array( (int) $_POST['per_page'], self::PER_PAGE_OPTIONS, true )
+			? (int) $_POST['per_page']
+			: self::DEFAULT_PER_PAGE;
 
 		wp_safe_redirect(
 			add_query_arg(
 				array(
-					'page'    => self::PAGE_SLUG,
-					'paged'   => $paged,
-					'updated' => 1,
+					'page'     => self::PAGE_SLUG,
+					'paged'    => $paged,
+					'per_page' => $per_page,
+					'updated'  => 1,
 				),
 				admin_url( 'admin.php' )
 			)
@@ -491,27 +582,94 @@ final class BulkEditor {
 	}
 
 	/**
-	 * Renders simple prev/next pagination links.
+	 * Renders the pager: item-count summary, per-page selector, and page
+	 * navigation with a direct "go to page" jump — shown above and below
+	 * the table so it's reachable without scrolling, and usable on a site
+	 * with far more than a handful of pages (paginate_links() alone
+	 * becomes a wall of numbers well before that).
 	 *
-	 * @param int $current     Current page.
-	 * @param int $total_pages Total number of pages.
+	 * @param int    $current     Current page number.
+	 * @param int    $total_pages Total number of pages.
+	 * @param int    $total_items Total matching items across all pages.
+	 * @param int    $per_page    Current page size.
+	 * @param string $position    'top' or 'bottom', to keep element IDs unique between the two.
 	 */
-	private function render_pagination( int $current, int $total_pages ): void {
-		if ( $total_pages <= 1 ) {
-			return;
-		}
+	private function render_pagination( int $current, int $total_pages, int $total_items, int $per_page, string $position ): void {
+		echo '<div class="tablenav seo-wp-bulk-pagination"><div class="tablenav-pages">';
 
-		$links = paginate_links(
-			array(
-				'base'    => add_query_arg( 'paged', '%#%' ),
-				'format'  => '',
-				'current' => $current,
-				'total'   => $total_pages,
+		$first_item = $total_items > 0 ? ( ( $current - 1 ) * $per_page ) + 1 : 0;
+		$last_item  = min( $total_items, $current * $per_page );
+
+		printf(
+			'<span class="displaying-num">%s</span> ',
+			esc_html(
+				sprintf(
+					/* translators: 1: first item shown, 2: last item shown, 3: total matching items. */
+					__( '%1$d–%2$d of %3$d', 'seo-wp' ),
+					$first_item,
+					$last_item,
+					$total_items
+				)
 			)
 		);
 
-		if ( is_string( $links ) && '' !== $links ) {
-			echo '<div class="tablenav"><div class="tablenav-pages">' . $links . '</div></div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- paginate_links() returns pre-escaped markup.
+		$select_id = 'seo-wp-bulk-per-page-' . $position;
+		printf( '<label for="%1$s" class="screen-reader-text">%2$s</label>', esc_attr( $select_id ), esc_html__( 'Rows per page', 'seo-wp' ) );
+		printf( '<select id="%1$s" class="seo-wp-bulk-per-page">', esc_attr( $select_id ) );
+		foreach ( self::PER_PAGE_OPTIONS as $option ) {
+			printf(
+				'<option value="%1$d" %2$s>%3$s</option>',
+				(int) $option,
+				selected( $per_page, $option, false ),
+				esc_html(
+					sprintf(
+						/* translators: %d: number of rows shown per page. */
+						__( '%d per page', 'seo-wp' ),
+						$option
+					)
+				)
+			);
 		}
+		echo '</select>';
+
+		if ( $total_pages > 1 ) {
+			$page_input_id = 'seo-wp-bulk-page-input-' . $position;
+			echo ' <span class="paging-input">';
+			printf(
+				/* translators: 1: page-number input, 2: total number of pages. */
+				esc_html__( 'Page %1$s of %2$d', 'seo-wp' ),
+				sprintf(
+					'<input type="number" min="1" max="%1$d" value="%2$d" class="seo-wp-bulk-page-input" id="%3$s" size="2" />',
+					absint( $total_pages ),
+					absint( $current ),
+					esc_attr( $page_input_id )
+				),
+				absint( $total_pages )
+			);
+			echo '</span> ';
+
+			// mid_size/end_size kept small deliberately: on a large site
+			// paginate_links()'s default spread becomes a wall of numbers
+			// long before the page-jump input above stops being the
+			// faster way to reach a distant page.
+			$links = paginate_links(
+				array(
+					'base'      => add_query_arg( 'paged', '%#%' ),
+					'format'    => '',
+					'current'   => $current,
+					'total'     => $total_pages,
+					'prev_text' => '&laquo;',
+					'next_text' => '&raquo;',
+					'mid_size'  => 1,
+					'end_size'  => 1,
+				)
+			);
+
+			if ( is_string( $links ) && '' !== $links ) {
+				echo $links; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- paginate_links() returns pre-escaped markup.
+			}
+		}
+
+		echo '</div></div>';
 	}
 }
