@@ -55,9 +55,22 @@ final class RankMathImporter {
 		'recipe'      => 'Recipe',
 		'restaurant'  => 'Restaurant',
 		'review'      => 'Review',
+		'service'     => 'Service',
 		'software'    => 'SoftwareApplication',
 		'video'       => 'VideoObject',
 	);
+
+	/**
+	 * Post meta key prefix Rank Math's newer, multi-schema-per-post
+	 * "Schema Generator"/"Schema Builder" uses (one entry per attached
+	 * schema block, keyed by a random suffix, e.g.
+	 * "rank_math_schema_pfjr") — a different, newer storage location than
+	 * the single `rank_math_rich_snippet` dropdown value SCHEMA_TYPES
+	 * above translates. Best-effort, like SCHEMA_TYPES itself: Rank Math
+	 * doesn't document this format, so this is inferred from observed
+	 * post meta shape rather than verified against their source.
+	 */
+	private const SCHEMA_GENERATOR_PREFIX = 'rank_math_schema_';
 
 	/**
 	 * Maps a single post's Rank Math meta to this plugin's target meta
@@ -127,12 +140,51 @@ final class RankMathImporter {
 			$target[ TwitterCards::META_IMAGE ] = $twitter_image;
 		}
 
-		$schema_type = (string) get_post_meta( $post_id, 'rank_math_rich_snippet', true );
-		if ( '' !== $schema_type && 'off' !== $schema_type ) {
-			$target[ GraphBuilder::META_SCHEMA_TYPE ] = self::SCHEMA_TYPES[ $schema_type ] ?? $schema_type;
+		$schema_type = self::resolve_schema_type( $post_id );
+		if ( '' !== $schema_type ) {
+			$target[ GraphBuilder::META_SCHEMA_TYPE ] = $schema_type;
 		}
 
 		return $target;
+	}
+
+	/**
+	 * Resolves a post's Rank Math schema type from whichever storage Rank
+	 * Math actually used: the legacy `rank_math_rich_snippet` dropdown
+	 * value first (translated via SCHEMA_TYPES), falling back to the
+	 * newer per-post Schema Generator's own meta (see
+	 * SCHEMA_GENERATOR_PREFIX) when the legacy key is absent — a post
+	 * built entirely with the Schema Generator UI never sets the legacy
+	 * key at all.
+	 *
+	 * @param int $post_id Post ID.
+	 */
+	private static function resolve_schema_type( int $post_id ): string {
+		$legacy = (string) get_post_meta( $post_id, 'rank_math_rich_snippet', true );
+		if ( '' !== $legacy && 'off' !== $legacy ) {
+			return self::SCHEMA_TYPES[ $legacy ] ?? ucfirst( $legacy );
+		}
+
+		foreach ( get_post_meta( $post_id ) as $meta_key => $meta_values ) {
+			if ( 0 !== strpos( (string) $meta_key, self::SCHEMA_GENERATOR_PREFIX ) ) {
+				continue;
+			}
+
+			$raw   = is_array( $meta_values ) ? reset( $meta_values ) : $meta_values;
+			$block = maybe_unserialize( (string) $raw );
+			if ( ! is_array( $block ) ) {
+				continue;
+			}
+
+			$type = isset( $block['@type'] ) ? (string) $block['@type'] : ( isset( $block['type'] ) ? (string) $block['type'] : '' );
+			if ( '' === $type ) {
+				continue;
+			}
+
+			return self::SCHEMA_TYPES[ strtolower( $type ) ] ?? ucfirst( $type );
+		}
+
+		return '';
 	}
 
 	/**
