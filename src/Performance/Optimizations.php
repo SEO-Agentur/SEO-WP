@@ -531,6 +531,16 @@ final class Optimizations {
 	 * Rejects anonymous REST API requests when configured; logged-in
 	 * users, and requests another filter already errored, are untouched.
 	 *
+	 * Deliberately blanket, no per-route exceptions: this does mean it
+	 * also blocks the slim-hreflang companion plugin's own multisite
+	 * manifest route (wp-json/slim-hreflang/v1/manifest), since that
+	 * sync is a server-to-server request authenticated by its own secret
+	 * header, never a logged-in WordPress session — documented on the
+	 * Performance tab's own field description rather than silently
+	 * exempted here, since a site owner who explicitly restricts "the
+	 * REST API" should get exactly that, and stay the one who decides
+	 * whether this specific route is an acceptable exception.
+	 *
 	 * @param mixed $result Current authentication result, as passed by the filter.
 	 * @return mixed
 	 */

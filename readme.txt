@@ -5,7 +5,7 @@ Tags: seo, wpml, sitemap, schema, hreflang
 Requires at least: 6.4
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.3.2
+Stable tag: 1.3.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -107,6 +107,9 @@ Yes. Every WPML-specific feature (hreflang, per-language templates) is a no-op w
 
 
 == Changelog ==
+
+= 1.3.3 =
+* Performance: documented that "Restrict the REST API to logged-in users" also blocks the slim-hreflang companion plugin's own multisite sync route, since that authenticates with its own secret rather than a logged-in WordPress session — deliberately not silently exempted, so the toggle always does exactly what it says.
 
 = 1.3.2 =
 * Performance: two more one-line `<head>` removals — the wlwmanifest (Windows Live Writer) link and rel="prev"/"next" adjacent-post links — closing out the last of the well-known WordPress "head bloat" list; everything else on it (generator tag, RSD link, shortlink, oEmbed discovery, emoji scripts, REST/RSS auto-discovery links) already had a toggle.

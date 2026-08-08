@@ -732,7 +732,7 @@ final class Settings {
 		$this->checkbox_field( 'remove_rss_feed_links', __( 'Remove RSS feed auto-discovery links from <head>', 'seo-wp' ), false );
 		$this->checkbox_field( 'disable_self_pingbacks', __( 'Disable self-pingbacks (linking to your own posts no longer pings them)', 'seo-wp' ), false );
 		$this->checkbox_field( 'restrict_rest_api', __( 'Restrict the REST API to logged-in users', 'seo-wp' ), false );
-		echo '<tr><td colspan="2"><p class="description">' . esc_html__( 'Careful: many themes, page builders and the block editor itself rely on the REST API, including for visitors who aren\'t logged in — test thoroughly before relying on this in production.', 'seo-wp' ) . '</p></td></tr>';
+		echo '<tr><td colspan="2"><p class="description">' . esc_html__( 'Careful: many themes, page builders and the block editor itself rely on the REST API, including for visitors who aren\'t logged in — test thoroughly before relying on this in production. This also blocks the slim-hreflang companion plugin\'s own multisite manifest route: its cross-site sync authenticates with its own secret, never a logged-in WordPress session, so enabling this breaks hreflang sync between your sites unless you exempt that route yourself (e.g. at the web server).', 'seo-wp' ) . '</p></td></tr>';
 		$this->checkbox_field( 'remove_rest_api_links', __( 'Remove REST API discovery links from <head> and HTTP headers', 'seo-wp' ), false );
 	}
 
