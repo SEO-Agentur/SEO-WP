@@ -11,6 +11,7 @@ namespace SeoWp\Admin;
 
 use SeoWp\Performance\Htaccess;
 use SeoWp\Performance\ResourceHintScanner;
+use SeoWp\Schema\GraphBuilder;
 use SeoWp\Templates\Tokens;
 
 /**
@@ -52,6 +53,7 @@ final class Settings {
 			'disable_author_archives',
 			'disable_date_archives',
 			'strip_attachment_links',
+			'staging_noindex',
 		),
 		'performance' => array(
 			'defer_noncritical_css',
@@ -114,6 +116,15 @@ final class Settings {
 		'verification_pinterest',
 		'verification_yandex',
 		'cors_allowed_origin',
+		'local_business_street_address',
+		'local_business_locality',
+		'local_business_region',
+		'local_business_postal_code',
+		'local_business_country',
+		'local_business_phone',
+		'local_business_price_range',
+		'local_business_latitude',
+		'local_business_longitude',
 	);
 
 	/**
@@ -273,7 +284,18 @@ final class Settings {
 		}
 
 		if ( array_key_exists( 'identity_type', $input ) ) {
-			$clean['identity_type'] = 'person' === $input['identity_type'] ? 'person' : 'organization';
+			$clean['identity_type'] = in_array( $input['identity_type'], array( 'person', 'local_business' ), true )
+				? $input['identity_type']
+				: 'organization';
+		}
+
+		if ( array_key_exists( 'local_business_type', $input ) ) {
+			$type                         = sanitize_text_field( wp_unslash( (string) $input['local_business_type'] ) );
+			$clean['local_business_type'] = GraphBuilder::is_valid_schema_type( $type ) ? $type : 'LocalBusiness';
+		}
+
+		if ( array_key_exists( 'local_business_opening_hours', $input ) ) {
+			$clean['local_business_opening_hours'] = sanitize_textarea_field( wp_unslash( (string) $input['local_business_opening_hours'] ) );
 		}
 
 		if ( array_key_exists( 'hreflang_x_default', $input ) ) {
@@ -453,14 +475,32 @@ final class Settings {
 			'identity_type',
 			__( 'Site represents', 'seo-wp' ),
 			array(
-				'organization' => __( 'An organization', 'seo-wp' ),
-				'person'       => __( 'A person', 'seo-wp' ),
+				'organization'   => __( 'An organization', 'seo-wp' ),
+				'person'         => __( 'A person', 'seo-wp' ),
+				'local_business' => __( 'A local business', 'seo-wp' ),
 			),
 			'organization'
 		);
-		$this->text_field( 'identity_name', __( 'Organization/person name', 'seo-wp' ), (string) get_bloginfo( 'name' ) );
+		$this->text_field( 'identity_name', __( 'Organization/person/business name', 'seo-wp' ), (string) get_bloginfo( 'name' ) );
 		$this->text_field( 'twitter_site', __( 'Twitter/X @handle for the site', 'seo-wp' ), '' );
 		$this->text_field( 'twitter_creator', __( 'Default Twitter/X @handle for authors', 'seo-wp' ), '' );
+
+		echo '<tr><td colspan="2"><hr /><p class="description"><strong>' . esc_html__( 'Local business details', 'seo-wp' ) . '</strong> — ' . esc_html__( 'only used when "Site represents" above is set to "A local business".', 'seo-wp' ) . '</p></td></tr>';
+
+		$this->text_field( 'local_business_type', __( 'Business type', 'seo-wp' ), 'LocalBusiness' );
+		echo '<tr><td colspan="2"><p class="description">' . esc_html__( 'Any Schema.org business type works, e.g. Restaurant, Store, ProfessionalService, MedicalBusiness, LegalService, RealEstateAgent, Attorney, AccountingService — LocalBusiness itself if none of the more specific ones fit.', 'seo-wp' ) . '</p></td></tr>';
+		$this->text_field( 'local_business_street_address', __( 'Street address', 'seo-wp' ), '' );
+		$this->text_field( 'local_business_locality', __( 'City', 'seo-wp' ), '' );
+		$this->text_field( 'local_business_region', __( 'State/region', 'seo-wp' ), '' );
+		$this->text_field( 'local_business_postal_code', __( 'Postal code', 'seo-wp' ), '' );
+		$this->text_field( 'local_business_country', __( 'Country (ISO 3166-1 alpha-2, e.g. DE, CH, US)', 'seo-wp' ), '' );
+		$this->text_field( 'local_business_phone', __( 'Telephone', 'seo-wp' ), '' );
+		$this->text_field( 'local_business_price_range', __( 'Price range (e.g. $$ or €€)', 'seo-wp' ), '' );
+		$this->text_field( 'local_business_latitude', __( 'Latitude', 'seo-wp' ), '' );
+		$this->text_field( 'local_business_longitude', __( 'Longitude', 'seo-wp' ), '' );
+
+		echo '<tr><td colspan="2"><p class="description">' . esc_html__( 'Opening hours — one line per rule: comma-separated two-letter days, a space, then HH:MM-HH:MM. Example: "Mo,Tu,We,Th,Fr 09:00-18:00" and "Sa 10:00-14:00" on two lines.', 'seo-wp' ) . '</p></td></tr>';
+		$this->textarea_field( 'local_business_opening_hours', __( 'Opening hours', 'seo-wp' ) );
 	}
 
 	/**
@@ -602,6 +642,9 @@ final class Settings {
 	 * archives, IndexNow.
 	 */
 	private function render_crawl_tab(): void {
+		echo '<tr><td colspan="2"><p class="description">' . esc_html__( 'A staging/development site is also automatically flagged with a dismissible admin notice suggesting this same setting — this checkbox is the same override, just reachable without waiting for that notice.', 'seo-wp' ) . '</p></td></tr>';
+		$this->checkbox_field( 'staging_noindex', __( 'Noindex this entire site (staging/development override) — overrides every other robots setting on every page', 'seo-wp' ), false );
+
 		$this->textarea_field( 'robots_txt_custom', __( 'Custom robots.txt rules', 'seo-wp' ) );
 		$this->checkbox_field( 'block_ai_crawlers', __( 'Block known AI training crawlers', 'seo-wp' ), false );
 		$this->checkbox_field( 'enable_llms_txt', __( 'Enable /llms.txt', 'seo-wp' ), true );

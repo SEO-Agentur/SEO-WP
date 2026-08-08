@@ -30,6 +30,7 @@ use SeoWp\Crawl\NotFoundMonitor;
 use SeoWp\Crawl\Redirects;
 use SeoWp\Crawl\RobotsTxt;
 use SeoWp\Crawl\SpecialArchives;
+use SeoWp\Crawl\StagingProtection;
 use SeoWp\Crawl\Verification;
 use SeoWp\Frontend\Head;
 use SeoWp\Performance\Optimizations;
@@ -93,6 +94,7 @@ final class Plugin {
 		( new GoogleIndexing() )->register();
 		( new ServerHeaders() )->register();
 		( new Optimizations() )->register();
+		( new StagingProtection() )->register();
 
 		if ( is_admin() ) {
 			( new Metabox() )->register();

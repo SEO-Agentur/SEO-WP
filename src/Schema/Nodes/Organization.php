@@ -9,9 +9,17 @@ declare(strict_types=1);
 
 namespace SeoWp\Schema\Nodes;
 
+use SeoWp\Schema\GraphBuilder;
+use SeoWp\Schema\OpeningHours;
+
 /**
  * Builds the Organization JSON-LD node: the site's publisher identity,
- * used unless Settings (M7) configures a Person identity instead.
+ * used unless Settings configures a Person identity instead. When
+ * configured as a local business, adds address/geo/telephone/opening-
+ * hours/price-range and swaps @type to the configured business type —
+ * LocalBusiness (and its subtypes, e.g. Restaurant, Store) is itself an
+ * Organization subtype in Schema.org's own hierarchy, so this stays one
+ * node rather than a second, competing one.
  */
 final class Organization {
 
@@ -29,7 +37,8 @@ final class Organization {
 	public function build(): ?array {
 		$settings = get_option( self::OPTION_KEY, array() );
 
-		if ( 'person' === ( $settings['identity_type'] ?? 'organization' ) ) {
+		$identity_type = (string) ( $settings['identity_type'] ?? 'organization' );
+		if ( 'person' === $identity_type ) {
 			return null;
 		}
 
@@ -50,7 +59,107 @@ final class Organization {
 			);
 		}
 
+		if ( 'local_business' === $identity_type ) {
+			$node = $this->add_local_business_fields( $node, $settings );
+		}
+
 		return $node;
+	}
+
+	/**
+	 * Adds local-business-specific fields on top of the base Organization
+	 * node, and swaps @type to the configured business type.
+	 *
+	 * @param array<string,mixed> $node     Node built so far.
+	 * @param array<string,mixed> $settings Plugin settings.
+	 * @return array<string,mixed>
+	 */
+	private function add_local_business_fields( array $node, array $settings ): array {
+		$type = isset( $settings['local_business_type'] ) ? (string) $settings['local_business_type'] : '';
+		if ( '' !== $type && GraphBuilder::is_valid_schema_type( $type ) ) {
+			$node['@type'] = $type;
+		} else {
+			$node['@type'] = 'LocalBusiness';
+		}
+
+		$address = $this->address( $settings );
+		if ( array() !== $address ) {
+			$node['address'] = $address;
+		}
+
+		$geo = $this->geo( $settings );
+		if ( null !== $geo ) {
+			$node['geo'] = $geo;
+		}
+
+		$phone = isset( $settings['local_business_phone'] ) ? trim( (string) $settings['local_business_phone'] ) : '';
+		if ( '' !== $phone ) {
+			$node['telephone'] = $phone;
+		}
+
+		$price_range = isset( $settings['local_business_price_range'] ) ? trim( (string) $settings['local_business_price_range'] ) : '';
+		if ( '' !== $price_range ) {
+			$node['priceRange'] = $price_range;
+		}
+
+		$hours = OpeningHours::parse( isset( $settings['local_business_opening_hours'] ) ? (string) $settings['local_business_opening_hours'] : '' );
+		if ( array() !== $hours ) {
+			$node['openingHoursSpecification'] = $hours;
+		}
+
+		return $node;
+	}
+
+	/**
+	 * Builds the PostalAddress node from the configured fields, or an
+	 * empty array when none are set.
+	 *
+	 * @param array<string,mixed> $settings Plugin settings.
+	 * @return array<string,mixed>
+	 */
+	private function address( array $settings ): array {
+		$map = array(
+			'streetAddress'   => 'local_business_street_address',
+			'addressLocality' => 'local_business_locality',
+			'addressRegion'   => 'local_business_region',
+			'postalCode'      => 'local_business_postal_code',
+			'addressCountry'  => 'local_business_country',
+		);
+
+		$address = array();
+		foreach ( $map as $schema_key => $settings_key ) {
+			$value = isset( $settings[ $settings_key ] ) ? trim( (string) $settings[ $settings_key ] ) : '';
+			if ( '' !== $value ) {
+				$address[ $schema_key ] = $value;
+			}
+		}
+
+		if ( array() === $address ) {
+			return array();
+		}
+
+		return array_merge( array( '@type' => 'PostalAddress' ), $address );
+	}
+
+	/**
+	 * Builds the GeoCoordinates node when both latitude and longitude are
+	 * set and numeric, or null otherwise.
+	 *
+	 * @param array<string,mixed> $settings Plugin settings.
+	 */
+	private function geo( array $settings ): ?array {
+		$lat = isset( $settings['local_business_latitude'] ) ? trim( (string) $settings['local_business_latitude'] ) : '';
+		$lng = isset( $settings['local_business_longitude'] ) ? trim( (string) $settings['local_business_longitude'] ) : '';
+
+		if ( '' === $lat || '' === $lng || ! is_numeric( $lat ) || ! is_numeric( $lng ) ) {
+			return null;
+		}
+
+		return array(
+			'@type'     => 'GeoCoordinates',
+			'latitude'  => (float) $lat,
+			'longitude' => (float) $lng,
+		);
 	}
 
 	/**

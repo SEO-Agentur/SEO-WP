@@ -5,7 +5,7 @@ Tags: seo, wpml, sitemap, schema, hreflang
 Requires at least: 6.4
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.3.3
+Stable tag: 1.3.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -27,7 +27,8 @@ Built and maintained by [Cyrus Badde](https://seo-wp.net). If it saves you time,
 **Social & structured data**
 
 * Open Graph and Twitter Card meta, with a shared image fallback (per-object override → featured image → site logo → site icon) — the same resolution, and the same override field, also supplies the Article/Product schema image, so social and structured data never disagree
-* A single deduplicated JSON-LD `@graph`: WebSite, Organization or Person, WebPage, Article (for non-hierarchical post types), BreadcrumbList, FAQPage, and Product when WooCommerce is active — exactly one primary content node per URL, never Article and Product stacked on the same page
+* A single deduplicated JSON-LD `@graph`: WebSite, Organization/Person/LocalBusiness, WebPage, Article (for non-hierarchical post types), BreadcrumbList, FAQPage, and Product when WooCommerce is active — exactly one primary content node per URL, never Article and Product stacked on the same page
+* Local business identity: set "Site represents" to "A local business" for a full LocalBusiness node (or any more specific Schema.org business type — Restaurant, Store, ProfessionalService, and so on) with address, geo coordinates, phone, price range and opening hours, on the same Organization node rather than a second competing one
 * The schema type of that primary content node is freely overridable per post *and* per taxonomy term (with autocomplete suggestions, but any Schema.org type name is accepted) — a specific article, product, product category, or plain category page can each be set independently
 * Product schema includes an `aggregateRating` node (star ratings in search results) whenever a WooCommerce product has reviews, sourced directly from WooCommerce's own rating data
 * A live Google search-result preview and social share-card preview in the metabox, updating as you type the title/description/social fields (falling back to the post title/excerpt when those are left empty)
@@ -50,6 +51,7 @@ Built and maintained by [Cyrus Badde](https://seo-wp.net). If it saves you time,
 * IndexNow support (Bing, Yandex, Seznam, Naver — Google does not participate): pings on publish/update/delete, serves the required key file
 * Google Instant Indexing: pings Google's Indexing API on publish/update/delete using a Google Cloud service account (signed JWT/OAuth2, no third-party library), per post type, with a submission history log
 * A redirect manager (exact source path → target URL, 301/302/307/410/451) and a 404 monitor that logs real broken-link hits with a one-click "create redirect" action
+* Staging-site protection: a dismissible admin notice when the site's own URL looks like a staging/development environment (staging./dev./.local/.test subdomains, common host-provider staging domains, bare IP addresses), with a one-click "noindex this entire site" action — plus the same override as a plain settings checkbox, independent of detection. When on, it overrides every other robots setting on every page, site-wide
 
 **Performance**
 
@@ -107,6 +109,10 @@ Yes. Every WPML-specific feature (hreflang, per-language templates) is a no-op w
 
 
 == Changelog ==
+
+= 1.3.4 =
+* Schema: "Site represents" gained "A local business" — address, geo coordinates, phone, price range and opening hours on the existing Organization node (LocalBusiness is itself an Organization subtype in Schema.org, so this isn't a second, competing node), with any Schema.org business subtype accepted (Restaurant, Store, ProfessionalService, etc.).
+* Crawl: a staging-site safeguard — a dismissible admin notice when the site's own URL matches a common staging/development pattern, with a one-click site-wide noindex action; the same override is also a plain settings checkbox, reachable without waiting for the notice.
 
 = 1.3.3 =
 * Performance: documented that "Restrict the REST API to logged-in users" also blocks the slim-hreflang companion plugin's own multisite sync route, since that authenticates with its own secret rather than a logged-in WordPress session — deliberately not silently exempted, so the toggle always does exactly what it says.
