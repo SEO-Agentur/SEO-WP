@@ -5,7 +5,7 @@ Tags: seo, wpml, sitemap, schema, hreflang
 Requires at least: 6.4
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.3.1
+Stable tag: 1.3.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -50,6 +50,13 @@ Built and maintained by [Cyrus Badde](https://seo-wp.net). If it saves you time,
 * IndexNow support (Bing, Yandex, Seznam, Naver — Google does not participate): pings on publish/update/delete, serves the required key file
 * Google Instant Indexing: pings Google's Indexing API on publish/update/delete using a Google Cloud service account (signed JWT/OAuth2, no third-party library), per post type, with a submission history log
 * A redirect manager (exact source path → target URL, 301/302/307/410/451) and a 404 monitor that logs real broken-link hits with a one-click "create redirect" action
+
+**Performance**
+
+* A large set of opt-in, off-by-default toggles (Settings > Performance): strip WordPress's own generator/RSD/wlwmanifest/shortlink/adjacent-post links, disable emojis/embeds/Dashicons, limit or disable post revisions, override the autosave interval, control the Heartbeat API, disable comments sitewide, block Google Maps scripts, trim WooCommerce assets outside shop pages, disable XML-RPC, remove jQuery Migrate, disable or trim RSS feeds, disable self-pingbacks, and restrict the REST API to logged-in users
+* A hand-written Critical CSS field (inlined in `<head>`) with an independent toggle to load every other stylesheet non-blocking — this plugin never guesses at critical CSS itself, since that requires actually rendering the page
+* A manual resource-hints field (preconnect/dns-prefetch/preload/prefetch/prerender) plus a "Scan homepage for suggestions" button that fetches your own front page, lists every external script/stylesheet origin found, and lets you add the ones you want — never inserted automatically
+* Settings > Server: HTTPS/canonical-URL redirects and security headers (HSTS, CORS, modern MIME types) applied in pure PHP, working on any web server; gzip/Brotli/browser caching, hotlink protection and directory-browsing prevention via a reviewable, one-click-apply `.htaccess` block on Apache/LiteSpeed (only where PHP genuinely can't reach — a static asset request never runs WordPress at all)
 
 **WPML**
 
@@ -100,6 +107,11 @@ Yes. Every WPML-specific feature (hreflang, per-language templates) is a no-op w
 
 
 == Changelog ==
+
+= 1.3.2 =
+* Performance: two more one-line `<head>` removals — the wlwmanifest (Windows Live Writer) link and rel="prev"/"next" adjacent-post links — closing out the last of the well-known WordPress "head bloat" list; everything else on it (generator tag, RSD link, shortlink, oEmbed discovery, emoji scripts, REST/RSS auto-discovery links) already had a toggle.
+* Performance: a "Scan homepage for suggestions" button next to the Resource Hints field — fetches your own front page, lists every external script/stylesheet origin it finds (preconnect for origins with more than one resource, dns-prefetch for a single one), and lets you pick which to add. Never inserted automatically, and doesn't replace the manual field — this only suggests what to put there.
+* Link Audit: the background broken-link check is now fully admin-configurable (Settings on the Link Audit screen) — manual-only by default, or daily/weekly/monthly if you opt in. Previously ran unconditionally every 15 minutes.
 
 = 1.3.1 =
 * Fixed the Yoast/Rank Math/AIOSEO import not showing up: writes went through update_post_meta()/update_term_meta()/update_option(), none of which invalidate the schema/hreflang fragment cache — a page rendered (and cached) before an import could keep serving its pre-import JSON-LD for up to 24 hours afterwards. The import now flushes that cache itself.

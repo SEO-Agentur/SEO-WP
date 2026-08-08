@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace SeoWp\Admin;
 
 use SeoWp\Performance\Htaccess;
+use SeoWp\Performance\ResourceHintScanner;
 use SeoWp\Templates\Tokens;
 
 /**
@@ -66,7 +67,9 @@ final class Settings {
 			'remove_jquery_migrate',
 			'remove_wp_version',
 			'remove_rsd_link',
+			'remove_wlwmanifest_link',
 			'remove_shortlink',
+			'remove_adjacent_posts_links',
 			'disable_rss_feeds',
 			'remove_rss_feed_links',
 			'disable_self_pingbacks',
@@ -143,6 +146,7 @@ final class Settings {
 		add_action( 'admin_init', array( $this, 'register_setting' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'maybe_enqueue_assets' ) );
 		add_action( 'admin_post_seo_wp_apply_htaccess', array( $this, 'handle_apply_htaccess' ) );
+		add_action( 'wp_ajax_seo_wp_scan_resource_hints', array( $this, 'handle_scan_resource_hints_ajax' ) );
 	}
 
 	/**
@@ -195,6 +199,43 @@ final class Settings {
 		}
 
 		wp_enqueue_style( 'seo-wp-admin', plugins_url( 'assets/admin/admin.css', \SeoWp\FILE ), array(), \SeoWp\VERSION );
+		wp_enqueue_script( 'seo-wp-resource-hint-scanner', plugins_url( 'assets/admin/resource-hint-scanner.js', \SeoWp\FILE ), array(), \SeoWp\VERSION, true );
+
+		wp_localize_script(
+			'seo-wp-resource-hint-scanner',
+			'seoWpResourceHintScanner',
+			array(
+				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
+				'nonce'   => wp_create_nonce( 'seo_wp_scan_resource_hints' ),
+				'i18n'    => array(
+					'scanning' => __( 'Scanning your homepage…', 'seo-wp' ),
+					'error'    => __( 'Something went wrong.', 'seo-wp' ),
+					'none'     => __( 'No external resources found — nothing to suggest.', 'seo-wp' ),
+				),
+			)
+		);
+	}
+
+	/**
+	 * Handles the "Scan for suggestions" click: fetches the site's own
+	 * front page and returns suggested resource-hint lines. Never writes
+	 * anything — the browser adds whichever suggestions the admin picks
+	 * to the Resource Hints textarea for review before Save.
+	 */
+	public function handle_scan_resource_hints_ajax(): void {
+		check_ajax_referer( 'seo_wp_scan_resource_hints', 'nonce' );
+
+		if ( ! current_user_can( self::CAPABILITY ) ) {
+			wp_send_json_error( array( 'message' => __( 'You are not allowed to do this.', 'seo-wp' ) ), 403 );
+		}
+
+		$result = ResourceHintScanner::scan();
+
+		if ( is_wp_error( $result ) ) {
+			wp_send_json_error( array( 'message' => $result->get_error_message() ) );
+		}
+
+		wp_send_json_success( array( 'lines' => $result ) );
 	}
 
 	/**
@@ -630,6 +671,13 @@ final class Settings {
 		);
 		$this->textarea_field( 'resource_hints', __( 'Resource hints (output early in <head>)', 'seo-wp' ) );
 
+		echo '<tr><td colspan="2">';
+		echo '<button type="button" class="button seo-wp-scan-resource-hints">' . esc_html__( 'Scan homepage for suggestions', 'seo-wp' ) . '</button> ';
+		echo '<span class="seo-wp-resource-hint-scan-status"></span>';
+		echo '<p class="description">' . esc_html__( 'Fetches your homepage and lists external script/stylesheet origins worth a hint — pick which ones to add below, nothing is inserted automatically.', 'seo-wp' ) . '</p>';
+		echo '<ul class="seo-wp-resource-hint-suggestions"></ul>';
+		echo '</td></tr>';
+
 		echo '<tr><td colspan="2"><hr /><p class="description"><strong>' . esc_html__( 'Unused scripts and assets', 'seo-wp' ) . '</strong> — ' . esc_html__( 'every toggle below is off by default; only turn on what this site genuinely doesn\'t use.', 'seo-wp' ) . '</p></td></tr>';
 
 		$this->checkbox_field( 'disable_emojis', __( 'Disable emoji scripts and styles', 'seo-wp' ), false );
@@ -677,7 +725,9 @@ final class Settings {
 		$this->checkbox_field( 'remove_jquery_migrate', __( 'Remove jQuery Migrate', 'seo-wp' ), false );
 		$this->checkbox_field( 'remove_wp_version', __( 'Remove the WordPress version number from the page source', 'seo-wp' ), false );
 		$this->checkbox_field( 'remove_rsd_link', __( 'Remove the RSD (Really Simple Discovery) link', 'seo-wp' ), false );
+		$this->checkbox_field( 'remove_wlwmanifest_link', __( 'Remove the wlwmanifest (Windows Live Writer) link', 'seo-wp' ), false );
 		$this->checkbox_field( 'remove_shortlink', __( 'Remove the shortlink', 'seo-wp' ), false );
+		$this->checkbox_field( 'remove_adjacent_posts_links', __( 'Remove rel="prev"/"next" adjacent-post links', 'seo-wp' ), false );
 		$this->checkbox_field( 'disable_rss_feeds', __( 'Disable RSS feeds entirely (visitors are shown a message instead)', 'seo-wp' ), false );
 		$this->checkbox_field( 'remove_rss_feed_links', __( 'Remove RSS feed auto-discovery links from <head>', 'seo-wp' ), false );
 		$this->checkbox_field( 'disable_self_pingbacks', __( 'Disable self-pingbacks (linking to your own posts no longer pings them)', 'seo-wp' ), false );

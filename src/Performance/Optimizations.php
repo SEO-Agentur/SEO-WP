@@ -2,8 +2,9 @@
 /**
  * Opt-in performance/hardening toggles: unused scripts, revisions,
  * autosave, Heartbeat, comments, third-party embeds, WooCommerce assets,
- * XML-RPC, jQuery Migrate, the WordPress version, RSD/shortlink,
- * RSS feeds, self-pingbacks and the REST API.
+ * XML-RPC, jQuery Migrate, the WordPress version, RSD/wlwmanifest/
+ * shortlink/adjacent-post links, RSS feeds, self-pingbacks and the REST
+ * API.
  *
  * @package SeoWp
  */
@@ -450,9 +451,10 @@ final class Optimizations {
 
 	/**
 	 * Groups every independent one-line wp_head/template_redirect removal
-	 * together: WP version, RSD link, shortlink, feed auto-discovery
-	 * links, REST API discovery links, and (if configured) killing feed
-	 * requests entirely.
+	 * together: WP version, RSD link, wlwmanifest link, shortlink,
+	 * adjacent-post rel links, feed auto-discovery links, REST API
+	 * discovery links, and (if configured) killing feed requests
+	 * entirely.
 	 */
 	public function maybe_trim_head_output(): void {
 		if ( $this->enabled( 'remove_wp_version' ) ) {
@@ -467,6 +469,14 @@ final class Optimizations {
 		if ( $this->enabled( 'remove_shortlink' ) ) {
 			remove_action( 'wp_head', 'wp_shortlink_wp_head' );
 			remove_action( 'template_redirect', 'wp_shortlink_header' );
+		}
+
+		if ( $this->enabled( 'remove_wlwmanifest_link' ) ) {
+			remove_action( 'wp_head', 'wlwmanifest_link' );
+		}
+
+		if ( $this->enabled( 'remove_adjacent_posts_links' ) ) {
+			remove_action( 'wp_head', 'adjacent_posts_rel_link_wp_head' );
 		}
 
 		if ( $this->enabled( 'remove_rss_feed_links' ) ) {
