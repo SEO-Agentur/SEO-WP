@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace SeoWp\Social;
 
 use SeoWp\Meta\TitleDescription;
+use SeoWp\Support\CoexistenceMode;
 use SeoWp\Support\Url;
 use WP_Post;
 use WP_Term;
@@ -57,7 +58,7 @@ final class OpenGraph {
 	 * Echoes the og: meta tags for the current request.
 	 */
 	public function output(): void {
-		if ( is_admin() || is_search() || is_404() ) {
+		if ( is_admin() || is_search() || is_404() || CoexistenceMode::active() ) {
 			return;
 		}
 

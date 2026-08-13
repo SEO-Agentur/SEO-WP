@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace SeoWp\Social;
 
 use SeoWp\Meta\TitleDescription;
+use SeoWp\Support\CoexistenceMode;
 use WP_Post;
 use WP_Term;
 
@@ -51,7 +52,7 @@ final class TwitterCards {
 	 * Echoes the twitter: meta tags for the current request.
 	 */
 	public function output(): void {
-		if ( is_admin() || is_search() || is_404() ) {
+		if ( is_admin() || is_search() || is_404() || CoexistenceMode::active() ) {
 			return;
 		}
 

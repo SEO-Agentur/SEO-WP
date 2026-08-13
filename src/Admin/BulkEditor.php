@@ -14,6 +14,7 @@ use SeoWp\Meta\Robots;
 use SeoWp\Meta\TitleDescription;
 use SeoWp\Support\AiClient;
 use SeoWp\Support\Ajax;
+use SeoWp\Support\CoexistenceMode;
 use SeoWp\Support\ContentRenderer;
 use SeoWp\Support\DeepLClient;
 use WP_Post;
@@ -248,9 +249,9 @@ final class BulkEditor {
 	 * @param WP_Post $post Post to render.
 	 */
 	private function render_row( WP_Post $post ): void {
-		$title       = (string) get_post_meta( $post->ID, TitleDescription::META_TITLE, true );
-		$description = (string) get_post_meta( $post->ID, TitleDescription::META_DESCRIPTION, true );
-		$canonical   = (string) get_post_meta( $post->ID, Canonical::META_CANONICAL, true );
+		$title       = (string) get_post_meta( $post->ID, $this->meta_key( 'title', TitleDescription::META_TITLE ), true );
+		$description = (string) get_post_meta( $post->ID, $this->meta_key( 'description', TitleDescription::META_DESCRIPTION ), true );
+		$canonical   = (string) get_post_meta( $post->ID, $this->meta_key( 'canonical', Canonical::META_CANONICAL ), true );
 		$noindex     = (string) get_post_meta( $post->ID, Robots::META_NOINDEX, true );
 		$post_type   = get_post_type_object( $post->post_type );
 		$edit_link   = (string) get_edit_post_link( $post->ID, 'raw' );
@@ -348,9 +349,9 @@ final class BulkEditor {
 				continue;
 			}
 
-			$this->save_field( $post_id, TitleDescription::META_TITLE, isset( $fields['title'] ) ? sanitize_text_field( (string) $fields['title'] ) : '' );
-			$this->save_field( $post_id, TitleDescription::META_DESCRIPTION, isset( $fields['description'] ) ? sanitize_textarea_field( (string) $fields['description'] ) : '' );
-			$this->save_field( $post_id, Canonical::META_CANONICAL, isset( $fields['canonical'] ) ? sanitize_text_field( (string) $fields['canonical'] ) : '' );
+			$this->save_field( $post_id, $this->meta_key( 'title', TitleDescription::META_TITLE ), isset( $fields['title'] ) ? sanitize_text_field( (string) $fields['title'] ) : '' );
+			$this->save_field( $post_id, $this->meta_key( 'description', TitleDescription::META_DESCRIPTION ), isset( $fields['description'] ) ? sanitize_textarea_field( (string) $fields['description'] ) : '' );
+			$this->save_field( $post_id, $this->meta_key( 'canonical', Canonical::META_CANONICAL ), isset( $fields['canonical'] ) ? sanitize_text_field( (string) $fields['canonical'] ) : '' );
 
 			$noindex = isset( $fields['noindex'] ) ? sanitize_text_field( (string) $fields['noindex'] ) : '';
 			$this->save_field( $post_id, Robots::META_NOINDEX, in_array( $noindex, array( '0', '1' ), true ) ? $noindex : '' );
@@ -541,7 +542,7 @@ final class BulkEditor {
 				if ( is_wp_error( $result ) ) {
 					$errors[] = $lang_code . ': ' . $result->get_error_message();
 				} else {
-					update_post_meta( $translated_id, TitleDescription::META_TITLE, $result );
+					update_post_meta( $translated_id, $this->meta_key( 'title', TitleDescription::META_TITLE ), $result );
 				}
 			}
 
@@ -550,7 +551,7 @@ final class BulkEditor {
 				if ( is_wp_error( $result ) ) {
 					$errors[] = $lang_code . ': ' . $result->get_error_message();
 				} else {
-					update_post_meta( $translated_id, TitleDescription::META_DESCRIPTION, $result );
+					update_post_meta( $translated_id, $this->meta_key( 'description', TitleDescription::META_DESCRIPTION ), $result );
 				}
 			}
 
@@ -579,6 +580,18 @@ final class BulkEditor {
 		}
 
 		update_post_meta( $post_id, $key, $value );
+	}
+
+	/**
+	 * Resolves which postmeta key a field reads from and writes to:
+	 * Yoast's or Rank Math's own key when Coexistence Mode redirects that
+	 * field to them, otherwise SEO-WP's own default.
+	 *
+	 * @param string $field       'title', 'description' or 'canonical'.
+	 * @param string $default_key SEO-WP's own meta key for this field.
+	 */
+	private function meta_key( string $field, string $default_key ): string {
+		return CoexistenceMode::meta_key( $field ) ?? $default_key;
 	}
 
 	/**

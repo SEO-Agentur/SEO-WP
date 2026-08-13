@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace SeoWp\Meta;
 
+use SeoWp\Support\CoexistenceMode;
 use SeoWp\Support\Url;
 use WP_Post;
 use WP_Term;
@@ -45,6 +46,10 @@ final class Canonical {
 	 * @param WP_Post $post          The queried post.
 	 */
 	public function filter_singular_canonical( string $canonical_url, WP_Post $post ): string {
+		if ( CoexistenceMode::active() ) {
+			return $canonical_url;
+		}
+
 		$override = (string) get_post_meta( $post->ID, self::META_CANONICAL, true );
 
 		return self::pick( $override, Url::wpml_permalink( $canonical_url ) );
@@ -55,7 +60,7 @@ final class Canonical {
 	 * that WordPress core does not compute one for.
 	 */
 	public function output_non_singular_canonical(): void {
-		if ( is_singular() || is_search() || is_404() || is_admin() ) {
+		if ( is_singular() || is_search() || is_404() || is_admin() || CoexistenceMode::active() ) {
 			return;
 		}
 

@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace SeoWp\Meta;
 
+use SeoWp\Support\CoexistenceMode;
 use SeoWp\Templates\Renderer;
 use SeoWp\Wpml\StringTranslation;
 use WP_Post;
@@ -63,7 +64,7 @@ final class TitleDescription {
 	 * @param string $title Title computed so far by WordPress core.
 	 */
 	public function filter_title( string $title ): string {
-		if ( is_admin() ) {
+		if ( is_admin() || CoexistenceMode::active() ) {
 			return $title;
 		}
 
@@ -76,7 +77,7 @@ final class TitleDescription {
 	 * Echoes the meta description tag when a description is available.
 	 */
 	public function output_meta_description(): void {
-		if ( is_admin() ) {
+		if ( is_admin() || CoexistenceMode::active() ) {
 			return;
 		}
 

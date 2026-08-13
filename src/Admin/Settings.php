@@ -12,6 +12,7 @@ namespace SeoWp\Admin;
 use SeoWp\Performance\Htaccess;
 use SeoWp\Performance\ResourceHintScanner;
 use SeoWp\Schema\GraphBuilder;
+use SeoWp\Support\StagingDetector;
 use SeoWp\Templates\Tokens;
 
 /**
@@ -324,6 +325,12 @@ final class Settings {
 				: 'redirect';
 		}
 
+		if ( array_key_exists( 'coexistence_source', $input ) ) {
+			$clean['coexistence_source'] = in_array( $input['coexistence_source'], array( 'yoast', 'rank_math' ), true )
+				? $input['coexistence_source']
+				: '';
+		}
+
 		if ( array_key_exists( 'heartbeat_mode', $input ) ) {
 			$clean['heartbeat_mode'] = in_array( $input['heartbeat_mode'], array( 'default', 'disable_admin_except_editor', 'disable_frontend', 'disable_everywhere' ), true )
 				? $input['heartbeat_mode']
@@ -468,6 +475,18 @@ final class Settings {
 	 * Twitter handles.
 	 */
 	private function render_general_tab(): void {
+		echo '<tr><td colspan="2"><p class="description"><strong>' . esc_html__( 'Coexistence with another SEO plugin', 'seo-wp' ) . '</strong> — ' . esc_html__( 'SEO-WP is meant to replace Yoast SEO or Rank Math, not run alongside them. If you need to keep one of them active anyway (e.g. for a feature SEO-WP doesn\'t have), set this to stop SEO-WP printing its own title/meta description/canonical/Open Graph/Twitter Card/schema output — leaving all of that to the other plugin, so you never get duplicate tags. The Bulk Editor\'s Title/Description/Canonical columns then read and write that plugin\'s own fields instead of SEO-WP\'s. Everything else (sitemaps, hreflang, redirects, 404 monitor, IndexNow, Link Audit, Duplicate Checker, Role Manager, Performance) is unaffected.', 'seo-wp' ) . '</p></td></tr>';
+		$this->select_field(
+			'coexistence_source',
+			__( 'Leave title/meta output to', 'seo-wp' ),
+			array(
+				''          => __( 'SEO-WP itself (default)', 'seo-wp' ),
+				'yoast'     => __( 'Yoast SEO', 'seo-wp' ),
+				'rank_math' => __( 'Rank Math', 'seo-wp' ),
+			),
+			''
+		);
+
 		$this->text_field( 'separator', __( 'Separator', 'seo-wp' ), '-' );
 		$this->template_field( 'title_template_home', __( 'Home title template', 'seo-wp' ), '%sitename%' );
 		$this->template_field( 'description_template_home', __( 'Home description template', 'seo-wp' ), '' );
@@ -638,10 +657,90 @@ final class Settings {
 	}
 
 	/**
+	 * Renders a live status box: whether this site's own host looks like
+	 * staging/development (Support\StagingDetector), and whether it's
+	 * actually indexable right now — checking both this plugin's own
+	 * staging_noindex override and WordPress core's own Settings >
+	 * Reading > "Discourage search engines" toggle, since either alone
+	 * noindexes the whole site and it's easy to forget one is on.
+	 */
+	private function render_staging_status(): void {
+		$host               = (string) wp_parse_url( home_url( '/' ), PHP_URL_HOST );
+		$looks_like_staging = StagingDetector::looks_like_staging_host( $host );
+		$staging_override   = ! empty( $this->option_raw( 'staging_noindex' ) );
+		$core_discourages   = '0' === (string) get_option( 'blog_public', '1' );
+		$indexable          = ! $staging_override && ! $core_discourages;
+
+		echo '<tr><td colspan="2">';
+		echo '<table class="widefat striped seo-wp-staging-status">';
+		echo '<tbody>';
+
+		printf(
+			'<tr><th scope="row">%1$s</th><td>%2$s <code>%3$s</code></td></tr>',
+			esc_html__( 'Detected environment', 'seo-wp' ),
+			$looks_like_staging
+				? '<span style="color:#b32d2e;">&#10003; ' . esc_html__( 'Looks like staging/development', 'seo-wp' ) . '</span>'
+				: '<span style="color:#00a32a;">&#10003; ' . esc_html__( 'Looks like production', 'seo-wp' ) . '</span>',
+			esc_html( $host )
+		);
+
+		printf(
+			'<tr><th scope="row">%1$s</th><td>%2$s</td></tr>',
+			esc_html__( 'Currently indexable by search engines', 'seo-wp' ),
+			$indexable
+				? '<span style="color:#00a32a;">&#10003; ' . esc_html__( 'Yes', 'seo-wp' ) . '</span>'
+				: '<span style="color:#b32d2e;">&#10007; ' . esc_html(
+					sprintf(
+					/* translators: %s: reason the site is noindexed. */
+						__( 'No — noindexed (%s)', 'seo-wp' ),
+						$this->noindex_reason( $staging_override, $core_discourages )
+					)
+				) . '</span>'
+		);
+
+		echo '</tbody></table>';
+		echo '</td></tr>';
+	}
+
+	/**
+	 * Explains which of the two independent noindex sources is active,
+	 * since a site owner fixing one without noticing the other would
+	 * otherwise stay noindexed and not know why.
+	 *
+	 * @param bool $staging_override Whether staging_noindex is on.
+	 * @param bool $core_discourages Whether WP core's "Discourage search engines" is on.
+	 */
+	private function noindex_reason( bool $staging_override, bool $core_discourages ): string {
+		if ( $staging_override && $core_discourages ) {
+			return __( 'this plugin\'s staging override, and WordPress\' own "Discourage search engines" setting', 'seo-wp' );
+		}
+
+		if ( $staging_override ) {
+			return __( 'this plugin\'s staging override, above', 'seo-wp' );
+		}
+
+		return __( 'WordPress\' own Settings > Reading > "Discourage search engines"', 'seo-wp' );
+	}
+
+	/**
+	 * Reads a single settings value without the StringTranslation
+	 * pass-through text_field()/option() apply — used where the raw
+	 * stored value (not a translatable template) is what's needed.
+	 *
+	 * @param string $key Settings key.
+	 */
+	private function option_raw( string $key ) {
+		$settings = get_option( self::OPTION_KEY, array() );
+
+		return is_array( $settings ) && isset( $settings[ $key ] ) ? $settings[ $key ] : null;
+	}
+
+	/**
 	 * Renders the Crawl tab: robots.txt, llms.txt, verification,
 	 * archives, IndexNow.
 	 */
 	private function render_crawl_tab(): void {
+		$this->render_staging_status();
 		echo '<tr><td colspan="2"><p class="description">' . esc_html__( 'A staging/development site is also automatically flagged with a dismissible admin notice suggesting this same setting — this checkbox is the same override, just reachable without waiting for that notice.', 'seo-wp' ) . '</p></td></tr>';
 		$this->checkbox_field( 'staging_noindex', __( 'Noindex this entire site (staging/development override) — overrides every other robots setting on every page', 'seo-wp' ), false );
 

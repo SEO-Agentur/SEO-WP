@@ -17,6 +17,7 @@ use SeoWp\Schema\Nodes\Person;
 use SeoWp\Schema\Nodes\Product;
 use SeoWp\Schema\Nodes\WebPage;
 use SeoWp\Schema\Nodes\WebSite;
+use SeoWp\Support\CoexistenceMode;
 use SeoWp\Support\FragmentCache;
 use WP_Post;
 use WP_Term;
@@ -124,7 +125,7 @@ final class GraphBuilder {
 	 * the plugin's head output.
 	 */
 	public function output(): void {
-		if ( is_admin() ) {
+		if ( is_admin() || CoexistenceMode::active() ) {
 			return;
 		}
 

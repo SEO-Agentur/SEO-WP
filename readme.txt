@@ -5,7 +5,7 @@ Tags: seo, wpml, sitemap, schema, hreflang
 Requires at least: 6.4
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.3.4
+Stable tag: 1.3.5
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -74,6 +74,7 @@ Built and maintained by [Cyrus Badde](https://seo-wp.net). If it saves you time,
 * Existing redirect rules from another plugin are never migrated automatically; the import wizard flags when a source has redirect data so you can recreate it in SEO-WP's own Redirects screen
 * An explicit "Deactivate {plugin} now" button appears after a real (non-dry-run) import completes — never automatic, and only shown when that plugin is actually confirmed active
 * Safe to re-run at any time: a field already set in SEO-WP — whether from an earlier import or edited by hand — is never overwritten, so running the import again only fills in what's still empty
+* Coexistence Mode (Settings > General): for when Yoast SEO or Rank Math needs to stay active instead of being replaced — SEO-WP stops printing its own title/meta description/canonical/Open Graph/Twitter Card/schema output, and the Bulk Editor redirects to that plugin's own fields instead
 
 **Admin**
 
@@ -97,7 +98,7 @@ Built and maintained by [Cyrus Badde](https://seo-wp.net). If it saves you time,
 
 = Does this replace Yoast SEO, Rank Math or All in One SEO? =
 
-Yes — SEO-WP is meant to be used instead of them, not alongside them. Use the Import screen to bring over your existing titles, descriptions, robots settings, social meta and (Yoast/Rank Math) global settings, then use the "Deactivate now" button that appears after a real import to turn off the previous plugin — it's never deactivated automatically.
+Normally, yes — use the Import screen to bring over your existing titles, descriptions, robots settings, social meta and (Yoast/Rank Math) global settings, then use the "Deactivate now" button that appears after a real import to turn off the previous plugin (it's never deactivated automatically). If you need to keep Yoast or Rank Math active anyway, Settings > General has a Coexistence Mode: SEO-WP stops printing its own title/meta description/canonical/Open Graph/Twitter Card/schema output entirely (so you never get duplicate tags), and the Bulk Editor reads and writes that plugin's own fields instead of SEO-WP's. Everything else SEO-WP does — sitemaps, hreflang, redirects, the 404 monitor, IndexNow, Link Audit, Duplicate Checker, Role Manager, Performance — keeps working either way, since none of it duplicates what Yoast/Rank Math already do.
 
 = Are redirects imported? =
 
@@ -109,6 +110,9 @@ Yes. Every WPML-specific feature (hreflang, per-language templates) is a no-op w
 
 
 == Changelog ==
+
+= 1.3.5 =
+* New Coexistence Mode (Settings > General): when Yoast SEO or Rank Math needs to stay active alongside SEO-WP, this stops SEO-WP printing its own title/meta description/canonical/Open Graph/Twitter Card/JSON-LD output — avoiding literal duplicate tags rather than just a value disagreement — and redirects the Bulk Editor's Title/Description/Canonical columns (including AI suggestions and DeepL translations) to that plugin's own postmeta fields. Off by default; everything else SEO-WP does is unaffected.
 
 = 1.3.4 =
 * Schema: "Site represents" gained "A local business" — address, geo coordinates, phone, price range and opening hours on the existing Organization node (LocalBusiness is itself an Organization subtype in Schema.org, so this isn't a second, competing node), with any Schema.org business subtype accepted (Restaurant, Store, ProfessionalService, etc.).
