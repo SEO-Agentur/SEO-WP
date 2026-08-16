@@ -5,7 +5,7 @@ Tags: seo, wpml, sitemap, schema, hreflang
 Requires at least: 6.4
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.4.0
+Stable tag: 1.4.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -66,7 +66,7 @@ Built and maintained by [Cyrus Badde](https://seo-wp.net). If it saves you time,
 * Full hreflang support via WPML's own translation data — only existing, WPML-confirmed alternates are ever emitted, self-reference always included, `x-default` configurable
 * The *same* hreflang output (and the same third-party compatibility filters) in both the document head and every sitemap URL entry
 * Title/description templates are translatable per language via WPML String Translation
-* Designed as a companion to the separate `slim-hreflang` plugin: this plugin is the sole hreflang sender and exposes the `slimseo/hreflang/alternates` and `slimseo/hreflang/managed_externally` filters so other plugins can extend, override, or fully take over its output
+* Designed as a companion to the separate `slim-hreflang` plugin: this plugin is the sole hreflang sender and exposes the `seo_wp/hreflang/alternates` and `seo_wp/hreflang/managed_externally` filters so other plugins can extend, override, or fully take over its output
 
 **Import**
 
@@ -112,6 +112,9 @@ Yes. Every WPML-specific feature (hreflang, per-language templates) is a no-op w
 
 
 == Changelog ==
+
+= 1.4.1 =
+* Changed: the slim-hreflang compatibility contract's filter names were renamed from `slimseo/hreflang/alternates` / `slimseo/hreflang/managed_externally` to `seo_wp/hreflang/alternates` / `seo_wp/hreflang/managed_externally` — the old names collided with (and read as belonging to) the unrelated, discontinued third-party "Slim SEO" plugin, not this plugin's own companion. Both sides of the contract were updated together; requires slim-hreflang 1.2.2 or later to keep working.
 
 = 1.4.0 =
 * New Content Freshness report (SEO-WP > Content Freshness): published posts not updated within a threshold you choose (3/6/12/24/36 months), purely informational

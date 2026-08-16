@@ -42,12 +42,12 @@ final class HreflangTest extends TestCase {
 	}
 
 	/**
-	 * A listener on slimseo/hreflang/alternates can override the computed
+	 * A listener on seo_wp/hreflang/alternates can override the computed
 	 * list entirely.
 	 */
 	public function test_alternates_filter_overrides_computed_output(): void {
 		add_filter(
-			'slimseo/hreflang/alternates',
+			'seo_wp/hreflang/alternates',
 			static function ( array $alternates, array $context ): array {
 				return array(
 					array(
@@ -86,7 +86,7 @@ final class HreflangTest extends TestCase {
 	 */
 	public function test_managed_externally_suppresses_own_computation(): void {
 		add_filter(
-			'slimseo/hreflang/managed_externally',
+			'seo_wp/hreflang/managed_externally',
 			static function (): bool {
 				return true;
 			}
@@ -95,7 +95,7 @@ final class HreflangTest extends TestCase {
 		$seen_by_alternates_filter = null;
 
 		add_filter(
-			'slimseo/hreflang/alternates',
+			'seo_wp/hreflang/alternates',
 			static function ( array $alternates ) use ( &$seen_by_alternates_filter ): array {
 				$seen_by_alternates_filter = $alternates;
 				return $alternates;
