@@ -17,6 +17,7 @@ use SeoWp\Support\Ajax;
 use SeoWp\Support\CoexistenceMode;
 use SeoWp\Support\ContentRenderer;
 use SeoWp\Support\DeepLClient;
+use SeoWp\Support\LengthAdvisor;
 use WP_Post;
 use WP_Query;
 
@@ -51,25 +52,6 @@ final class BulkEditor {
 	 * @var int[]
 	 */
 	private const PER_PAGE_OPTIONS = array( 20, 50, 100, 200 );
-
-	/**
-	 * Title/description length bands (in characters) the traffic-light
-	 * indicator is drawn from: below 'min' is too short, above 'max' is
-	 * too long, in between is good — the same rough guidance a Google
-	 * search result truncates to.
-	 *
-	 * @var array<string,array{min:int,max:int}>
-	 */
-	private const LENGTH_BANDS = array(
-		'title'       => array(
-			'min' => 30,
-			'max' => 60,
-		),
-		'description' => array(
-			'min' => 70,
-			'max' => 155,
-		),
-	);
 
 	/**
 	 * Nonce action/field name.
@@ -307,21 +289,11 @@ final class BulkEditor {
 	 * green in between. bulk-editor-ux.js re-renders this live as the
 	 * field is typed into; this is only the pre-JS/initial state.
 	 *
-	 * @param string $field  'title' or 'description', a LENGTH_BANDS key.
+	 * @param string $field  'title' or 'description', a LengthAdvisor::bands() key.
 	 * @param int    $length Current character count.
 	 */
 	private function length_badge( string $field, int $length ): string {
-		$band = self::LENGTH_BANDS[ $field ];
-
-		if ( 0 === $length ) {
-			$status = 'empty';
-		} elseif ( $length < $band['min'] ) {
-			$status = 'short';
-		} elseif ( $length > $band['max'] ) {
-			$status = 'long';
-		} else {
-			$status = 'good';
-		}
+		$status = LengthAdvisor::status( $field, $length );
 
 		return sprintf(
 			'<span class="seo-wp-bulk-length is-%1$s" data-seo-wp-length-field="%2$s">%3$d</span>',

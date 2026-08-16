@@ -46,7 +46,7 @@ final class Settings {
 	private const CHECKBOX_FIELDS_BY_TAB = array(
 		'general'     => array(),
 		'content'     => array(),
-		'sitemaps'    => array( 'disable_core_sitemap', 'enable_news_sitemap' ),
+		'sitemaps'    => array( 'disable_core_sitemap', 'enable_news_sitemap', 'sitemap_include_video', 'sitemap_include_hreflang' ),
 		'crawl'       => array(
 			'block_ai_crawlers',
 			'enable_llms_txt',
@@ -635,6 +635,24 @@ final class Settings {
 		);
 		echo '<tr><td colspan="2"><p class="description">';
 		echo esc_html__( 'Follows Google\'s News sitemap guidelines: a separate /news-sitemap.xml listing only article-like content (non-hierarchical public post types) published in the last 48 hours, capped at 1000 URLs. It disappears from the sitemap index automatically whenever nothing currently qualifies. Turn this off if the site doesn\'t publish news content — Google News enrollment itself is a separate application, this only controls whether the plugin generates the file.', 'seo-wp' );
+		echo '</p></td></tr>';
+
+		$this->checkbox_field(
+			'sitemap_include_video',
+			__( 'Include video:video entries in sitemaps', 'seo-wp' ),
+			true
+		);
+		echo '<tr><td colspan="2"><p class="description">';
+		echo esc_html__( 'Adds video:video entries for self-hosted <video poster> elements and YouTube embeds found in a post\'s content. An entry is only added when a real thumbnail is available, so not every embedded video qualifies (e.g. Vimeo currently doesn\'t).', 'seo-wp' );
+		echo '</p></td></tr>';
+
+		$this->checkbox_field(
+			'sitemap_include_hreflang',
+			__( 'Include hreflang alternates (xhtml:link) in sitemaps', 'seo-wp' ),
+			true
+		);
+		echo '<tr><td colspan="2"><p class="description">';
+		echo esc_html__( 'When WPML or slim-hreflang provides alternate-language URLs, this plugin\'s sitemaps normally list them as xhtml:link entries alongside the per-page <link rel="alternate"> tags in the document head. Turn this off to have hreflang live only on the pages themselves — some setups prefer one single source of truth rather than two places search engines could theoretically disagree on.', 'seo-wp' );
 		echo '</p></td></tr>';
 
 		foreach ( get_post_types( array( 'public' => true ), 'objects' ) as $post_type ) {

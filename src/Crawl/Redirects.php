@@ -54,7 +54,8 @@ final class Redirects {
 	 * current request matches an active rule.
 	 */
 	public function maybe_redirect(): void {
-		$rule = self::match( NotFoundMonitor::current_path() );
+		$path = NotFoundMonitor::current_path();
+		$rule = self::match( $path );
 		if ( null === $rule ) {
 			return;
 		}
@@ -68,24 +69,35 @@ final class Redirects {
 			exit;
 		}
 
-		if ( '' === $rule['target'] ) {
+		$target = self::resolve_target( $rule, $path );
+		if ( '' === $target ) {
 			return;
 		}
 
 		// phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- target is an admin-authored setting (not user input), and cross-domain targets are a legitimate, intentional use of a redirect manager.
-		wp_redirect( $rule['target'], $rule['type'] );
+		wp_redirect( $target, $rule['type'] );
 		exit;
 	}
 
 	/**
-	 * Finds the active rule matching a normalised path, if any.
+	 * Finds the active rule matching a normalised path, if any. Regex
+	 * rules (is_regex) are tried in stored order against the raw pattern;
+	 * exact rules compare the normalised source directly.
 	 *
 	 * @param string $path Path as normalised by NotFoundMonitor::normalize_path().
-	 * @return array{id:int,source:string,target:string,type:int,active:bool,hits:int}|null
+	 * @return array{id:int,source:string,target:string,type:int,active:bool,hits:int,is_regex:bool}|null
 	 */
 	public static function match( string $path ): ?array {
 		foreach ( self::all() as $id => $rule ) {
-			if ( ! empty( $rule['active'] ) && $rule['source'] === $path ) {
+			if ( empty( $rule['active'] ) ) {
+				continue;
+			}
+
+			$matches = ! empty( $rule['is_regex'] )
+				? self::regex_matches( $rule['source'], $path )
+				: $rule['source'] === $path;
+
+			if ( $matches ) {
 				$rule['id'] = $id;
 				return $rule;
 			}
@@ -95,9 +107,74 @@ final class Redirects {
 	}
 
 	/**
+	 * Resolves a matched rule's redirect target, substituting PCRE
+	 * backreferences (e.g. "$1") from the current path for regex rules —
+	 * so a single rule like source "^/blog/(.+)$" / target "/news/$1" can
+	 * cover a whole moved section instead of one row per URL.
+	 *
+	 * @param array{source:string,target:string,is_regex?:bool} $rule Matched rule.
+	 * @param string                                            $path Path the rule matched against.
+	 */
+	public static function resolve_target( array $rule, string $path ): string {
+		$target = $rule['target'];
+
+		if ( empty( $rule['is_regex'] ) || ! self::is_valid_regex( $rule['source'] ) ) {
+			return $target;
+		}
+
+		// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- validity is already confirmed by is_valid_regex() above; suppressing only the redundant warning a malformed pattern would otherwise still raise.
+		$replaced = @preg_replace( self::wrap_pattern( $rule['source'] ), $target, $path, 1 );
+
+		return is_string( $replaced ) ? $replaced : $target;
+	}
+
+	/**
+	 * Whether a user-authored pattern (without delimiters) compiles as a
+	 * valid PCRE regex once wrapped. Pure and safe to call on untrusted
+	 * input — never emits a warning of its own.
+	 *
+	 * @param string $pattern Pattern as authored, without delimiters.
+	 */
+	public static function is_valid_regex( string $pattern ): bool {
+		if ( '' === trim( $pattern ) ) {
+			return false;
+		}
+
+		// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- the boolean return value is the point: this is the validity check itself, so the E_WARNING a malformed pattern raises is expected noise, not a bug to surface.
+		return false !== @preg_match( self::wrap_pattern( $pattern ), '' );
+	}
+
+	/**
+	 * Whether a path matches a user-authored regex pattern.
+	 *
+	 * @param string $pattern Pattern as authored, without delimiters.
+	 * @param string $path    Path to test.
+	 */
+	private static function regex_matches( string $pattern, string $path ): bool {
+		if ( ! self::is_valid_regex( $pattern ) ) {
+			return false;
+		}
+
+		// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- validity already confirmed by is_valid_regex() above.
+		return 1 === @preg_match( self::wrap_pattern( $pattern ), $path );
+	}
+
+	/**
+	 * Wraps a delimiter-less user pattern in PCRE delimiters. "#" is used
+	 * because it practically never appears in a URL path pattern, unlike
+	 * "/" — sparing admins from having to escape the delimiter themselves,
+	 * the same convention the Redirection plugin uses.
+	 *
+	 * @param string $pattern Pattern as authored, without delimiters.
+	 */
+	private static function wrap_pattern( string $pattern ): string {
+		return '#' . $pattern . '#';
+	}
+
+	/**
 	 * Every stored rule, keyed by ID.
 	 *
-	 * @return array<int,array{source:string,target:string,type:int,active:bool,hits:int}>
+	 * @return array<int,array{source:string,target:string,type:int,active:bool,hits:int,is_regex:bool}>
 	 */
 	public static function all(): array {
 		$rules = get_option( self::OPTION_KEY, array() );
@@ -109,7 +186,7 @@ final class Redirects {
 	 * Creates or updates a rule.
 	 *
 	 * @param int                 $id   Existing rule ID to update, or 0 to create a new one.
-	 * @param array<string,mixed> $rule Rule data: source, target, type, active.
+	 * @param array<string,mixed> $rule Rule data: source, target, type, active, is_regex.
 	 * @return int The rule's ID.
 	 */
 	public static function save( int $id, array $rule ): int {
@@ -117,15 +194,21 @@ final class Redirects {
 
 		$existing_hits = $id > 0 && isset( $rules[ $id ] ) ? (int) ( $rules[ $id ]['hits'] ?? 0 ) : 0;
 
-		$source = self::normalize_path( isset( $rule['source'] ) ? (string) $rule['source'] : '' );
+		$is_regex   = ! empty( $rule['is_regex'] );
+		$raw_source = isset( $rule['source'] ) ? (string) $rule['source'] : '';
+		// A regex pattern isn't a path: normalize_path() would wp_parse_url()
+		// and slash-trim it, corrupting anything but the simplest pattern.
+		// Only trim incidental whitespace instead.
+		$source = $is_regex ? trim( $raw_source ) : self::normalize_path( $raw_source );
 		$type   = isset( $rule['type'] ) ? (int) $rule['type'] : 301;
 
 		$clean = array(
-			'source' => $source,
-			'target' => isset( $rule['target'] ) ? esc_url_raw( (string) $rule['target'] ) : '',
-			'type'   => in_array( $type, self::TYPES, true ) ? $type : 301,
-			'active' => ! empty( $rule['active'] ),
-			'hits'   => $existing_hits,
+			'source'   => $source,
+			'target'   => isset( $rule['target'] ) ? esc_url_raw( (string) $rule['target'] ) : '',
+			'type'     => in_array( $type, self::TYPES, true ) ? $type : 301,
+			'active'   => ! empty( $rule['active'] ),
+			'is_regex' => $is_regex,
+			'hits'     => $existing_hits,
 		);
 
 		if ( $id <= 0 || ! isset( $rules[ $id ] ) ) {
@@ -137,6 +220,69 @@ final class Redirects {
 		update_option( self::OPTION_KEY, $rules, false );
 
 		return $id;
+	}
+
+	/**
+	 * Parses one CSV row (already split into columns, keyed by lower-cased
+	 * header name) into a clean payload for save(), or null when it has no
+	 * source. Pure array transformation, independent of the filesystem, so
+	 * the mapping itself is easy to unit test without a real upload.
+	 *
+	 * @param array<string,string> $row One CSV row, keyed by header name.
+	 * @return array{source:string,target:string,type:int,active:bool,is_regex:bool}|null
+	 */
+	public static function parse_csv_row( array $row ): ?array {
+		$source = trim( (string) ( $row['source'] ?? '' ) );
+		if ( '' === $source ) {
+			return null;
+		}
+
+		$type = (int) ( $row['type'] ?? 301 );
+
+		return array(
+			'source'   => $source,
+			'target'   => trim( (string) ( $row['target'] ?? '' ) ),
+			'type'     => in_array( $type, self::TYPES, true ) ? $type : 301,
+			'active'   => self::parse_csv_bool( (string) ( $row['active'] ?? '1' ) ),
+			'is_regex' => self::parse_csv_bool( (string) ( $row['is_regex'] ?? '0' ) ),
+		);
+	}
+
+	/**
+	 * Interprets a CSV cell as a boolean: "1", "true" and "yes"
+	 * (case-insensitive) are true, everything else is false.
+	 *
+	 * @param string $value Raw cell value.
+	 */
+	private static function parse_csv_bool( string $value ): bool {
+		return in_array( strtolower( trim( $value ) ), array( '1', 'true', 'yes' ), true );
+	}
+
+	/**
+	 * Flattens one stored rule into the CSV row shape exported/re-imported
+	 * by RedirectsPage — the exact counterpart of parse_csv_row(). Pure,
+	 * for the same testing reason.
+	 *
+	 * @param array{source:string,target:string,type:int,active:bool,is_regex?:bool,hits?:int} $rule Stored rule.
+	 * @return array<string,string>
+	 */
+	public static function to_csv_row( array $rule ): array {
+		return array(
+			'source'   => $rule['source'],
+			'target'   => $rule['target'],
+			'type'     => (string) $rule['type'],
+			'active'   => ! empty( $rule['active'] ) ? '1' : '0',
+			'is_regex' => ! empty( $rule['is_regex'] ) ? '1' : '0',
+		);
+	}
+
+	/**
+	 * The CSV header row used by both export and the import parser.
+	 *
+	 * @return string[]
+	 */
+	public static function csv_header(): array {
+		return array( 'source', 'target', 'type', 'active', 'is_regex' );
 	}
 
 	/**

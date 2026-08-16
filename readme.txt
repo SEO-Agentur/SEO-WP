@@ -5,7 +5,7 @@ Tags: seo, wpml, sitemap, schema, hreflang
 Requires at least: 6.4
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.3.5
+Stable tag: 1.4.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -30,14 +30,15 @@ Built and maintained by [Cyrus Badde](https://seo-wp.net). If it saves you time,
 * A single deduplicated JSON-LD `@graph`: WebSite, Organization/Person/LocalBusiness, WebPage, Article (for non-hierarchical post types), BreadcrumbList, FAQPage, and Product when WooCommerce is active — exactly one primary content node per URL, never Article and Product stacked on the same page
 * Local business identity: set "Site represents" to "A local business" for a full LocalBusiness node (or any more specific Schema.org business type — Restaurant, Store, ProfessionalService, and so on) with address, geo coordinates, phone, price range and opening hours, on the same Organization node rather than a second competing one
 * The schema type of that primary content node is freely overridable per post *and* per taxonomy term (with autocomplete suggestions, but any Schema.org type name is accepted) — a specific article, product, product category, or plain category page can each be set independently
-* Product schema includes an `aggregateRating` node (star ratings in search results) whenever a WooCommerce product has reviews, sourced directly from WooCommerce's own rating data
-* A live Google search-result preview and social share-card preview in the metabox, updating as you type the title/description/social fields (falling back to the post title/excerpt when those are left empty)
+* Product schema includes an `aggregateRating` node (star ratings in search results) whenever a WooCommerce product has reviews, sourced directly from WooCommerce's own rating data, plus optional brand/GTIN/MPN/price-valid-until fields and the full WooCommerce image gallery — none of which WooCommerce core has a field for, so they're edited in the SEO-WP metabox's Schema tab
+* A live Google search-result preview and social share-card preview in the metabox, updating as you type the title/description/social fields (falling back to the post title/excerpt when those are left empty) — mirrored in a block editor sidebar panel too, so the title/description fields and a live length traffic-light badge stay visible without scrolling down to the metabox
 
 **Sitemaps**
 
-* Dynamic XML sitemaps (post types, taxonomies, images, news) with no physical files written to the webroot, cached in the object cache — every public post type and taxonomy is included automatically, WooCommerce products and product categories among them, with no special-casing needed
+* Dynamic XML sitemaps (post types, taxonomies, images, videos, news) with no physical files written to the webroot, cached in the object cache — every public post type and taxonomy is included automatically, WooCommerce products and product categories among them, with no special-casing needed
 * Per-post-type and per-taxonomy inclusion toggles on the Sitemaps settings tab, so any type (including products/product categories) can be excluded individually
-* Image sitemap entries are extracted from the fully rendered page output, not raw post content — so pages built with Divi, WPBakery or other shortcode/dynamic-content builders still get their images listed, not just Gutenberg block markup
+* Image and video sitemap entries are extracted from the fully rendered page output, not raw post content — so pages built with Divi, WPBakery or other shortcode/dynamic-content builders still get their media listed, not just Gutenberg block markup. A video entry is only added when a real thumbnail is actually available (a self-hosted `<video poster>`, or a YouTube embed's own well-known thumbnail URL) rather than guessing one
+* An independent toggle to leave hreflang alternates out of sitemaps entirely (Settings > Sitemaps), for setups that want the per-page `<link rel="alternate">` tags to be the only source of truth
 * Optionally disables WordPress core's own `/wp-sitemap.xml`
 
 **Crawl control**
@@ -50,7 +51,7 @@ Built and maintained by [Cyrus Badde](https://seo-wp.net). If it saves you time,
 * Optionally strips the `<a>` WordPress wraps around an inserted image when it links to that image's own attachment page — the image itself is untouched, and only a genuine self-link is removed, never a deliberate link to something else
 * IndexNow support (Bing, Yandex, Seznam, Naver — Google does not participate): pings on publish/update/delete, serves the required key file
 * Google Instant Indexing: pings Google's Indexing API on publish/update/delete using a Google Cloud service account (signed JWT/OAuth2, no third-party library), per post type, with a submission history log
-* A redirect manager (exact source path → target URL, 301/302/307/410/451) and a 404 monitor that logs real broken-link hits with a one-click "create redirect" action
+* A redirect manager (exact source path or regular expression → target URL, with `$1`/`$2` backreferences in the target for pattern rules, 301/302/307/410/451) with CSV import/export, and a 404 monitor that logs real broken-link hits with a one-click "create redirect" action
 * Staging-site protection: a dismissible admin notice when the site's own URL looks like a staging/development environment (staging./dev./.local/.test subdomains, common host-provider staging domains, bare IP addresses), with a one-click "noindex this entire site" action — plus the same override as a plain settings checkbox, independent of detection. When on, it overrides every other robots setting on every page, site-wide
 
 **Performance**
@@ -83,10 +84,11 @@ Built and maintained by [Cyrus Badde](https://seo-wp.net). If it saves you time,
 * A bulk editor for Title/Description/Canonical/Robots across every public post type
 * Bring-your-own-key AI in the Bulk Editor: Claude or OpenAI generate a title/description pair in a "{keyword}: {USP} | {USP} > {CTA}" template from the page's URL, content and focus keyword — written straight into the row's fields for review, never saved until you click "Save changes"; a one-click action offers suggestions for every still-empty field on the page. DeepL translates a row's title/description into every other WPML-linked translation of that post. Every provider is entirely optional, configured with your own API key on the new AI Settings page, and never called except on an explicit click — no proxying, no markup on your usage
 * A Duplicate Content Checker finding posts that share the exact same *effective* title or meta description — the value actually used on the front end, whether from a manual override or a rendered template
+* A Content Freshness report listing published posts that haven't been updated within a threshold you choose (3/6/12/24/36 months) — purely informational, nothing here changes anything automatically
 * A persistent Link Audit finding orphan pages, broken links and redirect chains across content, rendered templates, menus and widgets; large audits continue server-side after the browser tab is closed
 * A guided import wizard with a live progress log
 * A Diagnostics page recording anything that went wrong during detection or import (a database error, an unexpected data shape), with a site-wide admin notice when something needs attention
-* A Role Manager controlling which WordPress roles can access which parts of the plugin (settings, metabox editing, bulk editor, import, diagnostics, redirects, 404 monitor, duplicate checker, link audit), via virtual capabilities rather than rewriting your roles — safe to enable/disable at any time, and a no-op until you actively configure it
+* A Role Manager controlling which WordPress roles can access which parts of the plugin (settings, metabox editing, bulk editor, import, diagnostics, redirects, 404 monitor, duplicate checker, link audit, content freshness), via virtual capabilities rather than rewriting your roles — safe to enable/disable at any time, and a no-op until you actively configure it
 
 == Installation ==
 
@@ -98,7 +100,7 @@ Built and maintained by [Cyrus Badde](https://seo-wp.net). If it saves you time,
 
 = Does this replace Yoast SEO, Rank Math or All in One SEO? =
 
-Normally, yes — use the Import screen to bring over your existing titles, descriptions, robots settings, social meta and (Yoast/Rank Math) global settings, then use the "Deactivate now" button that appears after a real import to turn off the previous plugin (it's never deactivated automatically). If you need to keep Yoast or Rank Math active anyway, Settings > General has a Coexistence Mode: SEO-WP stops printing its own title/meta description/canonical/Open Graph/Twitter Card/schema output entirely (so you never get duplicate tags), and the Bulk Editor reads and writes that plugin's own fields instead of SEO-WP's. Everything else SEO-WP does — sitemaps, hreflang, redirects, the 404 monitor, IndexNow, Link Audit, Duplicate Checker, Role Manager, Performance — keeps working either way, since none of it duplicates what Yoast/Rank Math already do.
+Normally, yes — use the Import screen to bring over your existing titles, descriptions, robots settings, social meta and (Yoast/Rank Math) global settings, then use the "Deactivate now" button that appears after a real import to turn off the previous plugin (it's never deactivated automatically). If you need to keep Yoast or Rank Math active anyway, Settings > General has a Coexistence Mode: SEO-WP stops printing its own title/meta description/canonical/Open Graph/Twitter Card/schema output entirely (so you never get duplicate tags), and the Bulk Editor reads and writes that plugin's own fields instead of SEO-WP's. Everything else SEO-WP does — sitemaps, hreflang, redirects, the 404 monitor, IndexNow, Link Audit, Duplicate Checker, Content Freshness, Role Manager, Performance — keeps working either way, since none of it duplicates what Yoast/Rank Math already do.
 
 = Are redirects imported? =
 
@@ -110,6 +112,13 @@ Yes. Every WPML-specific feature (hreflang, per-language templates) is a no-op w
 
 
 == Changelog ==
+
+= 1.4.0 =
+* New Content Freshness report (SEO-WP > Content Freshness): published posts not updated within a threshold you choose (3/6/12/24/36 months), purely informational
+* Redirects: regular-expression source patterns with `$1`/`$2` backreferences in the target (alongside the existing exact-path rules), plus CSV import/export
+* New block editor sidebar panel mirroring the metabox's Title/Meta description fields, with a live SERP preview and a character-count traffic-light badge — the classic metabox gained the same badge. The sidebar is a UI mirror only; the metabox's own fields remain the single thing that's actually saved
+* New video:video sitemap entries for self-hosted `<video poster>` elements and YouTube embeds, and an independent toggle to leave hreflang alternates out of sitemaps entirely (Settings > Sitemaps)
+* Product schema gained optional brand/GTIN/MPN/price-valid-until fields (SEO-WP metabox's Schema tab, WooCommerce products only) and now lists the full WooCommerce image gallery, not just the primary image
 
 = 1.3.5 =
 * New Coexistence Mode (Settings > General): when Yoast SEO or Rank Math needs to stay active alongside SEO-WP, this stops SEO-WP printing its own title/meta description/canonical/Open Graph/Twitter Card/JSON-LD output — avoiding literal duplicate tags rather than just a value disagreement — and redirects the Bulk Editor's Title/Description/Canonical columns (including AI suggestions and DeepL translations) to that plugin's own postmeta fields. Off by default; everything else SEO-WP does is unaffected.

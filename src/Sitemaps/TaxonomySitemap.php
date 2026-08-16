@@ -69,7 +69,7 @@ final class TaxonomySitemap {
 
 			$urls[] = array(
 				'loc'        => (string) $link,
-				'alternates' => $hreflang->for_term( $term_id, $taxonomy ),
+				'alternates' => Inclusion::hreflang_in_sitemap() ? $hreflang->for_term( $term_id, $taxonomy ) : array(),
 			);
 		}
 

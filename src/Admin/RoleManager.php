@@ -65,6 +65,7 @@ final class RoleManager {
 		'404_monitor'  => 'seo_wp_view_404_monitor',
 		'duplicates'   => 'seo_wp_view_duplicates',
 		'link_audit'   => 'seo_wp_view_link_audit',
+		'freshness'    => 'seo_wp_view_freshness',
 		'role_manager' => self::MANAGE_ROLES_CAP,
 	);
 
@@ -197,6 +198,7 @@ final class RoleManager {
 				self::AREAS['404_monitor']  => $has_manage_options,
 				self::AREAS['duplicates']   => $has_manage_options,
 				self::AREAS['link_audit']   => $has_manage_options,
+				self::AREAS['freshness']    => $has_manage_options,
 				self::AREAS['role_manager'] => $has_manage_options,
 			);
 		}
@@ -268,6 +270,7 @@ final class RoleManager {
 			'404_monitor'  => __( '404 Monitor', 'seo-wp' ),
 			'duplicates'   => __( 'Duplicate Content Checker', 'seo-wp' ),
 			'link_audit'   => __( 'Link Audit (Broken Links / Orphan Pages)', 'seo-wp' ),
+			'freshness'    => __( 'Content Freshness', 'seo-wp' ),
 			'role_manager' => __( 'Role Manager', 'seo-wp' ),
 		);
 	}

@@ -11,6 +11,7 @@ namespace SeoWp;
 
 use SeoWp\Admin\AiSettings;
 use SeoWp\Admin\BulkEditor;
+use SeoWp\Admin\ContentFreshness;
 use SeoWp\Admin\Diagnostics;
 use SeoWp\Admin\DuplicateChecker;
 use SeoWp\Admin\GoogleIndexingPage;
@@ -107,6 +108,7 @@ final class Plugin {
 			( new GoogleIndexingPage() )->register();
 			( new IndexNowPage() )->register();
 			( new DuplicateChecker() )->register();
+			( new ContentFreshness() )->register();
 			( new AiSettings() )->register();
 		}
 	}

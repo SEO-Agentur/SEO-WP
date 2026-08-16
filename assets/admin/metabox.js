@@ -1,9 +1,47 @@
 /**
- * Tab switching and the FAQ repeater for the SEO-WP metabox. Vanilla JS,
- * no dependencies; loaded only on post-edit and term-edit screens.
+ * Tab switching, the FAQ repeater and the live title/description length
+ * badges for the SEO-WP metabox. Vanilla JS, no dependencies; loaded only
+ * on post-edit and term-edit screens.
  */
 ( function () {
 	'use strict';
+
+	/**
+	 * Classifies a length exactly like SeoWp\Support\LengthAdvisor::status()
+	 * — same bands, localized from PHP so the two never drift apart.
+	 */
+	function lengthStatus( field, length ) {
+		var bands = ( window.seoWpMetabox && window.seoWpMetabox.lengthBands ) || {};
+		var band = bands[ field ];
+
+		if ( ! band ) {
+			return 'good';
+		}
+		if ( 0 === length ) {
+			return 'empty';
+		}
+		if ( length < band.min ) {
+			return 'short';
+		}
+		if ( length > band.max ) {
+			return 'long';
+		}
+		return 'good';
+	}
+
+	function updateLengthBadges() {
+		document.querySelectorAll( '.seo-wp-length-badge' ).forEach( function ( badge ) {
+			var field = badge.getAttribute( 'data-seo-wp-length-field' );
+			var input = document.getElementById( 'seo-wp-_seo_wp_' + field );
+			if ( ! input ) {
+				return;
+			}
+
+			var length = input.value.length;
+			badge.textContent = String( length );
+			badge.className = 'seo-wp-length-badge is-' + lengthStatus( field, length );
+		} );
+	}
 
 	function activateTab( metabox, tabName ) {
 		metabox.querySelectorAll( '.seo-wp-tab-button' ).forEach( function ( button ) {
@@ -112,6 +150,7 @@
 		}
 
 		updatePreviews();
+		updateLengthBadges();
 
 		[
 			'seo-wp-_seo_wp_title',
@@ -125,6 +164,13 @@
 			var el = document.getElementById( id );
 			if ( el ) {
 				el.addEventListener( 'input', updatePreviews );
+			}
+		} );
+
+		[ 'seo-wp-_seo_wp_title', 'seo-wp-_seo_wp_description' ].forEach( function ( id ) {
+			var el = document.getElementById( id );
+			if ( el ) {
+				el.addEventListener( 'input', updateLengthBadges );
 			}
 		} );
 	} );

@@ -63,6 +63,7 @@ final class PostTypeSitemap {
 		}
 
 		$image_sitemap = new ImageSitemap();
+		$video_sitemap = new VideoSitemap();
 		$hreflang      = new HreflangAlternates();
 		$urls          = array();
 
@@ -78,7 +79,8 @@ final class PostTypeSitemap {
 				'loc'        => $permalink,
 				'lastmod'    => (string) get_post_modified_time( DATE_W3C, true, $post_id ),
 				'images'     => $image_sitemap->images_for( $post_id ),
-				'alternates' => $hreflang->for_post( $post_id ),
+				'videos'     => Inclusion::video_sitemap() ? $video_sitemap->videos_for( $post_id ) : array(),
+				'alternates' => Inclusion::hreflang_in_sitemap() ? $hreflang->for_post( $post_id ) : array(),
 			);
 		}
 
@@ -125,13 +127,13 @@ final class PostTypeSitemap {
 	/**
 	 * Builds the urlset XML for a list of URL entries.
 	 *
-	 * @param array<int,array{loc: string, lastmod: string, images: string[], alternates: array<int,array{hreflang:string,href:string}>}> $urls URL entries.
+	 * @param array<int,array{loc: string, lastmod: string, images: string[], videos: array<int,array{title:string,description:string,thumbnail_loc:string,content_loc?:string,player_loc?:string}>, alternates: array<int,array{hreflang:string,href:string}>}> $urls URL entries.
 	 */
 	private function xml( array $urls ): string {
 		$hreflang_renderer = new HreflangAlternates();
 
 		$xml  = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
-		$xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:xhtml="http://www.w3.org/1999/xhtml">' . "\n";
+		$xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1" xmlns:xhtml="http://www.w3.org/1999/xhtml">' . "\n";
 
 		foreach ( $urls as $url ) {
 			$xml .= '<url>' . "\n";
@@ -145,12 +147,40 @@ final class PostTypeSitemap {
 				$xml .= '<image:image><image:loc>' . esc_url( $image_url ) . '</image:loc></image:image>' . "\n";
 			}
 
+			foreach ( $url['videos'] as $video ) {
+				$xml .= $this->video_xml( $video );
+			}
+
 			$xml .= $hreflang_renderer->xml( $url['alternates'] );
 
 			$xml .= '</url>' . "\n";
 		}
 
 		$xml .= '</urlset>';
+
+		return $xml;
+	}
+
+	/**
+	 * Builds a single video:video element.
+	 *
+	 * @param array{title:string,description:string,thumbnail_loc:string,content_loc?:string,player_loc?:string} $video Video entry.
+	 */
+	private function video_xml( array $video ): string {
+		$xml  = '<video:video>' . "\n";
+		$xml .= '<video:thumbnail_loc>' . esc_url( $video['thumbnail_loc'] ) . '</video:thumbnail_loc>' . "\n";
+		$xml .= '<video:title>' . esc_html( $video['title'] ) . '</video:title>' . "\n";
+		$xml .= '<video:description>' . esc_html( $video['description'] ) . '</video:description>' . "\n";
+
+		if ( ! empty( $video['content_loc'] ) ) {
+			$xml .= '<video:content_loc>' . esc_url( $video['content_loc'] ) . '</video:content_loc>' . "\n";
+		}
+
+		if ( ! empty( $video['player_loc'] ) ) {
+			$xml .= '<video:player_loc>' . esc_url( $video['player_loc'] ) . '</video:player_loc>' . "\n";
+		}
+
+		$xml .= '</video:video>' . "\n";
 
 		return $xml;
 	}

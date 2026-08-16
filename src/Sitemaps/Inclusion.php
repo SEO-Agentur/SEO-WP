@@ -43,6 +43,24 @@ final class Inclusion {
 	}
 
 	/**
+	 * Whether video:video entries should be added to sitemaps.
+	 */
+	public static function video_sitemap(): bool {
+		return self::included( 'sitemap_include_video' );
+	}
+
+	/**
+	 * Whether xhtml:link hreflang alternates should be added to sitemap
+	 * entries. Off doesn't mean "no hreflang" — it means the per-page
+	 * <link rel="alternate"> tags (Wpml\Hreflang, or slim-hreflang taking
+	 * over via the compatibility contract) are the only place they're
+	 * emitted, instead of also duplicating them into every sitemap.
+	 */
+	public static function hreflang_in_sitemap(): bool {
+		return self::included( 'sitemap_include_hreflang' );
+	}
+
+	/**
 	 * Reads a single inclusion setting, defaulting to true when unset.
 	 *
 	 * @param string $key Settings key.

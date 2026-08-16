@@ -14,8 +14,10 @@ use SeoWp\Meta\Robots;
 use SeoWp\Meta\TitleDescription;
 use SeoWp\Schema\GraphBuilder;
 use SeoWp\Schema\Nodes\FaqPage;
+use SeoWp\Schema\Nodes\Product;
 use SeoWp\Social\OpenGraph;
 use SeoWp\Social\TwitterCards;
+use SeoWp\Support\LengthAdvisor;
 use WP_Post;
 use WP_Taxonomy;
 use WP_Term;
@@ -134,18 +136,45 @@ final class Metabox {
 			'seo-wp-metabox',
 			'seoWpMetabox',
 			array(
-				'i18n'    => array(
+				'i18n'        => array(
 					'question' => __( 'Question', 'seo-wp' ),
 					'answer'   => __( 'Answer', 'seo-wp' ),
 					'remove'   => __( 'Remove', 'seo-wp' ),
 					'noImage'  => __( 'No image set', 'seo-wp' ),
 				),
-				'preview' => array(
+				'preview'     => array(
 					'siteName'  => (string) get_bloginfo( 'name' ),
 					'separator' => (string) $this->separator_setting(),
 					'domain'    => (string) wp_parse_url( home_url(), PHP_URL_HOST ),
 				),
+				'lengthBands' => LengthAdvisor::bands(),
 			)
+		);
+
+		$this->maybe_enqueue_sidebar( $hook_suffix );
+	}
+
+	/**
+	 * Loads the block-editor sidebar panel script — post-edit screens
+	 * only, since PluginSidebar is a block-editor concept with nothing
+	 * to attach to on a term-edit screen. Registered as a separate
+	 * script (not folded into metabox.js) so term-edit screens never
+	 * load the wp-edit-post/wp-plugins/wp-element dependencies they'd
+	 * otherwise pull in for nothing.
+	 *
+	 * @param string $hook_suffix Current admin page hook suffix.
+	 */
+	private function maybe_enqueue_sidebar( string $hook_suffix ): void {
+		if ( ! in_array( $hook_suffix, array( 'post.php', 'post-new.php' ), true ) ) {
+			return;
+		}
+
+		wp_enqueue_script(
+			'seo-wp-editor-sidebar',
+			plugins_url( 'assets/admin/editor-sidebar.js', \SeoWp\FILE ),
+			array( 'wp-plugins', 'wp-edit-post', 'wp-element', 'wp-components', 'wp-data', 'wp-i18n', 'seo-wp-metabox' ),
+			\SeoWp\VERSION,
+			true
 		);
 	}
 
@@ -167,9 +196,10 @@ final class Metabox {
 	public function render_post_metabox( WP_Post $post ): void {
 		wp_nonce_field( self::NONCE_ACTION, self::NONCE_NAME );
 
-		$faq = get_post_meta( $post->ID, FaqPage::META_FAQ, true );
+		$faq        = get_post_meta( $post->ID, FaqPage::META_FAQ, true );
+		$is_product = 'product' === $post->post_type && function_exists( 'wc_get_product' );
 
-		$this->render_tabs( $this->read_values( $post->ID, true ), is_array( $faq ) ? $faq : array(), true );
+		$this->render_tabs( $this->read_values( $post->ID, true ), is_array( $faq ) ? $faq : array(), true, $is_product );
 	}
 
 	/**
@@ -185,7 +215,7 @@ final class Metabox {
 		wp_nonce_field( self::NONCE_ACTION, self::NONCE_NAME );
 
 		echo '<tr class="form-field"><th scope="row">' . esc_html__( 'SEO-WP', 'seo-wp' ) . '</th><td>';
-		$this->render_tabs( $this->read_values( $term->term_id, false ), array(), false );
+		$this->render_tabs( $this->read_values( $term->term_id, false ), array(), false, false );
 		echo '</td></tr>';
 	}
 
@@ -257,6 +287,10 @@ final class Metabox {
 			TwitterCards::META_DESCRIPTION,
 			TwitterCards::META_IMAGE,
 			GraphBuilder::META_SCHEMA_TYPE,
+			Product::META_BRAND,
+			Product::META_GTIN,
+			Product::META_MPN,
+			Product::META_PRICE_VALID_UNTIL,
 		);
 
 		$values = array();
@@ -293,12 +327,18 @@ final class Metabox {
 			TwitterCards::META_TITLE,
 			TwitterCards::META_DESCRIPTION,
 			TwitterCards::META_IMAGE,
+			Product::META_BRAND,
+			Product::META_GTIN,
+			Product::META_MPN,
 		);
 
 		foreach ( $text_keys as $key ) {
 			$value = isset( $_POST[ $key ] ) ? sanitize_textarea_field( wp_unslash( $_POST[ $key ] ) ) : '';
 			$this->update_meta( $object_id, $is_post, $key, $value );
 		}
+
+		$price_valid_until = isset( $_POST[ Product::META_PRICE_VALID_UNTIL ] ) ? sanitize_text_field( wp_unslash( $_POST[ Product::META_PRICE_VALID_UNTIL ] ) ) : '';
+		$this->update_meta( $object_id, $is_post, Product::META_PRICE_VALID_UNTIL, Product::normalise_price_valid_until( $price_valid_until ) );
 
 		$noindex = isset( $_POST[ Robots::META_NOINDEX ] ) ? sanitize_text_field( wp_unslash( $_POST[ Robots::META_NOINDEX ] ) ) : '';
 		$this->update_meta( $object_id, $is_post, Robots::META_NOINDEX, in_array( $noindex, array( '0', '1' ), true ) ? $noindex : '' );
@@ -370,11 +410,12 @@ final class Metabox {
 	 * posts-only, since FaqPage only ever builds a node for singular
 	 * content.
 	 *
-	 * @param array<string,mixed>                             $values   Field values, keyed by meta key.
-	 * @param array<int,array{question:string,answer:string}> $faq      FAQ entries (posts only, empty for terms).
-	 * @param bool                                            $show_faq Whether to render the FAQ repeater (posts only).
+	 * @param array<string,mixed>                             $values     Field values, keyed by meta key.
+	 * @param array<int,array{question:string,answer:string}> $faq        FAQ entries (posts only, empty for terms).
+	 * @param bool                                            $show_faq   Whether to render the FAQ repeater (posts only).
+	 * @param bool                                            $is_product Whether the object being edited is a WooCommerce product.
 	 */
-	private function render_tabs( array $values, array $faq, bool $show_faq ): void {
+	private function render_tabs( array $values, array $faq, bool $show_faq, bool $is_product ): void {
 		echo '<div class="seo-wp-metabox">';
 
 		echo '<div class="seo-wp-metabox-tabs">';
@@ -384,8 +425,8 @@ final class Metabox {
 		echo '</div>';
 
 		echo '<div class="seo-wp-tab-panel seo-wp-tab-active" data-seo-wp-panel="general">';
-		$this->field_text( TitleDescription::META_TITLE, __( 'Title', 'seo-wp' ), (string) $values[ TitleDescription::META_TITLE ] );
-		$this->field_textarea( TitleDescription::META_DESCRIPTION, __( 'Meta description', 'seo-wp' ), (string) $values[ TitleDescription::META_DESCRIPTION ] );
+		$this->field_text( TitleDescription::META_TITLE, __( 'Title', 'seo-wp' ), (string) $values[ TitleDescription::META_TITLE ], 'title' );
+		$this->field_textarea( TitleDescription::META_DESCRIPTION, __( 'Meta description', 'seo-wp' ), (string) $values[ TitleDescription::META_DESCRIPTION ], 'description' );
 		$this->field_text( self::META_FOCUS_KEYWORD, __( 'Focus keyword (optional)', 'seo-wp' ), (string) $values[ self::META_FOCUS_KEYWORD ] );
 		$this->field_text( Canonical::META_CANONICAL, __( 'Canonical URL', 'seo-wp' ), (string) $values[ Canonical::META_CANONICAL ] );
 		$this->field_robots( $values );
@@ -404,6 +445,9 @@ final class Metabox {
 
 		echo '<div class="seo-wp-tab-panel" data-seo-wp-panel="schema">';
 		$this->field_schema_type( (string) $values[ GraphBuilder::META_SCHEMA_TYPE ] );
+		if ( $is_product ) {
+			$this->field_product( $values );
+		}
 		if ( $show_faq ) {
 			$this->field_faq( $faq );
 		}
@@ -413,34 +457,64 @@ final class Metabox {
 	}
 
 	/**
-	 * Renders a single-line text field.
+	 * Renders a single-line text field, optionally with a live length
+	 * traffic-light badge (metabox.js fills in/updates it; $length_field
+	 * is a LengthAdvisor::bands() key, e.g. 'title').
 	 *
-	 * @param string $name  Field name (also the meta key).
-	 * @param string $label Field label.
-	 * @param string $value Current value.
+	 * @param string $name         Field name (also the meta key).
+	 * @param string $label        Field label.
+	 * @param string $value        Current value.
+	 * @param string $length_field LengthAdvisor field key for the badge, or '' for none.
 	 */
-	private function field_text( string $name, string $label, string $value ): void {
+	private function field_text( string $name, string $label, string $value, string $length_field = '' ): void {
 		printf(
-			'<p class="seo-wp-field"><label for="seo-wp-%1$s">%2$s</label><input type="text" id="seo-wp-%1$s" name="%1$s" value="%3$s" class="widefat" /></p>',
+			'<p class="seo-wp-field"><label for="seo-wp-%1$s">%2$s</label>%3$s<input type="text" id="seo-wp-%1$s" name="%1$s" value="%4$s" class="widefat" /></p>',
 			esc_attr( $name ),
 			esc_html( $label ),
+			$this->length_badge_markup( $length_field, mb_strlen( $value ) ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- length_badge_markup() escapes every attribute itself.
 			esc_attr( $value )
 		);
 	}
 
 	/**
-	 * Renders a multi-line textarea field.
+	 * Renders a multi-line textarea field, same length-badge option as
+	 * field_text().
 	 *
-	 * @param string $name  Field name (also the meta key).
-	 * @param string $label Field label.
-	 * @param string $value Current value.
+	 * @param string $name         Field name (also the meta key).
+	 * @param string $label        Field label.
+	 * @param string $value        Current value.
+	 * @param string $length_field LengthAdvisor field key for the badge, or '' for none.
 	 */
-	private function field_textarea( string $name, string $label, string $value ): void {
+	private function field_textarea( string $name, string $label, string $value, string $length_field = '' ): void {
 		printf(
-			'<p class="seo-wp-field"><label for="seo-wp-%1$s">%2$s</label><textarea id="seo-wp-%1$s" name="%1$s" rows="3" class="widefat">%3$s</textarea></p>',
+			'<p class="seo-wp-field"><label for="seo-wp-%1$s">%2$s</label>%3$s<textarea id="seo-wp-%1$s" name="%1$s" rows="3" class="widefat">%4$s</textarea></p>',
 			esc_attr( $name ),
 			esc_html( $label ),
+			$this->length_badge_markup( $length_field, mb_strlen( $value ) ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- length_badge_markup() escapes every attribute itself.
 			esc_textarea( $value )
+		);
+	}
+
+	/**
+	 * Builds the length-badge <span> markup for field_text()/
+	 * field_textarea(), or '' when the field has no length field.
+	 * metabox.js re-renders this live as the field is typed into; this is
+	 * only the pre-JS/initial state (same split as BulkEditor's own
+	 * length_badge()).
+	 *
+	 * @param string $length_field LengthAdvisor field key, or ''.
+	 * @param int    $length       Current character count.
+	 */
+	private function length_badge_markup( string $length_field, int $length ): string {
+		if ( '' === $length_field ) {
+			return '';
+		}
+
+		return sprintf(
+			'<span class="seo-wp-length-badge is-%1$s" data-seo-wp-length-field="%2$s">%3$d</span>',
+			esc_attr( LengthAdvisor::status( $length_field, $length ) ),
+			esc_attr( $length_field ),
+			(int) $length
 		);
 	}
 
@@ -558,6 +632,28 @@ final class Metabox {
 			esc_html__( 'Leave empty to use the automatic type (Article or WebPage). Any Schema.org type name works, not just the suggestions.', 'seo-wp' )
 		);
 		echo '</p>';
+	}
+
+	/**
+	 * Renders the WooCommerce product schema fields: brand, GTIN, MPN and
+	 * a price-valid-until date. None of these have a WooCommerce-core
+	 * equivalent, so they're this plugin's own optional fields, folded
+	 * into the Product JSON-LD node when present (Schema\Nodes\Product).
+	 *
+	 * @param array<string,mixed> $values Field values, keyed by meta key.
+	 */
+	private function field_product( array $values ): void {
+		$this->field_text( Product::META_BRAND, __( 'Brand', 'seo-wp' ), (string) $values[ Product::META_BRAND ] );
+		$this->field_text( Product::META_GTIN, __( 'GTIN', 'seo-wp' ), (string) $values[ Product::META_GTIN ] );
+		$this->field_text( Product::META_MPN, __( 'MPN (manufacturer part number)', 'seo-wp' ), (string) $values[ Product::META_MPN ] );
+
+		printf(
+			'<p class="seo-wp-field"><label for="seo-wp-%1$s">%2$s</label><input type="date" id="seo-wp-%1$s" name="%1$s" value="%3$s" /><span class="description">%4$s</span></p>',
+			esc_attr( Product::META_PRICE_VALID_UNTIL ),
+			esc_html__( 'Price valid until', 'seo-wp' ),
+			esc_attr( (string) $values[ Product::META_PRICE_VALID_UNTIL ] ),
+			esc_html__( 'Optional. Leave empty unless the current price is a limited-time offer.', 'seo-wp' )
+		);
 	}
 
 	/**
