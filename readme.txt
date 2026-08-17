@@ -5,7 +5,7 @@ Tags: seo, wpml, sitemap, schema, hreflang
 Requires at least: 6.4
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.4.1
+Stable tag: 1.4.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -90,6 +90,13 @@ Built and maintained by [Cyrus Badde](https://seo-wp.net). If it saves you time,
 * A Diagnostics page recording anything that went wrong during detection or import (a database error, an unexpected data shape), with a site-wide admin notice when something needs attention
 * A Role Manager controlling which WordPress roles can access which parts of the plugin (settings, metabox editing, bulk editor, import, diagnostics, redirects, 404 monitor, duplicate checker, link audit, content freshness), via virtual capabilities rather than rewriting your roles — safe to enable/disable at any time, and a no-op until you actively configure it
 
+**Developers**
+
+* `seo_wp/title`, `seo_wp/meta_description` and `seo_wp/canonical` filter the final title/description/canonical, after SEO-WP's own override and template resolution
+* `seo_wp/opengraph/tags` filters the full set of `og:*` tags before they're printed; `seo_wp/schema/graph` filters the collected JSON-LD nodes before `@id` deduplication, so another plugin can add or replace a node
+* None of the above are attached to anything by default — a site that never uses them pays no cost for their existence
+* Full parameter reference, examples and the public constants/methods worth calling directly (redirect matching, staging detection, Coexistence Mode's own state) are in `docs/DEVELOPERS.md` in the plugin's source repository
+
 == Installation ==
 
 1. Upload the plugin to the `/wp-content/plugins/` directory, or install it through the WordPress plugins screen.
@@ -112,6 +119,9 @@ Yes. Every WPML-specific feature (hreflang, per-language templates) is a no-op w
 
 
 == Changelog ==
+
+= 1.4.2 =
+* New public filter API for developers: `seo_wp/title`, `seo_wp/meta_description`, `seo_wp/canonical`, `seo_wp/opengraph/tags` and `seo_wp/schema/graph` — customize any of SEO-WP's own head output from a theme or another plugin without editing this plugin's files. None attached by default, so existing sites are unaffected. See `docs/DEVELOPERS.md` for the full reference.
 
 = 1.4.1 =
 * Changed: the slim-hreflang compatibility contract's filter names were renamed from `slimseo/hreflang/alternates` / `slimseo/hreflang/managed_externally` to `seo_wp/hreflang/alternates` / `seo_wp/hreflang/managed_externally` — the old names collided with (and read as belonging to) the unrelated, discontinued third-party "Slim SEO" plugin, not this plugin's own companion. Both sides of the contract were updated together; requires slim-hreflang 1.2.2 or later to keep working.

@@ -89,6 +89,16 @@ final class OpenGraph {
 			}
 		}
 
+		/**
+		 * Filters the full set of og: tags (property => content) just
+		 * before they're printed — add, remove or change any of them.
+		 *
+		 * @param array<string,string> $tags    Tags SEO-WP would otherwise output.
+		 * @param mixed                 $queried The current request's queried object (WP_Post, WP_Term, ...), or null.
+		 */
+		// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- namespaced public extension point, documented for third-party developers.
+		$tags = (array) apply_filters( 'seo_wp/opengraph/tags', $tags, get_queried_object() );
+
 		foreach ( $tags as $property => $content ) {
 			if ( '' === $content ) {
 				continue;

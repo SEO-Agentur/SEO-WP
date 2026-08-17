@@ -69,8 +69,17 @@ final class TitleDescription {
 		}
 
 		$rendered = $this->resolve_title();
+		$rendered = '' !== $rendered ? $rendered : $title;
 
-		return '' !== $rendered ? $rendered : $title;
+		/**
+		 * Filters the final document title, after SEO-WP's own template
+		 * rendering and override resolution.
+		 *
+		 * @param string $rendered The title SEO-WP would otherwise output.
+		 * @param mixed  $queried  The current request's queried object (WP_Post, WP_Term, ...), or null.
+		 */
+		// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- namespaced public extension point, documented for third-party developers.
+		return (string) apply_filters( 'seo_wp/title', $rendered, get_queried_object() );
 	}
 
 	/**
@@ -82,6 +91,16 @@ final class TitleDescription {
 		}
 
 		$description = $this->resolve_description();
+
+		/**
+		 * Filters the final meta description, after SEO-WP's own template
+		 * rendering and override resolution.
+		 *
+		 * @param string $description The description SEO-WP would otherwise output.
+		 * @param mixed  $queried     The current request's queried object (WP_Post, WP_Term, ...), or null.
+		 */
+		// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- namespaced public extension point, documented for third-party developers.
+		$description = (string) apply_filters( 'seo_wp/meta_description', $description, get_queried_object() );
 
 		if ( '' === $description ) {
 			return;

@@ -51,8 +51,18 @@ final class Canonical {
 		}
 
 		$override = (string) get_post_meta( $post->ID, self::META_CANONICAL, true );
+		$resolved = self::pick( $override, Url::wpml_permalink( $canonical_url ) );
 
-		return self::pick( $override, Url::wpml_permalink( $canonical_url ) );
+		/**
+		 * Filters the final canonical URL, singular and non-singular alike
+		 * (also applied in output_non_singular_canonical()) — one filter
+		 * covers every request type.
+		 *
+		 * @param string $resolved The canonical URL SEO-WP would otherwise output.
+		 * @param mixed  $queried  The current request's queried object (WP_Post, WP_Term, ...), or null.
+		 */
+		// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- namespaced public extension point, documented for third-party developers.
+		return (string) apply_filters( 'seo_wp/canonical', $resolved, $post );
 	}
 
 	/**
@@ -65,6 +75,10 @@ final class Canonical {
 		}
 
 		$url = $this->resolve_non_singular_url();
+
+		/** This filter is documented in filter_singular_canonical() above. */
+		// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- namespaced public extension point, documented for third-party developers.
+		$url = (string) apply_filters( 'seo_wp/canonical', $url, get_queried_object() );
 
 		if ( '' === $url ) {
 			return;

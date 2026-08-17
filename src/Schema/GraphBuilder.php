@@ -143,7 +143,21 @@ final class GraphBuilder {
 	 * Builds the JSON-encoded @graph for the current request.
 	 */
 	public function render(): string {
-		$nodes = self::deduplicate( $this->collect_nodes() );
+		$nodes = $this->collect_nodes();
+
+		/**
+		 * Filters the collected schema nodes before @id deduplication —
+		 * add, remove or change any node (e.g. inject a Review node from
+		 * another plugin). A node added here with the same @id as a
+		 * built-in one and placed first in the array wins the dedup below.
+		 *
+		 * @param array<int,array<string,mixed>> $nodes   Nodes SEO-WP collected from its own builders.
+		 * @param mixed                          $queried The current request's queried object (WP_Post, WP_Term, ...), or null.
+		 */
+		// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- namespaced public extension point, documented for third-party developers.
+		$nodes = (array) apply_filters( 'seo_wp/schema/graph', $nodes, get_queried_object() );
+
+		$nodes = self::deduplicate( $nodes );
 
 		if ( array() === $nodes ) {
 			return '';
