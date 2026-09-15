@@ -5,7 +5,7 @@ Tags: seo, wpml, sitemap, schema, hreflang
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.4.3
+Stable tag: 1.4.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -134,6 +134,10 @@ SEO-WP integrates with several third-party services. Every one is optional, off 
 **Resource Hint Scanner** — contacted only when you click "Scan homepage for suggestions" under Settings > Performance. Fetches your *own* site's homepage (never a third party) to detect external script/stylesheet hosts worth preconnecting to. The result is a list of suggested lines you may choose to add to your own settings — nothing is applied automatically and nothing is sent anywhere else.
 
 == Changelog ==
+
+= 1.4.4 =
+* Ran the official WordPress.org Plugin Check tool against a live install and fixed everything it flagged that was safe to fix: replaced a denylisted function (`wp_get_sidebars_widgets()`) in Link Audit's widget scanner, bumped "Tested up to" to WordPress 7.1, filled in the real Contributors username, and stopped shipping a stray dotfile in the languages folder
+* See `docs/release/WORDPRESS-ORG-CHECKLIST.md` for the full findings — including two open questions (the plugin name's "wp" trademark flag, and WordPress 7.0's new AI Client core API) that need a product decision rather than a silent code change
 
 = 1.4.3 =
 * Security: escaped the document `<title>` output, closing an XSS gap on the `pre_get_document_title` short-circuit path where WordPress core doesn't apply its own escaping
