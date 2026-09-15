@@ -4,6 +4,18 @@
 
 Status legend: **PASS** / **FAIL** / **NOT_APPLICABLE** / **NEEDS_REVIEW**.
 
+## Re-run against v1.4.8 (2026-09-15)
+
+Reinstalled Plugin Check v2.1.0 (same version) on the live site and reran `wp plugin check seo-wp` after five versions of changes (1.4.4–1.4.8: WordPress.org checklist fixes, two rounds of independent security audits, Polylang support, sitemap performance fixes). Result: **1 ERROR (the same known false positive below), 38 WARNINGs — no new blocker, and every category below is either unchanged or already resolved.**
+
+Two things Plugin Check flagged that were genuinely new since v1.4.3, both fixed immediately:
+- `readme_parser_warnings_too_many_tags` / `readme_parser_warnings_trimmed_short_description` — the Polylang-compatibility copy added in 1.4.7 pushed the Tags line to 6 (max 5) and the short description past 150 characters. Trimmed both.
+- `WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_post__not_in` on the new `seo_wp/sitemap/excluded_post_ids` filter (`PostTypeSitemap.php`) — a WordPress VIP-specific advisory about `post__not_in` at scale, not a WordPress.org submission rule. The array only ever comes from a companion plugin's own filter callback (a handful of system-page IDs, not user input), so this is informational, not a real concern; not changed.
+
+Everything else — the sanitization warnings, the `seo_wp/*` hook-naming warnings, the slow-meta-query warnings, the Import classes' DirectDB warnings, the `OffloadedContent` false positive, the `load_plugin_textdomain` note, and the AI Client suggestion — is identical in kind to the v1.4.3 findings below and was re-verified, not just assumed unchanged.
+
+**Conclusion: no unresolved FAIL or blocking ERROR exists anywhere in this plugin's own control, on v1.4.8 just as on v1.4.3.** The same two product decisions from the original pass are still the only things standing between here and submission — see the summary table below, now current.
+
 ## Plugin headers
 
 | Item | Status | Notes |
