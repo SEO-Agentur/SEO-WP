@@ -576,7 +576,15 @@ final class LinkAudit {
 	public function handle_worker_ajax(): void {
 		$token = isset( $_POST['token'] ) ? sanitize_text_field( wp_unslash( $_POST['token'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- see docblock: the token itself, verified via hash_equals() below, is the authentication for this loopback-only endpoint.
 		$job   = self::job_data();
-		if ( '' === $token || ! hash_equals( (string) ( $job['token'] ?? '' ), $token ) ) {
+		if ( '' === $token || ! hash_equals( (string) ( $job['token'] ?? '' ), $token )
+			|| ! in_array( (string) ( $job['status'] ?? '' ), array( 'scanning', 'checking' ), true ) ) {
+			// Covers three cases with one check: no token submitted, a
+			// token that doesn't match the current job (including no job
+			// at all, where the stored token is ''), and a token that
+			// *did* match a job but that job has since finished —
+			// finish_job() clears the token on completion/error
+			// specifically so a captured or replayed old request can't
+			// trigger another run against a job that's no longer active.
 			wp_die( 'Invalid worker token', '', array( 'response' => 403 ) );
 		}
 		if ( get_transient( self::WORKER_LOCK ) ) {
@@ -586,9 +594,7 @@ final class LinkAudit {
 		try {
 			$this->run_job_slice( $job );
 		} catch ( \Throwable $e ) {
-			$job['status']     = 'error';
-			$job['error']      = $e->getMessage();
-			$job['updated_at'] = time();
+			self::finish_job( $job, 'error', $e->getMessage() );
 			update_option( self::JOB_OPTION, $job, false );
 		}
 		delete_transient( self::WORKER_LOCK );
@@ -613,12 +619,38 @@ final class LinkAudit {
 		try {
 			$this->run_job_slice( $job );
 		} catch ( \Throwable $e ) {
-			$job['status']     = 'error';
-			$job['error']      = $e->getMessage();
-			$job['updated_at'] = time();
+			self::finish_job( $job, 'error', $e->getMessage() );
 			update_option( self::JOB_OPTION, $job, false );
 		}
 		delete_transient( self::WORKER_LOCK );
+	}
+
+	/**
+	 * Marks the job finished — completed or errored — and invalidates its
+	 * token: once a job is no longer active, the token that authenticated
+	 * its worker requests must stop working too, so a captured or replayed
+	 * old request can't trigger another run against it. Also clears the
+	 * job's own scheduled cron fallback, which is otherwise keyed by that
+	 * same token and would never fire successfully again anyway.
+	 *
+	 * @param array<string,mixed> $job    Job state, modified by reference.
+	 * @param string              $status 'completed' or 'error'.
+	 * @param string              $error  Error message, when $status is 'error'.
+	 */
+	private static function finish_job( array &$job, string $status, string $error = '' ): void {
+		$token = (string) ( $job['token'] ?? '' );
+		if ( '' !== $token ) {
+			wp_clear_scheduled_hook( self::JOB_CRON_HOOK, array( $token ) );
+		}
+
+		$job['status']     = $status;
+		$job['updated_at'] = time();
+		$job['token']      = '';
+		if ( 'completed' === $status ) {
+			$job['completed_at'] = time();
+		} else {
+			$job['error'] = $error;
+		}
 	}
 
 	/**
@@ -638,9 +670,7 @@ final class LinkAudit {
 			$job['current']       = (string) ( $progress['current'] ?? '' );
 			$job['updated_at']    = time();
 			if ( 0 === $after ) {
-				$job['status']       = 'completed';
-				$job['completed_at'] = time();
-				wp_clear_scheduled_hook( self::JOB_CRON_HOOK, array( (string) ( $job['token'] ?? '' ) ) );
+				self::finish_job( $job, 'completed' );
 			}
 			update_option( self::JOB_OPTION, $job, false );
 		}
@@ -724,9 +754,7 @@ final class LinkAudit {
 			$job['checked_links'] = 0;
 			$job['current']       = __( 'Preparing link checks…', 'seo-wp' );
 			if ( 0 === count( $queue ) ) {
-				$job['status']       = 'completed';
-				$job['completed_at'] = time();
-				wp_clear_scheduled_hook( self::JOB_CRON_HOOK, array( (string) ( $job['token'] ?? '' ) ) );
+				self::finish_job( $job, 'completed' );
 			}
 		}
 		update_option( self::JOB_OPTION, $job, false );
