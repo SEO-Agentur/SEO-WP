@@ -1,6 +1,7 @@
 <?php
 /**
- * Tests for per-post-type/taxonomy sitemap inclusion settings.
+ * Tests for the sitemap inclusion toggles (per post type, per taxonomy,
+ * and the video/hreflang extensions).
  *
  * @package SeoWp
  */
@@ -24,6 +25,18 @@ final class InclusionTest extends TestCase {
 		parent::setUp();
 
 		$GLOBALS['seo_wp_test_options'] = array();
+	}
+
+	/**
+	 * With no settings saved yet, every toggle defaults to included —
+	 * installing this plugin (or adding a new toggle to it later) never
+	 * silently removes something that was already in the sitemap.
+	 */
+	public function test_defaults_to_included_when_unset(): void {
+		$this->assertTrue( Inclusion::post_type( 'post' ) );
+		$this->assertTrue( Inclusion::taxonomy( 'category' ) );
+		$this->assertTrue( Inclusion::video_sitemap() );
+		$this->assertTrue( Inclusion::hreflang_in_sitemap() );
 	}
 
 	/**
@@ -60,5 +73,33 @@ final class InclusionTest extends TestCase {
 		$GLOBALS['seo_wp_test_options']['seo_wp_settings'] = array( 'sitemap_include_tax_product_cat' => false );
 
 		$this->assertFalse( Inclusion::taxonomy( 'product_cat' ) );
+	}
+
+	/**
+	 * An explicit false on the video/hreflang extension toggles is
+	 * honoured.
+	 */
+	public function test_honours_explicit_false(): void {
+		$GLOBALS['seo_wp_test_options']['seo_wp_settings'] = array(
+			'sitemap_include_video'    => false,
+			'sitemap_include_hreflang' => false,
+		);
+
+		$this->assertFalse( Inclusion::video_sitemap() );
+		$this->assertFalse( Inclusion::hreflang_in_sitemap() );
+	}
+
+	/**
+	 * An explicit true on the video/hreflang extension toggles is
+	 * honoured (not just the default).
+	 */
+	public function test_honours_explicit_true(): void {
+		$GLOBALS['seo_wp_test_options']['seo_wp_settings'] = array(
+			'sitemap_include_video'    => true,
+			'sitemap_include_hreflang' => true,
+		);
+
+		$this->assertTrue( Inclusion::video_sitemap() );
+		$this->assertTrue( Inclusion::hreflang_in_sitemap() );
 	}
 }
