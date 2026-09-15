@@ -320,7 +320,6 @@ final class Metabox {
 			TitleDescription::META_TITLE,
 			TitleDescription::META_DESCRIPTION,
 			self::META_FOCUS_KEYWORD,
-			Canonical::META_CANONICAL,
 			OpenGraph::META_TITLE,
 			OpenGraph::META_DESCRIPTION,
 			OpenGraph::META_IMAGE,
@@ -336,6 +335,9 @@ final class Metabox {
 			$value = isset( $_POST[ $key ] ) ? sanitize_textarea_field( wp_unslash( $_POST[ $key ] ) ) : '';
 			$this->update_meta( $object_id, $is_post, $key, $value );
 		}
+
+		$canonical_override = isset( $_POST[ Canonical::META_CANONICAL ] ) ? sanitize_text_field( wp_unslash( $_POST[ Canonical::META_CANONICAL ] ) ) : '';
+		$this->update_meta( $object_id, $is_post, Canonical::META_CANONICAL, Canonical::sanitize_override( $canonical_override ) );
 
 		$price_valid_until = isset( $_POST[ Product::META_PRICE_VALID_UNTIL ] ) ? sanitize_text_field( wp_unslash( $_POST[ Product::META_PRICE_VALID_UNTIL ] ) ) : '';
 		$this->update_meta( $object_id, $is_post, Product::META_PRICE_VALID_UNTIL, Product::normalise_price_valid_until( $price_valid_until ) );

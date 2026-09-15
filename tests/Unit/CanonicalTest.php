@@ -34,4 +34,44 @@ final class CanonicalTest extends TestCase {
 
 		$this->assertSame( 'https://example.com/computed/', $result );
 	}
+
+	/**
+	 * A well-formed absolute http(s) URL is accepted as-is.
+	 */
+	public function test_sanitize_override_accepts_a_well_formed_url(): void {
+		$this->assertSame(
+			'https://example.com/canonical-target/',
+			Canonical::sanitize_override( 'https://example.com/canonical-target/' )
+		);
+	}
+
+	/**
+	 * An empty submission stays empty (no override set).
+	 */
+	public function test_sanitize_override_accepts_empty_string(): void {
+		$this->assertSame( '', Canonical::sanitize_override( '' ) );
+	}
+
+	/**
+	 * A non-http(s) scheme is rejected outright, not just left unescaped —
+	 * this value is later echoed as <link rel="canonical" href="...">, and
+	 * this field is reachable by any role with the (by default Author/
+	 * Contributor-level) seo_wp_edit_meta capability.
+	 *
+	 * @dataProvider invalid_override_provider
+	 */
+	public function test_sanitize_override_rejects_non_http_values( string $raw ): void {
+		$this->assertSame( '', Canonical::sanitize_override( $raw ) );
+	}
+
+	/**
+	 * @return array<string,array{0:string}>
+	 */
+	public static function invalid_override_provider(): array {
+		return array(
+			'javascript scheme' => array( 'javascript:alert(1)' ),
+			'not a url at all'  => array( 'this is not a url' ),
+			'bare host'         => array( 'attacker.example' ),
+		);
+	}
 }

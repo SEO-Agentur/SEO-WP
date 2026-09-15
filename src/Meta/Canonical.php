@@ -98,6 +98,29 @@ final class Canonical {
 	}
 
 	/**
+	 * Sanitizes a submitted canonical-override value for storage: '' unless
+	 * it's a well-formed absolute http(s) URL. The metabox/term field this
+	 * feeds is reachable by any role granted the (by default, Author/
+	 * Contributor-level) seo_wp_edit_meta capability, and this value is
+	 * later echoed verbatim as <link rel="canonical" href="...">; without
+	 * this check a non-URL or a non-http(s) scheme (e.g. "javascript:")
+	 * could be stored — esc_url() at render time still prevents XSS, but
+	 * not a bogus/hijacked canonical target.
+	 *
+	 * @param string $raw Raw submitted value.
+	 */
+	public static function sanitize_override( string $raw ): string {
+		$raw = trim( $raw );
+		if ( '' === $raw ) {
+			return '';
+		}
+
+		$clean = esc_url_raw( $raw, array( 'http', 'https' ) );
+
+		return '' !== $clean && filter_var( $clean, FILTER_VALIDATE_URL ) ? $clean : '';
+	}
+
+	/**
 	 * Resolves the canonical URL for the current non-singular request,
 	 * applying the term-level override and pagination.
 	 */
