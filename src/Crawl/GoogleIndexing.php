@@ -285,6 +285,16 @@ final class GoogleIndexing {
 			'exp'   => $now + HOUR_IN_SECONDS,
 		);
 
+		// PHP's openssl_* functions accept not just an inline PEM string but
+		// also a file://(or other stream-wrapper, notably phar://) path as
+		// this argument. Rejecting anything that doesn't look like an
+		// actual PEM key before it ever reaches openssl_pkey_get_private()
+		// stops a pasted "private_key" value from being interpreted as a
+		// path instead of key material.
+		if ( 1 !== preg_match( '/^-----BEGIN [A-Z ]*PRIVATE KEY-----/', trim( $private_key ) ) ) {
+			return '';
+		}
+
 		$signing_input = self::base64url( (string) wp_json_encode( $header ) ) . '.' . self::base64url( (string) wp_json_encode( $claims ) );
 
 		$key_resource = openssl_pkey_get_private( $private_key );

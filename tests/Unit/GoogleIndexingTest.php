@@ -103,4 +103,29 @@ final class GoogleIndexingTest extends TestCase {
 
 		$this->assertSame( '', $jwt );
 	}
+
+	/**
+	 * A "private key" string that's actually a stream-wrapper path (e.g.
+	 * phar://, http://) is rejected before ever reaching
+	 * openssl_pkey_get_private(), which would otherwise follow it — a
+	 * known phar-deserialization/SSRF primitive.
+	 *
+	 * @dataProvider stream_wrapper_provider
+	 */
+	public function test_rejects_stream_wrapper_paths_instead_of_a_pem_key( string $value ): void {
+		$jwt = GoogleIndexing::build_jwt( 'svc@example.iam.gserviceaccount.com', $value );
+
+		$this->assertSame( '', $jwt );
+	}
+
+	/**
+	 * @return array<string,array{0:string}>
+	 */
+	public static function stream_wrapper_provider(): array {
+		return array(
+			'phar wrapper' => array( 'phar:///tmp/whatever.jpg' ),
+			'http wrapper' => array( 'http://attacker.example/x' ),
+			'file wrapper' => array( 'file:///etc/passwd' ),
+		);
+	}
 }
