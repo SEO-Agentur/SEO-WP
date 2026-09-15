@@ -10,3 +10,4 @@
 /phpunit.xml.dist
 /vendor
 /.phpunit.result.cache
+/languages/.gitkeep
