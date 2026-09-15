@@ -127,7 +127,10 @@ final class GoogleIndexingPage {
 	 */
 	private function render_settings_form( array $settings ): void {
 		$enabled    = ! empty( $settings['enable_google_indexing'] );
-		$key        = isset( $settings['google_indexing_key'] ) ? (string) $settings['google_indexing_key'] : '';
+		$has_key    = ! empty( $settings['google_indexing_key'] );
+		$key_hint   = $has_key
+			? __( '•••••••• (a key is saved — paste a new one to replace it, or leave blank to keep it)', 'seo-wp' )
+			: __( 'Paste the full contents of the service account key file downloaded from Google Cloud Console.', 'seo-wp' );
 		$post_types = isset( $settings['google_indexing_post_types'] ) && is_array( $settings['google_indexing_post_types'] )
 			? $settings['google_indexing_post_types']
 			: array( 'post', 'page' );
@@ -146,11 +149,10 @@ final class GoogleIndexingPage {
 		);
 
 		printf(
-			'<tr><th scope="row"><label for="seo_wp_google_indexing_key">%1$s</label></th><td><textarea id="seo_wp_google_indexing_key" name="google_indexing_key" rows="8" class="large-text code" placeholder="%2$s">%3$s</textarea><p class="description">%4$s</p></td></tr>',
+			'<tr><th scope="row"><label for="seo_wp_google_indexing_key">%1$s</label></th><td><textarea id="seo_wp_google_indexing_key" name="google_indexing_key" rows="8" class="large-text code" placeholder="%2$s" autocomplete="off"></textarea><p class="description">%3$s</p></td></tr>',
 			esc_html__( 'Service account JSON key', 'seo-wp' ),
-			esc_attr__( 'Paste the full contents of the service account key file downloaded from Google Cloud Console.', 'seo-wp' ),
-			esc_textarea( $key ),
-			esc_html__( 'Create a service account with the "Owner" role on a project with the Indexing API enabled, add its email as a delegated owner in Search Console, then paste its JSON key here.', 'seo-wp' )
+			esc_attr( $key_hint ),
+			esc_html__( 'Create a service account with the "Owner" role on a project with the Indexing API enabled, add its email as a delegated owner in Search Console, then paste its JSON key here. Never echoed back once saved — leave the field blank to keep the existing key.', 'seo-wp' )
 		);
 
 		echo '<tr><th scope="row">' . esc_html__( 'Post types', 'seo-wp' ) . '</th><td>';
@@ -223,7 +225,15 @@ final class GoogleIndexingPage {
 		}
 
 		$settings['enable_google_indexing'] = ! empty( $_POST['enable_google_indexing'] );
-		$settings['google_indexing_key']    = isset( $_POST['google_indexing_key'] ) ? sanitize_textarea_field( wp_unslash( (string) $_POST['google_indexing_key'] ) ) : '';
+
+		// A blank submission keeps the existing key rather than clearing it —
+		// the field is write-only (never re-populated with the stored value,
+		// see render_settings_form()), so "blank" is indistinguishable from
+		// "didn't mean to change it" and must not be read as "remove the key".
+		$submitted_key = isset( $_POST['google_indexing_key'] ) ? sanitize_textarea_field( wp_unslash( (string) $_POST['google_indexing_key'] ) ) : '';
+		if ( '' !== $submitted_key ) {
+			$settings['google_indexing_key'] = $submitted_key;
+		}
 
 		$submitted_types                        = isset( $_POST['google_indexing_post_types'] ) && is_array( $_POST['google_indexing_post_types'] )
 			? array_map( 'sanitize_key', wp_unslash( $_POST['google_indexing_post_types'] ) )
