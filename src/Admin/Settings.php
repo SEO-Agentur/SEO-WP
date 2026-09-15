@@ -934,7 +934,7 @@ final class Settings {
 		$this->checkbox_field( 'hsts_include_subdomains', __( 'Include subdomains in HSTS', 'seo-wp' ), false );
 		echo '<tr><td colspan="2"><p class="description">' . esc_html__( 'HSTS is only ever sent over an already-HTTPS connection — enabling it tells browsers to always use HTTPS for this domain from now on, which is hard to undo quickly (browsers cache it for the configured lifetime), so make sure HTTPS is fully working sitewide first.', 'seo-wp' ) . '</p></td></tr>';
 		$this->checkbox_field( 'enable_cors', __( 'Send Access-Control-Allow-Origin (CORS)', 'seo-wp' ), false );
-		$this->text_field( 'cors_allowed_origin', __( 'Allowed origin', 'seo-wp' ), '*' );
+		$this->text_field( 'cors_allowed_origin', __( 'Allowed origin', 'seo-wp' ), __( 'e.g. https://example.com — left blank, no CORS header is sent at all', 'seo-wp' ) );
 		$this->checkbox_field( 'enable_modern_mime_types', __( 'Allow uploading WebP, AVIF, WOFF/WOFF2 and JSON files', 'seo-wp' ), false );
 
 		echo '<tr><td colspan="2"><hr /><p class="description"><strong>' . esc_html__( 'Gzip, Brotli, browser caching, hotlink protection & directory browsing', 'seo-wp' ) . '</strong> — ' . esc_html__( 'these need actual web-server configuration, not just a PHP hook — see below the Save button for how they\'re applied.', 'seo-wp' ) . '</p></td></tr>';

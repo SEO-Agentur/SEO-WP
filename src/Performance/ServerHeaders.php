@@ -264,18 +264,22 @@ final class ServerHeaders {
 
 		if ( $this->enabled( 'enable_cors' ) ) {
 			$origin = $this->cors_origin();
-			header( 'Access-Control-Allow-Origin: ' . $origin );
-			header( 'Vary: Origin' );
+			// Fails closed rather than defaulting to a wildcard: enabling
+			// CORS with the origin field left blank sends no CORS headers
+			// at all, instead of silently becoming the most permissive
+			// possible policy ("*"). An explicit origin must be configured.
+			if ( '' !== $origin ) {
+				header( 'Access-Control-Allow-Origin: ' . $origin );
+				header( 'Vary: Origin' );
+			}
 		}
 	}
 
 	/**
-	 * The configured CORS origin, defaulting to '*' when left empty.
+	 * The configured CORS origin, or '' when none is set.
 	 */
 	private function cors_origin(): string {
-		$origin = isset( $this->settings()['cors_allowed_origin'] ) ? trim( (string) $this->settings()['cors_allowed_origin'] ) : '';
-
-		return '' === $origin ? '*' : $origin;
+		return isset( $this->settings()['cors_allowed_origin'] ) ? trim( (string) $this->settings()['cors_allowed_origin'] ) : '';
 	}
 
 	/**
