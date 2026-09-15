@@ -343,4 +343,92 @@ final class RedirectsTest extends TestCase {
 
 		$this->assertSame( Redirects::csv_header(), array_keys( $row ) );
 	}
+
+	/**
+	 * Recording one execution-limit failure increments the counter but
+	 * leaves the rule active — it takes MAX_REGEX_FAILURES to quarantine.
+	 */
+	public function test_record_regex_execution_failure_increments_without_quarantining_early(): void {
+		$id = Redirects::save(
+			0,
+			array( 'source' => '^/blog/(.+)$', 'target' => '/news/$1', 'type' => 301, 'active' => true, 'is_regex' => true )
+		);
+
+		Redirects::record_regex_execution_failure( $id );
+
+		$rule = Redirects::all()[ $id ];
+		$this->assertSame( 1, $rule['regex_failures'] );
+		$this->assertTrue( $rule['active'] );
+		$this->assertArrayNotHasKey( 'regex_quarantined', $rule );
+	}
+
+	/**
+	 * A rule is deactivated and flagged quarantined once it reaches
+	 * MAX_REGEX_FAILURES execution-limit failures.
+	 */
+	public function test_record_regex_execution_failure_quarantines_after_threshold(): void {
+		$id = Redirects::save(
+			0,
+			array( 'source' => '^/blog/(.+)$', 'target' => '/news/$1', 'type' => 301, 'active' => true, 'is_regex' => true )
+		);
+
+		Redirects::record_regex_execution_failure( $id );
+		Redirects::record_regex_execution_failure( $id );
+		Redirects::record_regex_execution_failure( $id );
+
+		$rule = Redirects::all()[ $id ];
+		$this->assertSame( 3, $rule['regex_failures'] );
+		$this->assertFalse( $rule['active'] );
+		$this->assertTrue( $rule['regex_quarantined'] );
+	}
+
+	/**
+	 * A quarantined rule is no longer matched — the deactivation from
+	 * record_regex_execution_failure() takes effect immediately.
+	 */
+	public function test_quarantined_rule_is_never_matched(): void {
+		$id = Redirects::save(
+			0,
+			array( 'source' => '^/blog/(.+)$', 'target' => '/news/$1', 'type' => 301, 'active' => true, 'is_regex' => true )
+		);
+
+		for ( $i = 0; $i < 3; $i++ ) {
+			Redirects::record_regex_execution_failure( $id );
+		}
+
+		$this->assertNull( Redirects::match( '/blog/my-post' ) );
+	}
+
+	/**
+	 * A no-op for an unknown rule ID rather than corrupting the stored
+	 * option with a bogus entry.
+	 */
+	public function test_record_regex_execution_failure_ignores_unknown_id(): void {
+		Redirects::record_regex_execution_failure( 999999 );
+
+		$this->assertArrayNotHasKey( 999999, Redirects::all() );
+	}
+
+	/**
+	 * Re-saving a quarantined rule (e.g. after fixing the pattern) clears
+	 * its failure history and quarantine flag — a fresh start, since
+	 * save() rebuilds the stored row from scratch rather than carrying
+	 * those fields forward.
+	 */
+	public function test_saving_a_rule_clears_prior_quarantine_state(): void {
+		$id = Redirects::save(
+			0,
+			array( 'source' => '^/blog/(.+)$', 'target' => '/news/$1', 'type' => 301, 'active' => true, 'is_regex' => true )
+		);
+		for ( $i = 0; $i < 3; $i++ ) {
+			Redirects::record_regex_execution_failure( $id );
+		}
+
+		Redirects::save( $id, array( 'source' => '^/blog/(.+)$', 'target' => '/news/$1', 'type' => 301, 'active' => true, 'is_regex' => true ) );
+
+		$rule = Redirects::all()[ $id ];
+		$this->assertTrue( $rule['active'] );
+		$this->assertArrayNotHasKey( 'regex_quarantined', $rule );
+		$this->assertArrayNotHasKey( 'regex_failures', $rule );
+	}
 }

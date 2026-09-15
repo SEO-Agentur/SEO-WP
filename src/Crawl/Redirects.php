@@ -46,6 +46,13 @@ final class Redirects {
 	private const MAX_PATTERN_LENGTH = 500;
 
 	/**
+	 * How many times a regex rule may hit PCRE's own backtrack/recursion
+	 * limit against a real request before it's auto-deactivated. See
+	 * regex_matches()/record_regex_execution_failure().
+	 */
+	private const MAX_REGEX_FAILURES = 3;
+
+	/**
 	 * Registers the redirect dispatcher. Runs before anything else on
 	 * template_redirect (including Crawl\SpecialArchives and
 	 * Crawl\NotFoundMonitor), so a configured rule always wins regardless
@@ -100,7 +107,7 @@ final class Redirects {
 			}
 
 			$matches = ! empty( $rule['is_regex'] )
-				? self::regex_matches( $rule['source'], $path )
+				? self::regex_matches( (int) $id, $rule['source'], $path )
 				: $rule['source'] === $path;
 
 			if ( $matches ) {
@@ -169,18 +176,74 @@ final class Redirects {
 	}
 
 	/**
-	 * Whether a path matches a user-authored regex pattern.
+	 * Whether a path matches a user-authored regex pattern. Defense in
+	 * depth beyond is_valid_regex()'s save-time heuristic: PCRE itself is
+	 * configured with a backtrack/recursion limit (php.ini's
+	 * pcre.backtrack_limit/pcre.recursion_limit — sane defaults on any
+	 * normal host), and if a pattern ever actually hits that limit against
+	 * a real request path — a shape the heuristic didn't catch — this
+	 * fails the match closed *and* counts it against the rule via
+	 * record_regex_execution_failure(), auto-deactivating it once that's
+	 * happened MAX_REGEX_FAILURES times, so a single slow request never
+	 * becomes a standing site-wide problem.
 	 *
+	 * @param int    $id      Rule ID, for failure tracking.
 	 * @param string $pattern Pattern as authored, without delimiters.
 	 * @param string $path    Path to test.
 	 */
-	private static function regex_matches( string $pattern, string $path ): bool {
+	private static function regex_matches( int $id, string $pattern, string $path ): bool {
 		if ( ! self::is_valid_regex( $pattern ) ) {
 			return false;
 		}
 
-		// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- validity already confirmed by is_valid_regex() above.
-		return 1 === @preg_match( self::wrap_pattern( $pattern ), $path );
+		// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- validity already confirmed by is_valid_regex() above; execution-limit errors are handled explicitly below via preg_last_error(), not swallowed.
+		$result = @preg_match( self::wrap_pattern( $pattern ), $path );
+
+		if ( false === $result && self::hit_pcre_execution_limit() ) {
+			self::record_regex_execution_failure( $id );
+		}
+
+		return 1 === $result;
+	}
+
+	/**
+	 * Whether the most recent preg_*() call failed specifically because it
+	 * hit PCRE's own backtrack or recursion budget — as opposed to, say, a
+	 * malformed pattern (which is_valid_regex() already excludes before
+	 * this is ever reached).
+	 */
+	private static function hit_pcre_execution_limit(): bool {
+		return in_array( preg_last_error(), array( PREG_BACKTRACK_LIMIT_ERROR, PREG_RECURSION_LIMIT_ERROR ), true );
+	}
+
+	/**
+	 * Records one execution-limit failure against a rule, deactivating it
+	 * once MAX_REGEX_FAILURES is reached so it stops being evaluated
+	 * against future requests — quarantined, not deleted, so the admin
+	 * can see why in the Redirects table and decide whether to fix or
+	 * remove it. Normally called internally by regex_matches() when a
+	 * live match attempt actually hits PCRE's backtrack/recursion limit;
+	 * public because that trigger condition isn't itself practical to
+	 * reproduce deterministically in a fast unit test, while this
+	 * increment/quarantine bookkeeping is and should be tested directly.
+	 *
+	 * @param int $id Rule ID.
+	 */
+	public static function record_regex_execution_failure( int $id ): void {
+		$rules = self::all();
+		if ( ! isset( $rules[ $id ] ) ) {
+			return;
+		}
+
+		$failures                       = (int) ( $rules[ $id ]['regex_failures'] ?? 0 ) + 1;
+		$rules[ $id ]['regex_failures'] = $failures;
+
+		if ( $failures >= self::MAX_REGEX_FAILURES ) {
+			$rules[ $id ]['active']            = false;
+			$rules[ $id ]['regex_quarantined'] = true;
+		}
+
+		update_option( self::OPTION_KEY, $rules, false );
 	}
 
 	/**

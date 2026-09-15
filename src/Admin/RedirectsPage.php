@@ -284,6 +284,13 @@ final class RedirectsPage {
 					$valid ? esc_html__( 'regex', 'seo-wp' ) : esc_html__( 'invalid regex', 'seo-wp' )
 				);
 			}
+			if ( ! empty( $rule['regex_quarantined'] ) ) {
+				printf(
+					' <span class="seo-wp-badge seo-wp-badge-warning" title="%1$s">%2$s</span>',
+					esc_attr__( 'Deactivated automatically: this pattern repeatedly hit PHP\'s PCRE backtrack/recursion limit against real requests, a sign it may be exploitable for denial-of-service. Rewrite it (avoid nested quantifiers like (a+)+) before reactivating.', 'seo-wp' ),
+					esc_html__( 'auto-deactivated: unsafe pattern', 'seo-wp' )
+				);
+			}
 			echo '</td>';
 			printf( '<td><code>%s</code></td>', esc_html( '' !== $rule['target'] ? $rule['target'] : '—' ) );
 			printf( '<td>%s</td>', esc_html( $type_labels[ $rule['type'] ] ?? (string) $rule['type'] ) );
