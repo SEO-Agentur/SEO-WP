@@ -5,7 +5,7 @@ Tags: seo, wpml, sitemap, schema, hreflang
 Requires at least: 6.4
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 1.4.2
+Stable tag: 1.4.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -134,6 +134,18 @@ SEO-WP integrates with several third-party services. Every one is optional, off 
 **Resource Hint Scanner** — contacted only when you click "Scan homepage for suggestions" under Settings > Performance. Fetches your *own* site's homepage (never a third party) to detect external script/stylesheet hosts worth preconnecting to. The result is a list of suggested lines you may choose to add to your own settings — nothing is applied automatically and nothing is sent anywhere else.
 
 == Changelog ==
+
+= 1.4.3 =
+* Security: escaped the document `<title>` output, closing an XSS gap on the `pre_get_document_title` short-circuit path where WordPress core doesn't apply its own escaping
+* Security: the Google Indexing API's service-account key field is now write-only (never echoed back), matching how the AI provider keys already work
+* Security: redirect regex patterns are now checked for the classic nested-quantifier shapes that cause catastrophic backtracking, and capped at 500 characters, before being accepted
+* Security: enabling CORS with no origin configured now sends no CORS headers at all, instead of defaulting to `Access-Control-Allow-Origin: *`
+* Fixed: the block editor's "SEO-WP" sidebar panel threw a JavaScript error on every post-edit screen and never actually rendered; the classic metabox was unaffected throughout
+* Fixed: a WooCommerce product with no price set could emit an invalid `"price": ""` in its Product schema; the offers block is now omitted instead
+* Fixed: uninstalling the plugin left 13 of its own options behind (role matrix, duplicate/link-audit scan state, Google Indexing token/log, IndexNow log, 404 log, redirects, a staging-notice flag, the error log) — all are now removed, matching the plugin's own documented intent. Post/term SEO data remains preserved on uninstall, as before
+* Added a WordPress.org-required "External services" section to the readme, disclosing all 6 outbound integrations (Google Indexing, IndexNow, Anthropic, OpenAI, DeepL, the Resource Hint Scanner)
+* Documented that Rank Math's Schema.org-type import mapping is best-effort/unverified
+* This release followed a full production-readiness audit — see `docs/audit/` and `docs/release/` for the complete findings and scope decisions
 
 = 1.4.2 =
 * New public filter API for developers: `seo_wp/title`, `seo_wp/meta_description`, `seo_wp/canonical`, `seo_wp/opengraph/tags` and `seo_wp/schema/graph` — customize any of SEO-WP's own head output from a theme or another plugin without editing this plugin's files. None attached by default, so existing sites are unaffected. See `docs/DEVELOPERS.md` for the full reference.
