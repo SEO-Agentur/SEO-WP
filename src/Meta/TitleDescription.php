@@ -79,7 +79,16 @@ final class TitleDescription {
 		 * @param mixed  $queried  The current request's queried object (WP_Post, WP_Term, ...), or null.
 		 */
 		// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- namespaced public extension point, documented for third-party developers.
-		return (string) apply_filters( 'seo_wp/title', $rendered, get_queried_object() );
+		$rendered = (string) apply_filters( 'seo_wp/title', $rendered, get_queried_object() );
+
+		// Unlike core's own title computation, a value returned through
+		// pre_get_document_title short-circuits _wp_render_title_tag()
+		// without any further escaping — core only escapes the title it
+		// computes itself. A post title, term name, or author display name
+		// (any of which can legally contain markup for a user with
+		// unfiltered_html, the default for Administrators/Editors) would
+		// otherwise reach <title> unescaped.
+		return esc_html( $rendered );
 	}
 
 	/**
