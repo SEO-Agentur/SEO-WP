@@ -57,6 +57,13 @@ final class DuplicateChecker {
 	private const BATCH_SIZE = 50;
 
 	/**
+	 * Transient used to prevent overlapping scan batch steps (two admin
+	 * tabs, or a slow request racing a client-side retry) from
+	 * interleaving their read-modify-write of OPTION_KEY.
+	 */
+	private const SCAN_LOCK = 'seo_wp_duplicate_scan_lock';
+
+	/**
 	 * Registers the submenu page, its assets and the AJAX endpoint.
 	 */
 	public function register(): void {
@@ -199,6 +206,11 @@ final class DuplicateChecker {
 			Ajax::error( array( 'message' => __( 'You are not allowed to do this.', 'seo-wp' ) ), 403 );
 		}
 
+		if ( get_transient( self::SCAN_LOCK ) ) {
+			Ajax::error( array( 'message' => __( 'A scan is already in progress.', 'seo-wp' ) ), 409 );
+		}
+		set_transient( self::SCAN_LOCK, 1, 30 );
+
 		$page = isset( $_POST['page'] ) ? max( 1, (int) $_POST['page'] ) : 1;
 
 		if ( 1 === $page ) {
@@ -246,6 +258,7 @@ final class DuplicateChecker {
 		}
 
 		update_option( self::OPTION_KEY, $scan, false );
+		delete_transient( self::SCAN_LOCK );
 
 		Ajax::success(
 			array(

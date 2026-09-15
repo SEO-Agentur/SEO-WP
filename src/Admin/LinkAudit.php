@@ -82,6 +82,12 @@ final class LinkAudit {
 	/** Transient used to prevent overlapping workers. */
 	private const WORKER_LOCK = 'seo_wp_link_audit_worker_lock';
 
+	/** Transient used to prevent overlapping content-scan batch steps. */
+	private const SCAN_LOCK = 'seo_wp_link_audit_scan_lock';
+
+	/** Transient used to prevent overlapping link-check batches (cron and on-demand share this). */
+	private const CHECK_LOCK = 'seo_wp_link_audit_check_lock';
+
 	/** WP-Cron fallback hook when loopback requests are unavailable. */
 	private const JOB_CRON_HOOK = 'seo_wp_link_audit_job_tick';
 
@@ -829,6 +835,12 @@ final class LinkAudit {
 		check_ajax_referer( self::NONCE_ACTION, 'nonce' );
 		if ( ! current_user_can( self::CAPABILITY ) && ! current_user_can( 'manage_options' ) ) {
 			Ajax::error( array( 'message' => __( 'You are not allowed to do this.', 'seo-wp' ) ), 403 ); }
+		// Guards against two concurrent batch steps (two admin tabs, or a
+		// slow request racing a client-side retry) interleaving their
+		// read-modify-write of SCAN_OPTION/QUEUE_OPTION.
+		if ( get_transient( self::SCAN_LOCK ) ) {
+			Ajax::error( array( 'message' => __( 'A scan is already in progress.', 'seo-wp' ) ), 409 ); }
+		set_transient( self::SCAN_LOCK, 1, 30 );
 		$page = isset( $_POST['page'] ) ? max( 1, (int) $_POST['page'] ) : 1;
 		if ( 1 === $page ) {
 			delete_option( self::SCAN_OPTION );
@@ -890,6 +902,7 @@ final class LinkAudit {
 			$scan['scanned_at'] = time(); }
 		update_option( self::SCAN_OPTION, $scan, false );
 		update_option( self::QUEUE_OPTION, $queue, false );
+		delete_transient( self::SCAN_LOCK );
 		Ajax::success(
 			array(
 				'done'        => ! $has_more,
@@ -1158,6 +1171,34 @@ final class LinkAudit {
 			);
 		}
 
+		// Cron and the on-demand AJAX endpoint both call this method
+		// against the same QUEUE_OPTION/RESULTS_OPTION; without a lock, an
+		// overlapping cron tick and an on-demand click (or two on-demand
+		// clicks) could interleave their read-modify-write and lose or
+		// duplicate results.
+		if ( get_transient( self::CHECK_LOCK ) ) {
+			return array(
+				'processed' => 0,
+				'current'   => '',
+			);
+		}
+		set_transient( self::CHECK_LOCK, 1, 30 );
+
+		try {
+			return $this->check_links_batch_locked( $queue );
+		} finally {
+			delete_transient( self::CHECK_LOCK );
+		}
+	}
+
+	/**
+	 * The locked body of check_links_batch(), split out only so the lock
+	 * acquired there can be released via try/finally regardless of which
+	 * branch below returns.
+	 *
+	 * @param array<string,array{sources:int[]}> $queue Current link queue.
+	 */
+	private function check_links_batch_locked( array $queue ): array {
 		// Each AJAX/cron request intentionally handles only a bounded slice.
 		// This prevents large sites or slow external hosts from exhausting the
 		// PHP max_execution_time. The browser immediately requests the next
