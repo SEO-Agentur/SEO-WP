@@ -70,7 +70,7 @@ Built and maintained by [Cyrus Badde](https://seo-wp.net). If it saves you time,
 
 **Import**
 
-* Non-destructive, dry-run capable, paginated import from Yoast SEO, Rank Math and All in One SEO — object meta, term meta, and (Yoast and Rank Math) author archive noindex settings; AIOSEO has no per-author SEO settings to import
+* Non-destructive, dry-run capable, paginated import from Yoast SEO, Rank Math and All in One SEO — object meta, term meta, and (Yoast and Rank Math) author archive noindex settings; AIOSEO has no per-author SEO settings to import. Rank Math's Schema.org type mapping specifically is best-effort — Rank Math's internal type slugs (both the legacy dropdown and the newer per-post Schema Generator) are translated via an inferred lookup that hasn't been verified against Rank Math's own source, so always spot-check imported schema types in the dry-run preview
 * Site-wide settings (title/description templates, separator, Twitter handle) are also imported from Yoast (high confidence — a stable option layout) and Rank Math (moderate confidence — flag any surprising result and adjust by hand); AIOSEO's settings format isn't imported, since it was never verified with enough confidence to map safely
 * Existing redirect rules from another plugin are never migrated automatically; the import wizard flags when a source has redirect data so you can recreate it in SEO-WP's own Redirects screen
 * An explicit "Deactivate {plugin} now" button appears after a real (non-dry-run) import completes — never automatic, and only shown when that plugin is actually confirmed active
@@ -117,6 +117,21 @@ No. Existing redirect *rules* from another plugin aren't migrated automatically 
 
 Yes. Every WPML-specific feature (hreflang, per-language templates) is a no-op when WPML isn't active — nothing here is a hard dependency.
 
+== External services ==
+
+SEO-WP integrates with several third-party services. Every one is optional, off by default, and only ever contacted when you explicitly enable and use that specific feature — nothing below runs on its own without your action, with the sole exception of the two "on publish" pings noted, which only fire automatically once you've explicitly turned that toggle on.
+
+**Google Indexing API** — notifies Google when you publish, update or delete content, if enabled under SEO-WP > Google Indexing API with your own Google Cloud service-account key. Sends the affected page's URL to Google on publish/update/delete. You provide and own the Google Cloud service account; SEO-WP never proxies this call or adds a markup. [Google APIs Terms of Service](https://developers.google.com/terms), [Google Privacy Policy](https://policies.google.com/privacy).
+
+**IndexNow** (Bing, Yandex, Seznam, Naver) — pings the shared IndexNow endpoint (api.indexnow.org) on publish/update/delete if enabled under SEO-WP > Instant Indexing, or when you manually submit URLs there. Sends the affected page URL(s) and your site's IndexNow key (auto-generated, or one you choose). [IndexNow protocol & privacy](https://www.indexnow.org/privacy).
+
+**Anthropic (Claude)** — contacted only when you click "Suggest" or "Translate" in the Bulk Editor with an Anthropic API key configured under SEO-WP > AI Settings and Anthropic selected as the provider. Sends the edited page's URL, your focus keyword, and up to roughly 1200 characters of its rendered content to Anthropic's Messages API, to generate a title/description suggestion. Bring-your-own-key: billed directly by Anthropic, never proxied or marked up by SEO-WP. [Anthropic Consumer Terms](https://www.anthropic.com/legal/consumer-terms), [Anthropic Privacy Policy](https://www.anthropic.com/legal/privacy).
+
+**OpenAI** — same trigger and the same data as the Anthropic integration above, sent to OpenAI's Chat Completions API instead, only when an OpenAI key is configured and OpenAI is the selected provider. Bring-your-own-key, same as Anthropic. [OpenAI Terms of Use](https://openai.com/policies/terms-of-use), [OpenAI Privacy Policy](https://openai.com/policies/privacy-policy).
+
+**DeepL** — contacted only when you click "Translate" in the Bulk Editor on a WPML-enabled site with a DeepL API key configured. Sends the row's title/description text to DeepL's Translate API, once per target language, and writes the result straight into that language's own WPML-linked post. Bring-your-own-key. [DeepL Terms & Conditions](https://www.deepl.com/en/pro-license), [DeepL Privacy Policy](https://www.deepl.com/en/privacy).
+
+**Resource Hint Scanner** — contacted only when you click "Scan homepage for suggestions" under Settings > Performance. Fetches your *own* site's homepage (never a third party) to detect external script/stylesheet hosts worth preconnecting to. The result is a list of suggested lines you may choose to add to your own settings — nothing is applied automatically and nothing is sent anywhere else.
 
 == Changelog ==
 
