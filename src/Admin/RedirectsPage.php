@@ -38,6 +38,28 @@ final class RedirectsPage {
 	private const NONCE_NAME = 'seo_wp_redirects_nonce';
 
 	/**
+	 * Maximum accepted CSV upload size for an import (2 MB — generous for
+	 * any real redirect list; bounds the worst case for an accidental
+	 * huge-file upload, which is otherwise resource exhaustion an
+	 * Administrator can trigger on themselves).
+	 */
+	private const MAX_IMPORT_FILE_SIZE = 2 * MB_IN_BYTES;
+
+	/**
+	 * Maximum rows read from one CSV import. Anything beyond this is
+	 * silently not read at all (reported as skipped), rather than the
+	 * request running indefinitely on a file with far more rows than any
+	 * real redirect list would ever have.
+	 */
+	private const MAX_IMPORT_ROWS = 5000;
+
+	/**
+	 * Maximum accepted length for a single source/target field in an
+	 * imported row — well beyond any real URL, just a sanity ceiling.
+	 */
+	private const MAX_IMPORT_FIELD_LENGTH = 2000;
+
+	/**
 	 * Registers the submenu page and its form handlers.
 	 */
 	public function register(): void {
@@ -112,6 +134,21 @@ final class RedirectsPage {
 	 */
 	private function maybe_render_import_notice(): void {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only success banner reflecting the just-completed import, not a state-changing action itself.
+		if ( isset( $_GET['oversize'] ) ) {
+			printf(
+				'<div class="notice notice-error is-dismissible"><p>%s</p></div>',
+				esc_html(
+					sprintf(
+						/* translators: %s: maximum accepted upload size, e.g. "2 MB". */
+						__( 'Import stopped: the uploaded file is larger than the %s limit. Split it into smaller files and import them one at a time.', 'seo-wp' ),
+						size_format( self::MAX_IMPORT_FILE_SIZE )
+					)
+				)
+			);
+			return;
+		}
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only success banner, not a state-changing action itself.
 		if ( ! isset( $_GET['imported'] ) ) {
 			return;
 		}
@@ -125,10 +162,12 @@ final class RedirectsPage {
 			'<div class="notice notice-success is-dismissible"><p>%s</p></div>',
 			esc_html(
 				sprintf(
-					/* translators: 1: number of rows imported, 2: number of rows skipped. */
-					__( 'Import complete: %1$d redirect(s) imported, %2$d row(s) skipped (no source column).', 'seo-wp' ),
+					/* translators: 1: number of rows imported, 2: number of rows skipped, 3: maximum field length, 4: maximum rows read per file. */
+					__( 'Import complete: %1$d redirect(s) imported, %2$d row(s) skipped (missing source, or a field over the %3$s length limit). At most %4$d rows are read from one file — split a larger export into multiple files if needed.', 'seo-wp' ),
 					$imported,
-					$skipped
+					$skipped,
+					number_format_i18n( self::MAX_IMPORT_FIELD_LENGTH ),
+					self::MAX_IMPORT_ROWS
 				)
 			)
 		);
@@ -417,22 +456,28 @@ final class RedirectsPage {
 
 		$imported = 0;
 		$skipped  = 0;
+		$oversize = false;
 
-		$tmp_name = isset( $_FILES['csv_file']['tmp_name'] ) ? (string) $_FILES['csv_file']['tmp_name'] : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- covered by check_admin_referer() above; $_FILES has no slashing to unslash.
-		if ( '' !== $tmp_name && is_uploaded_file( $tmp_name ) ) {
+		$tmp_name  = isset( $_FILES['csv_file']['tmp_name'] ) ? (string) $_FILES['csv_file']['tmp_name'] : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- covered by check_admin_referer() above; $_FILES has no slashing to unslash.
+		$file_size = isset( $_FILES['csv_file']['size'] ) ? (int) $_FILES['csv_file']['size'] : 0; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- covered by check_admin_referer() above.
+		if ( '' !== $tmp_name && is_uploaded_file( $tmp_name ) && $file_size > self::MAX_IMPORT_FILE_SIZE ) {
+			$oversize = true;
+		} elseif ( '' !== $tmp_name && is_uploaded_file( $tmp_name ) ) {
 			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen -- reading the just-validated upload's own temp file directly; WP_Filesystem has no CSV row API and would add nothing here.
 			$handle = fopen( $tmp_name, 'r' );
 			if ( is_resource( $handle ) ) {
 				$header = fgetcsv( $handle );
 				if ( is_array( $header ) ) {
 					$header = array_map( static fn( $column ): string => strtolower( trim( (string) $column ) ), $header );
+					$rows   = 0;
 
 					// phpcs:ignore Generic.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition -- fgetcsv()'s own API: false means end-of-file (a genuine empty row returns array(null)), so the assignment has to happen in the loop condition to tell them apart.
-					while ( false !== ( $row = fgetcsv( $handle ) ) ) {
+					while ( $rows < self::MAX_IMPORT_ROWS && false !== ( $row = fgetcsv( $handle ) ) ) {
+						++$rows;
 						$assoc = array_combine( $header, array_pad( $row, count( $header ), '' ) );
 						$rule  = is_array( $assoc ) ? Redirects::parse_csv_row( $assoc ) : null;
 
-						if ( null === $rule ) {
+						if ( null === $rule || strlen( $rule['source'] ) > self::MAX_IMPORT_FIELD_LENGTH || strlen( $rule['target'] ) > self::MAX_IMPORT_FIELD_LENGTH ) {
 							++$skipped;
 							continue;
 						}
@@ -446,16 +491,16 @@ final class RedirectsPage {
 			}
 		}
 
-		wp_safe_redirect(
-			add_query_arg(
-				array(
-					'page'     => self::PAGE_SLUG,
-					'imported' => $imported,
-					'skipped'  => $skipped,
-				),
-				admin_url( 'admin.php' )
-			)
+		$redirect_args = array(
+			'page'     => self::PAGE_SLUG,
+			'imported' => $imported,
+			'skipped'  => $skipped,
 		);
+		if ( $oversize ) {
+			$redirect_args['oversize'] = 1;
+		}
+
+		wp_safe_redirect( add_query_arg( $redirect_args, admin_url( 'admin.php' ) ) );
 		exit;
 	}
 }
