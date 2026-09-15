@@ -5,7 +5,7 @@ Tags: seo, wpml, sitemap, schema, hreflang
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.4.5
+Stable tag: 1.4.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -134,6 +134,16 @@ SEO-WP integrates with several third-party services. Every one is optional, off 
 **Resource Hint Scanner** — contacted only when you click "Scan homepage for suggestions" under Settings > Performance. Fetches your *own* site's homepage (never a third party) to detect external script/stylesheet hosts worth preconnecting to. The result is a list of suggested lines you may choose to add to your own settings — nothing is applied automatically and nothing is sent anywhere else.
 
 == Changelog ==
+
+= 1.4.6 =
+* Security: fixed an authorization bug in Role Manager where saving the roles form could silently strip the Administrator role's own access to Settings, the SEO metabox, Bulk Editor, Redirects, Import and Diagnostics, with no self-service recovery — every area is now correctly kept for Administrator on every save, plus a defense-in-depth `manage_options` bypass
+* Security: sitemap and head-fragment caches are no longer flushed on every autosave/revision save (only on a real publish/update), and sitemap page numbers are now validated against the actual page count before querying — closing an unauthenticated cache-bypass amplification vector
+* Security: the Google Indexing service-account key is now validated as an actual PEM key before use, rejecting `phar://`/`http://`/`file://` stream-wrapper values
+* Security: the canonical URL override (post/term metabox field, writable by Author/Contributor-level roles by default) now requires a well-formed absolute http(s) URL, closing a canonical-hijacking vector
+* Security: the Settings page now correctly enforces its own virtual capability when saved (previously fell back to requiring real `manage_options`, breaking Role Manager's own delegation for this page)
+* Hardened: the sitemap cache key now includes the active WPML language, a `</style>` breakout guard is now case-insensitive, the video sitemap's HTML scan is now length-bounded, the content renderer restores global state even if a third-party filter throws, the autoloader rejects malformed class names, and the 404 monitor's referrer field is now length-capped
+* Hardened: the Duplicate Content and Link Audit batch scanners now guard against overlapping concurrent runs corrupting shared scan state
+* This release followed a second, independent security audit — going beyond the WordPress.org Plugin Check and the externally-authored audit both covered in 1.4.4/1.4.5 — see `docs/audit/` for the full findings and reasoning behind each fix
 
 = 1.4.5 =
 * Security: fixed an SSRF in the Link Audit broken-link checker — server-side HTTP requests (including every redirect hop) now go through wp_safe_remote_head()/wp_safe_remote_get(), rejecting loopback/private/reserved/link-local destinations
