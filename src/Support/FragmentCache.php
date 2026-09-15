@@ -36,10 +36,27 @@ final class FragmentCache {
 	 * any cached fragment.
 	 */
 	public function register(): void {
-		add_action( 'save_post', array( $this, 'invalidate' ) );
+		add_action( 'save_post', array( $this, 'maybe_invalidate_on_save' ) );
 		add_action( 'deleted_post', array( $this, 'invalidate' ) );
 		add_action( 'edited_term', array( $this, 'invalidate' ) );
 		add_action( 'delete_term', array( $this, 'invalidate' ) );
+	}
+
+	/**
+	 * Invalidates on a real save only. save_post fires unconditionally for
+	 * every wp_insert_post() call, including autosaves and revisions —
+	 * without this guard, any editor's normal autosave loop would keep
+	 * every cached fragment perpetually cold (same issue as, and fixed the
+	 * same way as, Sitemaps\Router::maybe_invalidate_cache_on_save()).
+	 *
+	 * @param int $post_id Post being saved.
+	 */
+	public function maybe_invalidate_on_save( int $post_id ): void {
+		if ( wp_is_post_revision( $post_id ) || wp_is_post_autosave( $post_id ) ) {
+			return;
+		}
+
+		$this->invalidate();
 	}
 
 	/**

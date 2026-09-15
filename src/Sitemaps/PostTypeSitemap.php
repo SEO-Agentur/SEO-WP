@@ -35,7 +35,7 @@ final class PostTypeSitemap {
 			return 0;
 		}
 
-		$query = new WP_Query( $this->query_args( $post_type, 1 ) );
+		$query = new WP_Query( $this->query_args( $post_type, 1, true ) );
 
 		return (int) $query->max_num_pages;
 	}
@@ -56,7 +56,7 @@ final class PostTypeSitemap {
 			return null;
 		}
 
-		$query = new WP_Query( $this->query_args( $post_type, $page ) );
+		$query = new WP_Query( $this->query_args( $post_type, $page, false ) );
 
 		if ( array() === $query->posts ) {
 			return null;
@@ -91,11 +91,16 @@ final class PostTypeSitemap {
 	 * Builds the WP_Query args for a post type's sitemap page, excluding
 	 * password-protected and noindexed posts.
 	 *
-	 * @param string $post_type Post type slug.
-	 * @param int    $page      Page number, starting at 1.
+	 * @param string $post_type       Post type slug.
+	 * @param int    $page            Page number, starting at 1.
+	 * @param bool   $need_found_rows Whether the caller needs max_num_pages
+	 *                                (max_pages()); render() already knows
+	 *                                the page is in range by the time it
+	 *                                queries, so it skips the SQL_CALC_FOUND_ROWS
+	 *                                pass entirely.
 	 * @return array<string,mixed>
 	 */
-	private function query_args( string $post_type, int $page ): array {
+	private function query_args( string $post_type, int $page, bool $need_found_rows ): array {
 		return array(
 			'post_type'              => $post_type,
 			'post_status'            => 'publish',
@@ -105,7 +110,7 @@ final class PostTypeSitemap {
 			'posts_per_page'         => self::ITEMS_PER_PAGE,
 			'paged'                  => $page,
 			'fields'                 => 'ids',
-			'no_found_rows'          => false,
+			'no_found_rows'          => ! $need_found_rows,
 			'ignore_sticky_posts'    => true,
 			'update_post_meta_cache' => false,
 			'update_post_term_cache' => false,

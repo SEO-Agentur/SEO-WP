@@ -42,7 +42,7 @@ final class Router {
 		add_action( 'template_redirect', array( $this, 'maybe_render' ) );
 		add_filter( 'wp_sitemaps_enabled', array( $this, 'maybe_disable_core_sitemap' ) );
 
-		add_action( 'save_post', array( $this, 'invalidate_cache' ) );
+		add_action( 'save_post', array( $this, 'maybe_invalidate_cache_on_save' ) );
 		add_action( 'deleted_post', array( $this, 'invalidate_cache' ) );
 		add_action( 'edited_term', array( $this, 'invalidate_cache' ) );
 		add_action( 'delete_term', array( $this, 'invalidate_cache' ) );
@@ -93,6 +93,12 @@ final class Router {
 		$name = (string) get_query_var( 'seo_wp_sitemap_name' );
 		$page = max( 1, (int) get_query_var( 'seo_wp_sitemap_page' ) );
 
+		if ( ! $this->page_in_range( $type, $name, $page ) ) {
+			status_header( 404 );
+			nocache_headers();
+			return;
+		}
+
 		$xml = $this->cached_render( $type, $name, $page );
 
 		if ( null === $xml ) {
@@ -124,11 +130,55 @@ final class Router {
 	}
 
 	/**
+	 * Flushes every cached sitemap page, but only for a save that actually
+	 * changes what a sitemap could show. save_post fires unconditionally
+	 * for every wp_insert_post() call, including autosaves and revisions —
+	 * without this guard, any editor's normal autosave loop would keep the
+	 * whole sitemap cache perpetually cold.
+	 *
+	 * @param int $post_id Post being saved.
+	 */
+	public function maybe_invalidate_cache_on_save( int $post_id ): void {
+		if ( wp_is_post_revision( $post_id ) || wp_is_post_autosave( $post_id ) ) {
+			return;
+		}
+
+		$this->invalidate_cache();
+	}
+
+	/**
 	 * Flushes every cached sitemap page. Cheaper than tracking which
 	 * specific pages a given post/term affects.
 	 */
 	public function invalidate_cache(): void {
 		wp_cache_flush_group( self::CACHE_GROUP );
+	}
+
+	/**
+	 * Whether a requested page number is within the sitemap's actual page
+	 * count. Checked before ever touching the cache or a builder, so an
+	 * out-of-range page number (e.g. an enumerated, ever-increasing value)
+	 * can't be used to force a guaranteed cache-miss followed by an
+	 * expensive, large-offset query — it 404s immediately instead.
+	 * index/news are single-page sitemaps with no page concept, so any
+	 * page other than 1 is out of range for them.
+	 *
+	 * @param string $type Sitemap type: index, news, posts or taxonomies.
+	 * @param string $name Post type or taxonomy slug, when applicable.
+	 * @param int    $page Requested page number.
+	 */
+	private function page_in_range( string $type, string $name, int $page ): bool {
+		switch ( $type ) {
+			case 'index':
+			case 'news':
+				return 1 === $page;
+			case 'posts':
+				return $page <= max( 1, ( new PostTypeSitemap() )->max_pages( $name ) );
+			case 'taxonomies':
+				return $page <= max( 1, ( new TaxonomySitemap() )->max_pages( $name ) );
+			default:
+				return false;
+		}
 	}
 
 	/**
@@ -140,7 +190,7 @@ final class Router {
 	 * @param int    $page Requested page number.
 	 */
 	private function cached_render( string $type, string $name, int $page ): ?string {
-		$cache_key = "sitemap:{$type}:{$name}:{$page}";
+		$cache_key = "sitemap:{$type}:{$name}:{$page}:" . $this->language();
 		$found     = false;
 		$cached    = wp_cache_get( $cache_key, self::CACHE_GROUP, false, $found );
 
@@ -153,6 +203,16 @@ final class Router {
 		wp_cache_set( $cache_key, $xml, self::CACHE_GROUP, self::CACHE_TTL );
 
 		return $xml;
+	}
+
+	/**
+	 * Resolves the current language, when WPML (or a compatible plugin) is
+	 * active, so cache entries never mix URLs resolved under one language
+	 * with a request for another — same pattern as Support\FragmentCache.
+	 */
+	private function language(): string {
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WPML's own filter, not one of ours.
+		return has_filter( 'wpml_current_language' ) ? (string) apply_filters( 'wpml_current_language', null ) : '';
 	}
 
 	/**
