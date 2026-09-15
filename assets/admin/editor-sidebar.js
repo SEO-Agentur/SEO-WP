@@ -99,11 +99,11 @@
 
 		var editedTitle = useSelect( function ( select ) {
 			return select( 'core/editor' ).getEditedPostAttribute( 'title' ) || '';
-		}, array() );
+		}, [] );
 
 		var editedExcerpt = useSelect( function ( select ) {
 			return select( 'core/editor' ).getEditedPostAttribute( 'excerpt' ) || '';
-		}, array() );
+		}, [] );
 
 		useEffect( function () {
 			function onTitleInput( event ) {
@@ -131,7 +131,7 @@
 					descriptionEl.removeEventListener( 'input', onDescriptionInput );
 				}
 			};
-		}, array() );
+		}, [] );
 
 		if ( ! classicAvailable ) {
 			return el(
