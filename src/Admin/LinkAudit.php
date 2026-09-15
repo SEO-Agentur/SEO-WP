@@ -961,7 +961,11 @@ final class LinkAudit {
 	 * @param array<string,array{sources:int[]}>      $queue Link queue, modified by reference.
 	 */
 	private function scan_widgets( string $host, array &$scan, array &$queue ): void {
-		$sidebars = wp_get_sidebars_widgets();
+		// The raw option, not wp_get_sidebars_widgets() (WordPress.org's
+		// Plugin Check denylists that function) — same sidebar_id =>
+		// widget_ids shape, including the 'wp_inactive_widgets' key this
+		// method already filters out below.
+		$sidebars = get_option( 'sidebars_widgets', array() );
 		if ( ! is_array( $sidebars ) ) {
 			return;
 		}
