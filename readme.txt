@@ -5,7 +5,7 @@ Tags: seo, wpml, sitemap, schema, hreflang
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.4.4
+Stable tag: 1.4.5
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -134,6 +134,15 @@ SEO-WP integrates with several third-party services. Every one is optional, off 
 **Resource Hint Scanner** — contacted only when you click "Scan homepage for suggestions" under Settings > Performance. Fetches your *own* site's homepage (never a third party) to detect external script/stylesheet hosts worth preconnecting to. The result is a list of suggested lines you may choose to add to your own settings — nothing is applied automatically and nothing is sent anywhere else.
 
 == Changelog ==
+
+= 1.4.5 =
+* Security: fixed an SSRF in the Link Audit broken-link checker — server-side HTTP requests (including every redirect hop) now go through wp_safe_remote_head()/wp_safe_remote_get(), rejecting loopback/private/reserved/link-local destinations
+* Security: moved the Anthropic, OpenAI, DeepL and Google Indexing API keys off the autoloaded general settings option into their own dedicated, non-autoloaded storage
+* Security: redirect regex patterns are now also checked at match time for PCRE backtrack/recursion-limit errors, not just at save time — a pattern that repeatedly hits the limit against real requests is automatically deactivated and flagged in the Redirects table
+* Security: added file size, row count and field length ceilings to the redirect CSV importer
+* Security: reduced database write amplification from anonymous 404-flooding (path length cap, less frequent log trimming)
+* Security: the Link Audit background worker's authentication token is now invalidated as soon as its job completes or errors, closing a token-replay window
+* This release followed an independent, verified security audit — see `docs/audit/` for the full findings and reasoning behind each fix
 
 = 1.4.4 =
 * Ran the official WordPress.org Plugin Check tool against a live install and fixed everything it flagged that was safe to fix: replaced a denylisted function (`wp_get_sidebars_widgets()`) in Link Audit's widget scanner, bumped "Tested up to" to WordPress 7.1, filled in the real Contributors username, and stopped shipping a stray dotfile in the languages folder
