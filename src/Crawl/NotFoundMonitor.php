@@ -31,6 +31,25 @@ final class NotFoundMonitor {
 	private const MAX_ENTRIES = 500;
 
 	/**
+	 * How far over MAX_ENTRIES the log is allowed to grow before it's
+	 * actually trimmed. Trimming re-sorts the whole log by last_seen, an
+	 * O(n log n) pass — without a buffer, that sort would run on every
+	 * single insert once at capacity, letting anonymous, high-cardinality
+	 * 404 traffic (a different bogus path each request) force a full sort
+	 * on every hit. Batching the trim to once every BUFFER inserts past
+	 * capacity keeps the log size bounded (never more than MAX_ENTRIES +
+	 * BUFFER entries) while cutting how often that sort actually runs.
+	 */
+	private const TRIM_BUFFER = 50;
+
+	/**
+	 * Request paths longer than this are truncated before being used as a
+	 * log key or stored — an attacker-chosen, arbitrarily long request
+	 * path shouldn't be able to bloat a single option row.
+	 */
+	private const MAX_PATH_LENGTH = 500;
+
+	/**
 	 * Registers the template_redirect recorder. Runs after Crawl\Redirects
 	 * (priority 1), so a URL that already has a matching redirect rule
 	 * never reaches is_404() in the first place and is never logged here.
@@ -50,6 +69,9 @@ final class NotFoundMonitor {
 		$path = self::current_path();
 		if ( '' === $path ) {
 			return;
+		}
+		if ( strlen( $path ) > self::MAX_PATH_LENGTH ) {
+			$path = substr( $path, 0, self::MAX_PATH_LENGTH );
 		}
 
 		$referrer = isset( $_SERVER['HTTP_REFERER'] ) ? esc_url_raw( wp_unslash( (string) $_SERVER['HTTP_REFERER'] ) ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- wp_unslash() is called here.
@@ -71,7 +93,7 @@ final class NotFoundMonitor {
 			);
 		}
 
-		if ( count( $log ) > self::MAX_ENTRIES ) {
+		if ( count( $log ) > self::MAX_ENTRIES + self::TRIM_BUFFER ) {
 			uasort( $log, static fn ( array $a, array $b ): int => $a['last_seen'] <=> $b['last_seen'] );
 			$log = array_slice( $log, -self::MAX_ENTRIES, null, true );
 		}
