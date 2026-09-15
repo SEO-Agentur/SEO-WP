@@ -54,8 +54,10 @@ final class CriticalCss {
 		// A literal "</style>" inside the stored CSS would otherwise close
 		// this tag early; nothing else needs escaping since raw CSS is the
 		// intended, admin-capability-gated content here (the same trust
-		// model as WordPress core's own Customizer "Additional CSS").
-		echo '<style id="seo-wp-critical-css">' . str_replace( '</style', '<\/style', $css ) . '</style>' . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- raw admin-supplied CSS, escaped for the one real risk (tag breakout) above; see docblock.
+		// model as WordPress core's own Customizer "Additional CSS"). HTML
+		// end-tag matching is case-insensitive, so this has to match
+		// "</STYLE"/"</Style"/etc. too, not just the lowercase literal.
+		echo '<style id="seo-wp-critical-css">' . preg_replace( '#</style#i', '<\/style', $css ) . '</style>' . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- raw admin-supplied CSS, escaped for the one real risk (tag breakout) above; see docblock.
 	}
 
 	/**

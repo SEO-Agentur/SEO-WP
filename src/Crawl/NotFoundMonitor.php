@@ -75,6 +75,9 @@ final class NotFoundMonitor {
 		}
 
 		$referrer = isset( $_SERVER['HTTP_REFERER'] ) ? esc_url_raw( wp_unslash( (string) $_SERVER['HTTP_REFERER'] ) ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- wp_unslash() is called here.
+		if ( strlen( $referrer ) > self::MAX_PATH_LENGTH ) {
+			$referrer = substr( $referrer, 0, self::MAX_PATH_LENGTH );
+		}
 
 		$log = self::all();
 

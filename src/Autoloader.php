@@ -42,7 +42,18 @@ final class Autoloader {
 		}
 
 		$relative = substr( $class_name, strlen( self::PREFIX ) );
-		$path     = self::BASE_DIR . str_replace( '\\', '/', $relative ) . '.php';
+
+		// A real PHP class declaration can't contain anything but this
+		// character set, but the string handed to a registered autoloader
+		// isn't required to have come from one (e.g. a crafted
+		// class_exists()/instantiation call fed by some other, unrelated
+		// code path) — reject anything else before it can influence a
+		// filesystem path.
+		if ( 1 !== preg_match( '/^[A-Za-z0-9_\\\\]+$/', $relative ) ) {
+			return;
+		}
+
+		$path = self::BASE_DIR . str_replace( '\\', '/', $relative ) . '.php';
 
 		if ( is_readable( $path ) ) {
 			require $path;

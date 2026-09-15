@@ -26,6 +26,17 @@ use WP_Post;
 final class VideoSitemap {
 
 	/**
+	 * The <video>...</video> block regex below uses a lazy dotall match
+	 * anchored on a literal closing tag, so content with many unclosed
+	 * <video opens scans to the end of the string on each attempt (O(n·k),
+	 * quadratic in the worst case, not exponential). Rendered content is
+	 * truncated to this length before scanning to bound that cost —
+	 * post_content this large is already far outside any realistic single
+	 * post.
+	 */
+	private const MAX_SCAN_LENGTH = 200000;
+
+	/**
 	 * Resolves the video entries to list for a post's sitemap entry.
 	 *
 	 * @param int $post_id Post ID.
@@ -40,6 +51,9 @@ final class VideoSitemap {
 		// Sitemap pages are cached (see Sitemaps\Router), so rendering the
 		// content this way runs at most once per post per cache window.
 		$html = ContentRenderer::render( $post );
+		if ( strlen( $html ) > self::MAX_SCAN_LENGTH ) {
+			$html = substr( $html, 0, self::MAX_SCAN_LENGTH );
+		}
 
 		$found = array_merge(
 			self::extract_self_hosted_videos( $html ),
