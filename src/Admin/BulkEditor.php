@@ -18,6 +18,7 @@ use SeoWp\Support\CoexistenceMode;
 use SeoWp\Support\ContentRenderer;
 use SeoWp\Support\DeepLClient;
 use SeoWp\Support\LengthAdvisor;
+use SeoWp\Support\Secrets;
 use WP_Post;
 use WP_Query;
 
@@ -102,14 +103,11 @@ final class BulkEditor {
 		wp_enqueue_script( 'seo-wp-bulk-editor-ai', plugins_url( 'assets/admin/bulk-editor-ai.js', \SeoWp\FILE ), array(), \SeoWp\VERSION, true );
 		wp_enqueue_script( 'seo-wp-bulk-editor-ux', plugins_url( 'assets/admin/bulk-editor-ux.js', \SeoWp\FILE ), array(), \SeoWp\VERSION, true );
 
-		$settings = get_option( 'seo_wp_settings', array() );
-		$settings = is_array( $settings ) ? $settings : array();
-
 		$providers = array();
-		if ( ! empty( $settings['ai_anthropic_key'] ) ) {
+		if ( Secrets::has( 'ai_anthropic_key' ) ) {
 			$providers['anthropic'] = __( 'Claude', 'seo-wp' );
 		}
-		if ( ! empty( $settings['ai_openai_key'] ) ) {
+		if ( Secrets::has( 'ai_openai_key' ) ) {
 			$providers['openai'] = __( 'OpenAI', 'seo-wp' );
 		}
 
@@ -122,7 +120,7 @@ final class BulkEditor {
 				'suggestAction'   => 'seo_wp_bulk_ai_suggest',
 				'translateAction' => 'seo_wp_bulk_ai_translate',
 				'providers'       => $providers,
-				'deeplConfigured' => ! empty( $settings['ai_deepl_key'] ),
+				'deeplConfigured' => Secrets::has( 'ai_deepl_key' ),
 				'wpmlActive'      => has_filter( 'wpml_object_id' ),
 				'i18n'            => array(
 					'suggesting'  => __( 'Asking AI…', 'seo-wp' ),
@@ -376,13 +374,13 @@ final class BulkEditor {
 		$prompt   = self::build_ai_prompt( $post );
 
 		if ( 'anthropic' === $provider ) {
-			$key = isset( $settings['ai_anthropic_key'] ) ? (string) $settings['ai_anthropic_key'] : '';
+			$key = Secrets::get( 'ai_anthropic_key' );
 			if ( '' === $key ) {
 				Ajax::error( array( 'message' => __( 'No Anthropic API key configured.', 'seo-wp' ) ), 400 );
 			}
 			$reply = AiClient::anthropic( $key, $prompt, isset( $settings['ai_anthropic_model'] ) ? (string) $settings['ai_anthropic_model'] : '' );
 		} elseif ( 'openai' === $provider ) {
-			$key = isset( $settings['ai_openai_key'] ) ? (string) $settings['ai_openai_key'] : '';
+			$key = Secrets::get( 'ai_openai_key' );
 			if ( '' === $key ) {
 				Ajax::error( array( 'message' => __( 'No OpenAI API key configured.', 'seo-wp' ) ), 400 );
 			}
@@ -467,9 +465,7 @@ final class BulkEditor {
 			Ajax::error( array( 'message' => __( 'Nothing to translate — fill in a title or description first.', 'seo-wp' ) ), 400 );
 		}
 
-		$settings = get_option( 'seo_wp_settings', array() );
-		$settings = is_array( $settings ) ? $settings : array();
-		$key      = isset( $settings['ai_deepl_key'] ) ? (string) $settings['ai_deepl_key'] : '';
+		$key = Secrets::get( 'ai_deepl_key' );
 		if ( '' === $key ) {
 			Ajax::error( array( 'message' => __( 'No DeepL API key configured.', 'seo-wp' ) ), 400 );
 		}

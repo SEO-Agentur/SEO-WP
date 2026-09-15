@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace SeoWp\Admin;
 
 use SeoWp\Crawl\GoogleIndexing;
+use SeoWp\Support\Secrets;
 
 /**
  * A settings form (enable toggle, service account key, eligible post
@@ -127,7 +128,7 @@ final class GoogleIndexingPage {
 	 */
 	private function render_settings_form( array $settings ): void {
 		$enabled    = ! empty( $settings['enable_google_indexing'] );
-		$has_key    = ! empty( $settings['google_indexing_key'] );
+		$has_key    = Secrets::has( 'google_indexing_key' );
 		$key_hint   = $has_key
 			? __( '•••••••• (a key is saved — paste a new one to replace it, or leave blank to keep it)', 'seo-wp' )
 			: __( 'Paste the full contents of the service account key file downloaded from Google Cloud Console.', 'seo-wp' );
@@ -232,8 +233,12 @@ final class GoogleIndexingPage {
 		// "didn't mean to change it" and must not be read as "remove the key".
 		$submitted_key = isset( $_POST['google_indexing_key'] ) ? sanitize_textarea_field( wp_unslash( (string) $_POST['google_indexing_key'] ) ) : '';
 		if ( '' !== $submitted_key ) {
-			$settings['google_indexing_key'] = $submitted_key;
+			Secrets::set( 'google_indexing_key', $submitted_key );
 		}
+		// Remove any copy left over from before Secrets existed — see
+		// Support\Secrets' own docblock for why this key doesn't belong in
+		// the autoloaded seo_wp_settings option.
+		unset( $settings['google_indexing_key'] );
 
 		$submitted_types                        = isset( $_POST['google_indexing_post_types'] ) && is_array( $_POST['google_indexing_post_types'] )
 			? array_map( 'sanitize_key', wp_unslash( $_POST['google_indexing_post_types'] ) )

@@ -11,6 +11,7 @@ namespace SeoWp\Crawl;
 
 use SeoWp\Meta\Robots;
 use SeoWp\Support\ErrorLog;
+use SeoWp\Support\Secrets;
 use WP_Post;
 
 /**
@@ -250,8 +251,7 @@ final class GoogleIndexing {
 	 * @return array<string,mixed>
 	 */
 	private function service_account_key(): array {
-		$settings = get_option( self::OPTION_KEY, array() );
-		$raw      = isset( $settings['google_indexing_key'] ) ? (string) $settings['google_indexing_key'] : '';
+		$raw = Secrets::get( 'google_indexing_key' );
 
 		if ( '' === $raw ) {
 			return array();

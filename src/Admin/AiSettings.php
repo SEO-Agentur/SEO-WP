@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace SeoWp\Admin;
 
+use SeoWp\Support\Secrets;
+
 /**
  * Optional API keys for Anthropic (Claude), OpenAI and DeepL, used by the
  * Bulk Editor's AI-suggestion and translation actions. Bring-your-own-key
@@ -121,19 +123,19 @@ final class AiSettings {
 
 		echo '<h2>' . esc_html__( 'Anthropic (Claude)', 'seo-wp' ) . '</h2>';
 		echo '<table class="form-table" role="presentation"><tbody>';
-		$this->secret_field( 'ai_anthropic_key', __( 'API key', 'seo-wp' ), $settings );
+		$this->secret_field( 'ai_anthropic_key', __( 'API key', 'seo-wp' ) );
 		$this->text_field( 'ai_anthropic_model', __( 'Model override', 'seo-wp' ), 'claude-haiku-4-5-20251001', $settings );
 		echo '</tbody></table>';
 
 		echo '<h2>' . esc_html__( 'OpenAI', 'seo-wp' ) . '</h2>';
 		echo '<table class="form-table" role="presentation"><tbody>';
-		$this->secret_field( 'ai_openai_key', __( 'API key', 'seo-wp' ), $settings );
+		$this->secret_field( 'ai_openai_key', __( 'API key', 'seo-wp' ) );
 		$this->text_field( 'ai_openai_model', __( 'Model override', 'seo-wp' ), 'gpt-4o-mini', $settings );
 		echo '</tbody></table>';
 
 		echo '<h2>' . esc_html__( 'DeepL', 'seo-wp' ) . '</h2>';
 		echo '<table class="form-table" role="presentation"><tbody>';
-		$this->secret_field( 'ai_deepl_key', __( 'API key', 'seo-wp' ), $settings );
+		$this->secret_field( 'ai_deepl_key', __( 'API key', 'seo-wp' ) );
 		echo '</tbody></table>';
 
 		submit_button( __( 'Save settings', 'seo-wp' ) );
@@ -145,12 +147,11 @@ final class AiSettings {
 	 * Renders a secret field: never shows the stored value, only whether
 	 * one is already saved.
 	 *
-	 * @param string              $key      Settings key.
-	 * @param string              $label    Field label.
-	 * @param array<string,mixed> $settings Current settings.
+	 * @param string $key   Secret key (see Support\Secrets).
+	 * @param string $label Field label.
 	 */
-	private function secret_field( string $key, string $label, array $settings ): void {
-		$has_value   = ! empty( $settings[ $key ] );
+	private function secret_field( string $key, string $label ): void {
+		$has_value   = Secrets::has( $key );
 		$placeholder = $has_value
 			? __( '•••••••• (saved — leave blank to keep)', 'seo-wp' )
 			: __( 'Not set', 'seo-wp' );
@@ -199,8 +200,14 @@ final class AiSettings {
 		foreach ( self::SECRET_KEYS as $key ) {
 			$submitted = isset( $_POST[ $key ] ) ? trim( (string) wp_unslash( $_POST[ $key ] ) ) : '';
 			if ( '' !== $submitted ) {
-				$settings[ $key ] = $submitted;
+				Secrets::set( $key, $submitted );
 			}
+			// A key already sitting in the legacy seo_wp_settings location
+			// (from before Secrets existed) is removed as soon as this form
+			// is saved at all — from then on Secrets::get()'s fallback is no
+			// longer needed for this key, and the plaintext copy stops
+			// being autoloaded on every request.
+			unset( $settings[ $key ] );
 		}
 
 		foreach ( self::TEXT_KEYS as $key ) {

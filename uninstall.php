@@ -18,6 +18,7 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 }
 
 delete_option( 'seo_wp_settings' );
+delete_option( 'seo_wp_secrets' );
 delete_option( 'seo_wp_indexnow_key' );
 delete_option( 'seo_wp_indexnow_log' );
 delete_option( 'seo_wp_import_log' );
