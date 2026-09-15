@@ -194,6 +194,30 @@ final class Hreflang {
 	}
 
 	/**
+	 * Resolves a post ID to its permalink, but only when it's actually
+	 * published. Used as the URL resolver everywhere a translation-plugin
+	 * API hands back a linked post ID with no guarantee about its status —
+	 * Polylang's pll_get_post_translations(), for instance, returns
+	 * whatever translation relationship exists regardless of whether the
+	 * linked post is a draft or private, since linking a published post to
+	 * an in-progress draft translation is a completely normal editorial
+	 * workflow. Emitting that draft's real URL in a hreflang tag or
+	 * sitemap entry on the *published* sibling's own page would disclose
+	 * its existence and slug to any visitor or crawler before it's ready.
+	 *
+	 * @param int $post_id Post ID.
+	 */
+	public static function resolve_published_post_permalink( int $post_id ): ?string {
+		if ( 'publish' !== get_post_status( $post_id ) ) {
+			return null;
+		}
+
+		$link = get_permalink( $post_id );
+
+		return is_string( $link ) && '' !== $link ? $link : null;
+	}
+
+	/**
 	 * Resolves the language that should also be emitted as x-default, per
 	 * the "hreflang_x_default" setting: 'off' emits none, 'default' (or
 	 * unset) uses WPML's or Polylang's own default language (whichever is
@@ -258,10 +282,7 @@ final class Hreflang {
 			return is_array( $translations )
 				? self::alternates_from_polylang_translations(
 					$translations,
-					static function ( int $id ): ?string {
-						$link = get_permalink( $id );
-						return is_string( $link ) && '' !== $link ? $link : null;
-					},
+					array( self::class, 'resolve_published_post_permalink' ),
 					self::x_default_language()
 				)
 				: array();

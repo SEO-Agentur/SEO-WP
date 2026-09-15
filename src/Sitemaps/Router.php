@@ -95,12 +95,6 @@ final class Router {
 		$name = (string) get_query_var( 'seo_wp_sitemap_name' );
 		$page = max( 1, (int) get_query_var( 'seo_wp_sitemap_page' ) );
 
-		if ( ! $this->page_in_range( $type, $name, $page ) ) {
-			status_header( 404 );
-			nocache_headers();
-			return;
-		}
-
 		$xml = $this->cached_render( $type, $name, $page );
 
 		if ( null === $xml ) {
@@ -158,10 +152,15 @@ final class Router {
 
 	/**
 	 * Whether a requested page number is within the sitemap's actual page
-	 * count. Checked before ever touching the cache or a builder, so an
-	 * out-of-range page number (e.g. an enumerated, ever-increasing value)
-	 * can't be used to force a guaranteed cache-miss followed by an
-	 * expensive, large-offset query — it 404s immediately instead.
+	 * count. Checked in cached_render() only on a cache miss (never before
+	 * the cache lookup itself — this check is a builder call in its own
+	 * right, e.g. a fresh WP_Query with SQL_CALC_FOUND_ROWS for a post-type
+	 * sitemap, and running it unconditionally on every request would erase
+	 * most of the point of caching), so an out-of-range page number (e.g.
+	 * an enumerated, ever-increasing value) still can't be used to force a
+	 * guaranteed cache-miss followed by an expensive, large-offset query —
+	 * it 404s immediately instead, just as cheaply the second time since
+	 * that "nothing to show" result is itself cached by cached_render().
 	 * index/news are single-page sitemaps with no page concept, so any
 	 * page other than 1 is out of range for them.
 	 *
@@ -200,7 +199,11 @@ final class Router {
 			return $cached;
 		}
 
-		$xml = $this->render( $type, $name, $page );
+		// Only reached on a miss: an out-of-range page still can't reach
+		// render()'s own, potentially large-offset query, but a cache HIT
+		// (the common case once a sitemap has been crawled) never pays for
+		// this check at all.
+		$xml = $this->page_in_range( $type, $name, $page ) ? $this->render( $type, $name, $page ) : null;
 
 		wp_cache_set( $cache_key, $xml, self::CACHE_GROUP, self::CACHE_TTL );
 

@@ -44,10 +44,7 @@ final class HreflangAlternates {
 		$alternates = $this->compute_element_alternates(
 			$post_id,
 			$element_type,
-			static function ( int $id ): ?string {
-				$link = get_permalink( $id );
-				return is_string( $link ) && '' !== $link ? $link : null;
-			}
+			array( Hreflang::class, 'resolve_published_post_permalink' )
 		);
 
 		return Hreflang::apply_contract(

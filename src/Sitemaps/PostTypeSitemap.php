@@ -31,6 +31,10 @@ final class PostTypeSitemap {
 	 * @param string $post_type Post type slug.
 	 */
 	public function max_pages( string $post_type ): int {
+		if ( ! in_array( $post_type, get_post_types( array( 'public' => true ), 'names' ), true ) ) {
+			return 0;
+		}
+
 		if ( ! Inclusion::post_type( $post_type ) ) {
 			return 0;
 		}
@@ -145,9 +149,20 @@ final class PostTypeSitemap {
 	 * its ID here keeps it out of the sitemap too — Google's own guidance
 	 * is that a noindexed URL shouldn't appear in a sitemap at all.
 	 *
+	 * Memoized for the request: query_args() can run this filter several
+	 * times in one request (max_pages() plus render(), and a third-party
+	 * filter callback may do its own DB work), but the result can't
+	 * legitimately change within a single request.
+	 *
 	 * @return int[]
 	 */
 	private static function excluded_post_ids(): array {
+		static $cached = null;
+
+		if ( null !== $cached ) {
+			return $cached;
+		}
+
 		/**
 		 * Filters the post IDs excluded from every SEO-WP post-type
 		 * sitemap, independently of their own noindex meta.
@@ -157,7 +172,9 @@ final class PostTypeSitemap {
 		// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- namespaced public extension point, documented for third-party developers.
 		$ids = (array) apply_filters( 'seo_wp/sitemap/excluded_post_ids', array() );
 
-		return array_values( array_unique( array_filter( array_map( 'intval', $ids ), static fn ( int $id ): bool => $id > 0 ) ) );
+		$cached = array_values( array_unique( array_filter( array_map( 'intval', $ids ), static fn ( int $id ): bool => $id > 0 ) ) );
+
+		return $cached;
 	}
 
 	/**

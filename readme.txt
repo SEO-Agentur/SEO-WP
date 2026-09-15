@@ -5,7 +5,7 @@ Tags: seo, wpml, polylang, sitemap, schema, hreflang
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.4.7
+Stable tag: 1.4.8
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -138,6 +138,14 @@ SEO-WP integrates with several third-party services. Every one is optional, off 
 **Resource Hint Scanner** — contacted only when you click "Scan homepage for suggestions" under Settings > Performance. Fetches your *own* site's homepage (never a third party) to detect external script/stylesheet hosts worth preconnecting to. The result is a list of suggested lines you may choose to add to your own settings — nothing is applied automatically and nothing is sent anywhere else.
 
 == Changelog ==
+
+= 1.4.8 =
+* Security: the new Polylang hreflang support (1.4.7) could emit the permalink of a draft/private translation on its published sibling's page — a common editorial workflow (linking a published post to an in-progress draft translation) previously leaked the draft's URL and slug in the hreflang tag and sitemap entry. Alternates now only resolve to a published post's URL, both in the document head and sitemap
+* Performance: sitemap page-range validation now only runs on a cache miss instead of on every request — a cache hit (the common case once a sitemap has been crawled) no longer pays for an extra query it doesn't need
+* Performance: the taxonomy sitemap's eligible-term lookup and the new `seo_wp/sitemap/excluded_post_ids` filter are now each computed once per request instead of twice, on a cache miss
+* Performance: the Duplicate Content scanner now primes the post meta cache for its batch, turning what was one meta query per post into one batched query
+* Hardened: `max_pages()` for both sitemap types now rejects a nonexistent post type/taxonomy before running any query, matching the check `render()` already had
+* This release followed a fresh, independent adversarial review of every change made in 1.4.6/1.4.7 (not just the original audit) — see `docs/audit/` for the full findings, including several specifically-tested items (URL validation bypasses, a PEM-check anchor bypass, a namespaced-constant check) that were verified clean, not just assumed
 
 = 1.4.7 =
 * New: native Polylang support for hreflang — alternate-language URLs are now computed directly from Polylang's own translation data (`pll_get_post_translations()`/`pll_get_term_translations()`) whenever WPML isn't active, in both the document head and every sitemap URL entry, with the same self-reference and configurable `x-default` behavior WPML already had

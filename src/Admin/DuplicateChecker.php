@@ -227,7 +227,11 @@ final class DuplicateChecker {
 				'order'                  => 'ASC',
 				'fields'                 => 'ids',
 				'no_found_rows'          => false,
-				'update_post_meta_cache' => false,
+				// The loop below resolves each post's effective title/
+				// description via get_post_meta() (TitleDescription's
+				// override lookups) — priming the meta cache here turns
+				// that into one batched query instead of one per post.
+				'update_post_meta_cache' => true,
 				'update_post_term_cache' => false,
 			)
 		);

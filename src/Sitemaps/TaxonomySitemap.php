@@ -28,6 +28,10 @@ final class TaxonomySitemap {
 	 * @param string $taxonomy Taxonomy slug.
 	 */
 	public function max_pages( string $taxonomy ): int {
+		if ( ! in_array( $taxonomy, get_taxonomies( array( 'public' => true ), 'names' ), true ) ) {
+			return 0;
+		}
+
 		if ( ! Inclusion::taxonomy( $taxonomy ) ) {
 			return 0;
 		}
@@ -77,12 +81,21 @@ final class TaxonomySitemap {
 	}
 
 	/**
-	 * Terms eligible for the sitemap: non-empty and not noindexed.
+	 * Terms eligible for the sitemap: non-empty and not noindexed. Memoized
+	 * per taxonomy for the request — on a cache miss, both max_pages() and
+	 * render() call this for the same taxonomy, and the result can't
+	 * legitimately change within a single request.
 	 *
 	 * @param string $taxonomy Taxonomy slug.
 	 * @return int[]
 	 */
 	private function eligible_term_ids( string $taxonomy ): array {
+		static $cache = array();
+
+		if ( array_key_exists( $taxonomy, $cache ) ) {
+			return $cache[ $taxonomy ];
+		}
+
 		$terms = get_terms(
 			array(
 				'taxonomy'   => $taxonomy,
@@ -103,7 +116,9 @@ final class TaxonomySitemap {
 			)
 		);
 
-		return is_array( $terms ) ? array_map( 'intval', $terms ) : array();
+		$cache[ $taxonomy ] = is_array( $terms ) ? array_map( 'intval', $terms ) : array();
+
+		return $cache[ $taxonomy ];
 	}
 
 	/**
