@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace SeoWp\Support;
 
+use SeoWp\Wpml\Hreflang;
 use WP_Post;
 use WP_Term;
 
@@ -126,11 +127,10 @@ final class FragmentCache {
 	}
 
 	/**
-	 * Resolves the current language, when WPML (or a compatible plugin)
-	 * is active.
+	 * Resolves the current language, when WPML or Polylang (or a
+	 * compatible plugin) is active.
 	 */
 	private function language(): string {
-		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WPML's own filter, not one of ours.
-		return has_filter( 'wpml_current_language' ) ? (string) apply_filters( 'wpml_current_language', null ) : '';
+		return Hreflang::current_language();
 	}
 }

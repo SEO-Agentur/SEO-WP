@@ -1,15 +1,15 @@
 === SEO-WP ===
 Contributors: seooptimierung
 Donate link: https://buymeacoffee.com/cyrusbadde
-Tags: seo, wpml, sitemap, schema, hreflang
+Tags: seo, wpml, polylang, sitemap, schema, hreflang
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.4.6
+Stable tag: 1.4.7
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-A slim, page-type-agnostic SEO plugin with full WPML compatibility: meta tags, social meta, JSON-LD schema, XML sitemaps and crawl control.
+A slim, page-type-agnostic SEO plugin with full WPML and Polylang compatibility: meta tags, social meta, JSON-LD schema, XML sitemaps and crawl control.
 
 == Description ==
 
@@ -22,7 +22,7 @@ Built and maintained by [Cyrus Badde](https://seo-wp.net). If it saves you time,
 * Title and meta description templates, with a token system compatible with Yoast, Rank Math and AIOSEO syntax (`%title%`, `%sitename%`, `%sep%`, `%excerpt%`, `%category%`, `%date%`, `%page%`, `%year%` — always the current year, for evergreen "{title} {year}" titles)
 * A read-only overview table at the top of the Content Types settings tab summarising every currently configured title/description template, so the full picture is visible without scrolling through the editable fields
 * Robots meta directives (noindex, nofollow, noarchive, nosnippet, noimageindex), layered on top of WordPress core's own `wp_robots` output rather than duplicating it
-* Self-referencing canonical URLs, correctly paginated, WPML-aware
+* Self-referencing canonical URLs, correctly paginated, WPML/Polylang-aware
 
 **Social & structured data**
 
@@ -61,10 +61,10 @@ Built and maintained by [Cyrus Badde](https://seo-wp.net). If it saves you time,
 * A manual resource-hints field (preconnect/dns-prefetch/preload/prefetch/prerender) plus a "Scan homepage for suggestions" button that fetches your own front page, lists every external script/stylesheet origin found, and lets you add the ones you want — never inserted automatically
 * Settings > Server: HTTPS/canonical-URL redirects and security headers (HSTS, CORS, modern MIME types) applied in pure PHP, working on any web server; gzip/Brotli/browser caching, hotlink protection and directory-browsing prevention via a reviewable, one-click-apply `.htaccess` block on Apache/LiteSpeed (only where PHP genuinely can't reach — a static asset request never runs WordPress at all)
 
-**WPML**
+**WPML & Polylang**
 
-* Full hreflang support via WPML's own translation data — only existing, WPML-confirmed alternates are ever emitted, self-reference always included, `x-default` configurable
-* The *same* hreflang output (and the same third-party compatibility filters) in both the document head and every sitemap URL entry
+* Full hreflang support via WPML's own translation data, or natively via Polylang when WPML isn't active — only existing, translation-plugin-confirmed alternates are ever emitted, self-reference always included, `x-default` configurable. With neither (nor a compatible plugin) active, no hreflang or `x-default` tags are output at all
+* The *same* hreflang output (and the same third-party compatibility filters) in both the document head and every sitemap URL entry, for WPML and Polylang alike
 * Title/description templates are translatable per language via WPML String Translation
 * Designed as a companion to the separate `slim-hreflang` plugin: this plugin is the sole hreflang sender and exposes the `seo_wp/hreflang/alternates` and `seo_wp/hreflang/managed_externally` filters so other plugins can extend, override, or fully take over its output
 
@@ -113,9 +113,13 @@ Normally, yes — use the Import screen to bring over your existing titles, desc
 
 No. Existing redirect *rules* from another plugin aren't migrated automatically — the import wizard tells you when it found some so you can recreate them by hand. SEO-WP does have its own Redirects screen (exact-path source → target URL, 301/302/307/410/451) and a 404 monitor for creating new ones going forward.
 
-= Does this work without WPML? =
+= Does this work without WPML or Polylang? =
 
-Yes. Every WPML-specific feature (hreflang, per-language templates) is a no-op when WPML isn't active — nothing here is a hard dependency.
+Yes. Every WPML/Polylang-specific feature (hreflang, per-language templates) is a no-op when neither is active — nothing here is a hard dependency.
+
+= Do I need slim-hreflang if I'm already using WPML or Polylang? =
+
+No. slim-hreflang exists for cross-*domain* hreflang (separate WordPress installs, e.g. one per market) — a scenario WPML and Polylang don't cover since they translate within a single install. If you're using WPML or Polylang, SEO-WP's built-in hreflang support already covers your site; there's nothing more to install.
 
 == External services ==
 
@@ -134,6 +138,12 @@ SEO-WP integrates with several third-party services. Every one is optional, off 
 **Resource Hint Scanner** — contacted only when you click "Scan homepage for suggestions" under Settings > Performance. Fetches your *own* site's homepage (never a third party) to detect external script/stylesheet hosts worth preconnecting to. The result is a list of suggested lines you may choose to add to your own settings — nothing is applied automatically and nothing is sent anywhere else.
 
 == Changelog ==
+
+= 1.4.7 =
+* New: native Polylang support for hreflang — alternate-language URLs are now computed directly from Polylang's own translation data (`pll_get_post_translations()`/`pll_get_term_translations()`) whenever WPML isn't active, in both the document head and every sitemap URL entry, with the same self-reference and configurable `x-default` behavior WPML already had
+* New: with neither WPML nor Polylang (nor a compatible plugin via the `seo_wp/hreflang/*` contract) active, hreflang output — including `x-default` — is now never emitted at all, closing the one path where an `x-default` tag could previously appear without a real localization plugin behind it
+* New: `seo_wp/sitemap/excluded_post_ids` filter — lets a companion plugin (e.g. an e-commerce plugin that noindexes its own cart/checkout/account pages by another means) keep specific post IDs out of every SEO-WP sitemap, matching Google's guidance that a noindexed URL shouldn't appear in a sitemap
+* Canonical URLs, sitemaps and the JSON-LD `@graph` are all already Polylang-compatible with no code changes needed: canonical URLs use each translation's own real permalink, sitemaps are page-type-agnostic and cover any public post type Polylang translates, and `seo_wp/schema/graph` is a documented public filter a WooCommerce-alternative product like WopCart can merge its own Product node into, the same way it already can with Yoast/Rank Math/AIOSEO
 
 = 1.4.6 =
 * Security: fixed an authorization bug in Role Manager where saving the roles form could silently strip the Administrator role's own access to Settings, the SEO metabox, Bulk Editor, Redirects, Import and Diagnostics, with no self-service recovery — every area is now correctly kept for Administrator on every save, plus a defense-in-depth `manage_options` bypass

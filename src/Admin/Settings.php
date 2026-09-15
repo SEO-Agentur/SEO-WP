@@ -671,7 +671,7 @@ final class Settings {
 			true
 		);
 		echo '<tr><td colspan="2"><p class="description">';
-		echo esc_html__( 'When WPML or slim-hreflang provides alternate-language URLs, this plugin\'s sitemaps normally list them as xhtml:link entries alongside the per-page <link rel="alternate"> tags in the document head. Turn this off to have hreflang live only on the pages themselves — some setups prefer one single source of truth rather than two places search engines could theoretically disagree on.', 'seo-wp' );
+		echo esc_html__( 'When WPML, Polylang or slim-hreflang provides alternate-language URLs, this plugin\'s sitemaps normally list them as xhtml:link entries alongside the per-page <link rel="alternate"> tags in the document head. Turn this off to have hreflang live only on the pages themselves — some setups prefer one single source of truth rather than two places search engines could theoretically disagree on.', 'seo-wp' );
 		echo '</p></td></tr>';
 
 		foreach ( get_post_types( array( 'public' => true ), 'objects' ) as $post_type ) {
@@ -819,11 +819,12 @@ final class Settings {
 			'hreflang_x_default',
 			__( 'x-default hreflang', 'seo-wp' ),
 			array(
-				'default' => __( 'WPML\'s default language', 'seo-wp' ),
+				'default' => __( 'WPML/Polylang\'s default language', 'seo-wp' ),
 				'off'     => __( 'Off', 'seo-wp' ),
 			),
 			'default'
 		);
+		echo '<tr><td colspan="2"><p class="description">' . esc_html__( 'Only takes effect when WPML, Polylang, or a compatible plugin (e.g. slim-hreflang) actually provides alternate-language URLs — with none active, no hreflang or x-default tags are output at all.', 'seo-wp' ) . '</p></td></tr>';
 	}
 
 	/**

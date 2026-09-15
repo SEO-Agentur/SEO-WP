@@ -14,10 +14,11 @@ use WP_Post;
 
 /**
  * Resolves hreflang alternates for an arbitrary post or term (not the
- * current request) via WPML's element translation API, then goes through
- * the exact same Hreflang::apply_contract() the document head uses — the
- * binding part of the slim-hreflang compatibility contract — so a filter
- * registered once behaves identically in the head and in the sitemap.
+ * current request) via WPML's element translation API, or natively via
+ * Polylang when WPML isn't active, then goes through the exact same
+ * Hreflang::apply_contract() the document head uses — the binding part of
+ * the slim-hreflang compatibility contract — so a filter registered once
+ * behaves identically in the head and in the sitemap.
  */
 final class HreflangAlternates {
 
@@ -110,19 +111,32 @@ final class HreflangAlternates {
 	}
 
 	/**
-	 * Looks up an element's translations via WPML and resolves each one's
-	 * URL, only ever using existing, WPML-confirmed translations.
+	 * Looks up an element's translations via WPML, or natively via
+	 * Polylang when WPML isn't active, and resolves each one's URL — only
+	 * ever using translations the active plugin itself confirms exist.
+	 *
+	 * @param int      $element_id   Post or term ID.
+	 * @param string   $element_type Element type, e.g. 'post_post' or 'tax_category' (the WPML convention, reused as a prefix to pick the right Polylang lookup too).
+	 * @param callable $resolve_url  Resolves a translated element's own ID to its URL.
+	 * @return array<int,array{hreflang:string,href:string}>
+	 */
+	private function compute_element_alternates( int $element_id, string $element_type, callable $resolve_url ): array {
+		if ( has_filter( 'wpml_element_trid' ) ) {
+			return $this->compute_wpml_element_alternates( $element_id, $element_type, $resolve_url );
+		}
+
+		return $this->compute_polylang_element_alternates( $element_id, $element_type, $resolve_url );
+	}
+
+	/**
+	 * WPML branch of compute_element_alternates().
 	 *
 	 * @param int      $element_id   Post or term ID.
 	 * @param string   $element_type WPML element type, e.g. 'post_post' or 'tax_category'.
 	 * @param callable $resolve_url  Resolves a translated element's own ID to its URL.
 	 * @return array<int,array{hreflang:string,href:string}>
 	 */
-	private function compute_element_alternates( int $element_id, string $element_type, callable $resolve_url ): array {
-		if ( ! has_filter( 'wpml_element_trid' ) ) {
-			return array();
-		}
-
+	private function compute_wpml_element_alternates( int $element_id, string $element_type, callable $resolve_url ): array {
 		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WPML's own filter, not one of ours.
 		$trid = apply_filters( 'wpml_element_trid', null, $element_id, $element_type );
 		if ( ! $trid ) {
@@ -168,26 +182,62 @@ final class HreflangAlternates {
 	}
 
 	/**
-	 * Resolves the WPML language code of a specific element.
+	 * Polylang branch of compute_element_alternates(), used when WPML
+	 * isn't active.
 	 *
-	 * @param int    $element_id   Post or term ID.
-	 * @param string $element_type WPML element type.
+	 * @param int      $element_id   Post or term ID.
+	 * @param string   $element_type 'post_...' or 'tax_...', picking pll_get_post_translations() vs. pll_get_term_translations().
+	 * @param callable $resolve_url  Resolves a translated element's own ID to its URL.
+	 * @return array<int,array{hreflang:string,href:string}>
 	 */
-	private function language_of( int $element_id, string $element_type ): string {
-		if ( ! has_filter( 'wpml_element_language_details' ) ) {
-			return '';
+	private function compute_polylang_element_alternates( int $element_id, string $element_type, callable $resolve_url ): array {
+		if ( str_starts_with( $element_type, 'post_' ) && function_exists( 'pll_get_post_translations' ) ) {
+			$translations = pll_get_post_translations( $element_id );
+		} elseif ( str_starts_with( $element_type, 'tax_' ) && function_exists( 'pll_get_term_translations' ) ) {
+			$translations = pll_get_term_translations( $element_id );
+		} else {
+			return array();
 		}
 
-		$details = apply_filters(
-			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WPML's own filter, not one of ours.
-			'wpml_element_language_details',
-			null,
-			array(
-				'element_id'   => $element_id,
-				'element_type' => $element_type,
-			)
-		);
+		if ( ! is_array( $translations ) ) {
+			return array();
+		}
 
-		return is_object( $details ) && isset( $details->language_code ) ? (string) $details->language_code : '';
+		return Hreflang::alternates_from_polylang_translations( $translations, $resolve_url, Hreflang::x_default_language() );
+	}
+
+	/**
+	 * Resolves the language code of a specific element, via WPML or,
+	 * natively, Polylang.
+	 *
+	 * @param int    $element_id   Post or term ID.
+	 * @param string $element_type Element type, e.g. 'post_post' or 'tax_category'.
+	 */
+	private function language_of( int $element_id, string $element_type ): string {
+		if ( has_filter( 'wpml_element_language_details' ) ) {
+			$details = apply_filters(
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WPML's own filter, not one of ours.
+				'wpml_element_language_details',
+				null,
+				array(
+					'element_id'   => $element_id,
+					'element_type' => $element_type,
+				)
+			);
+
+			return is_object( $details ) && isset( $details->language_code ) ? (string) $details->language_code : '';
+		}
+
+		if ( str_starts_with( $element_type, 'post_' ) && function_exists( 'pll_get_post_language' ) ) {
+			$lang = pll_get_post_language( $element_id, 'slug' );
+			return is_string( $lang ) ? $lang : '';
+		}
+
+		if ( str_starts_with( $element_type, 'tax_' ) && function_exists( 'pll_get_term_language' ) ) {
+			$lang = pll_get_term_language( $element_id, 'slug' );
+			return is_string( $lang ) ? $lang : '';
+		}
+
+		return '';
 	}
 }

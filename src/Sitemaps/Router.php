@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace SeoWp\Sitemaps;
 
+use SeoWp\Wpml\Hreflang;
+
 /**
  * Registers dynamic rewrite rules for sitemap endpoints and dispatches
  * matching requests to the right builder. No physical XML files are
@@ -206,13 +208,13 @@ final class Router {
 	}
 
 	/**
-	 * Resolves the current language, when WPML (or a compatible plugin) is
-	 * active, so cache entries never mix URLs resolved under one language
-	 * with a request for another — same pattern as Support\FragmentCache.
+	 * Resolves the current language, when WPML or Polylang (or a
+	 * compatible plugin) is active, so cache entries never mix URLs
+	 * resolved under one language with a request for another — same
+	 * pattern as Support\FragmentCache.
 	 */
 	private function language(): string {
-		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WPML's own filter, not one of ours.
-		return has_filter( 'wpml_current_language' ) ? (string) apply_filters( 'wpml_current_language', null ) : '';
+		return Hreflang::current_language();
 	}
 
 	/**

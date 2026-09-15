@@ -11,10 +11,11 @@ update.
 
 ## Filters
 
-All five filters below were added in **1.4.1**. Every one of them wraps a
-value SEO-WP had already fully computed — a filter with nothing attached to
-it changes nothing and costs essentially nothing (a function call and an
-empty-array check).
+The first five filters below were added in **1.4.1**;
+`seo_wp/sitemap/excluded_post_ids` was added in **1.4.6**. Every one of them
+wraps a value SEO-WP had already fully computed — a filter with nothing
+attached to it changes nothing and costs essentially nothing (a function
+call and an empty-array check).
 
 ### `seo_wp/title`
 
@@ -100,16 +101,37 @@ Each `$node` is a plain associative array matching JSON-LD shape (`@type`,
 `@id`, and whatever properties apply) — see `SeoWp\Schema\Nodes\*` for the
 shapes SEO-WP's own builders produce.
 
-## The slim-hreflang contract (a worked example of the same pattern)
+### `seo_wp/sitemap/excluded_post_ids`
 
-`SeoWp\Wpml\Hreflang` exposes two of its own filters,
-`seo_wp/hreflang/alternates` and `seo_wp/hreflang/managed_externally`, used
-by the companion [slim-hreflang](https://seo-wp.net) plugin to feed
-cross-domain hreflang data into SEO-WP's output. It's the same mechanism as
-the filters above, just plugin-to-plugin instead of theme-to-plugin — worth
-reading `SeoWp\Wpml\Hreflang::apply_contract()` as a second example if you're
+Fires in `SeoWp\Sitemaps\PostTypeSitemap::query_args()`, on the list of post
+IDs to leave out of every SEO-WP post-type sitemap, regardless of their own
+noindex meta. Intended for a companion plugin that noindexes some of its own
+pages by another means (a cart, checkout or account page kept out of search
+engines purely via the `wp_robots` filter, never through SEO-WP's own
+per-post meta) — listing those IDs here keeps them out of the sitemap too,
+matching Google's own guidance that a noindexed URL shouldn't appear in a
+sitemap at all.
+
+```php
+apply_filters( 'seo_wp/sitemap/excluded_post_ids', int[] $post_ids ): int[]
+```
+
+## Hreflang: WPML, Polylang and the slim-hreflang contract (a worked example of the same pattern)
+
+`SeoWp\Wpml\Hreflang` computes alternate-language URLs from WPML when it's
+active, or natively from Polylang when it's active and WPML isn't (the two
+are mutually exclusive in practice). With neither installed, it also exposes
+two of its own filters, `seo_wp/hreflang/alternates` and
+`seo_wp/hreflang/managed_externally`, used by the companion
+[slim-hreflang](https://seo-wp.net) plugin to feed cross-domain hreflang data
+into SEO-WP's output. It's the same mechanism as the filters above, just
+plugin-to-plugin instead of theme-to-plugin — worth reading
+`SeoWp\Wpml\Hreflang::apply_contract()` as a second example if you're
 building an integration of comparable depth (e.g. a plugin that wants to
-fully replace one piece of SEO-WP's output for URLs it manages itself).
+fully replace one piece of SEO-WP's output for URLs it manages itself). With
+none of WPML, Polylang or a listener on these filters present, SEO-WP emits
+no hreflang output at all — including no `x-default` — since there is no
+localization plugin to make that entry meaningful.
 
 ```php
 apply_filters( 'seo_wp/hreflang/managed_externally', bool $managed, array $context ): bool

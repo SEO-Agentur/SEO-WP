@@ -101,7 +101,7 @@ final class PostTypeSitemap {
 	 * @return array<string,mixed>
 	 */
 	private function query_args( string $post_type, int $page, bool $need_found_rows ): array {
-		return array(
+		$args = array(
 			'post_type'              => $post_type,
 			'post_status'            => 'publish',
 			'has_password'           => false,
@@ -127,6 +127,37 @@ final class PostTypeSitemap {
 				),
 			),
 		);
+
+		$excluded = self::excluded_post_ids();
+		if ( array() !== $excluded ) {
+			$args['post__not_in'] = $excluded;
+		}
+
+		return $args;
+	}
+
+	/**
+	 * IDs to leave out of every post-type sitemap regardless of their
+	 * noindex meta, via the seo_wp/sitemap/excluded_post_ids filter. For a
+	 * page a companion plugin keeps out of search engines by its own means
+	 * (e.g. a cart/checkout/account page noindexed only through the
+	 * wp_robots filter, never through this plugin's own postmeta), listing
+	 * its ID here keeps it out of the sitemap too — Google's own guidance
+	 * is that a noindexed URL shouldn't appear in a sitemap at all.
+	 *
+	 * @return int[]
+	 */
+	private static function excluded_post_ids(): array {
+		/**
+		 * Filters the post IDs excluded from every SEO-WP post-type
+		 * sitemap, independently of their own noindex meta.
+		 *
+		 * @param int[] $post_ids Post IDs to exclude.
+		 */
+		// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- namespaced public extension point, documented for third-party developers.
+		$ids = (array) apply_filters( 'seo_wp/sitemap/excluded_post_ids', array() );
+
+		return array_values( array_unique( array_filter( array_map( 'intval', $ids ), static fn ( int $id ): bool => $id > 0 ) ) );
 	}
 
 	/**

@@ -15,12 +15,20 @@ use WP_Post;
 use WP_Term;
 
 /**
- * Builds the hreflang alternates list from WPML, applies the
+ * Builds the hreflang alternates list from WPML or, natively, Polylang
+ * (WPML is tried first; Polylang is only consulted when no WPML-compatible
+ * plugin exposes the wpml_active_languages filter — the two are never
+ * active together in practice, and this order keeps this class the single
+ * hreflang sender regardless of which is installed), applies the
  * seo_wp/hreflang/alternates and seo_wp/hreflang/managed_externally
  * filters, and renders the head output. The sole hreflang sender for the
  * slim-hreflang plugin contract; apply_contract() is the shared entry
  * point the sitemap's xhtml:link output (Sitemaps\HreflangAlternates)
- * goes through too, so both surfaces honour the contract identically.
+ * goes through too, so both surfaces honour the contract identically. When
+ * neither WPML, Polylang, nor a slim-hreflang-style listener on the
+ * contract filters above is present, this class computes and emits
+ * nothing at all — including no x-default — since there is no
+ * localization plugin to make that entry meaningful.
  */
 final class Hreflang {
 
@@ -138,10 +146,59 @@ final class Hreflang {
 	}
 
 	/**
-	 * Resolves the language that should also be emitted as x-default,
-	 * per the "hreflang_x_default" setting: 'off' emits none, 'default'
-	 * (or unset) uses WPML's own default language, anything else is taken
-	 * as an explicit WPML language code.
+	 * Turns a Polylang translations map (as pll_get_post_translations()/
+	 * pll_get_term_translations() return it: language slug => translated
+	 * object ID, including the object's own language) into a candidate
+	 * alternates list, adding an x-default entry where configured. Mirrors
+	 * alternates_from_wpml_languages()'s contract and output shape; shared
+	 * by the current-request computation below and
+	 * Sitemaps\HreflangAlternates, so both surfaces resolve Polylang
+	 * translations identically. Pure array processing plus one injected
+	 * URL resolver, so it is easy to unit test independently of Polylang.
+	 *
+	 * @param array<string,int> $translations   Language slug => translated post/term ID.
+	 * @param callable          $resolve_url    Resolves a translated object's ID to its URL, or null when it doesn't resolve.
+	 * @param string            $x_default_lang Language slug to also emit as x-default, or ''.
+	 * @return array<int,array{hreflang:string,href:string}>
+	 */
+	public static function alternates_from_polylang_translations( array $translations, callable $resolve_url, string $x_default_lang ): array {
+		$alternates = array();
+
+		foreach ( $translations as $lang_slug => $object_id ) {
+			$lang_slug = (string) $lang_slug;
+			$object_id = (int) $object_id;
+
+			if ( '' === $lang_slug || $object_id <= 0 ) {
+				continue;
+			}
+
+			$url = $resolve_url( $object_id );
+			if ( null === $url ) {
+				continue;
+			}
+
+			$alternates[] = array(
+				'hreflang' => $lang_slug,
+				'href'     => $url,
+			);
+
+			if ( '' !== $x_default_lang && $lang_slug === $x_default_lang ) {
+				$alternates[] = array(
+					'hreflang' => 'x-default',
+					'href'     => $url,
+				);
+			}
+		}
+
+		return $alternates;
+	}
+
+	/**
+	 * Resolves the language that should also be emitted as x-default, per
+	 * the "hreflang_x_default" setting: 'off' emits none, 'default' (or
+	 * unset) uses WPML's or Polylang's own default language (whichever is
+	 * active; '' when neither is), anything else is taken as an explicit
+	 * language code.
 	 */
 	public static function x_default_language(): string {
 		$settings = get_option( self::OPTION_KEY, array() );
@@ -153,33 +210,85 @@ final class Hreflang {
 
 		if ( 'default' === $setting || '' === $setting ) {
 			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WPML's own filter, not one of ours.
-			return has_filter( 'wpml_default_language' ) ? (string) apply_filters( 'wpml_default_language', null ) : '';
+			if ( has_filter( 'wpml_default_language' ) ) {
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WPML's own filter, not one of ours.
+				return (string) apply_filters( 'wpml_default_language', null );
+			}
+
+			return function_exists( 'pll_default_language' ) ? (string) pll_default_language( 'slug' ) : '';
 		}
 
 		return $setting;
 	}
 
 	/**
-	 * Computes the candidate alternates for the current request via
-	 * WPML's own "current page in every language" API, which already
-	 * only returns existing, bidirectionally-linked translations when
-	 * asked to skip missing ones.
+	 * Computes the candidate alternates for the current request via WPML's
+	 * own "current page in every language" API (which already only
+	 * returns existing, bidirectionally-linked translations when asked to
+	 * skip missing ones), or natively via Polylang when WPML isn't active.
 	 *
 	 * @return array<int,array{hreflang:string,href:string}>
 	 */
 	private function compute_current_request_alternates(): array {
-		if ( ! has_filter( 'wpml_active_languages' ) ) {
-			return array();
+		if ( has_filter( 'wpml_active_languages' ) ) {
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WPML's own filter, not one of ours.
+			$languages = apply_filters( 'wpml_active_languages', null, array( 'skip_missing' => 1 ) );
+
+			return is_array( $languages ) ? self::alternates_from_wpml_languages( $languages, self::x_default_language() ) : array();
 		}
 
-		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WPML's own filter, not one of ours.
-		$languages = apply_filters( 'wpml_active_languages', null, array( 'skip_missing' => 1 ) );
+		return $this->compute_current_request_polylang_alternates();
+	}
 
-		if ( ! is_array( $languages ) ) {
-			return array();
+	/**
+	 * Computes the candidate alternates for the current request natively
+	 * via Polylang's own per-object translation lookups.
+	 *
+	 * @return array<int,array{hreflang:string,href:string}>
+	 */
+	private function compute_current_request_polylang_alternates(): array {
+		if ( is_singular() && function_exists( 'pll_get_post_translations' ) ) {
+			$post = get_queried_object();
+			if ( ! $post instanceof WP_Post ) {
+				return array();
+			}
+
+			$translations = pll_get_post_translations( $post->ID );
+
+			return is_array( $translations )
+				? self::alternates_from_polylang_translations(
+					$translations,
+					static function ( int $id ): ?string {
+						$link = get_permalink( $id );
+						return is_string( $link ) && '' !== $link ? $link : null;
+					},
+					self::x_default_language()
+				)
+				: array();
 		}
 
-		return self::alternates_from_wpml_languages( $languages, self::x_default_language() );
+		if ( ( is_category() || is_tag() || is_tax() ) && function_exists( 'pll_get_term_translations' ) ) {
+			$term = get_queried_object();
+			if ( ! $term instanceof WP_Term ) {
+				return array();
+			}
+
+			$translations = pll_get_term_translations( $term->term_id );
+			$taxonomy     = $term->taxonomy;
+
+			return is_array( $translations )
+				? self::alternates_from_polylang_translations(
+					$translations,
+					static function ( int $id ) use ( $taxonomy ): ?string {
+						$link = get_term_link( $id, $taxonomy );
+						return is_wp_error( $link ) ? null : (string) $link;
+					},
+					self::x_default_language()
+				)
+				: array();
+		}
+
+		return array();
 	}
 
 	/**
@@ -191,9 +300,25 @@ final class Hreflang {
 		return array(
 			'url'       => $this->current_url(),
 			'object_id' => $this->current_object_id(),
-			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WPML's own filter, not one of ours.
-			'lang'      => has_filter( 'wpml_current_language' ) ? (string) apply_filters( 'wpml_current_language', null ) : '',
+			'lang'      => self::current_language(),
 		);
+	}
+
+	/**
+	 * Resolves the current request's language via WPML or, natively,
+	 * Polylang — whichever is active. '' when neither is. Also used by
+	 * Support\FragmentCache and Sitemaps\Router to key their caches per
+	 * language, so a cached fragment/sitemap page is never served across a
+	 * language it wasn't built for.
+	 */
+	public static function current_language(): string {
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WPML's own filter, not one of ours.
+		if ( has_filter( 'wpml_current_language' ) ) {
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WPML's own filter, not one of ours.
+			return (string) apply_filters( 'wpml_current_language', null );
+		}
+
+		return function_exists( 'pll_current_language' ) ? (string) pll_current_language( 'slug' ) : '';
 	}
 
 	/**
