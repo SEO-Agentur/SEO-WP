@@ -96,6 +96,17 @@ final class RoleManager {
 			return $allcaps;
 		}
 
+		// Belt and suspenders alongside handle_save()'s own guarantee that
+		// every area is persisted true for the administrator role: even if
+		// the stored matrix somehow ended up with a false entry for
+		// administrator (a bug here, a direct option edit, a future
+		// regression), a real manage_options user is never locked out of
+		// any seo_wp_* area.
+		if ( ! empty( $allcaps['manage_options'] ) ) {
+			$allcaps[ $requested ] = true;
+			return $allcaps;
+		}
+
 		$matrix = self::matrix();
 
 		// Role Manager itself, and the two newest areas (Link Audit,
@@ -350,10 +361,18 @@ final class RoleManager {
 				$matrix[ $role_slug ][ $cap ] = ! empty( $role_input[ $area ] );
 			}
 
-			// The Administrator role can never lose access to this page —
-			// otherwise a mistaken save could lock every admin out of it.
+			// The Administrator role can never lose access to any area —
+			// its checkboxes are rendered disabled (so the browser never
+			// submits them at all) precisely because every one of them
+			// must stay true regardless of what was submitted, not just
+			// this page's own capability. Forcing only the one area here
+			// while deriving the rest from (necessarily absent) submitted
+			// data silently zeroed every other admin capability on every
+			// save.
 			if ( 'administrator' === $role_slug ) {
-				$matrix[ $role_slug ][ self::MANAGE_ROLES_CAP ] = true;
+				foreach ( self::AREAS as $cap ) {
+					$matrix[ $role_slug ][ $cap ] = true;
+				}
 			}
 		}
 
