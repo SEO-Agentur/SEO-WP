@@ -155,6 +155,36 @@ final class RedirectsTest extends TestCase {
 	}
 
 	/**
+	 * A pattern longer than the accepted maximum is rejected outright,
+	 * without ever reaching preg_match().
+	 */
+	public function test_is_valid_regex_rejects_an_overlong_pattern(): void {
+		$this->assertFalse( Redirects::is_valid_regex( str_repeat( 'a', 501 ) ) );
+		$this->assertTrue( Redirects::is_valid_regex( str_repeat( 'a', 500 ) ) );
+	}
+
+	/**
+	 * Classic nested-quantifier shapes known to cause catastrophic
+	 * backtracking are rejected, even though they compile as valid PCRE.
+	 */
+	public function test_is_valid_regex_rejects_catastrophic_backtracking_shapes(): void {
+		$this->assertFalse( Redirects::is_valid_regex( '^(a+)+$' ) );
+		$this->assertFalse( Redirects::is_valid_regex( '^(a*)*$' ) );
+		$this->assertFalse( Redirects::is_valid_regex( '^(a+)*$' ) );
+		$this->assertFalse( Redirects::is_valid_regex( '^(ab+c*)+$' ) );
+	}
+
+	/**
+	 * Ordinary redirect patterns using + or * outside of a nested-group
+	 * shape are unaffected by the backtracking guard.
+	 */
+	public function test_is_valid_regex_still_accepts_ordinary_quantifiers(): void {
+		$this->assertTrue( Redirects::is_valid_regex( '^/blog/(.+)$' ) );
+		$this->assertTrue( Redirects::is_valid_regex( '^/old-.*-page$' ) );
+		$this->assertTrue( Redirects::is_valid_regex( '^/products/([a-z0-9-]+)/reviews$' ) );
+	}
+
+	/**
 	 * A regex rule matches the current path via its pattern, not an
 	 * exact-string comparison.
 	 */

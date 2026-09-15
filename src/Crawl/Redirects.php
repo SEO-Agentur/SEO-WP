@@ -40,6 +40,12 @@ final class Redirects {
 	private const STATUS_ONLY_TYPES = array( 410, 451 );
 
 	/**
+	 * Maximum accepted length for a regex rule's source pattern. Generous
+	 * for any real redirect rule; bounds the worst-case PCRE search space.
+	 */
+	private const MAX_PATTERN_LENGTH = 500;
+
+	/**
 	 * Registers the redirect dispatcher. Runs before anything else on
 	 * template_redirect (including Crawl\SpecialArchives and
 	 * Crawl\NotFoundMonitor), so a configured rule always wins regardless
@@ -136,12 +142,30 @@ final class Redirects {
 	 * @param string $pattern Pattern as authored, without delimiters.
 	 */
 	public static function is_valid_regex( string $pattern ): bool {
-		if ( '' === trim( $pattern ) ) {
+		$pattern = trim( $pattern );
+
+		if ( '' === $pattern || strlen( $pattern ) > self::MAX_PATTERN_LENGTH || self::has_catastrophic_backtracking_shape( $pattern ) ) {
 			return false;
 		}
 
 		// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- the boolean return value is the point: this is the validity check itself, so the E_WARNING a malformed pattern raises is expected noise, not a bug to surface.
 		return false !== @preg_match( self::wrap_pattern( $pattern ), '' );
+	}
+
+	/**
+	 * Rejects the classic nested-quantifier shape (e.g. "(a+)+", "(a*)*")
+	 * that causes PCRE's catastrophic backtracking on a crafted, non-
+	 * matching input — a ReDoS vector this plugin would otherwise let an
+	 * admin (or a CSV import) plant, since is_valid_regex() only used to
+	 * confirm a pattern *compiles*, not that it terminates quickly on
+	 * every input. A heuristic, not a full static analyzer: it catches the
+	 * common accidental/malicious shapes without rejecting ordinary
+	 * redirect patterns like "^/blog/(.+)$".
+	 *
+	 * @param string $pattern Pattern as authored, without delimiters.
+	 */
+	private static function has_catastrophic_backtracking_shape( string $pattern ): bool {
+		return 1 === preg_match( '/\([^()]*[+*][^()]*\)[+*]/', $pattern );
 	}
 
 	/**
