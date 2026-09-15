@@ -11,3 +11,4 @@
 /vendor
 /.phpunit.result.cache
 /languages/.gitkeep
+/screens
