@@ -1,7 +1,7 @@
 === SEO-WP ===
 Contributors: seooptimierung
 Donate link: https://buymeacoffee.com/cyrusbadde
-Tags: seo, wpml, polylang, sitemap, schema, hreflang
+Tags: seo, wpml, polylang, sitemap, schema
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.1
@@ -9,7 +9,7 @@ Stable tag: 1.4.8
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-A slim, page-type-agnostic SEO plugin with full WPML and Polylang compatibility: meta tags, social meta, JSON-LD schema, XML sitemaps and crawl control.
+A slim SEO plugin with full WPML and Polylang support: meta tags, JSON-LD schema, XML sitemaps and crawl control.
 
 == Description ==
 
