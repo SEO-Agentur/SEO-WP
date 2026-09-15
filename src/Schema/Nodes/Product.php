@@ -106,17 +106,25 @@ final class Product {
 			$node['mpn'] = $mpn;
 		}
 
-		$node['offers'] = array(
-			'@type'         => 'Offer',
-			'url'           => $url,
-			'priceCurrency' => function_exists( 'get_woocommerce_currency' ) ? get_woocommerce_currency() : '',
-			'price'         => (string) $product->get_price(),
-			'availability'  => $product->is_in_stock() ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
-		);
+		// A blank/unset price is common for a variable product with no
+		// variations configured yet, or one simply not priced yet — Google
+		// requires a real numeric price on every Offer, so emitting one
+		// with an empty string would be invalid structured data. Omitting
+		// the whole offers block is more correct than guessing a price.
+		$price = trim( (string) $product->get_price() );
+		if ( is_numeric( $price ) ) {
+			$node['offers'] = array(
+				'@type'         => 'Offer',
+				'url'           => $url,
+				'priceCurrency' => function_exists( 'get_woocommerce_currency' ) ? get_woocommerce_currency() : '',
+				'price'         => $price,
+				'availability'  => $product->is_in_stock() ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+			);
 
-		$price_valid_until = self::normalise_price_valid_until( (string) get_post_meta( $post->ID, self::META_PRICE_VALID_UNTIL, true ) );
-		if ( '' !== $price_valid_until ) {
-			$node['offers']['priceValidUntil'] = $price_valid_until;
+			$price_valid_until = self::normalise_price_valid_until( (string) get_post_meta( $post->ID, self::META_PRICE_VALID_UNTIL, true ) );
+			if ( '' !== $price_valid_until ) {
+				$node['offers']['priceValidUntil'] = $price_valid_until;
+			}
 		}
 
 		$review_count = (int) $product->get_review_count();
