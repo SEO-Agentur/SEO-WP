@@ -159,6 +159,25 @@ final class Settings {
 		add_action( 'admin_enqueue_scripts', array( $this, 'maybe_enqueue_assets' ) );
 		add_action( 'admin_post_seo_wp_apply_htaccess', array( $this, 'handle_apply_htaccess' ) );
 		add_action( 'wp_ajax_seo_wp_scan_resource_hints', array( $this, 'handle_scan_resource_hints_ajax' ) );
+
+		// This form submits through WordPress core's own options.php, whose
+		// permission check defaults to requiring real manage_options unless
+		// told otherwise here. Every other settings screen in this plugin
+		// (AiSettings, GoogleIndexingPage, IndexNowPage) instead runs its
+		// own admin-post handler checking self::CAPABILITY directly, so
+		// they already work for a role granted only that virtual capability
+		// via RoleManager. Without this filter, delegating the "Settings"
+		// area to a non-administrator role — the exact scenario Role
+		// Manager exists for — would let that role reach this page but
+		// fail to save it.
+		add_filter( 'option_page_capability_' . self::OPTION_KEY, array( $this, 'option_page_capability' ) );
+	}
+
+	/**
+	 * Tells options.php which capability actually gates this option group.
+	 */
+	public function option_page_capability(): string {
+		return self::CAPABILITY;
 	}
 
 	/**
