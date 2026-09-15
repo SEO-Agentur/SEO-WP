@@ -1194,14 +1194,26 @@ final class LinkAudit {
 		$codes   = array();
 		for ( $step = 0; $step < 10; $step++ ) {
 			$args     = array(
-				'timeout'     => 5,
-				'redirection' => 0,
-				'user-agent'  => 'SEO-WP Link Audit/' . \SeoWp\VERSION,
+				'timeout'            => 5,
+				'redirection'        => 0,
+				'user-agent'         => 'SEO-WP Link Audit/' . \SeoWp\VERSION,
+				// Every hop is a fresh call (redirects are followed manually,
+				// one step at a time, below) rather than delegated to core's
+				// own redirect-following — so wp_safe_remote_*() re-validates
+				// every hop, not just the first request. Link targets come
+				// from post/menu/widget content, which a role below
+				// Administrator can normally author, so the destination
+				// (including where a redirect points) must never be trusted:
+				// this rejects loopback, private/reserved, and link-local
+				// IPv4/IPv6 destinations via WordPress core's own
+				// wp_http_validate_url(), the same mechanism wp_safe_remote_*()
+				// is built on.
+				'reject_unsafe_urls' => true,
 			);
-			$response = wp_remote_head( $current, $args );
+			$response = wp_safe_remote_head( $current, $args );
 			$code     = is_wp_error( $response ) ? 0 : (int) wp_remote_retrieve_response_code( $response );
 			if ( is_wp_error( $response ) || 0 === $code || in_array( $code, array( 403, 405 ), true ) ) {
-				$response = wp_remote_get( $current, $args ); }
+				$response = wp_safe_remote_get( $current, $args ); }
 			if ( is_wp_error( $response ) ) {
 				return array(
 					'type'      => 'broken',
