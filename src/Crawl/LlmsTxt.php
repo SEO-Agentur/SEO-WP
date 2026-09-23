@@ -35,7 +35,11 @@ final class LlmsTxt {
 	public function register(): void {
 		add_action( 'init', array( $this, 'add_rewrite_rules' ) );
 		add_filter( 'query_vars', array( $this, 'register_query_vars' ) );
-		add_action( 'template_redirect', array( $this, 'maybe_render' ) );
+		// Priority 1: see the identical comment in Sitemaps\Router::register()
+		// — core's redirect_canonical() runs at the default priority (10)
+		// and, registered earlier in the boot sequence, wins any tie there,
+		// 301-redirecting this virtual route before this callback ever runs.
+		add_action( 'template_redirect', array( $this, 'maybe_render' ), 1 );
 	}
 
 	/**

@@ -64,7 +64,15 @@ final class IndexNow {
 	public function register(): void {
 		add_action( 'init', array( $this, 'add_rewrite_rules' ) );
 		add_filter( 'query_vars', array( $this, 'register_query_vars' ) );
-		add_action( 'template_redirect', array( $this, 'maybe_render_key_file' ) );
+		// Priority 1: see the identical comment in Sitemaps\Router::register()
+		// — core's redirect_canonical() runs at the default priority (10)
+		// and, registered earlier in the boot sequence, wins any tie there,
+		// 301-redirecting this virtual route before this callback ever
+		// runs. Search engines verifying this key file don't follow
+		// redirects, so this isn't just cosmetic — it silently breaks
+		// IndexNow verification entirely on a site with no matching rule
+		// already resolved by the time redirect_canonical looks at it.
+		add_action( 'template_redirect', array( $this, 'maybe_render_key_file' ), 1 );
 
 		add_action( 'transition_post_status', array( $this, 'maybe_ping_on_publish' ), 10, 3 );
 		add_action( 'before_delete_post', array( $this, 'ping_before_delete' ) );

@@ -41,7 +41,17 @@ final class Router {
 	public function register(): void {
 		add_action( 'init', array( $this, 'add_rewrite_rules' ) );
 		add_filter( 'query_vars', array( $this, 'register_query_vars' ) );
-		add_action( 'template_redirect', array( $this, 'maybe_render' ) );
+		// Priority 1: WordPress core's own redirect_canonical() is hooked
+		// on template_redirect at the default priority (10) very early in
+		// the request lifecycle, before any plugin's init-triggered hook
+		// registration — so a handler registered at the same priority
+		// always loses that race and never gets to run at all. Without a
+		// static front page configured, core's query for these unmatched
+		// virtual routes falls back to is_home()/is_front_page(), and
+		// redirect_canonical() 301s them to add a trailing slash before
+		// this callback would ever see the request. Matches the same
+		// priority Crawl\Redirects already uses for the same reason.
+		add_action( 'template_redirect', array( $this, 'maybe_render' ), 1 );
 		add_filter( 'wp_sitemaps_enabled', array( $this, 'maybe_disable_core_sitemap' ) );
 
 		add_action( 'save_post', array( $this, 'maybe_invalidate_cache_on_save' ) );
