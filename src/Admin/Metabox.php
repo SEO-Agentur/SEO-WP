@@ -603,23 +603,29 @@ final class Metabox {
 	}
 
 	/**
-	 * Renders the schema type override field: a text input with an
-	 * autocomplete list of common Schema.org type names. Any value is
-	 * accepted here — GraphBuilder::is_valid_schema_type() is the actual
-	 * gate, both on save (invalid values are silently dropped) and again
-	 * at render time as a second safety net.
+	 * Renders the schema type override field: a text input with a custom,
+	 * JS-driven autocomplete list of common Schema.org type names. Not the
+	 * native <input list> + <datalist> combination — that pairing's actual
+	 * suggestion-popup behavior is inconsistent across browsers (most
+	 * notably Safari/WebKit) to the point of unreliability, so this
+	 * renders its own dropdown (metabox.js) reading the same option list
+	 * from a still-server-rendered, but otherwise inert, <datalist> used
+	 * purely as a data source. Any value is accepted here —
+	 * GraphBuilder::is_valid_schema_type() is the actual gate, both on
+	 * save (invalid values are silently dropped) and again at render time
+	 * as a second safety net.
 	 *
 	 * @param string $value Current value.
 	 */
 	private function field_schema_type( string $value ): void {
-		echo '<p class="seo-wp-field">';
+		echo '<p class="seo-wp-field seo-wp-schema-type-field">';
 		printf(
 			'<label for="seo-wp-%1$s">%2$s</label>',
 			esc_attr( GraphBuilder::META_SCHEMA_TYPE ),
 			esc_html__( 'Schema type', 'seo-wp' )
 		);
 		printf(
-			'<input type="text" id="seo-wp-%1$s" name="%1$s" value="%2$s" list="seo-wp-schema-type-suggestions" placeholder="%3$s" class="widefat" />',
+			'<input type="text" id="seo-wp-%1$s" name="%1$s" value="%2$s" placeholder="%3$s" class="widefat" autocomplete="off" />',
 			esc_attr( GraphBuilder::META_SCHEMA_TYPE ),
 			esc_attr( $value ),
 			esc_attr__( 'Automatic', 'seo-wp' )

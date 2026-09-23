@@ -42,6 +42,38 @@
 	margin-bottom: 4px;
 }
 
+.seo-wp-schema-type-field {
+	position: relative;
+}
+
+.seo-wp-schema-suggestions {
+	position: absolute;
+	z-index: 10;
+	top: 100%;
+	left: 0;
+	right: 0;
+	margin: 2px 0 0;
+	padding: 4px 0;
+	list-style: none;
+	background: #fff;
+	border: 1px solid #949494;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+	max-height: 220px;
+	overflow-y: auto;
+}
+
+.seo-wp-schema-suggestions li {
+	margin: 0;
+	padding: 6px 10px;
+	cursor: pointer;
+}
+
+.seo-wp-schema-suggestions li:hover,
+.seo-wp-schema-suggestions li.is-active {
+	background: #2271b1;
+	color: #fff;
+}
+
 .seo-wp-faq-row {
 	display: grid;
 	grid-template-columns: 1fr 1fr auto;

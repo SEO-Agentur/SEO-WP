@@ -81,6 +81,124 @@
 		container.appendChild( row );
 	}
 
+	/**
+	 * Builds a custom, JS-driven suggestion dropdown for the schema type
+	 * field, replacing the native <input list> + <datalist> pairing —
+	 * that combination's actual popup behavior is inconsistent enough
+	 * across browsers (Safari/WebKit in particular) to be unreliable.
+	 * Reads its option list from the still-server-rendered <datalist>
+	 * element, which is otherwise inert once the input's own `list`
+	 * attribute is removed (see Admin\Metabox::field_schema_type()).
+	 */
+	function initSchemaTypeAutocomplete() {
+		var input = document.getElementById( 'seo-wp-_seo_wp_schema_type' );
+		var datalist = document.getElementById( 'seo-wp-schema-type-suggestions' );
+		if ( ! input || ! datalist ) {
+			return;
+		}
+
+		var options = Array.prototype.map.call( datalist.options, function ( option ) {
+			return option.value;
+		} );
+
+		var dropdown = document.createElement( 'ul' );
+		dropdown.className = 'seo-wp-schema-suggestions';
+		dropdown.hidden = true;
+		input.insertAdjacentElement( 'afterend', dropdown );
+
+		var activeIndex = -1;
+
+		function setActive( index ) {
+			var items = dropdown.children;
+			if ( items[ activeIndex ] ) {
+				items[ activeIndex ].classList.remove( 'is-active' );
+			}
+			activeIndex = index;
+			if ( items[ activeIndex ] ) {
+				items[ activeIndex ].classList.add( 'is-active' );
+				items[ activeIndex ].scrollIntoView( { block: 'nearest' } );
+			}
+		}
+
+		function close() {
+			dropdown.hidden = true;
+			dropdown.innerHTML = '';
+			activeIndex = -1;
+		}
+
+		function open( query ) {
+			var needle = query.toLowerCase();
+			var matches = options.filter( function ( option ) {
+				return option.toLowerCase().indexOf( needle ) !== -1;
+			} );
+
+			if ( 0 === matches.length ) {
+				close();
+				return;
+			}
+
+			dropdown.innerHTML = '';
+			matches.forEach( function ( match ) {
+				var item = document.createElement( 'li' );
+				item.textContent = match;
+				dropdown.appendChild( item );
+			} );
+			dropdown.hidden = false;
+			activeIndex = -1;
+		}
+
+		function choose( value ) {
+			input.value = value;
+			close();
+			input.dispatchEvent( new Event( 'input' ) );
+		}
+
+		input.addEventListener( 'input', function () {
+			open( input.value );
+		} );
+
+		input.addEventListener( 'focus', function () {
+			open( input.value );
+		} );
+
+		input.addEventListener( 'keydown', function ( event ) {
+			if ( dropdown.hidden ) {
+				return;
+			}
+
+			var count = dropdown.children.length;
+
+			if ( 'ArrowDown' === event.key ) {
+				event.preventDefault();
+				setActive( ( activeIndex + 1 ) % count );
+			} else if ( 'ArrowUp' === event.key ) {
+				event.preventDefault();
+				setActive( ( activeIndex - 1 + count ) % count );
+			} else if ( 'Enter' === event.key && activeIndex > -1 ) {
+				event.preventDefault();
+				choose( dropdown.children[ activeIndex ].textContent );
+			} else if ( 'Escape' === event.key ) {
+				close();
+			}
+		} );
+
+		// mousedown (not click) fires before the input's own blur handler
+		// would otherwise close the dropdown first.
+		dropdown.addEventListener( 'mousedown', function ( event ) {
+			var item = event.target.closest( 'li' );
+			if ( item ) {
+				event.preventDefault();
+				choose( item.textContent );
+			}
+		} );
+
+		document.addEventListener( 'click', function ( event ) {
+			if ( event.target !== input && ! dropdown.contains( event.target ) ) {
+				close();
+			}
+		} );
+	}
+
 	function fieldValue( id ) {
 		var el = document.getElementById( id );
 		return el ? el.value.trim() : '';
@@ -151,6 +269,7 @@
 
 		updatePreviews();
 		updateLengthBadges();
+		initSchemaTypeAutocomplete();
 
 		[
 			'seo-wp-_seo_wp_title',
