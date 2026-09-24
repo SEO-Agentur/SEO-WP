@@ -157,6 +157,7 @@ final class Settings {
 		add_action( 'admin_menu', array( $this, 'add_menu' ), 5 );
 		add_action( 'admin_init', array( $this, 'register_setting' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'maybe_enqueue_assets' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_menu_icon_style' ) );
 		add_action( 'admin_post_seo_wp_apply_htaccess', array( $this, 'handle_apply_htaccess' ) );
 		add_action( 'wp_ajax_seo_wp_scan_resource_hints', array( $this, 'handle_scan_resource_hints_ajax' ) );
 
@@ -190,7 +191,7 @@ final class Settings {
 			self::CAPABILITY,
 			self::PAGE_SLUG,
 			array( $this, 'render_page' ),
-			'dashicons-search',
+			plugins_url( 'assets/admin/icons/menu-icon.png', \Seooptimierung\Toolkit\FILE ),
 			80
 		);
 
@@ -245,6 +246,28 @@ final class Settings {
 				),
 			)
 		);
+	}
+
+	/**
+	 * Attaches the top-level menu icon's hover-color swap as an inline
+	 * style on WordPress core's own 'admin-menu' stylesheet — that handle
+	 * is already enqueued unconditionally on every wp-admin screen (the
+	 * sidebar itself is global), which this plugin's own admin.css is not
+	 * (it only loads on this plugin's own pages), so this is the one place
+	 * the rule needs to live to actually take effect everywhere the menu
+	 * item is visible.
+	 */
+	public function enqueue_menu_icon_style(): void {
+		$css = sprintf(
+			'#toplevel_page_%1$s .wp-menu-image { opacity: 1; }' .
+			'#toplevel_page_%1$s:hover .wp-menu-image,' .
+			'#toplevel_page_%1$s.wp-has-current-submenu .wp-menu-image,' .
+			'#toplevel_page_%1$s.current .wp-menu-image { background-image: url(%2$s) !important; }',
+			self::PAGE_SLUG,
+			esc_url( plugins_url( 'assets/admin/icons/menu-icon-hover.png', \Seooptimierung\Toolkit\FILE ) )
+		);
+
+		wp_add_inline_style( 'admin-menu', $css );
 	}
 
 	/**
