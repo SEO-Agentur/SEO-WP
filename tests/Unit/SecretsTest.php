@@ -2,18 +2,18 @@
 /**
  * Tests for dedicated, non-autoloaded secret storage.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Tests\Unit;
+namespace Seooptimierung\Toolkit\Tests\Unit;
 
-use SeoWp\Support\Secrets;
+use Seooptimierung\Toolkit\Support\Secrets;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \SeoWp\Support\Secrets
+ * @covers \Seooptimierung\Toolkit\Support\Secrets
  */
 final class SecretsTest extends TestCase {
 

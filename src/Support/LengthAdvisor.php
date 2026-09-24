@@ -2,12 +2,12 @@
 /**
  * Title/meta description length classification.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Support;
+namespace Seooptimierung\Toolkit\Support;
 
 /**
  * The single source of truth for the title/description "traffic light"

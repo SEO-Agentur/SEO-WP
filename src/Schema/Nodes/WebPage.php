@@ -2,15 +2,15 @@
 /**
  * WebPage schema node.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Schema\Nodes;
+namespace Seooptimierung\Toolkit\Schema\Nodes;
 
-use SeoWp\Schema\GraphBuilder;
-use SeoWp\Support\Url;
+use Seooptimierung\Toolkit\Schema\GraphBuilder;
+use Seooptimierung\Toolkit\Support\Url;
 use WP_Post;
 use WP_Post_Type;
 use WP_Term;

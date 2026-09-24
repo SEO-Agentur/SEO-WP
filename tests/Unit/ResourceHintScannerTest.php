@@ -2,18 +2,18 @@
 /**
  * Tests for extracting external resource hosts and suggesting hints.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Tests\Unit;
+namespace Seooptimierung\Toolkit\Tests\Unit;
 
-use SeoWp\Performance\ResourceHintScanner;
+use Seooptimierung\Toolkit\Performance\ResourceHintScanner;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \SeoWp\Performance\ResourceHintScanner
+ * @covers \Seooptimierung\Toolkit\Performance\ResourceHintScanner
  */
 final class ResourceHintScannerTest extends TestCase {
 

@@ -2,15 +2,15 @@
 /**
  * Product schema node.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Schema\Nodes;
+namespace Seooptimierung\Toolkit\Schema\Nodes;
 
-use SeoWp\Schema\GraphBuilder;
-use SeoWp\Social\OpenGraph;
+use Seooptimierung\Toolkit\Schema\GraphBuilder;
+use Seooptimierung\Toolkit\Social\OpenGraph;
 use WC_Product;
 use WP_Post;
 
@@ -19,7 +19,7 @@ use WP_Post;
  * active and the current request is a single product; safe to call
  * unconditionally otherwise. Brand/GTIN/MPN/price-valid-until have no
  * reliable WooCommerce-core equivalent (core has no such fields), so
- * they're this plugin's own optional post meta, editable in the SEO-WP
+ * they're this plugin's own optional post meta, editable in the Seooptimierung Toolkit
  * metabox's Schema tab for products.
  */
 final class Product {

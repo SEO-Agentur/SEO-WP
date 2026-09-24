@@ -2,18 +2,18 @@
 /**
  * Tests for redirect rule storage and matching.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Tests\Unit;
+namespace Seooptimierung\Toolkit\Tests\Unit;
 
-use SeoWp\Crawl\Redirects;
+use Seooptimierung\Toolkit\Crawl\Redirects;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \SeoWp\Crawl\Redirects
+ * @covers \Seooptimierung\Toolkit\Crawl\Redirects
  */
 final class RedirectsTest extends TestCase {
 

@@ -2,12 +2,12 @@
 /**
  * Locates and deactivates a detected competing SEO plugin.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Import;
+namespace Seooptimierung\Toolkit\Import;
 
 /**
  * Resolves which plugin file (if any) is actually active for a given

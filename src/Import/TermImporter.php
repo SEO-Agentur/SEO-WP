@@ -2,19 +2,19 @@
 /**
  * Imports taxonomy term SEO data from Yoast, Rank Math and AIOSEO.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Import;
+namespace Seooptimierung\Toolkit\Import;
 
-use SeoWp\Meta\Canonical;
-use SeoWp\Meta\Robots;
-use SeoWp\Meta\TitleDescription;
-use SeoWp\Social\OpenGraph;
-use SeoWp\Support\ErrorLog;
-use SeoWp\Templates\Tokens;
+use Seooptimierung\Toolkit\Meta\Canonical;
+use Seooptimierung\Toolkit\Meta\Robots;
+use Seooptimierung\Toolkit\Meta\TitleDescription;
+use Seooptimierung\Toolkit\Social\OpenGraph;
+use Seooptimierung\Toolkit\Support\ErrorLog;
+use Seooptimierung\Toolkit\Templates\Tokens;
 
 /**
  * Reads Yoast's wpseo_taxonomy_meta option (taxonomy => term ID => fields

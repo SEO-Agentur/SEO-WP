@@ -2,23 +2,23 @@
 /**
  * Builds the deduplicated JSON-LD @graph for the current request.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Schema;
+namespace Seooptimierung\Toolkit\Schema;
 
-use SeoWp\Schema\Nodes\Article;
-use SeoWp\Schema\Nodes\BreadcrumbList;
-use SeoWp\Schema\Nodes\FaqPage;
-use SeoWp\Schema\Nodes\Organization;
-use SeoWp\Schema\Nodes\Person;
-use SeoWp\Schema\Nodes\Product;
-use SeoWp\Schema\Nodes\WebPage;
-use SeoWp\Schema\Nodes\WebSite;
-use SeoWp\Support\CoexistenceMode;
-use SeoWp\Support\FragmentCache;
+use Seooptimierung\Toolkit\Schema\Nodes\Article;
+use Seooptimierung\Toolkit\Schema\Nodes\BreadcrumbList;
+use Seooptimierung\Toolkit\Schema\Nodes\FaqPage;
+use Seooptimierung\Toolkit\Schema\Nodes\Organization;
+use Seooptimierung\Toolkit\Schema\Nodes\Person;
+use Seooptimierung\Toolkit\Schema\Nodes\Product;
+use Seooptimierung\Toolkit\Schema\Nodes\WebPage;
+use Seooptimierung\Toolkit\Schema\Nodes\WebSite;
+use Seooptimierung\Toolkit\Support\CoexistenceMode;
+use Seooptimierung\Toolkit\Support\FragmentCache;
 use WP_Post;
 use WP_Term;
 
@@ -151,11 +151,11 @@ final class GraphBuilder {
 		 * another plugin). A node added here with the same @id as a
 		 * built-in one and placed first in the array wins the dedup below.
 		 *
-		 * @param array<int,array<string,mixed>> $nodes   Nodes SEO-WP collected from its own builders.
+		 * @param array<int,array<string,mixed>> $nodes   Nodes Seooptimierung Toolkit collected from its own builders.
 		 * @param mixed                          $queried The current request's queried object (WP_Post, WP_Term, ...), or null.
 		 */
 		// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- namespaced public extension point, documented for third-party developers.
-		$nodes = (array) apply_filters( 'seo_wp/schema/graph', $nodes, get_queried_object() );
+		$nodes = (array) apply_filters( 'seooptimierung/schema/graph', $nodes, get_queried_object() );
 
 		$nodes = self::deduplicate( $nodes );
 

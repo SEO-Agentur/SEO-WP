@@ -2,14 +2,14 @@
 /**
  * Generic sitemap for a single public taxonomy.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Sitemaps;
+namespace Seooptimierung\Toolkit\Sitemaps;
 
-use SeoWp\Meta\Robots;
+use Seooptimierung\Toolkit\Meta\Robots;
 
 /**
  * Renders a sitemap for any public taxonomy's terms, excluding empty and

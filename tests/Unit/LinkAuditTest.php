@@ -2,18 +2,18 @@
 /**
  * Tests for extracting checkable link targets from post content.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Tests\Unit;
+namespace Seooptimierung\Toolkit\Tests\Unit;
 
-use SeoWp\Admin\LinkAudit;
+use Seooptimierung\Toolkit\Admin\LinkAudit;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \SeoWp\Admin\LinkAudit
+ * @covers \Seooptimierung\Toolkit\Admin\LinkAudit
  */
 final class LinkAuditTest extends TestCase {
 

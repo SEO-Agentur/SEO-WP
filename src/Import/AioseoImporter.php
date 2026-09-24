@@ -2,21 +2,21 @@
 /**
  * Imports object data written by AIOSEO v4.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Import;
+namespace Seooptimierung\Toolkit\Import;
 
-use SeoWp\Meta\Canonical;
-use SeoWp\Meta\Robots;
-use SeoWp\Meta\TitleDescription;
-use SeoWp\Schema\GraphBuilder;
-use SeoWp\Social\OpenGraph;
-use SeoWp\Social\TwitterCards;
-use SeoWp\Support\ErrorLog;
-use SeoWp\Templates\Tokens;
+use Seooptimierung\Toolkit\Meta\Canonical;
+use Seooptimierung\Toolkit\Meta\Robots;
+use Seooptimierung\Toolkit\Meta\TitleDescription;
+use Seooptimierung\Toolkit\Schema\GraphBuilder;
+use Seooptimierung\Toolkit\Social\OpenGraph;
+use Seooptimierung\Toolkit\Social\TwitterCards;
+use Seooptimierung\Toolkit\Support\ErrorLog;
+use Seooptimierung\Toolkit\Templates\Tokens;
 
 /**
  * Reads AIOSEO's custom wp_aioseo_posts table (not postmeta — AIOSEO v4

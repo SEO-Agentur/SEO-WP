@@ -6,12 +6,12 @@
  * shortlink/adjacent-post links, RSS feeds, self-pingbacks and the REST
  * API.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Performance;
+namespace Seooptimierung\Toolkit\Performance;
 
 /**
  * Every single feature here defaults to off and is gated by its own
@@ -502,7 +502,7 @@ final class Optimizations {
 	 */
 	public function die_no_feed(): void {
 		wp_die(
-			esc_html__( 'No feed available, please visit our homepage.', 'seo-wp' ),
+			esc_html__( 'No feed available, please visit our homepage.', 'seooptimierung-toolkit' ),
 			'',
 			array( 'response' => 404 )
 		);
@@ -551,7 +551,7 @@ final class Optimizations {
 
 		return new \WP_Error(
 			'seo_wp_rest_not_logged_in',
-			__( 'The REST API is restricted to logged-in users on this site.', 'seo-wp' ),
+			__( 'The REST API is restricted to logged-in users on this site.', 'seooptimierung-toolkit' ),
 			array( 'status' => 401 )
 		);
 	}

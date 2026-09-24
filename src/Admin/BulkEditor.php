@@ -2,23 +2,23 @@
 /**
  * Bulk-edit table for SEO fields across all objects.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Admin;
+namespace Seooptimierung\Toolkit\Admin;
 
-use SeoWp\Meta\Canonical;
-use SeoWp\Meta\Robots;
-use SeoWp\Meta\TitleDescription;
-use SeoWp\Support\AiClient;
-use SeoWp\Support\Ajax;
-use SeoWp\Support\CoexistenceMode;
-use SeoWp\Support\ContentRenderer;
-use SeoWp\Support\DeepLClient;
-use SeoWp\Support\LengthAdvisor;
-use SeoWp\Support\Secrets;
+use Seooptimierung\Toolkit\Meta\Canonical;
+use Seooptimierung\Toolkit\Meta\Robots;
+use Seooptimierung\Toolkit\Meta\TitleDescription;
+use Seooptimierung\Toolkit\Support\AiClient;
+use Seooptimierung\Toolkit\Support\Ajax;
+use Seooptimierung\Toolkit\Support\CoexistenceMode;
+use Seooptimierung\Toolkit\Support\ContentRenderer;
+use Seooptimierung\Toolkit\Support\DeepLClient;
+use Seooptimierung\Toolkit\Support\LengthAdvisor;
+use Seooptimierung\Toolkit\Support\Secrets;
 use WP_Post;
 use WP_Query;
 
@@ -34,7 +34,7 @@ final class BulkEditor {
 	/**
 	 * Submenu page slug.
 	 */
-	private const PAGE_SLUG = 'seo-wp-bulk-editor';
+	private const PAGE_SLUG = 'seooptimierung-bulk-editor';
 
 	/**
 	 * Capability required to use the bulk editor.
@@ -81,8 +81,8 @@ final class BulkEditor {
 	public function add_menu(): void {
 		add_submenu_page(
 			Settings::PAGE_SLUG,
-			__( 'Bulk Editor', 'seo-wp' ),
-			__( 'Bulk Editor', 'seo-wp' ),
+			__( 'Bulk Editor', 'seooptimierung-toolkit' ),
+			__( 'Bulk Editor', 'seooptimierung-toolkit' ),
 			self::CAPABILITY,
 			self::PAGE_SLUG,
 			array( $this, 'render_page' )
@@ -99,16 +99,16 @@ final class BulkEditor {
 			return;
 		}
 
-		wp_enqueue_style( 'seo-wp-admin', plugins_url( 'assets/admin/admin.css', \SeoWp\FILE ), array(), \SeoWp\VERSION );
-		wp_enqueue_script( 'seo-wp-bulk-editor-ai', plugins_url( 'assets/admin/bulk-editor-ai.js', \SeoWp\FILE ), array(), \SeoWp\VERSION, true );
-		wp_enqueue_script( 'seo-wp-bulk-editor-ux', plugins_url( 'assets/admin/bulk-editor-ux.js', \SeoWp\FILE ), array(), \SeoWp\VERSION, true );
+		wp_enqueue_style( 'seo-wp-admin', plugins_url( 'assets/admin/admin.css', \Seooptimierung\Toolkit\FILE ), array(), \Seooptimierung\Toolkit\VERSION );
+		wp_enqueue_script( 'seo-wp-bulk-editor-ai', plugins_url( 'assets/admin/bulk-editor-ai.js', \Seooptimierung\Toolkit\FILE ), array(), \Seooptimierung\Toolkit\VERSION, true );
+		wp_enqueue_script( 'seo-wp-bulk-editor-ux', plugins_url( 'assets/admin/bulk-editor-ux.js', \Seooptimierung\Toolkit\FILE ), array(), \Seooptimierung\Toolkit\VERSION, true );
 
 		$providers = array();
 		if ( Secrets::has( 'ai_anthropic_key' ) ) {
-			$providers['anthropic'] = __( 'Claude', 'seo-wp' );
+			$providers['anthropic'] = __( 'Claude', 'seooptimierung-toolkit' );
 		}
 		if ( Secrets::has( 'ai_openai_key' ) ) {
-			$providers['openai'] = __( 'OpenAI', 'seo-wp' );
+			$providers['openai'] = __( 'OpenAI', 'seooptimierung-toolkit' );
 		}
 
 		wp_localize_script(
@@ -123,13 +123,13 @@ final class BulkEditor {
 				'deeplConfigured' => Secrets::has( 'ai_deepl_key' ),
 				'wpmlActive'      => has_filter( 'wpml_object_id' ),
 				'i18n'            => array(
-					'suggesting'  => __( 'Asking AI…', 'seo-wp' ),
-					'translating' => __( 'Translating…', 'seo-wp' ),
-					'error'       => __( 'Something went wrong.', 'seo-wp' ),
-					'done'        => __( 'Done.', 'seo-wp' ),
-					'noProviders' => __( 'No AI provider configured — add a key on the AI Settings page.', 'seo-wp' ),
-					'noDeepl'     => __( 'No DeepL API key configured — add one on the AI Settings page.', 'seo-wp' ),
-					'noWpml'      => __( 'WPML is not active.', 'seo-wp' ),
+					'suggesting'  => __( 'Asking AI…', 'seooptimierung-toolkit' ),
+					'translating' => __( 'Translating…', 'seooptimierung-toolkit' ),
+					'error'       => __( 'Something went wrong.', 'seooptimierung-toolkit' ),
+					'done'        => __( 'Done.', 'seooptimierung-toolkit' ),
+					'noProviders' => __( 'No AI provider configured — add a key on the AI Settings page.', 'seooptimierung-toolkit' ),
+					'noDeepl'     => __( 'No DeepL API key configured — add one on the AI Settings page.', 'seooptimierung-toolkit' ),
+					'noWpml'      => __( 'WPML is not active.', 'seooptimierung-toolkit' ),
 				),
 			)
 		);
@@ -159,14 +159,14 @@ final class BulkEditor {
 		);
 
 		echo '<div class="wrap seo-wp-bulk-editor">';
-		echo '<h1>' . esc_html__( 'SEO-WP Bulk Editor', 'seo-wp' ) . '</h1>';
+		echo '<h1>' . esc_html__( 'Seooptimierung Toolkit Bulk Editor', 'seooptimierung-toolkit' ) . '</h1>';
 
 		if ( isset( $_GET['updated'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only success banner, not a state-changing action.
-			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Changes saved.', 'seo-wp' ) . '</p></div>';
+			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Changes saved.', 'seooptimierung-toolkit' ) . '</p></div>';
 		}
 
 		if ( array() === $query->posts ) {
-			echo '<p>' . esc_html__( 'No content found.', 'seo-wp' ) . '</p></div>';
+			echo '<p>' . esc_html__( 'No content found.', 'seooptimierung-toolkit' ) . '</p></div>';
 			return;
 		}
 
@@ -174,7 +174,7 @@ final class BulkEditor {
 		$total_items = (int) $query->found_posts;
 
 		echo '<p>';
-		echo '<button type="button" class="button seo-wp-bulk-ai-suggest-empty">' . esc_html__( 'Suggest AI titles/descriptions for empty fields on this page', 'seo-wp' ) . '</button> ';
+		echo '<button type="button" class="button seo-wp-bulk-ai-suggest-empty">' . esc_html__( 'Suggest AI titles/descriptions for empty fields on this page', 'seooptimierung-toolkit' ) . '</button> ';
 		echo '<span class="seo-wp-bulk-ai-suggest-empty-status"></span>';
 		echo '</p>';
 
@@ -188,12 +188,12 @@ final class BulkEditor {
 
 		echo '<table class="widefat seo-wp-bulk-table">';
 		echo '<thead><tr>';
-		echo '<th>' . esc_html__( 'Content', 'seo-wp' ) . '</th>';
-		echo '<th>' . esc_html__( 'Title', 'seo-wp' ) . '</th>';
-		echo '<th>' . esc_html__( 'Description', 'seo-wp' ) . '</th>';
-		echo '<th>' . esc_html__( 'Canonical', 'seo-wp' ) . '</th>';
-		echo '<th>' . esc_html__( 'Robots', 'seo-wp' ) . '</th>';
-		echo '<th>' . esc_html__( 'AI', 'seo-wp' ) . '</th>';
+		echo '<th>' . esc_html__( 'Content', 'seooptimierung-toolkit' ) . '</th>';
+		echo '<th>' . esc_html__( 'Title', 'seooptimierung-toolkit' ) . '</th>';
+		echo '<th>' . esc_html__( 'Description', 'seooptimierung-toolkit' ) . '</th>';
+		echo '<th>' . esc_html__( 'Canonical', 'seooptimierung-toolkit' ) . '</th>';
+		echo '<th>' . esc_html__( 'Robots', 'seooptimierung-toolkit' ) . '</th>';
+		echo '<th>' . esc_html__( 'AI', 'seooptimierung-toolkit' ) . '</th>';
 		echo '</tr></thead><tbody>';
 
 		foreach ( $query->posts as $post ) {
@@ -204,7 +204,7 @@ final class BulkEditor {
 
 		echo '</tbody></table>';
 
-		submit_button( __( 'Save changes', 'seo-wp' ) );
+		submit_button( __( 'Save changes', 'seooptimierung-toolkit' ) );
 		echo '</form>';
 
 		$this->render_pagination( $paged, $total_pages, $total_items, $per_page, 'bottom' );
@@ -261,9 +261,9 @@ final class BulkEditor {
 		printf( '<select name="seo_wp_bulk[%1$d][noindex]">', (int) $post->ID );
 		foreach (
 			array(
-				''  => __( 'Default', 'seo-wp' ),
-				'0' => __( 'Index', 'seo-wp' ),
-				'1' => __( 'Noindex', 'seo-wp' ),
+				''  => __( 'Default', 'seooptimierung-toolkit' ),
+				'0' => __( 'Index', 'seooptimierung-toolkit' ),
+				'1' => __( 'Noindex', 'seooptimierung-toolkit' ),
 			) as $value => $label
 		) {
 			printf( '<option value="%1$s" %2$s>%3$s</option>', esc_attr( $value ), selected( $noindex, $value, false ), esc_html( $label ) );
@@ -272,8 +272,8 @@ final class BulkEditor {
 
 		echo '<td class="seo-wp-bulk-ai-cell">';
 		echo '<select class="seo-wp-bulk-ai-provider"></select> ';
-		echo '<button type="button" class="button seo-wp-bulk-ai-suggest">' . esc_html__( 'Suggest', 'seo-wp' ) . '</button> ';
-		echo '<button type="button" class="button seo-wp-bulk-ai-translate">' . esc_html__( 'Translate', 'seo-wp' ) . '</button>';
+		echo '<button type="button" class="button seo-wp-bulk-ai-suggest">' . esc_html__( 'Suggest', 'seooptimierung-toolkit' ) . '</button> ';
+		echo '<button type="button" class="button seo-wp-bulk-ai-translate">' . esc_html__( 'Translate', 'seooptimierung-toolkit' ) . '</button>';
 		echo '<div class="seo-wp-bulk-ai-status"></div>';
 		echo '</td>';
 
@@ -306,7 +306,7 @@ final class BulkEditor {
 	 */
 	public function handle_save(): void {
 		if ( ! current_user_can( self::CAPABILITY ) ) {
-			wp_die( esc_html__( 'You are not allowed to do this.', 'seo-wp' ) );
+			wp_die( esc_html__( 'You are not allowed to do this.', 'seooptimierung-toolkit' ) );
 		}
 
 		check_admin_referer( self::NONCE_ACTION, self::NONCE_NAME );
@@ -358,7 +358,7 @@ final class BulkEditor {
 		check_ajax_referer( self::NONCE_ACTION, 'nonce' );
 
 		if ( ! current_user_can( self::CAPABILITY ) ) {
-			Ajax::error( array( 'message' => __( 'You are not allowed to do this.', 'seo-wp' ) ), 403 );
+			Ajax::error( array( 'message' => __( 'You are not allowed to do this.', 'seooptimierung-toolkit' ) ), 403 );
 		}
 
 		$post_id  = isset( $_POST['post_id'] ) ? (int) $_POST['post_id'] : 0;
@@ -366,7 +366,7 @@ final class BulkEditor {
 
 		$post = $post_id > 0 ? get_post( $post_id ) : null;
 		if ( ! $post instanceof WP_Post || ! current_user_can( 'edit_post', $post_id ) ) {
-			Ajax::error( array( 'message' => __( 'Unknown post.', 'seo-wp' ) ), 400 );
+			Ajax::error( array( 'message' => __( 'Unknown post.', 'seooptimierung-toolkit' ) ), 400 );
 		}
 
 		$settings = get_option( 'seo_wp_settings', array() );
@@ -376,17 +376,17 @@ final class BulkEditor {
 		if ( 'anthropic' === $provider ) {
 			$key = Secrets::get( 'ai_anthropic_key' );
 			if ( '' === $key ) {
-				Ajax::error( array( 'message' => __( 'No Anthropic API key configured.', 'seo-wp' ) ), 400 );
+				Ajax::error( array( 'message' => __( 'No Anthropic API key configured.', 'seooptimierung-toolkit' ) ), 400 );
 			}
 			$reply = AiClient::anthropic( $key, $prompt, isset( $settings['ai_anthropic_model'] ) ? (string) $settings['ai_anthropic_model'] : '' );
 		} elseif ( 'openai' === $provider ) {
 			$key = Secrets::get( 'ai_openai_key' );
 			if ( '' === $key ) {
-				Ajax::error( array( 'message' => __( 'No OpenAI API key configured.', 'seo-wp' ) ), 400 );
+				Ajax::error( array( 'message' => __( 'No OpenAI API key configured.', 'seooptimierung-toolkit' ) ), 400 );
 			}
 			$reply = AiClient::openai( $key, $prompt, isset( $settings['ai_openai_model'] ) ? (string) $settings['ai_openai_model'] : '' );
 		} else {
-			Ajax::error( array( 'message' => __( 'Unknown provider.', 'seo-wp' ) ), 400 );
+			Ajax::error( array( 'message' => __( 'Unknown provider.', 'seooptimierung-toolkit' ) ), 400 );
 		}
 
 		if ( is_wp_error( $reply ) ) {
@@ -395,7 +395,7 @@ final class BulkEditor {
 
 		$parsed = AiClient::parse_title_description_reply( $reply );
 		if ( null === $parsed ) {
-			Ajax::error( array( 'message' => __( 'Could not parse the AI reply.', 'seo-wp' ) ) );
+			Ajax::error( array( 'message' => __( 'Could not parse the AI reply.', 'seooptimierung-toolkit' ) ) );
 		}
 
 		Ajax::success( $parsed );
@@ -449,7 +449,7 @@ final class BulkEditor {
 		check_ajax_referer( self::NONCE_ACTION, 'nonce' );
 
 		if ( ! current_user_can( self::CAPABILITY ) ) {
-			Ajax::error( array( 'message' => __( 'You are not allowed to do this.', 'seo-wp' ) ), 403 );
+			Ajax::error( array( 'message' => __( 'You are not allowed to do this.', 'seooptimierung-toolkit' ) ), 403 );
 		}
 
 		$post_id     = isset( $_POST['post_id'] ) ? (int) $_POST['post_id'] : 0;
@@ -458,21 +458,21 @@ final class BulkEditor {
 
 		$post = $post_id > 0 ? get_post( $post_id ) : null;
 		if ( ! $post instanceof WP_Post || ! current_user_can( 'edit_post', $post_id ) ) {
-			Ajax::error( array( 'message' => __( 'Unknown post.', 'seo-wp' ) ), 400 );
+			Ajax::error( array( 'message' => __( 'Unknown post.', 'seooptimierung-toolkit' ) ), 400 );
 		}
 
 		if ( '' === $title && '' === $description ) {
-			Ajax::error( array( 'message' => __( 'Nothing to translate — fill in a title or description first.', 'seo-wp' ) ), 400 );
+			Ajax::error( array( 'message' => __( 'Nothing to translate — fill in a title or description first.', 'seooptimierung-toolkit' ) ), 400 );
 		}
 
 		$key = Secrets::get( 'ai_deepl_key' );
 		if ( '' === $key ) {
-			Ajax::error( array( 'message' => __( 'No DeepL API key configured.', 'seo-wp' ) ), 400 );
+			Ajax::error( array( 'message' => __( 'No DeepL API key configured.', 'seooptimierung-toolkit' ) ), 400 );
 		}
 
 		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WPML's own filters, not ones of ours.
 		if ( ! has_filter( 'wpml_active_languages' ) || ! has_filter( 'wpml_object_id' ) ) {
-			Ajax::error( array( 'message' => __( 'WPML is not active.', 'seo-wp' ) ), 400 );
+			Ajax::error( array( 'message' => __( 'WPML is not active.', 'seooptimierung-toolkit' ) ), 400 );
 		}
 
 		$current_lang = '';
@@ -553,10 +553,10 @@ final class BulkEditor {
 	/**
 	 * Resolves which postmeta key a field reads from and writes to:
 	 * Yoast's or Rank Math's own key when Coexistence Mode redirects that
-	 * field to them, otherwise SEO-WP's own default.
+	 * field to them, otherwise Seooptimierung Toolkit's own default.
 	 *
 	 * @param string $field       'title', 'description' or 'canonical'.
-	 * @param string $default_key SEO-WP's own meta key for this field.
+	 * @param string $default_key Seooptimierung Toolkit's own meta key for this field.
 	 */
 	private function meta_key( string $field, string $default_key ): string {
 		return CoexistenceMode::meta_key( $field ) ?? $default_key;
@@ -586,7 +586,7 @@ final class BulkEditor {
 			esc_html(
 				sprintf(
 					/* translators: 1: first item shown, 2: last item shown, 3: total matching items. */
-					__( '%1$d–%2$d of %3$d', 'seo-wp' ),
+					__( '%1$d–%2$d of %3$d', 'seooptimierung-toolkit' ),
 					$first_item,
 					$last_item,
 					$total_items
@@ -595,7 +595,7 @@ final class BulkEditor {
 		);
 
 		$select_id = 'seo-wp-bulk-per-page-' . $position;
-		printf( '<label for="%1$s" class="screen-reader-text">%2$s</label>', esc_attr( $select_id ), esc_html__( 'Rows per page', 'seo-wp' ) );
+		printf( '<label for="%1$s" class="screen-reader-text">%2$s</label>', esc_attr( $select_id ), esc_html__( 'Rows per page', 'seooptimierung-toolkit' ) );
 		printf( '<select id="%1$s" class="seo-wp-bulk-per-page">', esc_attr( $select_id ) );
 		foreach ( self::PER_PAGE_OPTIONS as $option ) {
 			printf(
@@ -605,7 +605,7 @@ final class BulkEditor {
 				esc_html(
 					sprintf(
 						/* translators: %d: number of rows shown per page. */
-						__( '%d per page', 'seo-wp' ),
+						__( '%d per page', 'seooptimierung-toolkit' ),
 						$option
 					)
 				)
@@ -618,7 +618,7 @@ final class BulkEditor {
 			echo ' <span class="paging-input">';
 			printf(
 				/* translators: 1: page-number input, 2: total number of pages. */
-				esc_html__( 'Page %1$s of %2$d', 'seo-wp' ),
+				esc_html__( 'Page %1$s of %2$d', 'seooptimierung-toolkit' ),
 				sprintf(
 					'<input type="number" min="1" max="%1$d" value="%2$d" class="seo-wp-bulk-page-input" id="%3$s" size="2" />',
 					absint( $total_pages ),

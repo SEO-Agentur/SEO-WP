@@ -2,15 +2,15 @@
 /**
  * PSR-4 style autoloader for the plugin's own classes.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp;
+namespace Seooptimierung\Toolkit;
 
 /**
- * Maps the SeoWp\ namespace prefix to the src/ directory.
+ * Maps the Seooptimierung\Toolkit\ namespace prefix to the src/ directory.
  */
 final class Autoloader {
 

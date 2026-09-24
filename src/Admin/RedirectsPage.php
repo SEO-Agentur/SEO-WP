@@ -2,14 +2,14 @@
 /**
  * Admin CRUD screen for redirect rules.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Admin;
+namespace Seooptimierung\Toolkit\Admin;
 
-use SeoWp\Crawl\Redirects;
+use Seooptimierung\Toolkit\Crawl\Redirects;
 
 /**
  * Add/edit/delete screen for Crawl\Redirects rules: a form (add, or edit
@@ -20,7 +20,7 @@ final class RedirectsPage {
 	/**
 	 * Submenu page slug.
 	 */
-	private const PAGE_SLUG = 'seo-wp-redirects';
+	private const PAGE_SLUG = 'seooptimierung-redirects';
 
 	/**
 	 * Capability required to manage redirects.
@@ -77,8 +77,8 @@ final class RedirectsPage {
 	public function add_menu(): void {
 		add_submenu_page(
 			Settings::PAGE_SLUG,
-			__( 'Redirects', 'seo-wp' ),
-			__( 'Redirects', 'seo-wp' ),
+			__( 'Redirects', 'seooptimierung-toolkit' ),
+			__( 'Redirects', 'seooptimierung-toolkit' ),
 			self::CAPABILITY,
 			self::PAGE_SLUG,
 			array( $this, 'render_page' )
@@ -95,8 +95,8 @@ final class RedirectsPage {
 			return;
 		}
 
-		wp_enqueue_style( 'seo-wp-admin', plugins_url( 'assets/admin/admin.css', \SeoWp\FILE ), array(), \SeoWp\VERSION );
-		wp_enqueue_script( 'seo-wp-redirects', plugins_url( 'assets/admin/redirects.js', \SeoWp\FILE ), array(), \SeoWp\VERSION, true );
+		wp_enqueue_style( 'seo-wp-admin', plugins_url( 'assets/admin/admin.css', \Seooptimierung\Toolkit\FILE ), array(), \Seooptimierung\Toolkit\VERSION );
+		wp_enqueue_script( 'seooptimierung-redirects', plugins_url( 'assets/admin/redirects.js', \Seooptimierung\Toolkit\FILE ), array(), \Seooptimierung\Toolkit\VERSION, true );
 	}
 
 	/**
@@ -114,10 +114,10 @@ final class RedirectsPage {
 		$prefill_src = isset( $_GET['source'] ) ? sanitize_text_field( wp_unslash( (string) $_GET['source'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only prefill from the 404 monitor's "create redirect" link, not a state-changing action.
 
 		echo '<div class="wrap seo-wp-redirects">';
-		echo '<h1>' . esc_html__( 'SEO-WP Redirects', 'seo-wp' ) . '</h1>';
+		echo '<h1>' . esc_html__( 'Seooptimierung Toolkit Redirects', 'seooptimierung-toolkit' ) . '</h1>';
 
 		if ( isset( $_GET['updated'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only success banner, not a state-changing action.
-			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Redirect saved.', 'seo-wp' ) . '</p></div>';
+			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Redirect saved.', 'seooptimierung-toolkit' ) . '</p></div>';
 		}
 
 		$this->maybe_render_import_notice();
@@ -140,7 +140,7 @@ final class RedirectsPage {
 				esc_html(
 					sprintf(
 						/* translators: %s: maximum accepted upload size, e.g. "2 MB". */
-						__( 'Import stopped: the uploaded file is larger than the %s limit. Split it into smaller files and import them one at a time.', 'seo-wp' ),
+						__( 'Import stopped: the uploaded file is larger than the %s limit. Split it into smaller files and import them one at a time.', 'seooptimierung-toolkit' ),
 						size_format( self::MAX_IMPORT_FILE_SIZE )
 					)
 				)
@@ -163,7 +163,7 @@ final class RedirectsPage {
 			esc_html(
 				sprintf(
 					/* translators: 1: number of rows imported, 2: number of rows skipped, 3: maximum field length, 4: maximum rows read per file. */
-					__( 'Import complete: %1$d redirect(s) imported, %2$d row(s) skipped (missing source, or a field over the %3$s length limit). At most %4$d rows are read from one file — split a larger export into multiple files if needed.', 'seo-wp' ),
+					__( 'Import complete: %1$d redirect(s) imported, %2$d row(s) skipped (missing source, or a field over the %3$s length limit). At most %4$d rows are read from one file — split a larger export into multiple files if needed.', 'seooptimierung-toolkit' ),
 					$imported,
 					$skipped,
 					number_format_i18n( self::MAX_IMPORT_FIELD_LENGTH ),
@@ -187,7 +187,7 @@ final class RedirectsPage {
 		$active   = null === $editing || $editing['active'];
 		$is_regex = null !== $editing && ! empty( $editing['is_regex'] );
 
-		echo '<h2>' . ( $edit_id > 0 ? esc_html__( 'Edit redirect', 'seo-wp' ) : esc_html__( 'Add redirect', 'seo-wp' ) ) . '</h2>';
+		echo '<h2>' . ( $edit_id > 0 ? esc_html__( 'Edit redirect', 'seooptimierung-toolkit' ) : esc_html__( 'Add redirect', 'seooptimierung-toolkit' ) ) . '</h2>';
 
 		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" class="seo-wp-redirects-form">';
 		echo '<input type="hidden" name="action" value="seo_wp_redirects_save" />';
@@ -198,30 +198,30 @@ final class RedirectsPage {
 
 		printf(
 			'<tr><th scope="row"><label for="seo_wp_redirect_source">%1$s</label></th><td><input type="text" id="seo_wp_redirect_source" name="source" value="%2$s" class="regular-text code" placeholder="/old-page/" required /><p class="description" data-seo-wp-redirect-source-hint>%3$s</p></td></tr>',
-			esc_html__( 'Source path', 'seo-wp' ),
+			esc_html__( 'Source path', 'seooptimierung-toolkit' ),
 			esc_attr( $source ),
-			esc_html__( 'The exact site-relative path to match, e.g. /old-page/.', 'seo-wp' )
+			esc_html__( 'The exact site-relative path to match, e.g. /old-page/.', 'seooptimierung-toolkit' )
 		);
 		printf(
 			'<tr><th scope="row"><label for="seo_wp_redirect_target">%1$s</label></th><td><input type="text" id="seo_wp_redirect_target" name="target" value="%2$s" class="regular-text code" placeholder="https://example.com/new-page/" /><p class="description" data-seo-wp-redirect-target-hint style="display:none;">%3$s</p></td></tr>',
-			esc_html__( 'Target URL', 'seo-wp' ),
+			esc_html__( 'Target URL', 'seooptimierung-toolkit' ),
 			esc_attr( $target ),
-			esc_html__( 'Can reference capture groups from the pattern above as $1, $2, …', 'seo-wp' )
+			esc_html__( 'Can reference capture groups from the pattern above as $1, $2, …', 'seooptimierung-toolkit' )
 		);
 
 		printf(
 			'<tr><th scope="row">%1$s</th><td><label for="seo_wp_redirect_is_regex"><input type="checkbox" id="seo_wp_redirect_is_regex" name="is_regex" value="1" %2$s /> %3$s</label><p class="description">%4$s</p></td></tr>',
-			esc_html__( 'Pattern', 'seo-wp' ),
+			esc_html__( 'Pattern', 'seooptimierung-toolkit' ),
 			checked( $is_regex, true, false ),
-			esc_html__( 'This is a regular expression, not a fixed path', 'seo-wp' ),
-			esc_html__( 'E.g. ^/blog/(.+)$ — no delimiters needed, they\'re added automatically. An invalid pattern is saved but will never match anything, and is flagged below.', 'seo-wp' )
+			esc_html__( 'This is a regular expression, not a fixed path', 'seooptimierung-toolkit' ),
+			esc_html__( 'E.g. ^/blog/(.+)$ — no delimiters needed, they\'re added automatically. An invalid pattern is saved but will never match anything, and is flagged below.', 'seooptimierung-toolkit' )
 		);
 
 		if ( null !== $editing && $is_regex && ! Redirects::is_valid_regex( $editing['source'] ) ) {
-			echo '<tr><td colspan="2"><div class="notice notice-warning inline"><p>' . esc_html__( 'This pattern is not valid regex and will never match — double-check it.', 'seo-wp' ) . '</p></div></td></tr>';
+			echo '<tr><td colspan="2"><div class="notice notice-warning inline"><p>' . esc_html__( 'This pattern is not valid regex and will never match — double-check it.', 'seooptimierung-toolkit' ) . '</p></div></td></tr>';
 		}
 
-		echo '<tr><th scope="row"><label for="seo_wp_redirect_type">' . esc_html__( 'Type', 'seo-wp' ) . '</label></th><td><select id="seo_wp_redirect_type" name="type">';
+		echo '<tr><th scope="row"><label for="seo_wp_redirect_type">' . esc_html__( 'Type', 'seooptimierung-toolkit' ) . '</label></th><td><select id="seo_wp_redirect_type" name="type">';
 		foreach ( $this->type_labels() as $value => $label ) {
 			printf( '<option value="%1$d" %2$s>%3$s</option>', (int) $value, selected( $type, $value, false ), esc_html( $label ) );
 		}
@@ -229,13 +229,13 @@ final class RedirectsPage {
 
 		printf(
 			'<tr><th scope="row">%1$s</th><td><label for="seo_wp_redirect_active"><input type="checkbox" id="seo_wp_redirect_active" name="active" value="1" %2$s /> %3$s</label></td></tr>',
-			esc_html__( 'Active', 'seo-wp' ),
+			esc_html__( 'Active', 'seooptimierung-toolkit' ),
 			checked( $active, true, false ),
-			esc_html__( 'Active', 'seo-wp' )
+			esc_html__( 'Active', 'seooptimierung-toolkit' )
 		);
 
 		echo '</tbody></table>';
-		submit_button( $edit_id > 0 ? __( 'Update redirect', 'seo-wp' ) : __( 'Add redirect', 'seo-wp' ) );
+		submit_button( $edit_id > 0 ? __( 'Update redirect', 'seooptimierung-toolkit' ) : __( 'Add redirect', 'seooptimierung-toolkit' ) );
 		echo '</form>';
 	}
 
@@ -248,22 +248,22 @@ final class RedirectsPage {
 			self::NONCE_ACTION . '_export'
 		);
 
-		echo '<h2>' . esc_html__( 'Import / export', 'seo-wp' ) . '</h2>';
+		echo '<h2>' . esc_html__( 'Import / export', 'seooptimierung-toolkit' ) . '</h2>';
 		echo '<p class="description">' . esc_html(
 			sprintf(
 				/* translators: %s: CSV column list. */
-				__( 'CSV columns: %s. Importing always adds new rows — it never overwrites or deduplicates existing ones, so review the list afterwards.', 'seo-wp' ),
+				__( 'CSV columns: %s. Importing always adds new rows — it never overwrites or deduplicates existing ones, so review the list afterwards.', 'seooptimierung-toolkit' ),
 				implode( ', ', Redirects::csv_header() )
 			)
 		) . '</p>';
 
-		echo '<p><a href="' . esc_url( $export_url ) . '" class="button">' . esc_html__( 'Export CSV', 'seo-wp' ) . '</a></p>';
+		echo '<p><a href="' . esc_url( $export_url ) . '" class="button">' . esc_html__( 'Export CSV', 'seooptimierung-toolkit' ) . '</a></p>';
 
 		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" enctype="multipart/form-data" class="seo-wp-redirects-import-form">';
 		echo '<input type="hidden" name="action" value="seo_wp_redirects_import" />';
 		wp_nonce_field( self::NONCE_ACTION . '_import', self::NONCE_NAME . '_import' );
 		echo '<input type="file" name="csv_file" accept=".csv,text/csv" required /> ';
-		submit_button( __( 'Import CSV', 'seo-wp' ), 'secondary', 'submit', false );
+		submit_button( __( 'Import CSV', 'seooptimierung-toolkit' ), 'secondary', 'submit', false );
 		echo '</form>';
 	}
 
@@ -273,10 +273,10 @@ final class RedirectsPage {
 	 * @param array<int,array{source:string,target:string,type:int,active:bool,is_regex?:bool,hits:int}> $rules Every stored rule.
 	 */
 	private function render_table( array $rules ): void {
-		echo '<h2>' . esc_html__( 'Existing redirects', 'seo-wp' ) . '</h2>';
+		echo '<h2>' . esc_html__( 'Existing redirects', 'seooptimierung-toolkit' ) . '</h2>';
 
 		if ( array() === $rules ) {
-			echo '<p>' . esc_html__( 'No redirects yet.', 'seo-wp' ) . '</p>';
+			echo '<p>' . esc_html__( 'No redirects yet.', 'seooptimierung-toolkit' ) . '</p>';
 			return;
 		}
 
@@ -284,12 +284,12 @@ final class RedirectsPage {
 
 		echo '<table class="widefat striped seo-wp-redirects-table">';
 		echo '<thead><tr>';
-		echo '<th>' . esc_html__( 'Source', 'seo-wp' ) . '</th>';
-		echo '<th>' . esc_html__( 'Target', 'seo-wp' ) . '</th>';
-		echo '<th>' . esc_html__( 'Type', 'seo-wp' ) . '</th>';
-		echo '<th>' . esc_html__( 'Active', 'seo-wp' ) . '</th>';
-		echo '<th>' . esc_html__( 'Hits', 'seo-wp' ) . '</th>';
-		echo '<th>' . esc_html__( 'Actions', 'seo-wp' ) . '</th>';
+		echo '<th>' . esc_html__( 'Source', 'seooptimierung-toolkit' ) . '</th>';
+		echo '<th>' . esc_html__( 'Target', 'seooptimierung-toolkit' ) . '</th>';
+		echo '<th>' . esc_html__( 'Type', 'seooptimierung-toolkit' ) . '</th>';
+		echo '<th>' . esc_html__( 'Active', 'seooptimierung-toolkit' ) . '</th>';
+		echo '<th>' . esc_html__( 'Hits', 'seooptimierung-toolkit' ) . '</th>';
+		echo '<th>' . esc_html__( 'Actions', 'seooptimierung-toolkit' ) . '</th>';
 		echo '</tr></thead><tbody>';
 
 		foreach ( $rules as $id => $rule ) {
@@ -319,29 +319,29 @@ final class RedirectsPage {
 				printf(
 					' <span class="seo-wp-badge %1$s" title="%2$s">%3$s</span>',
 					$valid ? 'seo-wp-badge-info' : 'seo-wp-badge-warning',
-					$valid ? esc_attr__( 'Regular expression', 'seo-wp' ) : esc_attr__( 'Invalid pattern — never matches', 'seo-wp' ),
-					$valid ? esc_html__( 'regex', 'seo-wp' ) : esc_html__( 'invalid regex', 'seo-wp' )
+					$valid ? esc_attr__( 'Regular expression', 'seooptimierung-toolkit' ) : esc_attr__( 'Invalid pattern — never matches', 'seooptimierung-toolkit' ),
+					$valid ? esc_html__( 'regex', 'seooptimierung-toolkit' ) : esc_html__( 'invalid regex', 'seooptimierung-toolkit' )
 				);
 			}
 			if ( ! empty( $rule['regex_quarantined'] ) ) {
 				printf(
 					' <span class="seo-wp-badge seo-wp-badge-warning" title="%1$s">%2$s</span>',
-					esc_attr__( 'Deactivated automatically: this pattern repeatedly hit PHP\'s PCRE backtrack/recursion limit against real requests, a sign it may be exploitable for denial-of-service. Rewrite it (avoid nested quantifiers like (a+)+) before reactivating.', 'seo-wp' ),
-					esc_html__( 'auto-deactivated: unsafe pattern', 'seo-wp' )
+					esc_attr__( 'Deactivated automatically: this pattern repeatedly hit PHP\'s PCRE backtrack/recursion limit against real requests, a sign it may be exploitable for denial-of-service. Rewrite it (avoid nested quantifiers like (a+)+) before reactivating.', 'seooptimierung-toolkit' ),
+					esc_html__( 'auto-deactivated: unsafe pattern', 'seooptimierung-toolkit' )
 				);
 			}
 			echo '</td>';
 			printf( '<td><code>%s</code></td>', esc_html( '' !== $rule['target'] ? $rule['target'] : '—' ) );
 			printf( '<td>%s</td>', esc_html( $type_labels[ $rule['type'] ] ?? (string) $rule['type'] ) );
-			printf( '<td>%s</td>', $rule['active'] ? esc_html__( 'Yes', 'seo-wp' ) : esc_html__( 'No', 'seo-wp' ) );
+			printf( '<td>%s</td>', $rule['active'] ? esc_html__( 'Yes', 'seooptimierung-toolkit' ) : esc_html__( 'No', 'seooptimierung-toolkit' ) );
 			printf( '<td>%d</td>', (int) $rule['hits'] );
 			printf(
 				'<td><a href="%1$s">%2$s</a> | <a href="%3$s" onclick="return confirm(\'%4$s\')">%5$s</a></td>',
 				esc_url( $edit_url ),
-				esc_html__( 'Edit', 'seo-wp' ),
+				esc_html__( 'Edit', 'seooptimierung-toolkit' ),
 				esc_url( $delete_url ),
-				esc_attr__( 'Delete this redirect?', 'seo-wp' ),
-				esc_html__( 'Delete', 'seo-wp' )
+				esc_attr__( 'Delete this redirect?', 'seooptimierung-toolkit' ),
+				esc_html__( 'Delete', 'seooptimierung-toolkit' )
 			);
 			echo '</tr>';
 		}
@@ -356,11 +356,11 @@ final class RedirectsPage {
 	 */
 	private function type_labels(): array {
 		return array(
-			301 => __( '301 Permanent Redirect', 'seo-wp' ),
-			302 => __( '302 Temporary Redirect', 'seo-wp' ),
-			307 => __( '307 Temporary Redirect (method preserved)', 'seo-wp' ),
-			410 => __( '410 Gone', 'seo-wp' ),
-			451 => __( '451 Unavailable For Legal Reasons', 'seo-wp' ),
+			301 => __( '301 Permanent Redirect', 'seooptimierung-toolkit' ),
+			302 => __( '302 Temporary Redirect', 'seooptimierung-toolkit' ),
+			307 => __( '307 Temporary Redirect (method preserved)', 'seooptimierung-toolkit' ),
+			410 => __( '410 Gone', 'seooptimierung-toolkit' ),
+			451 => __( '451 Unavailable For Legal Reasons', 'seooptimierung-toolkit' ),
 		);
 	}
 
@@ -369,7 +369,7 @@ final class RedirectsPage {
 	 */
 	public function handle_save(): void {
 		if ( ! current_user_can( self::CAPABILITY ) ) {
-			wp_die( esc_html__( 'You are not allowed to do this.', 'seo-wp' ) );
+			wp_die( esc_html__( 'You are not allowed to do this.', 'seooptimierung-toolkit' ) );
 		}
 
 		check_admin_referer( self::NONCE_ACTION, self::NONCE_NAME );
@@ -404,7 +404,7 @@ final class RedirectsPage {
 	 */
 	public function handle_delete(): void {
 		if ( ! current_user_can( self::CAPABILITY ) ) {
-			wp_die( esc_html__( 'You are not allowed to do this.', 'seo-wp' ) );
+			wp_die( esc_html__( 'You are not allowed to do this.', 'seooptimierung-toolkit' ) );
 		}
 
 		$id = isset( $_GET['id'] ) ? max( 0, (int) $_GET['id'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- the ID is needed to build the per-row nonce action checked on the next line; an (int) cast can't carry unsafe data.
@@ -421,7 +421,7 @@ final class RedirectsPage {
 	 */
 	public function handle_export(): void {
 		if ( ! current_user_can( self::CAPABILITY ) ) {
-			wp_die( esc_html__( 'You are not allowed to do this.', 'seo-wp' ) );
+			wp_die( esc_html__( 'You are not allowed to do this.', 'seooptimierung-toolkit' ) );
 		}
 
 		check_admin_referer( self::NONCE_ACTION . '_export' );
@@ -449,7 +449,7 @@ final class RedirectsPage {
 	 */
 	public function handle_import(): void {
 		if ( ! current_user_can( self::CAPABILITY ) ) {
-			wp_die( esc_html__( 'You are not allowed to do this.', 'seo-wp' ) );
+			wp_die( esc_html__( 'You are not allowed to do this.', 'seooptimierung-toolkit' ) );
 		}
 
 		check_admin_referer( self::NONCE_ACTION . '_import', self::NONCE_NAME . '_import' );

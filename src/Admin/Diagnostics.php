@@ -2,14 +2,14 @@
 /**
  * Admin display for the recorded error log.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Admin;
+namespace Seooptimierung\Toolkit\Admin;
 
-use SeoWp\Support\ErrorLog;
+use Seooptimierung\Toolkit\Support\ErrorLog;
 
 /**
  * Surfaces ErrorLog entries: a dismissible admin notice site-wide when
@@ -21,7 +21,7 @@ final class Diagnostics {
 	/**
 	 * Submenu page slug.
 	 */
-	private const PAGE_SLUG = 'seo-wp-diagnostics';
+	private const PAGE_SLUG = 'seooptimierung-diagnostics';
 
 	/**
 	 * Capability required to view or clear diagnostics.
@@ -55,8 +55,8 @@ final class Diagnostics {
 	public function add_menu(): void {
 		add_submenu_page(
 			Settings::PAGE_SLUG,
-			__( 'Diagnostics', 'seo-wp' ),
-			__( 'Diagnostics', 'seo-wp' ),
+			__( 'Diagnostics', 'seooptimierung-toolkit' ),
+			__( 'Diagnostics', 'seooptimierung-toolkit' ),
 			self::CAPABILITY,
 			self::PAGE_SLUG,
 			array( $this, 'render_page' )
@@ -73,7 +73,7 @@ final class Diagnostics {
 			return;
 		}
 
-		wp_enqueue_style( 'seo-wp-admin', plugins_url( 'assets/admin/admin.css', \SeoWp\FILE ), array(), \SeoWp\VERSION );
+		wp_enqueue_style( 'seo-wp-admin', plugins_url( 'assets/admin/admin.css', \Seooptimierung\Toolkit\FILE ), array(), \Seooptimierung\Toolkit\VERSION );
 	}
 
 	/**
@@ -87,9 +87,9 @@ final class Diagnostics {
 
 		printf(
 			'<div class="notice notice-warning is-dismissible"><p>%s <a href="%s">%s</a></p></div>',
-			esc_html__( 'SEO-WP recorded one or more issues recently (import mapping or a database check).', 'seo-wp' ),
+			esc_html__( 'Seooptimierung Toolkit recorded one or more issues recently (import mapping or a database check).', 'seooptimierung-toolkit' ),
 			esc_url( admin_url( 'admin.php?page=' . self::PAGE_SLUG ) ),
-			esc_html__( 'View details', 'seo-wp' )
+			esc_html__( 'View details', 'seooptimierung-toolkit' )
 		);
 	}
 
@@ -105,24 +105,24 @@ final class Diagnostics {
 		$entries = array_reverse( ErrorLog::all() );
 
 		echo '<div class="wrap seo-wp-diagnostics">';
-		echo '<h1>' . esc_html__( 'SEO-WP Diagnostics', 'seo-wp' ) . '</h1>';
+		echo '<h1>' . esc_html__( 'Seooptimierung Toolkit Diagnostics', 'seooptimierung-toolkit' ) . '</h1>';
 
 		if ( array() === $entries ) {
-			echo '<p>' . esc_html__( 'No issues recorded.', 'seo-wp' ) . '</p></div>';
+			echo '<p>' . esc_html__( 'No issues recorded.', 'seooptimierung-toolkit' ) . '</p></div>';
 			return;
 		}
 
 		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
 		echo '<input type="hidden" name="action" value="seo_wp_diagnostics_clear" />';
 		wp_nonce_field( self::NONCE_ACTION, self::NONCE_NAME );
-		submit_button( __( 'Clear log', 'seo-wp' ), 'delete', 'submit', false );
+		submit_button( __( 'Clear log', 'seooptimierung-toolkit' ), 'delete', 'submit', false );
 		echo '</form>';
 
 		echo '<table class="widefat striped seo-wp-diagnostics-table">';
 		echo '<thead><tr>';
-		echo '<th>' . esc_html__( 'Time', 'seo-wp' ) . '</th>';
-		echo '<th>' . esc_html__( 'Where', 'seo-wp' ) . '</th>';
-		echo '<th>' . esc_html__( 'Message', 'seo-wp' ) . '</th>';
+		echo '<th>' . esc_html__( 'Time', 'seooptimierung-toolkit' ) . '</th>';
+		echo '<th>' . esc_html__( 'Where', 'seooptimierung-toolkit' ) . '</th>';
+		echo '<th>' . esc_html__( 'Message', 'seooptimierung-toolkit' ) . '</th>';
 		echo '</tr></thead><tbody>';
 
 		foreach ( $entries as $entry ) {
@@ -176,7 +176,7 @@ final class Diagnostics {
 
 		return sprintf(
 			'<details class="seo-wp-diagnostics-detail"><summary>%s</summary>%s</details>',
-			esc_html__( 'Details', 'seo-wp' ),
+			esc_html__( 'Details', 'seooptimierung-toolkit' ),
 			$lines // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built entirely from esc_html()/esc_html__() above.
 		);
 	}
@@ -186,7 +186,7 @@ final class Diagnostics {
 	 */
 	public function handle_clear(): void {
 		if ( ! current_user_can( self::CAPABILITY ) ) {
-			wp_die( esc_html__( 'You are not allowed to do this.', 'seo-wp' ) );
+			wp_die( esc_html__( 'You are not allowed to do this.', 'seooptimierung-toolkit' ) );
 		}
 
 		check_admin_referer( self::NONCE_ACTION, self::NONCE_NAME );

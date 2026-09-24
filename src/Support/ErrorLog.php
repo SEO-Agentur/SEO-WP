@@ -4,12 +4,12 @@
  * database queries) so failures are surfaced in the admin instead of
  * disappearing silently.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Support;
+namespace Seooptimierung\Toolkit\Support;
 
 use Throwable;
 

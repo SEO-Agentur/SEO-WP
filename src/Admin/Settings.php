@@ -2,18 +2,18 @@
 /**
  * Plugin settings screen.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Admin;
+namespace Seooptimierung\Toolkit\Admin;
 
-use SeoWp\Performance\Htaccess;
-use SeoWp\Performance\ResourceHintScanner;
-use SeoWp\Schema\GraphBuilder;
-use SeoWp\Support\StagingDetector;
-use SeoWp\Templates\Tokens;
+use Seooptimierung\Toolkit\Performance\Htaccess;
+use Seooptimierung\Toolkit\Performance\ResourceHintScanner;
+use Seooptimierung\Toolkit\Schema\GraphBuilder;
+use Seooptimierung\Toolkit\Support\StagingDetector;
+use Seooptimierung\Toolkit\Templates\Tokens;
 
 /**
  * Registers the General, Content Types, Sitemaps and Crawl settings tabs,
@@ -29,7 +29,7 @@ final class Settings {
 	/**
 	 * Top-level admin menu / settings page slug.
 	 */
-	public const PAGE_SLUG = 'seo-wp';
+	public const PAGE_SLUG = 'seooptimierung-toolkit';
 
 	/**
 	 * Capability required to view or change settings.
@@ -185,8 +185,8 @@ final class Settings {
 	 */
 	public function add_menu(): void {
 		add_menu_page(
-			__( 'SEO-WP', 'seo-wp' ),
-			__( 'SEO-WP', 'seo-wp' ),
+			__( 'Seooptimierung Toolkit', 'seooptimierung-toolkit' ),
+			__( 'Seooptimierung Toolkit', 'seooptimierung-toolkit' ),
 			self::CAPABILITY,
 			self::PAGE_SLUG,
 			array( $this, 'render_page' ),
@@ -196,8 +196,8 @@ final class Settings {
 
 		add_submenu_page(
 			self::PAGE_SLUG,
-			__( 'Settings', 'seo-wp' ),
-			__( 'Settings', 'seo-wp' ),
+			__( 'Settings', 'seooptimierung-toolkit' ),
+			__( 'Settings', 'seooptimierung-toolkit' ),
 			self::CAPABILITY,
 			self::PAGE_SLUG,
 			array( $this, 'render_page' )
@@ -229,8 +229,8 @@ final class Settings {
 			return;
 		}
 
-		wp_enqueue_style( 'seo-wp-admin', plugins_url( 'assets/admin/admin.css', \SeoWp\FILE ), array(), \SeoWp\VERSION );
-		wp_enqueue_script( 'seo-wp-resource-hint-scanner', plugins_url( 'assets/admin/resource-hint-scanner.js', \SeoWp\FILE ), array(), \SeoWp\VERSION, true );
+		wp_enqueue_style( 'seo-wp-admin', plugins_url( 'assets/admin/admin.css', \Seooptimierung\Toolkit\FILE ), array(), \Seooptimierung\Toolkit\VERSION );
+		wp_enqueue_script( 'seo-wp-resource-hint-scanner', plugins_url( 'assets/admin/resource-hint-scanner.js', \Seooptimierung\Toolkit\FILE ), array(), \Seooptimierung\Toolkit\VERSION, true );
 
 		wp_localize_script(
 			'seo-wp-resource-hint-scanner',
@@ -239,9 +239,9 @@ final class Settings {
 				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
 				'nonce'   => wp_create_nonce( 'seo_wp_scan_resource_hints' ),
 				'i18n'    => array(
-					'scanning' => __( 'Scanning your homepage…', 'seo-wp' ),
-					'error'    => __( 'Something went wrong.', 'seo-wp' ),
-					'none'     => __( 'No external resources found — nothing to suggest.', 'seo-wp' ),
+					'scanning' => __( 'Scanning your homepage…', 'seooptimierung-toolkit' ),
+					'error'    => __( 'Something went wrong.', 'seooptimierung-toolkit' ),
+					'none'     => __( 'No external resources found — nothing to suggest.', 'seooptimierung-toolkit' ),
 				),
 			)
 		);
@@ -257,7 +257,7 @@ final class Settings {
 		check_ajax_referer( 'seo_wp_scan_resource_hints', 'nonce' );
 
 		if ( ! current_user_can( self::CAPABILITY ) ) {
-			wp_send_json_error( array( 'message' => __( 'You are not allowed to do this.', 'seo-wp' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'You are not allowed to do this.', 'seooptimierung-toolkit' ) ), 403 );
 		}
 
 		$result = ResourceHintScanner::scan();
@@ -418,12 +418,12 @@ final class Settings {
 		}
 
 		$tabs = array(
-			'general'     => __( 'General', 'seo-wp' ),
-			'content'     => __( 'Content Types', 'seo-wp' ),
-			'sitemaps'    => __( 'Sitemaps', 'seo-wp' ),
-			'crawl'       => __( 'Crawl', 'seo-wp' ),
-			'performance' => __( 'Performance', 'seo-wp' ),
-			'server'      => __( 'Server', 'seo-wp' ),
+			'general'     => __( 'General', 'seooptimierung-toolkit' ),
+			'content'     => __( 'Content Types', 'seooptimierung-toolkit' ),
+			'sitemaps'    => __( 'Sitemaps', 'seooptimierung-toolkit' ),
+			'crawl'       => __( 'Crawl', 'seooptimierung-toolkit' ),
+			'performance' => __( 'Performance', 'seooptimierung-toolkit' ),
+			'server'      => __( 'Server', 'seooptimierung-toolkit' ),
 		);
 
 		$active_tab = isset( $_GET['tab'] ) && isset( $tabs[ sanitize_key( wp_unslash( $_GET['tab'] ) ) ] ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only tab selector, not a state-changing action.
@@ -431,7 +431,7 @@ final class Settings {
 			: 'general';
 
 		echo '<div class="wrap seo-wp-settings">';
-		echo '<h1>' . esc_html__( 'SEO-WP Settings', 'seo-wp' ) . '</h1>';
+		echo '<h1>' . esc_html__( 'Seooptimierung Toolkit Settings', 'seooptimierung-toolkit' ) . '</h1>';
 		echo '<h2 class="nav-tab-wrapper">';
 		foreach ( $tabs as $slug => $label ) {
 			$class = $slug === $active_tab ? 'nav-tab nav-tab-active' : 'nav-tab';
@@ -494,51 +494,51 @@ final class Settings {
 	 * Twitter handles.
 	 */
 	private function render_general_tab(): void {
-		echo '<tr><td colspan="2"><p class="description"><strong>' . esc_html__( 'Coexistence with another SEO plugin', 'seo-wp' ) . '</strong> — ' . esc_html__( 'SEO-WP is meant to replace Yoast SEO or Rank Math, not run alongside them. If you need to keep one of them active anyway (e.g. for a feature SEO-WP doesn\'t have), set this to stop SEO-WP printing its own title/meta description/canonical/Open Graph/Twitter Card/schema output — leaving all of that to the other plugin, so you never get duplicate tags. The Bulk Editor\'s Title/Description/Canonical columns then read and write that plugin\'s own fields instead of SEO-WP\'s. Everything else (sitemaps, hreflang, redirects, 404 monitor, IndexNow, Link Audit, Duplicate Checker, Role Manager, Performance) is unaffected.', 'seo-wp' ) . '</p></td></tr>';
+		echo '<tr><td colspan="2"><p class="description"><strong>' . esc_html__( 'Coexistence with another SEO plugin', 'seooptimierung-toolkit' ) . '</strong> — ' . esc_html__( 'Seooptimierung Toolkit is meant to replace Yoast SEO or Rank Math, not run alongside them. If you need to keep one of them active anyway (e.g. for a feature Seooptimierung Toolkit doesn\'t have), set this to stop Seooptimierung Toolkit printing its own title/meta description/canonical/Open Graph/Twitter Card/schema output — leaving all of that to the other plugin, so you never get duplicate tags. The Bulk Editor\'s Title/Description/Canonical columns then read and write that plugin\'s own fields instead of Seooptimierung Toolkit\'s. Everything else (sitemaps, hreflang, redirects, 404 monitor, IndexNow, Link Audit, Duplicate Checker, Role Manager, Performance) is unaffected.', 'seooptimierung-toolkit' ) . '</p></td></tr>';
 		$this->select_field(
 			'coexistence_source',
-			__( 'Leave title/meta output to', 'seo-wp' ),
+			__( 'Leave title/meta output to', 'seooptimierung-toolkit' ),
 			array(
-				''          => __( 'SEO-WP itself (default)', 'seo-wp' ),
-				'yoast'     => __( 'Yoast SEO', 'seo-wp' ),
-				'rank_math' => __( 'Rank Math', 'seo-wp' ),
+				''          => __( 'Seooptimierung Toolkit itself (default)', 'seooptimierung-toolkit' ),
+				'yoast'     => __( 'Yoast SEO', 'seooptimierung-toolkit' ),
+				'rank_math' => __( 'Rank Math', 'seooptimierung-toolkit' ),
 			),
 			''
 		);
 
-		$this->text_field( 'separator', __( 'Separator', 'seo-wp' ), '-' );
-		$this->template_field( 'title_template_home', __( 'Home title template', 'seo-wp' ), '%sitename%' );
-		$this->template_field( 'description_template_home', __( 'Home description template', 'seo-wp' ), '' );
+		$this->text_field( 'separator', __( 'Separator', 'seooptimierung-toolkit' ), '-' );
+		$this->template_field( 'title_template_home', __( 'Home title template', 'seooptimierung-toolkit' ), '%sitename%' );
+		$this->template_field( 'description_template_home', __( 'Home description template', 'seooptimierung-toolkit' ), '' );
 		$this->select_field(
 			'identity_type',
-			__( 'Site represents', 'seo-wp' ),
+			__( 'Site represents', 'seooptimierung-toolkit' ),
 			array(
-				'organization'   => __( 'An organization', 'seo-wp' ),
-				'person'         => __( 'A person', 'seo-wp' ),
-				'local_business' => __( 'A local business', 'seo-wp' ),
+				'organization'   => __( 'An organization', 'seooptimierung-toolkit' ),
+				'person'         => __( 'A person', 'seooptimierung-toolkit' ),
+				'local_business' => __( 'A local business', 'seooptimierung-toolkit' ),
 			),
 			'organization'
 		);
-		$this->text_field( 'identity_name', __( 'Organization/person/business name', 'seo-wp' ), (string) get_bloginfo( 'name' ) );
-		$this->text_field( 'twitter_site', __( 'Twitter/X @handle for the site', 'seo-wp' ), '' );
-		$this->text_field( 'twitter_creator', __( 'Default Twitter/X @handle for authors', 'seo-wp' ), '' );
+		$this->text_field( 'identity_name', __( 'Organization/person/business name', 'seooptimierung-toolkit' ), (string) get_bloginfo( 'name' ) );
+		$this->text_field( 'twitter_site', __( 'Twitter/X @handle for the site', 'seooptimierung-toolkit' ), '' );
+		$this->text_field( 'twitter_creator', __( 'Default Twitter/X @handle for authors', 'seooptimierung-toolkit' ), '' );
 
-		echo '<tr><td colspan="2"><hr /><p class="description"><strong>' . esc_html__( 'Local business details', 'seo-wp' ) . '</strong> — ' . esc_html__( 'only used when "Site represents" above is set to "A local business".', 'seo-wp' ) . '</p></td></tr>';
+		echo '<tr><td colspan="2"><hr /><p class="description"><strong>' . esc_html__( 'Local business details', 'seooptimierung-toolkit' ) . '</strong> — ' . esc_html__( 'only used when "Site represents" above is set to "A local business".', 'seooptimierung-toolkit' ) . '</p></td></tr>';
 
-		$this->text_field( 'local_business_type', __( 'Business type', 'seo-wp' ), 'LocalBusiness' );
-		echo '<tr><td colspan="2"><p class="description">' . esc_html__( 'Any Schema.org business type works, e.g. Restaurant, Store, ProfessionalService, MedicalBusiness, LegalService, RealEstateAgent, Attorney, AccountingService — LocalBusiness itself if none of the more specific ones fit.', 'seo-wp' ) . '</p></td></tr>';
-		$this->text_field( 'local_business_street_address', __( 'Street address', 'seo-wp' ), '' );
-		$this->text_field( 'local_business_locality', __( 'City', 'seo-wp' ), '' );
-		$this->text_field( 'local_business_region', __( 'State/region', 'seo-wp' ), '' );
-		$this->text_field( 'local_business_postal_code', __( 'Postal code', 'seo-wp' ), '' );
-		$this->text_field( 'local_business_country', __( 'Country (ISO 3166-1 alpha-2, e.g. DE, CH, US)', 'seo-wp' ), '' );
-		$this->text_field( 'local_business_phone', __( 'Telephone', 'seo-wp' ), '' );
-		$this->text_field( 'local_business_price_range', __( 'Price range (e.g. $$ or €€)', 'seo-wp' ), '' );
-		$this->text_field( 'local_business_latitude', __( 'Latitude', 'seo-wp' ), '' );
-		$this->text_field( 'local_business_longitude', __( 'Longitude', 'seo-wp' ), '' );
+		$this->text_field( 'local_business_type', __( 'Business type', 'seooptimierung-toolkit' ), 'LocalBusiness' );
+		echo '<tr><td colspan="2"><p class="description">' . esc_html__( 'Any Schema.org business type works, e.g. Restaurant, Store, ProfessionalService, MedicalBusiness, LegalService, RealEstateAgent, Attorney, AccountingService — LocalBusiness itself if none of the more specific ones fit.', 'seooptimierung-toolkit' ) . '</p></td></tr>';
+		$this->text_field( 'local_business_street_address', __( 'Street address', 'seooptimierung-toolkit' ), '' );
+		$this->text_field( 'local_business_locality', __( 'City', 'seooptimierung-toolkit' ), '' );
+		$this->text_field( 'local_business_region', __( 'State/region', 'seooptimierung-toolkit' ), '' );
+		$this->text_field( 'local_business_postal_code', __( 'Postal code', 'seooptimierung-toolkit' ), '' );
+		$this->text_field( 'local_business_country', __( 'Country (ISO 3166-1 alpha-2, e.g. DE, CH, US)', 'seooptimierung-toolkit' ), '' );
+		$this->text_field( 'local_business_phone', __( 'Telephone', 'seooptimierung-toolkit' ), '' );
+		$this->text_field( 'local_business_price_range', __( 'Price range (e.g. $$ or €€)', 'seooptimierung-toolkit' ), '' );
+		$this->text_field( 'local_business_latitude', __( 'Latitude', 'seooptimierung-toolkit' ), '' );
+		$this->text_field( 'local_business_longitude', __( 'Longitude', 'seooptimierung-toolkit' ), '' );
 
-		echo '<tr><td colspan="2"><p class="description">' . esc_html__( 'Opening hours — one line per rule: comma-separated two-letter days, a space, then HH:MM-HH:MM. Example: "Mo,Tu,We,Th,Fr 09:00-18:00" and "Sa 10:00-14:00" on two lines.', 'seo-wp' ) . '</p></td></tr>';
-		$this->textarea_field( 'local_business_opening_hours', __( 'Opening hours', 'seo-wp' ) );
+		echo '<tr><td colspan="2"><p class="description">' . esc_html__( 'Opening hours — one line per rule: comma-separated two-letter days, a space, then HH:MM-HH:MM. Example: "Mo,Tu,We,Th,Fr 09:00-18:00" and "Sa 10:00-14:00" on two lines.', 'seooptimierung-toolkit' ) . '</p></td></tr>';
+		$this->textarea_field( 'local_business_opening_hours', __( 'Opening hours', 'seooptimierung-toolkit' ) );
 	}
 
 	/**
@@ -554,13 +554,13 @@ final class Settings {
 			$this->template_field(
 				"title_template_{$post_type->name}",
 				/* translators: %s: post type label. */
-				sprintf( __( '%s title template', 'seo-wp' ), $post_type->labels->singular_name ),
+				sprintf( __( '%s title template', 'seooptimierung-toolkit' ), $post_type->labels->singular_name ),
 				'%title% %sep% %sitename%'
 			);
 			$this->template_field(
 				"description_template_{$post_type->name}",
 				/* translators: %s: post type label. */
-				sprintf( __( '%s description template', 'seo-wp' ), $post_type->labels->singular_name ),
+				sprintf( __( '%s description template', 'seooptimierung-toolkit' ), $post_type->labels->singular_name ),
 				'%excerpt%'
 			);
 		}
@@ -569,7 +569,7 @@ final class Settings {
 			$this->template_field(
 				"title_template_term_{$taxonomy->name}",
 				/* translators: %s: taxonomy label. */
-				sprintf( __( '%s title template', 'seo-wp' ), $taxonomy->labels->singular_name ),
+				sprintf( __( '%s title template', 'seooptimierung-toolkit' ), $taxonomy->labels->singular_name ),
 				'%category% %sep% %sitename%'
 			);
 		}
@@ -584,9 +584,9 @@ final class Settings {
 	private function render_content_types_overview(): void {
 		echo '<tr><td colspan="2"><table class="widefat striped seo-wp-content-types-overview">';
 		echo '<thead><tr>';
-		echo '<th>' . esc_html__( 'Type', 'seo-wp' ) . '</th>';
-		echo '<th>' . esc_html__( 'Title template', 'seo-wp' ) . '</th>';
-		echo '<th>' . esc_html__( 'Description template', 'seo-wp' ) . '</th>';
+		echo '<th>' . esc_html__( 'Type', 'seooptimierung-toolkit' ) . '</th>';
+		echo '<th>' . esc_html__( 'Title template', 'seooptimierung-toolkit' ) . '</th>';
+		echo '<th>' . esc_html__( 'Description template', 'seooptimierung-toolkit' ) . '</th>';
 		echo '</tr></thead><tbody>';
 
 		foreach ( get_post_types( array( 'public' => true ), 'objects' ) as $post_type ) {
@@ -643,42 +643,42 @@ final class Settings {
 	private function render_sitemaps_tab(): void {
 		$this->checkbox_field(
 			'disable_core_sitemap',
-			__( 'Disable WordPress core\'s own /wp-sitemap.xml', 'seo-wp' ),
+			__( 'Disable WordPress core\'s own /wp-sitemap.xml', 'seooptimierung-toolkit' ),
 			true
 		);
 
 		$this->checkbox_field(
 			'enable_news_sitemap',
-			__( 'Enable Google News sitemap', 'seo-wp' ),
+			__( 'Enable Google News sitemap', 'seooptimierung-toolkit' ),
 			true
 		);
 		echo '<tr><td colspan="2"><p class="description">';
-		echo esc_html__( 'Follows Google\'s News sitemap guidelines: a separate /news-sitemap.xml listing only article-like content (non-hierarchical public post types) published in the last 48 hours, capped at 1000 URLs. It disappears from the sitemap index automatically whenever nothing currently qualifies. Turn this off if the site doesn\'t publish news content — Google News enrollment itself is a separate application, this only controls whether the plugin generates the file.', 'seo-wp' );
+		echo esc_html__( 'Follows Google\'s News sitemap guidelines: a separate /news-sitemap.xml listing only article-like content (non-hierarchical public post types) published in the last 48 hours, capped at 1000 URLs. It disappears from the sitemap index automatically whenever nothing currently qualifies. Turn this off if the site doesn\'t publish news content — Google News enrollment itself is a separate application, this only controls whether the plugin generates the file.', 'seooptimierung-toolkit' );
 		echo '</p></td></tr>';
 
 		$this->checkbox_field(
 			'sitemap_include_video',
-			__( 'Include video:video entries in sitemaps', 'seo-wp' ),
+			__( 'Include video:video entries in sitemaps', 'seooptimierung-toolkit' ),
 			true
 		);
 		echo '<tr><td colspan="2"><p class="description">';
-		echo esc_html__( 'Adds video:video entries for self-hosted <video poster> elements and YouTube embeds found in a post\'s content. An entry is only added when a real thumbnail is available, so not every embedded video qualifies (e.g. Vimeo currently doesn\'t).', 'seo-wp' );
+		echo esc_html__( 'Adds video:video entries for self-hosted <video poster> elements and YouTube embeds found in a post\'s content. An entry is only added when a real thumbnail is available, so not every embedded video qualifies (e.g. Vimeo currently doesn\'t).', 'seooptimierung-toolkit' );
 		echo '</p></td></tr>';
 
 		$this->checkbox_field(
 			'sitemap_include_hreflang',
-			__( 'Include hreflang alternates (xhtml:link) in sitemaps', 'seo-wp' ),
+			__( 'Include hreflang alternates (xhtml:link) in sitemaps', 'seooptimierung-toolkit' ),
 			true
 		);
 		echo '<tr><td colspan="2"><p class="description">';
-		echo esc_html__( 'When WPML, Polylang or slim-hreflang provides alternate-language URLs, this plugin\'s sitemaps normally list them as xhtml:link entries alongside the per-page <link rel="alternate"> tags in the document head. Turn this off to have hreflang live only on the pages themselves — some setups prefer one single source of truth rather than two places search engines could theoretically disagree on.', 'seo-wp' );
+		echo esc_html__( 'When WPML, Polylang or slim-hreflang provides alternate-language URLs, this plugin\'s sitemaps normally list them as xhtml:link entries alongside the per-page <link rel="alternate"> tags in the document head. Turn this off to have hreflang live only on the pages themselves — some setups prefer one single source of truth rather than two places search engines could theoretically disagree on.', 'seooptimierung-toolkit' );
 		echo '</p></td></tr>';
 
 		foreach ( get_post_types( array( 'public' => true ), 'objects' ) as $post_type ) {
 			$this->checkbox_field(
 				"sitemap_include_{$post_type->name}",
 				/* translators: %s: post type label, e.g. "Products". */
-				sprintf( __( 'Include %s in the XML sitemap', 'seo-wp' ), $post_type->labels->name ),
+				sprintf( __( 'Include %s in the XML sitemap', 'seooptimierung-toolkit' ), $post_type->labels->name ),
 				true
 			);
 		}
@@ -687,7 +687,7 @@ final class Settings {
 			$this->checkbox_field(
 				"sitemap_include_tax_{$taxonomy->name}",
 				/* translators: %s: taxonomy label, e.g. "Product categories". */
-				sprintf( __( 'Include %s in the XML sitemap', 'seo-wp' ), $taxonomy->labels->name ),
+				sprintf( __( 'Include %s in the XML sitemap', 'seooptimierung-toolkit' ), $taxonomy->labels->name ),
 				true
 			);
 		}
@@ -714,22 +714,22 @@ final class Settings {
 
 		printf(
 			'<tr><th scope="row">%1$s</th><td>%2$s <code>%3$s</code></td></tr>',
-			esc_html__( 'Detected environment', 'seo-wp' ),
+			esc_html__( 'Detected environment', 'seooptimierung-toolkit' ),
 			$looks_like_staging
-				? '<span style="color:#b32d2e;">&#10003; ' . esc_html__( 'Looks like staging/development', 'seo-wp' ) . '</span>'
-				: '<span style="color:#00a32a;">&#10003; ' . esc_html__( 'Looks like production', 'seo-wp' ) . '</span>',
+				? '<span style="color:#b32d2e;">&#10003; ' . esc_html__( 'Looks like staging/development', 'seooptimierung-toolkit' ) . '</span>'
+				: '<span style="color:#00a32a;">&#10003; ' . esc_html__( 'Looks like production', 'seooptimierung-toolkit' ) . '</span>',
 			esc_html( $host )
 		);
 
 		printf(
 			'<tr><th scope="row">%1$s</th><td>%2$s</td></tr>',
-			esc_html__( 'Currently indexable by search engines', 'seo-wp' ),
+			esc_html__( 'Currently indexable by search engines', 'seooptimierung-toolkit' ),
 			$indexable
-				? '<span style="color:#00a32a;">&#10003; ' . esc_html__( 'Yes', 'seo-wp' ) . '</span>'
+				? '<span style="color:#00a32a;">&#10003; ' . esc_html__( 'Yes', 'seooptimierung-toolkit' ) . '</span>'
 				: '<span style="color:#b32d2e;">&#10007; ' . esc_html(
 					sprintf(
 					/* translators: %s: reason the site is noindexed. */
-						__( 'No — noindexed (%s)', 'seo-wp' ),
+						__( 'No — noindexed (%s)', 'seooptimierung-toolkit' ),
 						$this->noindex_reason( $staging_override, $core_discourages )
 					)
 				) . '</span>'
@@ -749,14 +749,14 @@ final class Settings {
 	 */
 	private function noindex_reason( bool $staging_override, bool $core_discourages ): string {
 		if ( $staging_override && $core_discourages ) {
-			return __( 'this plugin\'s staging override, and WordPress\' own "Discourage search engines" setting', 'seo-wp' );
+			return __( 'this plugin\'s staging override, and WordPress\' own "Discourage search engines" setting', 'seooptimierung-toolkit' );
 		}
 
 		if ( $staging_override ) {
-			return __( 'this plugin\'s staging override, above', 'seo-wp' );
+			return __( 'this plugin\'s staging override, above', 'seooptimierung-toolkit' );
 		}
 
-		return __( 'WordPress\' own Settings > Reading > "Discourage search engines"', 'seo-wp' );
+		return __( 'WordPress\' own Settings > Reading > "Discourage search engines"', 'seooptimierung-toolkit' );
 	}
 
 	/**
@@ -778,53 +778,53 @@ final class Settings {
 	 */
 	private function render_crawl_tab(): void {
 		$this->render_staging_status();
-		echo '<tr><td colspan="2"><p class="description">' . esc_html__( 'A staging/development site is also automatically flagged with a dismissible admin notice suggesting this same setting — this checkbox is the same override, just reachable without waiting for that notice.', 'seo-wp' ) . '</p></td></tr>';
-		$this->checkbox_field( 'staging_noindex', __( 'Noindex this entire site (staging/development override) — overrides every other robots setting on every page', 'seo-wp' ), false );
+		echo '<tr><td colspan="2"><p class="description">' . esc_html__( 'A staging/development site is also automatically flagged with a dismissible admin notice suggesting this same setting — this checkbox is the same override, just reachable without waiting for that notice.', 'seooptimierung-toolkit' ) . '</p></td></tr>';
+		$this->checkbox_field( 'staging_noindex', __( 'Noindex this entire site (staging/development override) — overrides every other robots setting on every page', 'seooptimierung-toolkit' ), false );
 
-		$this->textarea_field( 'robots_txt_custom', __( 'Custom robots.txt rules', 'seo-wp' ) );
-		$this->checkbox_field( 'block_ai_crawlers', __( 'Block known AI training crawlers', 'seo-wp' ), false );
-		$this->checkbox_field( 'enable_llms_txt', __( 'Enable /llms.txt', 'seo-wp' ), true );
-		$this->checkbox_field( 'enable_llms_full_txt', __( 'Enable /llms-full.txt', 'seo-wp' ), false );
-		$this->textarea_field( 'llms_txt_custom', __( 'Custom llms.txt content (appended after the generated list)', 'seo-wp' ) );
-		$this->text_field( 'verification_google', __( 'Google verification code', 'seo-wp' ), '' );
-		$this->text_field( 'verification_bing', __( 'Bing verification code', 'seo-wp' ), '' );
-		$this->text_field( 'verification_baidu', __( 'Baidu verification code', 'seo-wp' ), '' );
-		$this->text_field( 'verification_pinterest', __( 'Pinterest verification code', 'seo-wp' ), '' );
-		$this->text_field( 'verification_yandex', __( 'Yandex verification code', 'seo-wp' ), '' );
-		$this->checkbox_field( 'disable_author_archives', __( 'Disable author archives', 'seo-wp' ), false );
-		$this->checkbox_field( 'disable_date_archives', __( 'Disable date archives', 'seo-wp' ), false );
+		$this->textarea_field( 'robots_txt_custom', __( 'Custom robots.txt rules', 'seooptimierung-toolkit' ) );
+		$this->checkbox_field( 'block_ai_crawlers', __( 'Block known AI training crawlers', 'seooptimierung-toolkit' ), false );
+		$this->checkbox_field( 'enable_llms_txt', __( 'Enable /llms.txt', 'seooptimierung-toolkit' ), true );
+		$this->checkbox_field( 'enable_llms_full_txt', __( 'Enable /llms-full.txt', 'seooptimierung-toolkit' ), false );
+		$this->textarea_field( 'llms_txt_custom', __( 'Custom llms.txt content (appended after the generated list)', 'seooptimierung-toolkit' ) );
+		$this->text_field( 'verification_google', __( 'Google verification code', 'seooptimierung-toolkit' ), '' );
+		$this->text_field( 'verification_bing', __( 'Bing verification code', 'seooptimierung-toolkit' ), '' );
+		$this->text_field( 'verification_baidu', __( 'Baidu verification code', 'seooptimierung-toolkit' ), '' );
+		$this->text_field( 'verification_pinterest', __( 'Pinterest verification code', 'seooptimierung-toolkit' ), '' );
+		$this->text_field( 'verification_yandex', __( 'Yandex verification code', 'seooptimierung-toolkit' ), '' );
+		$this->checkbox_field( 'disable_author_archives', __( 'Disable author archives', 'seooptimierung-toolkit' ), false );
+		$this->checkbox_field( 'disable_date_archives', __( 'Disable date archives', 'seooptimierung-toolkit' ), false );
 		$this->checkbox_field(
 			'strip_attachment_links',
-			__( 'Don\'t link inserted images to their attachment page', 'seo-wp' ),
+			__( 'Don\'t link inserted images to their attachment page', 'seooptimierung-toolkit' ),
 			false
 		);
 		$this->select_field(
 			'attachment_handling',
-			__( 'Attachment pages', 'seo-wp' ),
+			__( 'Attachment pages', 'seooptimierung-toolkit' ),
 			array(
-				'redirect' => __( 'Redirect to the parent post (recommended)', 'seo-wp' ),
-				'noindex'  => __( 'Keep accessible, but noindex them', 'seo-wp' ),
-				'off'      => __( 'Leave to WordPress core', 'seo-wp' ),
+				'redirect' => __( 'Redirect to the parent post (recommended)', 'seooptimierung-toolkit' ),
+				'noindex'  => __( 'Keep accessible, but noindex them', 'seooptimierung-toolkit' ),
+				'off'      => __( 'Leave to WordPress core', 'seooptimierung-toolkit' ),
 			),
 			'redirect'
 		);
-		echo '<tr><th scope="row">' . esc_html__( 'IndexNow (Bing, Yandex, Seznam, Naver)', 'seo-wp' ) . '</th><td><p class="description">';
+		echo '<tr><th scope="row">' . esc_html__( 'IndexNow (Bing, Yandex, Seznam, Naver)', 'seooptimierung-toolkit' ) . '</th><td><p class="description">';
 		printf(
 			/* translators: %s: link to the Instant Indexing admin page. */
-			esc_html__( 'Moved to the %s page — enable it, optionally set a custom API key, and submit URLs manually or in one click there.', 'seo-wp' ),
-			sprintf( '<a href="%1$s">%2$s</a>', esc_url( admin_url( 'admin.php?page=seo-wp-instant-indexing' ) ), esc_html__( 'Instant Indexing', 'seo-wp' ) )
+			esc_html__( 'Moved to the %s page — enable it, optionally set a custom API key, and submit URLs manually or in one click there.', 'seooptimierung-toolkit' ),
+			sprintf( '<a href="%1$s">%2$s</a>', esc_url( admin_url( 'admin.php?page=seooptimierung-instant-indexing' ) ), esc_html__( 'Instant Indexing', 'seooptimierung-toolkit' ) )
 		);
 		echo '</p></td></tr>';
 		$this->select_field(
 			'hreflang_x_default',
-			__( 'x-default hreflang', 'seo-wp' ),
+			__( 'x-default hreflang', 'seooptimierung-toolkit' ),
 			array(
-				'default' => __( 'WPML/Polylang\'s default language', 'seo-wp' ),
-				'off'     => __( 'Off', 'seo-wp' ),
+				'default' => __( 'WPML/Polylang\'s default language', 'seooptimierung-toolkit' ),
+				'off'     => __( 'Off', 'seooptimierung-toolkit' ),
 			),
 			'default'
 		);
-		echo '<tr><td colspan="2"><p class="description">' . esc_html__( 'Only takes effect when WPML, Polylang, or a compatible plugin (e.g. slim-hreflang) actually provides alternate-language URLs — with none active, no hreflang or x-default tags are output at all.', 'seo-wp' ) . '</p></td></tr>';
+		echo '<tr><td colspan="2"><p class="description">' . esc_html__( 'Only takes effect when WPML, Polylang, or a compatible plugin (e.g. slim-hreflang) actually provides alternate-language URLs — with none active, no hreflang or x-default tags are output at all.', 'seooptimierung-toolkit' ) . '</p></td></tr>';
 	}
 
 	/**
@@ -833,87 +833,87 @@ final class Settings {
 	 */
 	private function render_performance_tab(): void {
 		echo '<tr><td colspan="2"><p class="description">';
-		echo esc_html__( 'This plugin cannot auto-detect critical CSS — that requires actually rendering the page (real layout, real box positions), which no CSS parsing pass can do. Paste critical CSS from a tool of your choice, or write it by hand.', 'seo-wp' );
+		echo esc_html__( 'This plugin cannot auto-detect critical CSS — that requires actually rendering the page (real layout, real box positions), which no CSS parsing pass can do. Paste critical CSS from a tool of your choice, or write it by hand.', 'seooptimierung-toolkit' );
 		echo '</p></td></tr>';
 
-		$this->textarea_field( 'critical_css', __( 'Critical CSS (inlined in <head>)', 'seo-wp' ) );
+		$this->textarea_field( 'critical_css', __( 'Critical CSS (inlined in <head>)', 'seooptimierung-toolkit' ) );
 
 		echo '<tr><td colspan="2"><p class="description">';
-		echo esc_html__( 'Independent of the above: without critical CSS in place, deferring every other stylesheet will show a flash of unstyled content until they finish loading — enable this once you have critical CSS covering what visitors see immediately, or if you\'ve decided that tradeoff is acceptable for your site.', 'seo-wp' );
+		echo esc_html__( 'Independent of the above: without critical CSS in place, deferring every other stylesheet will show a flash of unstyled content until they finish loading — enable this once you have critical CSS covering what visitors see immediately, or if you\'ve decided that tradeoff is acceptable for your site.', 'seooptimierung-toolkit' );
 		echo '</p></td></tr>';
 
-		$this->checkbox_field( 'defer_noncritical_css', __( 'Load all other stylesheets non-blocking', 'seo-wp' ), false );
+		$this->checkbox_field( 'defer_noncritical_css', __( 'Load all other stylesheets non-blocking', 'seooptimierung-toolkit' ), false );
 
-		echo '<tr><td colspan="2"><hr /><p class="description"><strong>' . esc_html__( 'Resource hints', 'seo-wp' ) . '</strong> — ' . esc_html__( 'one per line: preconnect/dns-prefetch/preload/prefetch/prerender, a URL, and optional as=…, type=… and crossorigin — e.g. the two lines below cover a typical Google Fonts setup.', 'seo-wp' ) . '</p></td></tr>';
+		echo '<tr><td colspan="2"><hr /><p class="description"><strong>' . esc_html__( 'Resource hints', 'seooptimierung-toolkit' ) . '</strong> — ' . esc_html__( 'one per line: preconnect/dns-prefetch/preload/prefetch/prerender, a URL, and optional as=…, type=… and crossorigin — e.g. the two lines below cover a typical Google Fonts setup.', 'seooptimierung-toolkit' ) . '</p></td></tr>';
 		printf(
 			'<tr><td colspan="2"><pre style="margin:0 0 8px;">%s</pre></td></tr>',
 			esc_html( "preconnect https://fonts.googleapis.com\npreconnect https://fonts.gstatic.com crossorigin\npreload https://example.com/font.woff2 as=font type=font/woff2 crossorigin" )
 		);
-		$this->textarea_field( 'resource_hints', __( 'Resource hints (output early in <head>)', 'seo-wp' ) );
+		$this->textarea_field( 'resource_hints', __( 'Resource hints (output early in <head>)', 'seooptimierung-toolkit' ) );
 
 		echo '<tr><td colspan="2">';
-		echo '<button type="button" class="button seo-wp-scan-resource-hints">' . esc_html__( 'Scan homepage for suggestions', 'seo-wp' ) . '</button> ';
+		echo '<button type="button" class="button seo-wp-scan-resource-hints">' . esc_html__( 'Scan homepage for suggestions', 'seooptimierung-toolkit' ) . '</button> ';
 		echo '<span class="seo-wp-resource-hint-scan-status"></span>';
-		echo '<p class="description">' . esc_html__( 'Fetches your homepage and lists external script/stylesheet origins worth a hint — pick which ones to add below, nothing is inserted automatically.', 'seo-wp' ) . '</p>';
+		echo '<p class="description">' . esc_html__( 'Fetches your homepage and lists external script/stylesheet origins worth a hint — pick which ones to add below, nothing is inserted automatically.', 'seooptimierung-toolkit' ) . '</p>';
 		echo '<ul class="seo-wp-resource-hint-suggestions"></ul>';
 		echo '</td></tr>';
 
-		echo '<tr><td colspan="2"><hr /><p class="description"><strong>' . esc_html__( 'Unused scripts and assets', 'seo-wp' ) . '</strong> — ' . esc_html__( 'every toggle below is off by default; only turn on what this site genuinely doesn\'t use.', 'seo-wp' ) . '</p></td></tr>';
+		echo '<tr><td colspan="2"><hr /><p class="description"><strong>' . esc_html__( 'Unused scripts and assets', 'seooptimierung-toolkit' ) . '</strong> — ' . esc_html__( 'every toggle below is off by default; only turn on what this site genuinely doesn\'t use.', 'seooptimierung-toolkit' ) . '</p></td></tr>';
 
-		$this->checkbox_field( 'disable_emojis', __( 'Disable emoji scripts and styles', 'seo-wp' ), false );
-		$this->checkbox_field( 'disable_embeds', __( 'Disable embeds (oEmbed discovery and the wp-embed script)', 'seo-wp' ), false );
-		$this->checkbox_field( 'disable_dashicons', __( 'Disable Dashicons for visitors who aren\'t logged in', 'seo-wp' ), false );
+		$this->checkbox_field( 'disable_emojis', __( 'Disable emoji scripts and styles', 'seooptimierung-toolkit' ), false );
+		$this->checkbox_field( 'disable_embeds', __( 'Disable embeds (oEmbed discovery and the wp-embed script)', 'seooptimierung-toolkit' ), false );
+		$this->checkbox_field( 'disable_dashicons', __( 'Disable Dashicons for visitors who aren\'t logged in', 'seooptimierung-toolkit' ), false );
 
-		echo '<tr><td colspan="2"><hr /><p class="description"><strong>' . esc_html__( 'Revisions and autosave', 'seo-wp' ) . '</strong></p></td></tr>';
+		echo '<tr><td colspan="2"><hr /><p class="description"><strong>' . esc_html__( 'Revisions and autosave', 'seooptimierung-toolkit' ) . '</strong></p></td></tr>';
 
-		$this->number_field( 'post_revisions_limit', __( 'Post revisions to keep', 'seo-wp' ), __( 'Leave empty for WordPress\' own default (unlimited). 0 disables revisions entirely.', 'seo-wp' ), 0, 100 );
-		$this->number_field( 'autosave_interval', __( 'Autosave interval (seconds)', 'seo-wp' ), __( 'Leave empty for WordPress\' own default (60 seconds).', 'seo-wp' ), 10, 600 );
+		$this->number_field( 'post_revisions_limit', __( 'Post revisions to keep', 'seooptimierung-toolkit' ), __( 'Leave empty for WordPress\' own default (unlimited). 0 disables revisions entirely.', 'seooptimierung-toolkit' ), 0, 100 );
+		$this->number_field( 'autosave_interval', __( 'Autosave interval (seconds)', 'seooptimierung-toolkit' ), __( 'Leave empty for WordPress\' own default (60 seconds).', 'seooptimierung-toolkit' ), 10, 600 );
 
-		echo '<tr><td colspan="2"><hr /><p class="description"><strong>' . esc_html__( 'Heartbeat API', 'seo-wp' ) . '</strong> — ' . esc_html__( 'polls admin-ajax.php on a timer for post locks, autosave and the site health widget; can add up noticeably on busy admin sessions.', 'seo-wp' ) . '</p></td></tr>';
+		echo '<tr><td colspan="2"><hr /><p class="description"><strong>' . esc_html__( 'Heartbeat API', 'seooptimierung-toolkit' ) . '</strong> — ' . esc_html__( 'polls admin-ajax.php on a timer for post locks, autosave and the site health widget; can add up noticeably on busy admin sessions.', 'seooptimierung-toolkit' ) . '</p></td></tr>';
 
 		$this->select_field(
 			'heartbeat_mode',
-			__( 'Heartbeat', 'seo-wp' ),
+			__( 'Heartbeat', 'seooptimierung-toolkit' ),
 			array(
-				'default'                     => __( 'Leave as-is', 'seo-wp' ),
-				'disable_admin_except_editor' => __( 'Disable everywhere in wp-admin except the post editor', 'seo-wp' ),
-				'disable_frontend'            => __( 'Disable on the public site', 'seo-wp' ),
-				'disable_everywhere'          => __( 'Disable everywhere', 'seo-wp' ),
+				'default'                     => __( 'Leave as-is', 'seooptimierung-toolkit' ),
+				'disable_admin_except_editor' => __( 'Disable everywhere in wp-admin except the post editor', 'seooptimierung-toolkit' ),
+				'disable_frontend'            => __( 'Disable on the public site', 'seooptimierung-toolkit' ),
+				'disable_everywhere'          => __( 'Disable everywhere', 'seooptimierung-toolkit' ),
 			),
 			'default'
 		);
-		$this->number_field( 'heartbeat_frequency', __( 'Heartbeat frequency (seconds)', 'seo-wp' ), __( 'Leave empty for WordPress\' own default. Ignored when Heartbeat is fully disabled above.', 'seo-wp' ), 15, 300 );
+		$this->number_field( 'heartbeat_frequency', __( 'Heartbeat frequency (seconds)', 'seooptimierung-toolkit' ), __( 'Leave empty for WordPress\' own default. Ignored when Heartbeat is fully disabled above.', 'seooptimierung-toolkit' ), 15, 300 );
 
-		echo '<tr><td colspan="2"><hr /><p class="description"><strong>' . esc_html__( 'Comments', 'seo-wp' ) . '</strong></p></td></tr>';
+		echo '<tr><td colspan="2"><hr /><p class="description"><strong>' . esc_html__( 'Comments', 'seooptimierung-toolkit' ) . '</strong></p></td></tr>';
 
-		$this->checkbox_field( 'disable_comments', __( 'Disable comments sitewide (closes comments/pings, hides the Comments admin menu)', 'seo-wp' ), false );
-		$this->checkbox_field( 'remove_comment_author_links', __( 'Show comment author names as plain text, without a link to their URL', 'seo-wp' ), false );
+		$this->checkbox_field( 'disable_comments', __( 'Disable comments sitewide (closes comments/pings, hides the Comments admin menu)', 'seooptimierung-toolkit' ), false );
+		$this->checkbox_field( 'remove_comment_author_links', __( 'Show comment author names as plain text, without a link to their URL', 'seooptimierung-toolkit' ), false );
 
-		echo '<tr><td colspan="2"><hr /><p class="description"><strong>' . esc_html__( 'Third-party embeds', 'seo-wp' ) . '</strong></p></td></tr>';
+		echo '<tr><td colspan="2"><hr /><p class="description"><strong>' . esc_html__( 'Third-party embeds', 'seooptimierung-toolkit' ) . '</strong></p></td></tr>';
 
-		$this->checkbox_field( 'disable_google_maps', __( 'Block Google Maps scripts from loading', 'seo-wp' ), false );
+		$this->checkbox_field( 'disable_google_maps', __( 'Block Google Maps scripts from loading', 'seooptimierung-toolkit' ), false );
 
 		if ( class_exists( 'WooCommerce' ) ) {
-			echo '<tr><td colspan="2"><hr /><p class="description"><strong>' . esc_html__( 'WooCommerce', 'seo-wp' ) . '</strong></p></td></tr>';
-			$this->checkbox_field( 'disable_wc_cart_fragments', __( 'Disable cart fragments (the wc-ajax=get_refreshed_fragments request)', 'seo-wp' ), false );
-			$this->checkbox_field( 'disable_wc_scripts_off_shop', __( 'Only load WooCommerce scripts/styles on shop, cart, checkout and account pages', 'seo-wp' ), false );
+			echo '<tr><td colspan="2"><hr /><p class="description"><strong>' . esc_html__( 'WooCommerce', 'seooptimierung-toolkit' ) . '</strong></p></td></tr>';
+			$this->checkbox_field( 'disable_wc_cart_fragments', __( 'Disable cart fragments (the wc-ajax=get_refreshed_fragments request)', 'seooptimierung-toolkit' ), false );
+			$this->checkbox_field( 'disable_wc_scripts_off_shop', __( 'Only load WooCommerce scripts/styles on shop, cart, checkout and account pages', 'seooptimierung-toolkit' ), false );
 		}
 
-		echo '<tr><td colspan="2"><hr /><p class="description"><strong>' . esc_html__( 'Miscellaneous', 'seo-wp' ) . '</strong></p></td></tr>';
+		echo '<tr><td colspan="2"><hr /><p class="description"><strong>' . esc_html__( 'Miscellaneous', 'seooptimierung-toolkit' ) . '</strong></p></td></tr>';
 
-		$this->checkbox_field( 'disable_xmlrpc', __( 'Disable XML-RPC', 'seo-wp' ), false );
-		$this->checkbox_field( 'remove_jquery_migrate', __( 'Remove jQuery Migrate', 'seo-wp' ), false );
-		$this->checkbox_field( 'remove_wp_version', __( 'Remove the WordPress version number from the page source', 'seo-wp' ), false );
-		$this->checkbox_field( 'remove_rsd_link', __( 'Remove the RSD (Really Simple Discovery) link', 'seo-wp' ), false );
-		$this->checkbox_field( 'remove_wlwmanifest_link', __( 'Remove the wlwmanifest (Windows Live Writer) link', 'seo-wp' ), false );
-		$this->checkbox_field( 'remove_shortlink', __( 'Remove the shortlink', 'seo-wp' ), false );
-		$this->checkbox_field( 'remove_adjacent_posts_links', __( 'Remove rel="prev"/"next" adjacent-post links', 'seo-wp' ), false );
-		$this->checkbox_field( 'disable_rss_feeds', __( 'Disable RSS feeds entirely (visitors are shown a message instead)', 'seo-wp' ), false );
-		$this->checkbox_field( 'remove_rss_feed_links', __( 'Remove RSS feed auto-discovery links from <head>', 'seo-wp' ), false );
-		$this->checkbox_field( 'disable_self_pingbacks', __( 'Disable self-pingbacks (linking to your own posts no longer pings them)', 'seo-wp' ), false );
-		$this->checkbox_field( 'restrict_rest_api', __( 'Restrict the REST API to logged-in users', 'seo-wp' ), false );
-		echo '<tr><td colspan="2"><p class="description">' . esc_html__( 'Careful: many themes, page builders and the block editor itself rely on the REST API, including for visitors who aren\'t logged in — test thoroughly before relying on this in production. This also blocks the slim-hreflang companion plugin\'s own multisite manifest route: its cross-site sync authenticates with its own secret, never a logged-in WordPress session, so enabling this breaks hreflang sync between your sites unless you exempt that route yourself (e.g. at the web server).', 'seo-wp' ) . '</p></td></tr>';
-		$this->checkbox_field( 'remove_rest_api_links', __( 'Remove REST API discovery links from <head> and HTTP headers', 'seo-wp' ), false );
+		$this->checkbox_field( 'disable_xmlrpc', __( 'Disable XML-RPC', 'seooptimierung-toolkit' ), false );
+		$this->checkbox_field( 'remove_jquery_migrate', __( 'Remove jQuery Migrate', 'seooptimierung-toolkit' ), false );
+		$this->checkbox_field( 'remove_wp_version', __( 'Remove the WordPress version number from the page source', 'seooptimierung-toolkit' ), false );
+		$this->checkbox_field( 'remove_rsd_link', __( 'Remove the RSD (Really Simple Discovery) link', 'seooptimierung-toolkit' ), false );
+		$this->checkbox_field( 'remove_wlwmanifest_link', __( 'Remove the wlwmanifest (Windows Live Writer) link', 'seooptimierung-toolkit' ), false );
+		$this->checkbox_field( 'remove_shortlink', __( 'Remove the shortlink', 'seooptimierung-toolkit' ), false );
+		$this->checkbox_field( 'remove_adjacent_posts_links', __( 'Remove rel="prev"/"next" adjacent-post links', 'seooptimierung-toolkit' ), false );
+		$this->checkbox_field( 'disable_rss_feeds', __( 'Disable RSS feeds entirely (visitors are shown a message instead)', 'seooptimierung-toolkit' ), false );
+		$this->checkbox_field( 'remove_rss_feed_links', __( 'Remove RSS feed auto-discovery links from <head>', 'seooptimierung-toolkit' ), false );
+		$this->checkbox_field( 'disable_self_pingbacks', __( 'Disable self-pingbacks (linking to your own posts no longer pings them)', 'seooptimierung-toolkit' ), false );
+		$this->checkbox_field( 'restrict_rest_api', __( 'Restrict the REST API to logged-in users', 'seooptimierung-toolkit' ), false );
+		echo '<tr><td colspan="2"><p class="description">' . esc_html__( 'Careful: many themes, page builders and the block editor itself rely on the REST API, including for visitors who aren\'t logged in — test thoroughly before relying on this in production. This also blocks the slim-hreflang companion plugin\'s own multisite manifest route: its cross-site sync authenticates with its own secret, never a logged-in WordPress session, so enabling this breaks hreflang sync between your sites unless you exempt that route yourself (e.g. at the web server).', 'seooptimierung-toolkit' ) . '</p></td></tr>';
+		$this->checkbox_field( 'remove_rest_api_links', __( 'Remove REST API discovery links from <head> and HTTP headers', 'seooptimierung-toolkit' ), false );
 	}
 
 	/**
@@ -922,48 +922,48 @@ final class Settings {
 	 * render_htaccess_section() — the .htaccess-backed toggles.
 	 */
 	private function render_server_tab(): void {
-		echo '<tr><td colspan="2"><p class="description"><strong>' . esc_html__( 'Redirects & URL normalization', 'seo-wp' ) . '</strong></p></td></tr>';
+		echo '<tr><td colspan="2"><p class="description"><strong>' . esc_html__( 'Redirects & URL normalization', 'seooptimierung-toolkit' ) . '</strong></p></td></tr>';
 
-		$this->checkbox_field( 'force_https', __( 'Redirect HTTP to HTTPS', 'seo-wp' ), false );
+		$this->checkbox_field( 'force_https', __( 'Redirect HTTP to HTTPS', 'seooptimierung-toolkit' ), false );
 		$this->select_field(
 			'www_canonical',
-			__( 'WWW ↔ non-WWW', 'seo-wp' ),
+			__( 'WWW ↔ non-WWW', 'seooptimierung-toolkit' ),
 			array(
-				'off'     => __( 'Leave as-is', 'seo-wp' ),
-				'www'     => __( 'Redirect to www.', 'seo-wp' ),
-				'non_www' => __( 'Redirect to the bare domain (non-www)', 'seo-wp' ),
+				'off'     => __( 'Leave as-is', 'seooptimierung-toolkit' ),
+				'www'     => __( 'Redirect to www.', 'seooptimierung-toolkit' ),
+				'non_www' => __( 'Redirect to the bare domain (non-www)', 'seooptimierung-toolkit' ),
 			),
 			'off'
 		);
 		$this->select_field(
 			'trailing_slash',
-			__( 'Trailing slash', 'seo-wp' ),
+			__( 'Trailing slash', 'seooptimierung-toolkit' ),
 			array(
-				'off'    => __( 'Leave as-is', 'seo-wp' ),
-				'add'    => __( 'Force a trailing slash', 'seo-wp' ),
-				'remove' => __( 'Remove the trailing slash', 'seo-wp' ),
+				'off'    => __( 'Leave as-is', 'seooptimierung-toolkit' ),
+				'add'    => __( 'Force a trailing slash', 'seooptimierung-toolkit' ),
+				'remove' => __( 'Remove the trailing slash', 'seooptimierung-toolkit' ),
 			),
 			'off'
 		);
-		$this->checkbox_field( 'enable_canonical_redirects', __( 'Collapse duplicate slashes in the URL path', 'seo-wp' ), false );
+		$this->checkbox_field( 'enable_canonical_redirects', __( 'Collapse duplicate slashes in the URL path', 'seooptimierung-toolkit' ), false );
 
-		echo '<tr><td colspan="2"><hr /><p class="description"><strong>' . esc_html__( 'Response headers', 'seo-wp' ) . '</strong></p></td></tr>';
+		echo '<tr><td colspan="2"><hr /><p class="description"><strong>' . esc_html__( 'Response headers', 'seooptimierung-toolkit' ) . '</strong></p></td></tr>';
 
-		$this->checkbox_field( 'enable_security_headers', __( 'Send security headers (X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy)', 'seo-wp' ), false );
-		$this->checkbox_field( 'enable_hsts', __( 'Send Strict-Transport-Security (HSTS)', 'seo-wp' ), false );
-		$this->checkbox_field( 'hsts_include_subdomains', __( 'Include subdomains in HSTS', 'seo-wp' ), false );
-		echo '<tr><td colspan="2"><p class="description">' . esc_html__( 'HSTS is only ever sent over an already-HTTPS connection — enabling it tells browsers to always use HTTPS for this domain from now on, which is hard to undo quickly (browsers cache it for the configured lifetime), so make sure HTTPS is fully working sitewide first.', 'seo-wp' ) . '</p></td></tr>';
-		$this->checkbox_field( 'enable_cors', __( 'Send Access-Control-Allow-Origin (CORS)', 'seo-wp' ), false );
-		$this->text_field( 'cors_allowed_origin', __( 'Allowed origin', 'seo-wp' ), __( 'e.g. https://example.com — left blank, no CORS header is sent at all', 'seo-wp' ) );
-		$this->checkbox_field( 'enable_modern_mime_types', __( 'Allow uploading WebP, AVIF, WOFF/WOFF2 and JSON files', 'seo-wp' ), false );
+		$this->checkbox_field( 'enable_security_headers', __( 'Send security headers (X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy)', 'seooptimierung-toolkit' ), false );
+		$this->checkbox_field( 'enable_hsts', __( 'Send Strict-Transport-Security (HSTS)', 'seooptimierung-toolkit' ), false );
+		$this->checkbox_field( 'hsts_include_subdomains', __( 'Include subdomains in HSTS', 'seooptimierung-toolkit' ), false );
+		echo '<tr><td colspan="2"><p class="description">' . esc_html__( 'HSTS is only ever sent over an already-HTTPS connection — enabling it tells browsers to always use HTTPS for this domain from now on, which is hard to undo quickly (browsers cache it for the configured lifetime), so make sure HTTPS is fully working sitewide first.', 'seooptimierung-toolkit' ) . '</p></td></tr>';
+		$this->checkbox_field( 'enable_cors', __( 'Send Access-Control-Allow-Origin (CORS)', 'seooptimierung-toolkit' ), false );
+		$this->text_field( 'cors_allowed_origin', __( 'Allowed origin', 'seooptimierung-toolkit' ), __( 'e.g. https://example.com — left blank, no CORS header is sent at all', 'seooptimierung-toolkit' ) );
+		$this->checkbox_field( 'enable_modern_mime_types', __( 'Allow uploading WebP, AVIF, WOFF/WOFF2 and JSON files', 'seooptimierung-toolkit' ), false );
 
-		echo '<tr><td colspan="2"><hr /><p class="description"><strong>' . esc_html__( 'Gzip, Brotli, browser caching, hotlink protection & directory browsing', 'seo-wp' ) . '</strong> — ' . esc_html__( 'these need actual web-server configuration, not just a PHP hook — see below the Save button for how they\'re applied.', 'seo-wp' ) . '</p></td></tr>';
+		echo '<tr><td colspan="2"><hr /><p class="description"><strong>' . esc_html__( 'Gzip, Brotli, browser caching, hotlink protection & directory browsing', 'seooptimierung-toolkit' ) . '</strong> — ' . esc_html__( 'these need actual web-server configuration, not just a PHP hook — see below the Save button for how they\'re applied.', 'seooptimierung-toolkit' ) . '</p></td></tr>';
 
-		$this->checkbox_field( 'enable_gzip', __( 'Gzip compression', 'seo-wp' ), false );
-		$this->checkbox_field( 'enable_brotli', __( 'Brotli compression (only takes effect if the server supports it)', 'seo-wp' ), false );
-		$this->checkbox_field( 'enable_browser_caching', __( 'Browser caching (Expires / Cache-Control) for static assets', 'seo-wp' ), false );
-		$this->checkbox_field( 'enable_hotlink_protection', __( 'Hotlink protection for images', 'seo-wp' ), false );
-		$this->checkbox_field( 'disable_directory_browsing', __( 'Disable directory browsing (Options -Indexes)', 'seo-wp' ), false );
+		$this->checkbox_field( 'enable_gzip', __( 'Gzip compression', 'seooptimierung-toolkit' ), false );
+		$this->checkbox_field( 'enable_brotli', __( 'Brotli compression (only takes effect if the server supports it)', 'seooptimierung-toolkit' ), false );
+		$this->checkbox_field( 'enable_browser_caching', __( 'Browser caching (Expires / Cache-Control) for static assets', 'seooptimierung-toolkit' ), false );
+		$this->checkbox_field( 'enable_hotlink_protection', __( 'Hotlink protection for images', 'seooptimierung-toolkit' ), false );
+		$this->checkbox_field( 'disable_directory_browsing', __( 'Disable directory browsing (Options -Indexes)', 'seooptimierung-toolkit' ), false );
 	}
 
 	/**
@@ -976,17 +976,17 @@ final class Settings {
 	private function render_htaccess_section(): void {
 		$htaccess = new Htaccess();
 
-		echo '<h2>' . esc_html__( 'Apply to .htaccess', 'seo-wp' ) . '</h2>';
+		echo '<h2>' . esc_html__( 'Apply to .htaccess', 'seooptimierung-toolkit' ) . '</h2>';
 
 		if ( ! $htaccess->server_supports_htaccess() ) {
-			echo '<div class="notice notice-warning inline"><p>' . esc_html__( 'This server doesn\'t look like Apache or LiteSpeed, so .htaccess has no effect here (this is normal on Nginx). Paste the rules below into your server\'s own configuration and reload it instead — this plugin can\'t do that part for you.', 'seo-wp' ) . '</p></div>';
+			echo '<div class="notice notice-warning inline"><p>' . esc_html__( 'This server doesn\'t look like Apache or LiteSpeed, so .htaccess has no effect here (this is normal on Nginx). Paste the rules below into your server\'s own configuration and reload it instead — this plugin can\'t do that part for you.', 'seooptimierung-toolkit' ) . '</p></div>';
 		} else {
-			echo '<p class="description">' . esc_html__( 'Writes the rules below into a marked block in this site\'s .htaccess (only that block is ever touched), using the checkboxes above — save them first, then apply.', 'seo-wp' ) . '</p>';
+			echo '<p class="description">' . esc_html__( 'Writes the rules below into a marked block in this site\'s .htaccess (only that block is ever touched), using the checkboxes above — save them first, then apply.', 'seooptimierung-toolkit' ) . '</p>';
 		}
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only banner reflecting a prior action's redirect, not a state-changing action itself.
 		if ( isset( $_GET['htaccess_applied'] ) ) {
-			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( '.htaccess updated.', 'seo-wp' ) . '</p></div>';
+			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( '.htaccess updated.', 'seooptimierung-toolkit' ) . '</p></div>';
 		}
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only banner.
 		if ( isset( $_GET['htaccess_error'] ) ) {
@@ -1000,14 +1000,14 @@ final class Settings {
 		$rules = $htaccess->build_rules();
 		printf(
 			'<textarea readonly rows="12" class="large-text code">%s</textarea>',
-			esc_textarea( '' !== $rules ? $rules : __( '(No .htaccess-backed toggle is currently enabled — save the checkboxes above first.)', 'seo-wp' ) )
+			esc_textarea( '' !== $rules ? $rules : __( '(No .htaccess-backed toggle is currently enabled — save the checkboxes above first.)', 'seooptimierung-toolkit' ) )
 		);
 
 		if ( $htaccess->server_supports_htaccess() ) {
 			echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
 			echo '<input type="hidden" name="action" value="seo_wp_apply_htaccess" />';
 			wp_nonce_field( 'seo_wp_apply_htaccess', 'seo_wp_apply_htaccess_nonce' );
-			submit_button( __( 'Apply to .htaccess', 'seo-wp' ), 'secondary', 'submit', false );
+			submit_button( __( 'Apply to .htaccess', 'seooptimierung-toolkit' ), 'secondary', 'submit', false );
 			echo '</form>';
 		}
 	}
@@ -1017,7 +1017,7 @@ final class Settings {
 	 */
 	public function handle_apply_htaccess(): void {
 		if ( ! current_user_can( self::CAPABILITY ) ) {
-			wp_die( esc_html__( 'You are not allowed to do this.', 'seo-wp' ) );
+			wp_die( esc_html__( 'You are not allowed to do this.', 'seooptimierung-toolkit' ) );
 		}
 
 		check_admin_referer( 'seo_wp_apply_htaccess', 'seo_wp_apply_htaccess_nonce' );

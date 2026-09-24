@@ -2,15 +2,15 @@
 /**
  * Organization schema node.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Schema\Nodes;
+namespace Seooptimierung\Toolkit\Schema\Nodes;
 
-use SeoWp\Schema\GraphBuilder;
-use SeoWp\Schema\OpeningHours;
+use Seooptimierung\Toolkit\Schema\GraphBuilder;
+use Seooptimierung\Toolkit\Schema\OpeningHours;
 
 /**
  * Builds the Organization JSON-LD node: the site's publisher identity,

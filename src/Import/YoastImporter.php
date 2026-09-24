@@ -2,20 +2,20 @@
 /**
  * Imports object meta written by Yoast SEO.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Import;
+namespace Seooptimierung\Toolkit\Import;
 
-use SeoWp\Meta\Canonical;
-use SeoWp\Meta\Robots;
-use SeoWp\Meta\TitleDescription;
-use SeoWp\Schema\GraphBuilder;
-use SeoWp\Social\OpenGraph;
-use SeoWp\Social\TwitterCards;
-use SeoWp\Templates\Tokens;
+use Seooptimierung\Toolkit\Meta\Canonical;
+use Seooptimierung\Toolkit\Meta\Robots;
+use Seooptimierung\Toolkit\Meta\TitleDescription;
+use Seooptimierung\Toolkit\Schema\GraphBuilder;
+use Seooptimierung\Toolkit\Social\OpenGraph;
+use Seooptimierung\Toolkit\Social\TwitterCards;
+use Seooptimierung\Toolkit\Templates\Tokens;
 
 /**
  * Reads Yoast's _yoast_wpseo_* postmeta and maps it to this plugin's meta
@@ -33,7 +33,7 @@ final class YoastImporter {
 	/**
 	 * Maps a single post's Yoast meta to this plugin's target meta keys.
 	 * Only fields with a non-empty Yoast value are included, so an import
-	 * never clears an already-configured SEO-WP field.
+	 * never clears an already-configured Seooptimierung Toolkit field.
 	 *
 	 * @param int $post_id Post ID.
 	 * @return array<string,mixed>

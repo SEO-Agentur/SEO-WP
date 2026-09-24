@@ -2,12 +2,12 @@
 /**
  * Strips links from inserted images to their own attachment page.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Crawl;
+namespace Seooptimierung\Toolkit\Crawl;
 
 /**
  * WordPress lets an editor link an inserted image to its own attachment

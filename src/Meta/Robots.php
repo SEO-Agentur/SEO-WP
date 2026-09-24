@@ -2,12 +2,12 @@
 /**
  * Robots meta directive overrides.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Meta;
+namespace Seooptimierung\Toolkit\Meta;
 
 use WP_Post;
 use WP_Term;

@@ -2,12 +2,12 @@
 /**
  * Minimal HTTP clients for the Anthropic and OpenAI text-generation APIs.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Support;
+namespace Seooptimierung\Toolkit\Support;
 
 /**
  * Sends one prompt to whichever provider is configured and returns its
@@ -90,7 +90,7 @@ final class AiClient {
 
 		$text = $body['content'][0]['text'] ?? null;
 		if ( ! is_string( $text ) || '' === $text ) {
-			return new \WP_Error( 'seo_wp_anthropic_error', __( 'Claude returned no text.', 'seo-wp' ) );
+			return new \WP_Error( 'seo_wp_anthropic_error', __( 'Claude returned no text.', 'seooptimierung-toolkit' ) );
 		}
 
 		return $text;
@@ -141,7 +141,7 @@ final class AiClient {
 
 		$text = $body['choices'][0]['message']['content'] ?? null;
 		if ( ! is_string( $text ) || '' === $text ) {
-			return new \WP_Error( 'seo_wp_openai_error', __( 'OpenAI returned no text.', 'seo-wp' ) );
+			return new \WP_Error( 'seo_wp_openai_error', __( 'OpenAI returned no text.', 'seooptimierung-toolkit' ) );
 		}
 
 		return $text;

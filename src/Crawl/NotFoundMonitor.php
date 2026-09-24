@@ -2,14 +2,14 @@
 /**
  * Records 404 hits so they can be turned into redirects.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Crawl;
+namespace Seooptimierung\Toolkit\Crawl;
 
-use SeoWp\Support\Url;
+use Seooptimierung\Toolkit\Support\Url;
 
 /**
  * A capped, path-keyed log of every URL that produced a 404 on the front

@@ -2,12 +2,12 @@
 /**
  * Handling for author, date, search, 404 and attachment archives.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Crawl;
+namespace Seooptimierung\Toolkit\Crawl;
 
 use WP_Post;
 

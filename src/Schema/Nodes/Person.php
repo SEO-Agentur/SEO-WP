@@ -2,12 +2,12 @@
 /**
  * Person schema node.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Schema\Nodes;
+namespace Seooptimierung\Toolkit\Schema\Nodes;
 
 /**
  * Builds the Person JSON-LD node, used as the site's publisher identity

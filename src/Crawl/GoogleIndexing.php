@@ -2,16 +2,16 @@
 /**
  * Google Indexing API pings on publish/update/delete.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Crawl;
+namespace Seooptimierung\Toolkit\Crawl;
 
-use SeoWp\Meta\Robots;
-use SeoWp\Support\ErrorLog;
-use SeoWp\Support\Secrets;
+use Seooptimierung\Toolkit\Meta\Robots;
+use Seooptimierung\Toolkit\Support\ErrorLog;
+use Seooptimierung\Toolkit\Support\Secrets;
 use WP_Post;
 
 /**

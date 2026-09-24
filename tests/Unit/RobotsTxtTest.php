@@ -2,18 +2,18 @@
 /**
  * Tests for the pure AI-crawler robots.txt block builder.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Tests\Unit;
+namespace Seooptimierung\Toolkit\Tests\Unit;
 
-use SeoWp\Crawl\RobotsTxt;
+use Seooptimierung\Toolkit\Crawl\RobotsTxt;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \SeoWp\Crawl\RobotsTxt
+ * @covers \Seooptimierung\Toolkit\Crawl\RobotsTxt
  */
 final class RobotsTxtTest extends TestCase {
 

@@ -2,14 +2,14 @@
 /**
  * Adds the news:news sitemap extension.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Sitemaps;
+namespace Seooptimierung\Toolkit\Sitemaps;
 
-use SeoWp\Meta\Robots;
+use Seooptimierung\Toolkit\Meta\Robots;
 use WP_Query;
 
 /**

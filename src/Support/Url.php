@@ -2,12 +2,12 @@
 /**
  * Shared URL normalisation helpers.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Support;
+namespace Seooptimierung\Toolkit\Support;
 
 /**
  * Normalises trailing slashes and compares permalinks for equality. Also

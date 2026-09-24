@@ -3,18 +3,18 @@
  * Tests for the sitemap inclusion toggles (per post type, per taxonomy,
  * and the video/hreflang extensions).
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Tests\Unit\Sitemaps;
+namespace Seooptimierung\Toolkit\Tests\Unit\Sitemaps;
 
-use SeoWp\Sitemaps\Inclusion;
+use Seooptimierung\Toolkit\Sitemaps\Inclusion;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \SeoWp\Sitemaps\Inclusion
+ * @covers \Seooptimierung\Toolkit\Sitemaps\Inclusion
  */
 final class InclusionTest extends TestCase {
 

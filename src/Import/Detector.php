@@ -2,14 +2,14 @@
 /**
  * Detects which competing SEO plugins have data present.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Import;
+namespace Seooptimierung\Toolkit\Import;
 
-use SeoWp\Support\ErrorLog;
+use Seooptimierung\Toolkit\Support\ErrorLog;
 
 /**
  * Detects Yoast SEO, Rank Math and AIOSEO data available for import,

@@ -2,18 +2,18 @@
 /**
  * Tests for the Yoast/Rank Math coexistence mode.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Tests\Unit;
+namespace Seooptimierung\Toolkit\Tests\Unit;
 
-use SeoWp\Support\CoexistenceMode;
+use Seooptimierung\Toolkit\Support\CoexistenceMode;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \SeoWp\Support\CoexistenceMode
+ * @covers \Seooptimierung\Toolkit\Support\CoexistenceMode
  */
 final class CoexistenceModeTest extends TestCase {
 

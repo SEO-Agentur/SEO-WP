@@ -2,12 +2,12 @@
 /**
  * Renders a token template into a final string.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Templates;
+namespace Seooptimierung\Toolkit\Templates;
 
 /**
  * Turns a template into a string and cleans up duplicate separators left

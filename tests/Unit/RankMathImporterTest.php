@@ -2,18 +2,18 @@
 /**
  * Tests for unserialising and reading Rank Math's rank_math_robots field.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Tests\Unit;
+namespace Seooptimierung\Toolkit\Tests\Unit;
 
-use SeoWp\Import\RankMathImporter;
+use Seooptimierung\Toolkit\Import\RankMathImporter;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \SeoWp\Import\RankMathImporter
+ * @covers \Seooptimierung\Toolkit\Import\RankMathImporter
  */
 final class RankMathImporterTest extends TestCase {
 

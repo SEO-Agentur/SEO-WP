@@ -2,18 +2,18 @@
 /**
  * Tests for parsing an AI model's title/description JSON reply.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Tests\Unit;
+namespace Seooptimierung\Toolkit\Tests\Unit;
 
-use SeoWp\Support\AiClient;
+use Seooptimierung\Toolkit\Support\AiClient;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \SeoWp\Support\AiClient
+ * @covers \Seooptimierung\Toolkit\Support\AiClient
  */
 final class AiClientTest extends TestCase {
 

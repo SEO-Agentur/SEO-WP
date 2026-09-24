@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<ruleset name="SeoWp">
-	<description>Coding standard for the SEO-WP plugin.</description>
+<ruleset name="SeooptimierungToolkit">
+	<description>Coding standard for the Seooptimierung Toolkit plugin.</description>
 
 	<file>.</file>
 	<exclude-pattern>/vendor/*</exclude-pattern>
@@ -25,7 +25,7 @@
 	<rule ref="WordPress.WP.I18n">
 		<properties>
 			<property name="text_domain" type="array">
-				<element value="seo-wp"/>
+				<element value="seooptimierung-toolkit"/>
 			</property>
 		</properties>
 	</rule>
@@ -36,6 +36,9 @@
 				<element value="seo_wp"/>
 				<element value="SeoWp"/>
 				<element value="SEO_WP"/>
+				<element value="seooptimierung"/>
+				<element value="Seooptimierung"/>
+				<element value="SEOOPTIMIERUNG"/>
 			</property>
 		</properties>
 	</rule>

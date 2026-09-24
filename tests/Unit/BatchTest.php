@@ -2,18 +2,18 @@
 /**
  * Tests for the import batch's "don't overwrite existing data" filter.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Tests\Unit;
+namespace Seooptimierung\Toolkit\Tests\Unit;
 
-use SeoWp\Import\Batch;
+use Seooptimierung\Toolkit\Import\Batch;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \SeoWp\Import\Batch
+ * @covers \Seooptimierung\Toolkit\Import\Batch
  */
 final class BatchTest extends TestCase {
 

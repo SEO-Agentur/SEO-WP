@@ -2,14 +2,14 @@
 /**
  * Imports site-wide settings (not per-object meta) from Yoast/Rank Math.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Import;
+namespace Seooptimierung\Toolkit\Import;
 
-use SeoWp\Templates\Tokens;
+use Seooptimierung\Toolkit\Templates\Tokens;
 
 /**
  * Reads a competing plugin's own global options (title templates,
@@ -103,7 +103,7 @@ final class SettingsImporter {
 	/**
 	 * Copies one field from a source options array into the target array,
 	 * converting its token syntax, only when the source has a non-empty
-	 * value — so an import never clears an already-configured SEO-WP
+	 * value — so an import never clears an already-configured Seooptimierung Toolkit
 	 * field by writing an empty string over it.
 	 *
 	 * @param array<string,string> $target       Target array, modified by reference.

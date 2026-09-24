@@ -2,18 +2,18 @@
 /**
  * Tests for the Google Indexing API's JWT assertion builder.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Tests\Unit;
+namespace Seooptimierung\Toolkit\Tests\Unit;
 
-use SeoWp\Crawl\GoogleIndexing;
+use Seooptimierung\Toolkit\Crawl\GoogleIndexing;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \SeoWp\Crawl\GoogleIndexing
+ * @covers \Seooptimierung\Toolkit\Crawl\GoogleIndexing
  */
 final class GoogleIndexingTest extends TestCase {
 

@@ -2,15 +2,15 @@
 /**
  * Dedicated, non-autoloaded storage for API keys and other credentials.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Support;
+namespace Seooptimierung\Toolkit\Support;
 
 /**
- * SEO-WP's general settings (`seo_wp_settings`) are deliberately
+ * Seooptimierung Toolkit's general settings (`seo_wp_settings`) are deliberately
  * autoloaded — that option is read on nearly every request, so keeping it
  * in memory avoids a query per read (see Plugin::activate()). Secrets
  * (AI provider keys, the Google service-account key) don't belong in

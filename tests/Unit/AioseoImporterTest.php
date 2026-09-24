@@ -2,21 +2,21 @@
 /**
  * Tests for mapping a raw wp_aioseo_posts row to this plugin's meta keys.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Tests\Unit;
+namespace Seooptimierung\Toolkit\Tests\Unit;
 
-use SeoWp\Import\AioseoImporter;
-use SeoWp\Meta\Canonical;
-use SeoWp\Meta\Robots;
-use SeoWp\Meta\TitleDescription;
+use Seooptimierung\Toolkit\Import\AioseoImporter;
+use Seooptimierung\Toolkit\Meta\Canonical;
+use Seooptimierung\Toolkit\Meta\Robots;
+use Seooptimierung\Toolkit\Meta\TitleDescription;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \SeoWp\Import\AioseoImporter
+ * @covers \Seooptimierung\Toolkit\Import\AioseoImporter
  */
 final class AioseoImporterTest extends TestCase {
 
@@ -89,7 +89,7 @@ final class AioseoImporterTest extends TestCase {
 
 	/**
 	 * Empty/absent fields are simply omitted, never written as empty
-	 * strings that would otherwise clear an existing SEO-WP value.
+	 * strings that would otherwise clear an existing Seooptimierung Toolkit value.
 	 */
 	public function test_empty_fields_are_omitted(): void {
 		$result = AioseoImporter::map_row( array( 'title' => '' ) );

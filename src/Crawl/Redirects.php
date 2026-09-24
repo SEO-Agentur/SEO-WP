@@ -2,12 +2,12 @@
 /**
  * URL redirect rules.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Crawl;
+namespace Seooptimierung\Toolkit\Crawl;
 
 /**
  * Admin-defined redirect rules, matched by exact path against every front
@@ -78,7 +78,7 @@ final class Redirects {
 		if ( in_array( $rule['type'], self::STATUS_ONLY_TYPES, true ) ) {
 			status_header( $rule['type'] );
 			nocache_headers();
-			echo esc_html__( 'This content is no longer available.', 'seo-wp' );
+			echo esc_html__( 'This content is no longer available.', 'seooptimierung-toolkit' );
 			exit;
 		}
 

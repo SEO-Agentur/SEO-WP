@@ -2,18 +2,18 @@
 /**
  * Tests for extracting <img> URLs from post content.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Tests\Unit;
+namespace Seooptimierung\Toolkit\Tests\Unit;
 
-use SeoWp\Sitemaps\ImageSitemap;
+use Seooptimierung\Toolkit\Sitemaps\ImageSitemap;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \SeoWp\Sitemaps\ImageSitemap
+ * @covers \Seooptimierung\Toolkit\Sitemaps\ImageSitemap
  */
 final class ImageSitemapTest extends TestCase {
 

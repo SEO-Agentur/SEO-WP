@@ -2,22 +2,22 @@
 /**
  * Per-object SEO metabox (General/Social/Schema tabs).
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Admin;
+namespace Seooptimierung\Toolkit\Admin;
 
-use SeoWp\Meta\Canonical;
-use SeoWp\Meta\Robots;
-use SeoWp\Meta\TitleDescription;
-use SeoWp\Schema\GraphBuilder;
-use SeoWp\Schema\Nodes\FaqPage;
-use SeoWp\Schema\Nodes\Product;
-use SeoWp\Social\OpenGraph;
-use SeoWp\Social\TwitterCards;
-use SeoWp\Support\LengthAdvisor;
+use Seooptimierung\Toolkit\Meta\Canonical;
+use Seooptimierung\Toolkit\Meta\Robots;
+use Seooptimierung\Toolkit\Meta\TitleDescription;
+use Seooptimierung\Toolkit\Schema\GraphBuilder;
+use Seooptimierung\Toolkit\Schema\Nodes\FaqPage;
+use Seooptimierung\Toolkit\Schema\Nodes\Product;
+use Seooptimierung\Toolkit\Social\OpenGraph;
+use Seooptimierung\Toolkit\Social\TwitterCards;
+use Seooptimierung\Toolkit\Support\LengthAdvisor;
 use WP_Post;
 use WP_Taxonomy;
 use WP_Term;
@@ -71,9 +71,9 @@ final class Metabox {
 	 */
 	private static function advanced_directive_labels(): array {
 		return array(
-			'noarchive'    => __( 'No archive', 'seo-wp' ),
-			'nosnippet'    => __( 'No snippet', 'seo-wp' ),
-			'noimageindex' => __( 'No image index', 'seo-wp' ),
+			'noarchive'    => __( 'No archive', 'seooptimierung-toolkit' ),
+			'nosnippet'    => __( 'No snippet', 'seooptimierung-toolkit' ),
+			'noimageindex' => __( 'No image index', 'seooptimierung-toolkit' ),
 		);
 	}
 
@@ -109,7 +109,7 @@ final class Metabox {
 		foreach ( get_post_types( array( 'public' => true ), 'names' ) as $post_type ) {
 			add_meta_box(
 				'seo_wp_metabox',
-				__( 'SEO-WP', 'seo-wp' ),
+				__( 'Seooptimierung Toolkit', 'seooptimierung-toolkit' ),
 				array( $this, 'render_post_metabox' ),
 				$post_type,
 				'normal',
@@ -129,18 +129,18 @@ final class Metabox {
 			return;
 		}
 
-		wp_enqueue_style( 'seo-wp-admin', plugins_url( 'assets/admin/admin.css', \SeoWp\FILE ), array(), \SeoWp\VERSION );
-		wp_enqueue_script( 'seo-wp-metabox', plugins_url( 'assets/admin/metabox.js', \SeoWp\FILE ), array(), \SeoWp\VERSION, true );
+		wp_enqueue_style( 'seo-wp-admin', plugins_url( 'assets/admin/admin.css', \Seooptimierung\Toolkit\FILE ), array(), \Seooptimierung\Toolkit\VERSION );
+		wp_enqueue_script( 'seo-wp-metabox', plugins_url( 'assets/admin/metabox.js', \Seooptimierung\Toolkit\FILE ), array(), \Seooptimierung\Toolkit\VERSION, true );
 
 		wp_localize_script(
 			'seo-wp-metabox',
 			'seoWpMetabox',
 			array(
 				'i18n'        => array(
-					'question' => __( 'Question', 'seo-wp' ),
-					'answer'   => __( 'Answer', 'seo-wp' ),
-					'remove'   => __( 'Remove', 'seo-wp' ),
-					'noImage'  => __( 'No image set', 'seo-wp' ),
+					'question' => __( 'Question', 'seooptimierung-toolkit' ),
+					'answer'   => __( 'Answer', 'seooptimierung-toolkit' ),
+					'remove'   => __( 'Remove', 'seooptimierung-toolkit' ),
+					'noImage'  => __( 'No image set', 'seooptimierung-toolkit' ),
 				),
 				'preview'     => array(
 					'siteName'  => (string) get_bloginfo( 'name' ),
@@ -171,9 +171,9 @@ final class Metabox {
 
 		wp_enqueue_script(
 			'seo-wp-editor-sidebar',
-			plugins_url( 'assets/admin/editor-sidebar.js', \SeoWp\FILE ),
+			plugins_url( 'assets/admin/editor-sidebar.js', \Seooptimierung\Toolkit\FILE ),
 			array( 'wp-plugins', 'wp-edit-post', 'wp-element', 'wp-components', 'wp-data', 'wp-i18n', 'seo-wp-metabox' ),
-			\SeoWp\VERSION,
+			\Seooptimierung\Toolkit\VERSION,
 			true
 		);
 	}
@@ -214,7 +214,7 @@ final class Metabox {
 
 		wp_nonce_field( self::NONCE_ACTION, self::NONCE_NAME );
 
-		echo '<tr class="form-field"><th scope="row">' . esc_html__( 'SEO-WP', 'seo-wp' ) . '</th><td>';
+		echo '<tr class="form-field"><th scope="row">' . esc_html__( 'Seooptimierung Toolkit', 'seooptimierung-toolkit' ) . '</th><td>';
 		$this->render_tabs( $this->read_values( $term->term_id, false ), array(), false, false );
 		echo '</td></tr>';
 	}
@@ -421,27 +421,27 @@ final class Metabox {
 		echo '<div class="seo-wp-metabox">';
 
 		echo '<div class="seo-wp-metabox-tabs">';
-		echo '<button type="button" class="seo-wp-tab-button seo-wp-tab-active" data-seo-wp-tab="general">' . esc_html__( 'General', 'seo-wp' ) . '</button>';
-		echo '<button type="button" class="seo-wp-tab-button" data-seo-wp-tab="social">' . esc_html__( 'Social', 'seo-wp' ) . '</button>';
-		echo '<button type="button" class="seo-wp-tab-button" data-seo-wp-tab="schema">' . esc_html__( 'Schema', 'seo-wp' ) . '</button>';
+		echo '<button type="button" class="seo-wp-tab-button seo-wp-tab-active" data-seo-wp-tab="general">' . esc_html__( 'General', 'seooptimierung-toolkit' ) . '</button>';
+		echo '<button type="button" class="seo-wp-tab-button" data-seo-wp-tab="social">' . esc_html__( 'Social', 'seooptimierung-toolkit' ) . '</button>';
+		echo '<button type="button" class="seo-wp-tab-button" data-seo-wp-tab="schema">' . esc_html__( 'Schema', 'seooptimierung-toolkit' ) . '</button>';
 		echo '</div>';
 
 		echo '<div class="seo-wp-tab-panel seo-wp-tab-active" data-seo-wp-panel="general">';
-		$this->field_text( TitleDescription::META_TITLE, __( 'Title', 'seo-wp' ), (string) $values[ TitleDescription::META_TITLE ], 'title' );
-		$this->field_textarea( TitleDescription::META_DESCRIPTION, __( 'Meta description', 'seo-wp' ), (string) $values[ TitleDescription::META_DESCRIPTION ], 'description' );
-		$this->field_text( self::META_FOCUS_KEYWORD, __( 'Focus keyword (optional)', 'seo-wp' ), (string) $values[ self::META_FOCUS_KEYWORD ] );
-		$this->field_text( Canonical::META_CANONICAL, __( 'Canonical URL', 'seo-wp' ), (string) $values[ Canonical::META_CANONICAL ] );
+		$this->field_text( TitleDescription::META_TITLE, __( 'Title', 'seooptimierung-toolkit' ), (string) $values[ TitleDescription::META_TITLE ], 'title' );
+		$this->field_textarea( TitleDescription::META_DESCRIPTION, __( 'Meta description', 'seooptimierung-toolkit' ), (string) $values[ TitleDescription::META_DESCRIPTION ], 'description' );
+		$this->field_text( self::META_FOCUS_KEYWORD, __( 'Focus keyword (optional)', 'seooptimierung-toolkit' ), (string) $values[ self::META_FOCUS_KEYWORD ] );
+		$this->field_text( Canonical::META_CANONICAL, __( 'Canonical URL', 'seooptimierung-toolkit' ), (string) $values[ Canonical::META_CANONICAL ] );
 		$this->field_robots( $values );
 		$this->render_serp_preview();
 		echo '</div>';
 
 		echo '<div class="seo-wp-tab-panel" data-seo-wp-panel="social">';
-		$this->field_text( OpenGraph::META_TITLE, __( 'Open Graph title', 'seo-wp' ), (string) $values[ OpenGraph::META_TITLE ] );
-		$this->field_textarea( OpenGraph::META_DESCRIPTION, __( 'Open Graph description', 'seo-wp' ), (string) $values[ OpenGraph::META_DESCRIPTION ] );
-		$this->field_text( OpenGraph::META_IMAGE, __( 'Open Graph image URL', 'seo-wp' ), (string) $values[ OpenGraph::META_IMAGE ] );
-		$this->field_text( TwitterCards::META_TITLE, __( 'Twitter title', 'seo-wp' ), (string) $values[ TwitterCards::META_TITLE ] );
-		$this->field_textarea( TwitterCards::META_DESCRIPTION, __( 'Twitter description', 'seo-wp' ), (string) $values[ TwitterCards::META_DESCRIPTION ] );
-		$this->field_text( TwitterCards::META_IMAGE, __( 'Twitter image URL', 'seo-wp' ), (string) $values[ TwitterCards::META_IMAGE ] );
+		$this->field_text( OpenGraph::META_TITLE, __( 'Open Graph title', 'seooptimierung-toolkit' ), (string) $values[ OpenGraph::META_TITLE ] );
+		$this->field_textarea( OpenGraph::META_DESCRIPTION, __( 'Open Graph description', 'seooptimierung-toolkit' ), (string) $values[ OpenGraph::META_DESCRIPTION ] );
+		$this->field_text( OpenGraph::META_IMAGE, __( 'Open Graph image URL', 'seooptimierung-toolkit' ), (string) $values[ OpenGraph::META_IMAGE ] );
+		$this->field_text( TwitterCards::META_TITLE, __( 'Twitter title', 'seooptimierung-toolkit' ), (string) $values[ TwitterCards::META_TITLE ] );
+		$this->field_textarea( TwitterCards::META_DESCRIPTION, __( 'Twitter description', 'seooptimierung-toolkit' ), (string) $values[ TwitterCards::META_DESCRIPTION ] );
+		$this->field_text( TwitterCards::META_IMAGE, __( 'Twitter image URL', 'seooptimierung-toolkit' ), (string) $values[ TwitterCards::META_IMAGE ] );
 		$this->render_social_preview();
 		echo '</div>';
 
@@ -529,7 +529,7 @@ final class Metabox {
 	 */
 	private function render_serp_preview(): void {
 		echo '<div class="seo-wp-field seo-wp-serp-preview">';
-		echo '<span class="seo-wp-preview-label">' . esc_html__( 'Search result preview', 'seo-wp' ) . '</span>';
+		echo '<span class="seo-wp-preview-label">' . esc_html__( 'Search result preview', 'seooptimierung-toolkit' ) . '</span>';
 		echo '<div class="seo-wp-serp-box">';
 		echo '<div class="seo-wp-serp-url" data-seo-wp-serp-url></div>';
 		echo '<div class="seo-wp-serp-title" data-seo-wp-serp-title></div>';
@@ -545,7 +545,7 @@ final class Metabox {
 	 */
 	private function render_social_preview(): void {
 		echo '<div class="seo-wp-field seo-wp-social-preview">';
-		echo '<span class="seo-wp-preview-label">' . esc_html__( 'Social share preview', 'seo-wp' ) . '</span>';
+		echo '<span class="seo-wp-preview-label">' . esc_html__( 'Social share preview', 'seooptimierung-toolkit' ) . '</span>';
 		echo '<div class="seo-wp-social-card">';
 		echo '<div class="seo-wp-social-image" data-seo-wp-social-image></div>';
 		echo '<div class="seo-wp-social-body">';
@@ -566,9 +566,9 @@ final class Metabox {
 		echo '<p class="seo-wp-field">';
 		foreach (
 			array(
-				''  => __( 'Default', 'seo-wp' ),
-				'0' => __( 'Index', 'seo-wp' ),
-				'1' => __( 'Noindex', 'seo-wp' ),
+				''  => __( 'Default', 'seooptimierung-toolkit' ),
+				'0' => __( 'Index', 'seooptimierung-toolkit' ),
+				'1' => __( 'Noindex', 'seooptimierung-toolkit' ),
 			) as $option_value => $option_label
 		) {
 			printf(
@@ -585,7 +585,7 @@ final class Metabox {
 			'<p class="seo-wp-field"><label><input type="checkbox" name="%1$s" value="1" %2$s /> %3$s</label></p>',
 			esc_attr( Robots::META_NOFOLLOW ),
 			checked( '1' === $values[ Robots::META_NOFOLLOW ], true, false ),
-			esc_html__( 'Nofollow', 'seo-wp' )
+			esc_html__( 'Nofollow', 'seooptimierung-toolkit' )
 		);
 
 		$advanced = (array) $values[ Robots::META_ADVANCED ];
@@ -622,13 +622,13 @@ final class Metabox {
 		printf(
 			'<label for="seo-wp-%1$s">%2$s</label>',
 			esc_attr( GraphBuilder::META_SCHEMA_TYPE ),
-			esc_html__( 'Schema type', 'seo-wp' )
+			esc_html__( 'Schema type', 'seooptimierung-toolkit' )
 		);
 		printf(
 			'<input type="text" id="seo-wp-%1$s" name="%1$s" value="%2$s" placeholder="%3$s" class="widefat" autocomplete="off" />',
 			esc_attr( GraphBuilder::META_SCHEMA_TYPE ),
 			esc_attr( $value ),
-			esc_attr__( 'Automatic', 'seo-wp' )
+			esc_attr__( 'Automatic', 'seooptimierung-toolkit' )
 		);
 		echo '<datalist id="seo-wp-schema-type-suggestions">';
 		foreach ( GraphBuilder::SUGGESTED_TYPES as $suggested_type ) {
@@ -637,7 +637,7 @@ final class Metabox {
 		echo '</datalist>';
 		printf(
 			'<span class="description">%s</span>',
-			esc_html__( 'Leave empty to use the automatic type (Article or WebPage). Any Schema.org type name works, not just the suggestions.', 'seo-wp' )
+			esc_html__( 'Leave empty to use the automatic type (Article or WebPage). Any Schema.org type name works, not just the suggestions.', 'seooptimierung-toolkit' )
 		);
 		echo '</p>';
 	}
@@ -651,16 +651,16 @@ final class Metabox {
 	 * @param array<string,mixed> $values Field values, keyed by meta key.
 	 */
 	private function field_product( array $values ): void {
-		$this->field_text( Product::META_BRAND, __( 'Brand', 'seo-wp' ), (string) $values[ Product::META_BRAND ] );
-		$this->field_text( Product::META_GTIN, __( 'GTIN', 'seo-wp' ), (string) $values[ Product::META_GTIN ] );
-		$this->field_text( Product::META_MPN, __( 'MPN (manufacturer part number)', 'seo-wp' ), (string) $values[ Product::META_MPN ] );
+		$this->field_text( Product::META_BRAND, __( 'Brand', 'seooptimierung-toolkit' ), (string) $values[ Product::META_BRAND ] );
+		$this->field_text( Product::META_GTIN, __( 'GTIN', 'seooptimierung-toolkit' ), (string) $values[ Product::META_GTIN ] );
+		$this->field_text( Product::META_MPN, __( 'MPN (manufacturer part number)', 'seooptimierung-toolkit' ), (string) $values[ Product::META_MPN ] );
 
 		printf(
 			'<p class="seo-wp-field"><label for="seo-wp-%1$s">%2$s</label><input type="date" id="seo-wp-%1$s" name="%1$s" value="%3$s" /><span class="description">%4$s</span></p>',
 			esc_attr( Product::META_PRICE_VALID_UNTIL ),
-			esc_html__( 'Price valid until', 'seo-wp' ),
+			esc_html__( 'Price valid until', 'seooptimierung-toolkit' ),
 			esc_attr( (string) $values[ Product::META_PRICE_VALID_UNTIL ] ),
-			esc_html__( 'Optional. Leave empty unless the current price is a limited-time offer.', 'seo-wp' )
+			esc_html__( 'Optional. Leave empty unless the current price is a limited-time offer.', 'seooptimierung-toolkit' )
 		);
 	}
 
@@ -675,7 +675,7 @@ final class Metabox {
 			$this->field_faq_row( (string) ( $item['question'] ?? '' ), (string) ( $item['answer'] ?? '' ) );
 		}
 		echo '</div>';
-		echo '<button type="button" class="button seo-wp-faq-add">' . esc_html__( 'Add question', 'seo-wp' ) . '</button>';
+		echo '<button type="button" class="button seo-wp-faq-add">' . esc_html__( 'Add question', 'seooptimierung-toolkit' ) . '</button>';
 	}
 
 	/**
@@ -688,10 +688,10 @@ final class Metabox {
 		printf(
 			'<div class="seo-wp-faq-row"><input type="text" name="seo_wp_faq_question[]" value="%1$s" placeholder="%2$s" class="widefat" /><textarea name="seo_wp_faq_answer[]" rows="2" class="widefat" placeholder="%3$s">%4$s</textarea><button type="button" class="button-link seo-wp-faq-remove">%5$s</button></div>',
 			esc_attr( $question ),
-			esc_attr__( 'Question', 'seo-wp' ),
-			esc_attr__( 'Answer', 'seo-wp' ),
+			esc_attr__( 'Question', 'seooptimierung-toolkit' ),
+			esc_attr__( 'Answer', 'seooptimierung-toolkit' ),
 			esc_textarea( $answer ),
-			esc_html__( 'Remove', 'seo-wp' )
+			esc_html__( 'Remove', 'seooptimierung-toolkit' )
 		);
 	}
 }

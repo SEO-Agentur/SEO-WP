@@ -2,12 +2,12 @@
 /**
  * Per-role access control for the plugin's own admin surfaces.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Admin;
+namespace Seooptimierung\Toolkit\Admin;
 
 use WP_User;
 
@@ -33,7 +33,7 @@ final class RoleManager {
 	/**
 	 * Submenu page slug.
 	 */
-	private const PAGE_SLUG = 'seo-wp-roles';
+	private const PAGE_SLUG = 'seooptimierung-roles';
 
 	/**
 	 * The capability that gates this page itself.
@@ -115,7 +115,7 @@ final class RoleManager {
 		// the one that actually matters for a role managed entirely
 		// through this plugin's own virtual system rather than real WP
 		// capabilities — this plugin's own Settings area. A role a site
-		// owner already trusts to configure SEO-WP is trusted with these
+		// owner already trusts to configure Seooptimierung Toolkit is trusted with these
 		// three too, full stop, without a per-area matrix lookup for
 		// them specifically. That matters beyond first install: these
 		// three are exactly the areas a matrix saved before they existed
@@ -244,8 +244,8 @@ final class RoleManager {
 
 		add_submenu_page(
 			Settings::PAGE_SLUG,
-			__( 'Role Manager', 'seo-wp' ),
-			__( 'Role Manager', 'seo-wp' ),
+			__( 'Role Manager', 'seooptimierung-toolkit' ),
+			__( 'Role Manager', 'seooptimierung-toolkit' ),
 			'read',
 			self::PAGE_SLUG,
 			array( $this, 'render_page' )
@@ -262,7 +262,7 @@ final class RoleManager {
 			return;
 		}
 
-		wp_enqueue_style( 'seo-wp-admin', plugins_url( 'assets/admin/admin.css', \SeoWp\FILE ), array(), \SeoWp\VERSION );
+		wp_enqueue_style( 'seo-wp-admin', plugins_url( 'assets/admin/admin.css', \Seooptimierung\Toolkit\FILE ), array(), \Seooptimierung\Toolkit\VERSION );
 	}
 
 	/**
@@ -272,17 +272,17 @@ final class RoleManager {
 	 */
 	private function area_labels(): array {
 		return array(
-			'settings'     => __( 'Settings', 'seo-wp' ),
-			'meta'         => __( 'Edit SEO metabox fields', 'seo-wp' ),
-			'bulk_editor'  => __( 'Bulk Editor', 'seo-wp' ),
-			'import'       => __( 'Import', 'seo-wp' ),
-			'diagnostics'  => __( 'Diagnostics', 'seo-wp' ),
-			'redirects'    => __( 'Redirects', 'seo-wp' ),
-			'404_monitor'  => __( '404 Monitor', 'seo-wp' ),
-			'duplicates'   => __( 'Duplicate Content Checker', 'seo-wp' ),
-			'link_audit'   => __( 'Link Audit (Broken Links / Orphan Pages)', 'seo-wp' ),
-			'freshness'    => __( 'Content Freshness', 'seo-wp' ),
-			'role_manager' => __( 'Role Manager', 'seo-wp' ),
+			'settings'     => __( 'Settings', 'seooptimierung-toolkit' ),
+			'meta'         => __( 'Edit SEO metabox fields', 'seooptimierung-toolkit' ),
+			'bulk_editor'  => __( 'Bulk Editor', 'seooptimierung-toolkit' ),
+			'import'       => __( 'Import', 'seooptimierung-toolkit' ),
+			'diagnostics'  => __( 'Diagnostics', 'seooptimierung-toolkit' ),
+			'redirects'    => __( 'Redirects', 'seooptimierung-toolkit' ),
+			'404_monitor'  => __( '404 Monitor', 'seooptimierung-toolkit' ),
+			'duplicates'   => __( 'Duplicate Content Checker', 'seooptimierung-toolkit' ),
+			'link_audit'   => __( 'Link Audit (Broken Links / Orphan Pages)', 'seooptimierung-toolkit' ),
+			'freshness'    => __( 'Content Freshness', 'seooptimierung-toolkit' ),
+			'role_manager' => __( 'Role Manager', 'seooptimierung-toolkit' ),
 		);
 	}
 
@@ -303,11 +303,11 @@ final class RoleManager {
 		$labels = $this->area_labels();
 
 		echo '<div class="wrap seo-wp-role-manager">';
-		echo '<h1>' . esc_html__( 'SEO-WP Role Manager', 'seo-wp' ) . '</h1>';
-		echo '<p>' . esc_html__( 'Control which roles can access which parts of SEO-WP. The Administrator role always keeps access to this page.', 'seo-wp' ) . '</p>';
+		echo '<h1>' . esc_html__( 'Seooptimierung Toolkit Role Manager', 'seooptimierung-toolkit' ) . '</h1>';
+		echo '<p>' . esc_html__( 'Control which roles can access which parts of Seooptimierung Toolkit. The Administrator role always keeps access to this page.', 'seooptimierung-toolkit' ) . '</p>';
 
 		if ( isset( $_GET['updated'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only success banner, not a state-changing action.
-			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Roles saved.', 'seo-wp' ) . '</p></div>';
+			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Roles saved.', 'seooptimierung-toolkit' ) . '</p></div>';
 		}
 
 		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
@@ -335,7 +335,7 @@ final class RoleManager {
 			echo '</td></tr></tbody></table>';
 		}
 
-		submit_button( __( 'Save roles', 'seo-wp' ) );
+		submit_button( __( 'Save roles', 'seooptimierung-toolkit' ) );
 		echo '</form>';
 		echo '</div>';
 	}
@@ -345,7 +345,7 @@ final class RoleManager {
 	 */
 	public function handle_save(): void {
 		if ( ! current_user_can( self::MANAGE_ROLES_CAP ) && ! current_user_can( 'manage_options' ) ) {
-			wp_die( esc_html__( 'You are not allowed to do this.', 'seo-wp' ) );
+			wp_die( esc_html__( 'You are not allowed to do this.', 'seooptimierung-toolkit' ) );
 		}
 
 		check_admin_referer( self::NONCE_ACTION, self::NONCE_NAME );

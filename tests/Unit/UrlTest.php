@@ -2,18 +2,18 @@
 /**
  * Tests for shared URL normalisation and the WPML permalink passthrough.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Tests\Unit;
+namespace Seooptimierung\Toolkit\Tests\Unit;
 
-use SeoWp\Support\Url;
+use Seooptimierung\Toolkit\Support\Url;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \SeoWp\Support\Url
+ * @covers \Seooptimierung\Toolkit\Support\Url
  */
 final class UrlTest extends TestCase {
 

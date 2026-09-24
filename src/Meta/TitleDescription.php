@@ -2,16 +2,16 @@
 /**
  * Document title and meta description output.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Meta;
+namespace Seooptimierung\Toolkit\Meta;
 
-use SeoWp\Support\CoexistenceMode;
-use SeoWp\Templates\Renderer;
-use SeoWp\Wpml\StringTranslation;
+use Seooptimierung\Toolkit\Support\CoexistenceMode;
+use Seooptimierung\Toolkit\Templates\Renderer;
+use Seooptimierung\Toolkit\Wpml\StringTranslation;
 use WP_Post;
 use WP_Term;
 
@@ -72,14 +72,14 @@ final class TitleDescription {
 		$rendered = '' !== $rendered ? $rendered : $title;
 
 		/**
-		 * Filters the final document title, after SEO-WP's own template
+		 * Filters the final document title, after Seooptimierung Toolkit's own template
 		 * rendering and override resolution.
 		 *
-		 * @param string $rendered The title SEO-WP would otherwise output.
+		 * @param string $rendered The title Seooptimierung Toolkit would otherwise output.
 		 * @param mixed  $queried  The current request's queried object (WP_Post, WP_Term, ...), or null.
 		 */
 		// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- namespaced public extension point, documented for third-party developers.
-		$rendered = (string) apply_filters( 'seo_wp/title', $rendered, get_queried_object() );
+		$rendered = (string) apply_filters( 'seooptimierung/title', $rendered, get_queried_object() );
 
 		// Unlike core's own title computation, a value returned through
 		// pre_get_document_title short-circuits _wp_render_title_tag()
@@ -102,14 +102,14 @@ final class TitleDescription {
 		$description = $this->resolve_description();
 
 		/**
-		 * Filters the final meta description, after SEO-WP's own template
+		 * Filters the final meta description, after Seooptimierung Toolkit's own template
 		 * rendering and override resolution.
 		 *
-		 * @param string $description The description SEO-WP would otherwise output.
+		 * @param string $description The description Seooptimierung Toolkit would otherwise output.
 		 * @param mixed  $queried     The current request's queried object (WP_Post, WP_Term, ...), or null.
 		 */
 		// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- namespaced public extension point, documented for third-party developers.
-		$description = (string) apply_filters( 'seo_wp/meta_description', $description, get_queried_object() );
+		$description = (string) apply_filters( 'seooptimierung/meta_description', $description, get_queried_object() );
 
 		if ( '' === $description ) {
 			return;
@@ -274,12 +274,12 @@ final class TitleDescription {
 		} elseif ( is_search() ) {
 			$values['title'] = (string) get_search_query();
 		} elseif ( is_404() ) {
-			$values['title'] = __( 'Page not found', 'seo-wp' );
+			$values['title'] = __( 'Page not found', 'seooptimierung-toolkit' );
 		}
 
 		$paged = max( (int) get_query_var( 'paged' ), (int) get_query_var( 'page' ) );
 		if ( $paged > 1 ) {
-			$values['page'] = sprintf( /* translators: %d: page number. */ __( 'Page %d', 'seo-wp' ), $paged );
+			$values['page'] = sprintf( /* translators: %d: page number. */ __( 'Page %d', 'seooptimierung-toolkit' ), $paged );
 		}
 
 		return $values;

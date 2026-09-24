@@ -2,18 +2,18 @@
 /**
  * Tests for the pure override-vs-computed precedence used by Canonical.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Tests\Unit;
+namespace Seooptimierung\Toolkit\Tests\Unit;
 
-use SeoWp\Meta\Canonical;
+use Seooptimierung\Toolkit\Meta\Canonical;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \SeoWp\Meta\Canonical
+ * @covers \Seooptimierung\Toolkit\Meta\Canonical
  */
 final class CanonicalTest extends TestCase {
 

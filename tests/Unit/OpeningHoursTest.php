@@ -2,18 +2,18 @@
 /**
  * Tests for parsing the opening-hours settings field.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Tests\Unit;
+namespace Seooptimierung\Toolkit\Tests\Unit;
 
-use SeoWp\Schema\OpeningHours;
+use Seooptimierung\Toolkit\Schema\OpeningHours;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \SeoWp\Schema\OpeningHours
+ * @covers \Seooptimierung\Toolkit\Schema\OpeningHours
  */
 final class OpeningHoursTest extends TestCase {
 

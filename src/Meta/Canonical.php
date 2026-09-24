@@ -2,15 +2,15 @@
 /**
  * Self-referencing canonical URL output.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Meta;
+namespace Seooptimierung\Toolkit\Meta;
 
-use SeoWp\Support\CoexistenceMode;
-use SeoWp\Support\Url;
+use Seooptimierung\Toolkit\Support\CoexistenceMode;
+use Seooptimierung\Toolkit\Support\Url;
 use WP_Post;
 use WP_Term;
 
@@ -58,11 +58,11 @@ final class Canonical {
 		 * (also applied in output_non_singular_canonical()) — one filter
 		 * covers every request type.
 		 *
-		 * @param string $resolved The canonical URL SEO-WP would otherwise output.
+		 * @param string $resolved The canonical URL Seooptimierung Toolkit would otherwise output.
 		 * @param mixed  $queried  The current request's queried object (WP_Post, WP_Term, ...), or null.
 		 */
 		// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- namespaced public extension point, documented for third-party developers.
-		return (string) apply_filters( 'seo_wp/canonical', $resolved, $post );
+		return (string) apply_filters( 'seooptimierung/canonical', $resolved, $post );
 	}
 
 	/**
@@ -78,7 +78,7 @@ final class Canonical {
 
 		/** This filter is documented in filter_singular_canonical() above. */
 		// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- namespaced public extension point, documented for third-party developers.
-		$url = (string) apply_filters( 'seo_wp/canonical', $url, get_queried_object() );
+		$url = (string) apply_filters( 'seooptimierung/canonical', $url, get_queried_object() );
 
 		if ( '' === $url ) {
 			return;

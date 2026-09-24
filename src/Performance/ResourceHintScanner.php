@@ -3,12 +3,12 @@
  * Scans the site's own rendered front page for external resource origins
  * worth a dns-prefetch/preconnect hint.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Performance;
+namespace Seooptimierung\Toolkit\Performance;
 
 /**
  * The Performance tab's "Resource hints" field is free text an admin
@@ -45,7 +45,7 @@ final class ResourceHintScanner {
 				'seo_wp_resource_hint_scan_failed',
 				sprintf(
 				/* translators: %d: HTTP status code. */
-					__( 'The homepage returned HTTP %d.', 'seo-wp' ),
+					__( 'The homepage returned HTTP %d.', 'seooptimierung-toolkit' ),
 					$code
 				)
 			);

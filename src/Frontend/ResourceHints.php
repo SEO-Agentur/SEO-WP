@@ -2,12 +2,12 @@
 /**
  * Manually-configured preconnect/dns-prefetch/preload resource hints.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Frontend;
+namespace Seooptimierung\Toolkit\Frontend;
 
 /**
  * One hint per line in a simple "type url [as=... type=... crossorigin]"

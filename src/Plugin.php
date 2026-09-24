@@ -2,42 +2,42 @@
 /**
  * Plugin bootstrap and hook registration container.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp;
+namespace Seooptimierung\Toolkit;
 
-use SeoWp\Admin\AiSettings;
-use SeoWp\Admin\BulkEditor;
-use SeoWp\Admin\ContentFreshness;
-use SeoWp\Admin\Diagnostics;
-use SeoWp\Admin\DuplicateChecker;
-use SeoWp\Admin\GoogleIndexingPage;
-use SeoWp\Admin\ImportWizard;
-use SeoWp\Admin\IndexNowPage;
-use SeoWp\Admin\LinkAudit;
-use SeoWp\Admin\Metabox;
-use SeoWp\Admin\NotFoundMonitorPage;
-use SeoWp\Admin\RedirectsPage;
-use SeoWp\Admin\RoleManager;
-use SeoWp\Admin\Settings;
-use SeoWp\Crawl\GoogleIndexing;
-use SeoWp\Crawl\ImageLinks;
-use SeoWp\Crawl\IndexNow;
-use SeoWp\Crawl\LlmsTxt;
-use SeoWp\Crawl\NotFoundMonitor;
-use SeoWp\Crawl\Redirects;
-use SeoWp\Crawl\RobotsTxt;
-use SeoWp\Crawl\SpecialArchives;
-use SeoWp\Crawl\StagingProtection;
-use SeoWp\Crawl\Verification;
-use SeoWp\Frontend\Head;
-use SeoWp\Performance\Optimizations;
-use SeoWp\Performance\ServerHeaders;
-use SeoWp\Sitemaps\Router;
-use SeoWp\Wpml\StringTranslation;
+use Seooptimierung\Toolkit\Admin\AiSettings;
+use Seooptimierung\Toolkit\Admin\BulkEditor;
+use Seooptimierung\Toolkit\Admin\ContentFreshness;
+use Seooptimierung\Toolkit\Admin\Diagnostics;
+use Seooptimierung\Toolkit\Admin\DuplicateChecker;
+use Seooptimierung\Toolkit\Admin\GoogleIndexingPage;
+use Seooptimierung\Toolkit\Admin\ImportWizard;
+use Seooptimierung\Toolkit\Admin\IndexNowPage;
+use Seooptimierung\Toolkit\Admin\LinkAudit;
+use Seooptimierung\Toolkit\Admin\Metabox;
+use Seooptimierung\Toolkit\Admin\NotFoundMonitorPage;
+use Seooptimierung\Toolkit\Admin\RedirectsPage;
+use Seooptimierung\Toolkit\Admin\RoleManager;
+use Seooptimierung\Toolkit\Admin\Settings;
+use Seooptimierung\Toolkit\Crawl\GoogleIndexing;
+use Seooptimierung\Toolkit\Crawl\ImageLinks;
+use Seooptimierung\Toolkit\Crawl\IndexNow;
+use Seooptimierung\Toolkit\Crawl\LlmsTxt;
+use Seooptimierung\Toolkit\Crawl\NotFoundMonitor;
+use Seooptimierung\Toolkit\Crawl\Redirects;
+use Seooptimierung\Toolkit\Crawl\RobotsTxt;
+use Seooptimierung\Toolkit\Crawl\SpecialArchives;
+use Seooptimierung\Toolkit\Crawl\StagingProtection;
+use Seooptimierung\Toolkit\Crawl\Verification;
+use Seooptimierung\Toolkit\Frontend\Head;
+use Seooptimierung\Toolkit\Performance\Optimizations;
+use Seooptimierung\Toolkit\Performance\ServerHeaders;
+use Seooptimierung\Toolkit\Sitemaps\Router;
+use Seooptimierung\Toolkit\Wpml\StringTranslation;
 
 /**
  * Singleton container responsible for wiring up all plugin modules.
@@ -71,7 +71,7 @@ final class Plugin {
 	 * Boot the plugin on plugins_loaded.
 	 */
 	public function init(): void {
-		load_plugin_textdomain( 'seo-wp', false, dirname( BASENAME ) . '/languages' );
+		load_plugin_textdomain( 'seooptimierung-toolkit', false, dirname( BASENAME ) . '/languages' );
 
 		( new Head() )->register();
 		( new Router() )->register();

@@ -2,14 +2,14 @@
 /**
  * Generic sitemap for a single public post type.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Sitemaps;
+namespace Seooptimierung\Toolkit\Sitemaps;
 
-use SeoWp\Meta\Robots;
+use Seooptimierung\Toolkit\Meta\Robots;
 use WP_Query;
 
 /**
@@ -142,7 +142,7 @@ final class PostTypeSitemap {
 
 	/**
 	 * IDs to leave out of every post-type sitemap regardless of their
-	 * noindex meta, via the seo_wp/sitemap/excluded_post_ids filter. For a
+	 * noindex meta, via the seooptimierung/sitemap/excluded_post_ids filter. For a
 	 * page a companion plugin keeps out of search engines by its own means
 	 * (e.g. a cart/checkout/account page noindexed only through the
 	 * wp_robots filter, never through this plugin's own postmeta), listing
@@ -164,13 +164,13 @@ final class PostTypeSitemap {
 		}
 
 		/**
-		 * Filters the post IDs excluded from every SEO-WP post-type
+		 * Filters the post IDs excluded from every Seooptimierung Toolkit post-type
 		 * sitemap, independently of their own noindex meta.
 		 *
 		 * @param int[] $post_ids Post IDs to exclude.
 		 */
 		// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- namespaced public extension point, documented for third-party developers.
-		$ids = (array) apply_filters( 'seo_wp/sitemap/excluded_post_ids', array() );
+		$ids = (array) apply_filters( 'seooptimierung/sitemap/excluded_post_ids', array() );
 
 		$cached = array_values( array_unique( array_filter( array_map( 'intval', $ids ), static fn ( int $id ): bool => $id > 0 ) ) );
 

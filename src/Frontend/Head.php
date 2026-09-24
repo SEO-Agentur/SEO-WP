@@ -2,21 +2,21 @@
 /**
  * Collects and renders the plugin's wp_head output.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Frontend;
+namespace Seooptimierung\Toolkit\Frontend;
 
-use SeoWp\Meta\Canonical;
-use SeoWp\Meta\Robots;
-use SeoWp\Meta\TitleDescription;
-use SeoWp\Schema\GraphBuilder;
-use SeoWp\Social\OpenGraph;
-use SeoWp\Social\TwitterCards;
-use SeoWp\Support\FragmentCache;
-use SeoWp\Wpml\Hreflang;
+use Seooptimierung\Toolkit\Meta\Canonical;
+use Seooptimierung\Toolkit\Meta\Robots;
+use Seooptimierung\Toolkit\Meta\TitleDescription;
+use Seooptimierung\Toolkit\Schema\GraphBuilder;
+use Seooptimierung\Toolkit\Social\OpenGraph;
+use Seooptimierung\Toolkit\Social\TwitterCards;
+use Seooptimierung\Toolkit\Support\FragmentCache;
+use Seooptimierung\Toolkit\Wpml\Hreflang;
 
 /**
  * Registers every module that contributes to the document head, including

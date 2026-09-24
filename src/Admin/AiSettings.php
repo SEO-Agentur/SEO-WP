@@ -2,14 +2,14 @@
 /**
  * Admin screen for bring-your-own-key AI provider settings.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Admin;
+namespace Seooptimierung\Toolkit\Admin;
 
-use SeoWp\Support\Secrets;
+use Seooptimierung\Toolkit\Support\Secrets;
 
 /**
  * Optional API keys for Anthropic (Claude), OpenAI and DeepL, used by the
@@ -26,7 +26,7 @@ final class AiSettings {
 	/**
 	 * Submenu page slug.
 	 */
-	private const PAGE_SLUG = 'seo-wp-ai';
+	private const PAGE_SLUG = 'seooptimierung-ai';
 
 	/**
 	 * Option key holding the plugin's settings array.
@@ -77,8 +77,8 @@ final class AiSettings {
 	public function add_menu(): void {
 		add_submenu_page(
 			Settings::PAGE_SLUG,
-			__( 'AI Settings', 'seo-wp' ),
-			__( 'AI Settings', 'seo-wp' ),
+			__( 'AI Settings', 'seooptimierung-toolkit' ),
+			__( 'AI Settings', 'seooptimierung-toolkit' ),
 			self::CAPABILITY,
 			self::PAGE_SLUG,
 			array( $this, 'render_page' )
@@ -95,7 +95,7 @@ final class AiSettings {
 			return;
 		}
 
-		wp_enqueue_style( 'seo-wp-admin', plugins_url( 'assets/admin/admin.css', \SeoWp\FILE ), array(), \SeoWp\VERSION );
+		wp_enqueue_style( 'seo-wp-admin', plugins_url( 'assets/admin/admin.css', \Seooptimierung\Toolkit\FILE ), array(), \Seooptimierung\Toolkit\VERSION );
 	}
 
 	/**
@@ -110,35 +110,35 @@ final class AiSettings {
 		$settings = is_array( $settings ) ? $settings : array();
 
 		echo '<div class="wrap seo-wp-ai-settings">';
-		echo '<h1>' . esc_html__( 'SEO-WP AI Settings', 'seo-wp' ) . '</h1>';
-		echo '<p>' . esc_html__( 'Bring your own API key for each provider you want to use in the Bulk Editor. Nothing here is called automatically — only when you explicitly click an AI action. Your key is billed directly by the provider; this plugin never proxies requests or adds a markup.', 'seo-wp' ) . '</p>';
+		echo '<h1>' . esc_html__( 'Seooptimierung Toolkit AI Settings', 'seooptimierung-toolkit' ) . '</h1>';
+		echo '<p>' . esc_html__( 'Bring your own API key for each provider you want to use in the Bulk Editor. Nothing here is called automatically — only when you explicitly click an AI action. Your key is billed directly by the provider; this plugin never proxies requests or adds a markup.', 'seooptimierung-toolkit' ) . '</p>';
 
 		if ( isset( $_GET['updated'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only success banner, not a state-changing action.
-			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Settings saved.', 'seo-wp' ) . '</p></div>';
+			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Settings saved.', 'seooptimierung-toolkit' ) . '</p></div>';
 		}
 
 		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
 		echo '<input type="hidden" name="action" value="seo_wp_ai_settings_save" />';
 		wp_nonce_field( self::NONCE_ACTION, self::NONCE_NAME );
 
-		echo '<h2>' . esc_html__( 'Anthropic (Claude)', 'seo-wp' ) . '</h2>';
+		echo '<h2>' . esc_html__( 'Anthropic (Claude)', 'seooptimierung-toolkit' ) . '</h2>';
 		echo '<table class="form-table" role="presentation"><tbody>';
-		$this->secret_field( 'ai_anthropic_key', __( 'API key', 'seo-wp' ) );
-		$this->text_field( 'ai_anthropic_model', __( 'Model override', 'seo-wp' ), 'claude-haiku-4-5-20251001', $settings );
+		$this->secret_field( 'ai_anthropic_key', __( 'API key', 'seooptimierung-toolkit' ) );
+		$this->text_field( 'ai_anthropic_model', __( 'Model override', 'seooptimierung-toolkit' ), 'claude-haiku-4-5-20251001', $settings );
 		echo '</tbody></table>';
 
-		echo '<h2>' . esc_html__( 'OpenAI', 'seo-wp' ) . '</h2>';
+		echo '<h2>' . esc_html__( 'OpenAI', 'seooptimierung-toolkit' ) . '</h2>';
 		echo '<table class="form-table" role="presentation"><tbody>';
-		$this->secret_field( 'ai_openai_key', __( 'API key', 'seo-wp' ) );
-		$this->text_field( 'ai_openai_model', __( 'Model override', 'seo-wp' ), 'gpt-4o-mini', $settings );
+		$this->secret_field( 'ai_openai_key', __( 'API key', 'seooptimierung-toolkit' ) );
+		$this->text_field( 'ai_openai_model', __( 'Model override', 'seooptimierung-toolkit' ), 'gpt-4o-mini', $settings );
 		echo '</tbody></table>';
 
-		echo '<h2>' . esc_html__( 'DeepL', 'seo-wp' ) . '</h2>';
+		echo '<h2>' . esc_html__( 'DeepL', 'seooptimierung-toolkit' ) . '</h2>';
 		echo '<table class="form-table" role="presentation"><tbody>';
-		$this->secret_field( 'ai_deepl_key', __( 'API key', 'seo-wp' ) );
+		$this->secret_field( 'ai_deepl_key', __( 'API key', 'seooptimierung-toolkit' ) );
 		echo '</tbody></table>';
 
-		submit_button( __( 'Save settings', 'seo-wp' ) );
+		submit_button( __( 'Save settings', 'seooptimierung-toolkit' ) );
 		echo '</form>';
 		echo '</div>';
 	}
@@ -153,8 +153,8 @@ final class AiSettings {
 	private function secret_field( string $key, string $label ): void {
 		$has_value   = Secrets::has( $key );
 		$placeholder = $has_value
-			? __( '•••••••• (saved — leave blank to keep)', 'seo-wp' )
-			: __( 'Not set', 'seo-wp' );
+			? __( '•••••••• (saved — leave blank to keep)', 'seooptimierung-toolkit' )
+			: __( 'Not set', 'seooptimierung-toolkit' );
 
 		printf(
 			'<tr><th scope="row"><label for="seo_wp_%1$s">%2$s</label></th><td><input type="password" id="seo_wp_%1$s" name="%1$s" value="" autocomplete="off" placeholder="%3$s" class="regular-text" /></td></tr>',
@@ -189,7 +189,7 @@ final class AiSettings {
 	 */
 	public function handle_save(): void {
 		if ( ! current_user_can( self::CAPABILITY ) ) {
-			wp_die( esc_html__( 'You are not allowed to do this.', 'seo-wp' ) );
+			wp_die( esc_html__( 'You are not allowed to do this.', 'seooptimierung-toolkit' ) );
 		}
 
 		check_admin_referer( self::NONCE_ACTION, self::NONCE_NAME );

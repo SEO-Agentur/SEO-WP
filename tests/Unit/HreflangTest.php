@@ -2,18 +2,18 @@
 /**
  * Tests for the slim-hreflang compatibility contract and WPML alternates mapping.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Tests\Unit;
+namespace Seooptimierung\Toolkit\Tests\Unit;
 
-use SeoWp\Wpml\Hreflang;
+use Seooptimierung\Toolkit\Wpml\Hreflang;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \SeoWp\Wpml\Hreflang
+ * @covers \Seooptimierung\Toolkit\Wpml\Hreflang
  */
 final class HreflangTest extends TestCase {
 
@@ -42,12 +42,12 @@ final class HreflangTest extends TestCase {
 	}
 
 	/**
-	 * A listener on seo_wp/hreflang/alternates can override the computed
+	 * A listener on seooptimierung/hreflang/alternates can override the computed
 	 * list entirely.
 	 */
 	public function test_alternates_filter_overrides_computed_output(): void {
 		add_filter(
-			'seo_wp/hreflang/alternates',
+			'seooptimierung/hreflang/alternates',
 			static function ( array $alternates, array $context ): array {
 				return array(
 					array(
@@ -86,7 +86,7 @@ final class HreflangTest extends TestCase {
 	 */
 	public function test_managed_externally_suppresses_own_computation(): void {
 		add_filter(
-			'seo_wp/hreflang/managed_externally',
+			'seooptimierung/hreflang/managed_externally',
 			static function (): bool {
 				return true;
 			}
@@ -95,7 +95,7 @@ final class HreflangTest extends TestCase {
 		$seen_by_alternates_filter = null;
 
 		add_filter(
-			'seo_wp/hreflang/alternates',
+			'seooptimierung/hreflang/alternates',
 			static function ( array $alternates ) use ( &$seen_by_alternates_filter ): array {
 				$seen_by_alternates_filter = $alternates;
 				return $alternates;

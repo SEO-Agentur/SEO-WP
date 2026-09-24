@@ -2,14 +2,14 @@
 /**
  * Rewrite rules and request routing for the XML sitemaps.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Sitemaps;
+namespace Seooptimierung\Toolkit\Sitemaps;
 
-use SeoWp\Wpml\Hreflang;
+use Seooptimierung\Toolkit\Wpml\Hreflang;
 
 /**
  * Registers dynamic rewrite rules for sitemap endpoints and dispatches

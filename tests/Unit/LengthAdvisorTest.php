@@ -2,18 +2,18 @@
 /**
  * Tests for the title/description length classification.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Tests\Unit;
+namespace Seooptimierung\Toolkit\Tests\Unit;
 
-use SeoWp\Support\LengthAdvisor;
+use Seooptimierung\Toolkit\Support\LengthAdvisor;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \SeoWp\Support\LengthAdvisor
+ * @covers \Seooptimierung\Toolkit\Support\LengthAdvisor
  */
 final class LengthAdvisorTest extends TestCase {
 

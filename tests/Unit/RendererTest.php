@@ -2,18 +2,18 @@
 /**
  * Tests for template rendering and separator cleanup.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Tests\Unit;
+namespace Seooptimierung\Toolkit\Tests\Unit;
 
-use SeoWp\Templates\Renderer;
+use Seooptimierung\Toolkit\Templates\Renderer;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \SeoWp\Templates\Renderer
+ * @covers \Seooptimierung\Toolkit\Templates\Renderer
  */
 final class RendererTest extends TestCase {
 

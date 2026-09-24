@@ -4,12 +4,12 @@
  * canonicalization, security headers, CORS, HSTS and modern upload MIME
  * types.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Performance;
+namespace Seooptimierung\Toolkit\Performance;
 
 /**
  * Everything here is pure PHP and works on any web server. The five

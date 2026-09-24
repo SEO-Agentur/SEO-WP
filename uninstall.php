@@ -8,7 +8,7 @@
  * described in the plugin's requirements — reinstalling the plugin
  * should not lose per-object SEO data.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);

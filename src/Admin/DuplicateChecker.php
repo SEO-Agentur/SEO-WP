@@ -2,15 +2,15 @@
 /**
  * Finds posts sharing an identical effective title or meta description.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Admin;
+namespace Seooptimierung\Toolkit\Admin;
 
-use SeoWp\Meta\TitleDescription;
-use SeoWp\Support\Ajax;
+use Seooptimierung\Toolkit\Meta\TitleDescription;
+use Seooptimierung\Toolkit\Support\Ajax;
 use WP_Post;
 use WP_Query;
 
@@ -29,7 +29,7 @@ final class DuplicateChecker {
 	/**
 	 * Submenu page slug.
 	 */
-	private const PAGE_SLUG = 'seo-wp-duplicates';
+	private const PAGE_SLUG = 'seooptimierung-duplicates';
 
 	/**
 	 * Option key the last scan's results are stored under.
@@ -80,8 +80,8 @@ final class DuplicateChecker {
 	public function add_menu(): void {
 		add_submenu_page(
 			Settings::PAGE_SLUG,
-			__( 'Duplicate Content', 'seo-wp' ),
-			__( 'Duplicate Content', 'seo-wp' ),
+			__( 'Duplicate Content', 'seooptimierung-toolkit' ),
+			__( 'Duplicate Content', 'seooptimierung-toolkit' ),
 			self::CAPABILITY,
 			self::PAGE_SLUG,
 			array( $this, 'render_page' )
@@ -99,8 +99,8 @@ final class DuplicateChecker {
 			return;
 		}
 
-		wp_enqueue_style( 'seo-wp-admin', plugins_url( 'assets/admin/admin.css', \SeoWp\FILE ), array(), \SeoWp\VERSION );
-		wp_enqueue_script( 'seo-wp-duplicate-checker', plugins_url( 'assets/admin/duplicate-checker.js', \SeoWp\FILE ), array(), \SeoWp\VERSION, true );
+		wp_enqueue_style( 'seo-wp-admin', plugins_url( 'assets/admin/admin.css', \Seooptimierung\Toolkit\FILE ), array(), \Seooptimierung\Toolkit\VERSION );
+		wp_enqueue_script( 'seo-wp-duplicate-checker', plugins_url( 'assets/admin/duplicate-checker.js', \Seooptimierung\Toolkit\FILE ), array(), \Seooptimierung\Toolkit\VERSION, true );
 
 		wp_localize_script(
 			'seo-wp-duplicate-checker',
@@ -110,9 +110,9 @@ final class DuplicateChecker {
 				'nonce'   => wp_create_nonce( self::NONCE_ACTION ),
 				'action'  => self::AJAX_ACTION,
 				'i18n'    => array(
-					'scanning' => __( 'Scanning…', 'seo-wp' ),
-					'done'     => __( 'Scan complete.', 'seo-wp' ),
-					'error'    => __( 'Something went wrong.', 'seo-wp' ),
+					'scanning' => __( 'Scanning…', 'seooptimierung-toolkit' ),
+					'done'     => __( 'Scan complete.', 'seooptimierung-toolkit' ),
+					'error'    => __( 'Something went wrong.', 'seooptimierung-toolkit' ),
 				),
 			)
 		);
@@ -130,11 +130,11 @@ final class DuplicateChecker {
 		$scan = self::scan_data();
 
 		echo '<div class="wrap seo-wp-duplicate-checker">';
-		echo '<h1>' . esc_html__( 'SEO-WP Duplicate Content', 'seo-wp' ) . '</h1>';
-		echo '<p>' . esc_html__( 'Finds posts sharing the exact same effective title or meta description — the value actually used on the front end, whether from a manual override or a rendered template.', 'seo-wp' ) . '</p>';
+		echo '<h1>' . esc_html__( 'Seooptimierung Toolkit Duplicate Content', 'seooptimierung-toolkit' ) . '</h1>';
+		echo '<p>' . esc_html__( 'Finds posts sharing the exact same effective title or meta description — the value actually used on the front end, whether from a manual override or a rendered template.', 'seooptimierung-toolkit' ) . '</p>';
 
 		echo '<p>';
-		echo '<button type="button" class="button button-primary seo-wp-duplicate-scan-start">' . esc_html__( 'Scan now', 'seo-wp' ) . '</button> ';
+		echo '<button type="button" class="button button-primary seo-wp-duplicate-scan-start">' . esc_html__( 'Scan now', 'seooptimierung-toolkit' ) . '</button> ';
 		echo '<span class="seo-wp-duplicate-scan-status"></span>';
 		echo '</p>';
 
@@ -144,14 +144,14 @@ final class DuplicateChecker {
 				esc_html(
 					sprintf(
 						/* translators: %s: date and time of the last completed scan. */
-						__( 'Last scanned: %s', 'seo-wp' ),
+						__( 'Last scanned: %s', 'seooptimierung-toolkit' ),
 						gmdate( 'Y-m-d H:i:s', (int) $scan['scanned_at'] )
 					)
 				)
 			);
 
-			$this->render_duplicate_group( __( 'Duplicate titles', 'seo-wp' ), (array) ( $scan['titles'] ?? array() ) );
-			$this->render_duplicate_group( __( 'Duplicate descriptions', 'seo-wp' ), (array) ( $scan['descriptions'] ?? array() ) );
+			$this->render_duplicate_group( __( 'Duplicate titles', 'seooptimierung-toolkit' ), (array) ( $scan['titles'] ?? array() ) );
+			$this->render_duplicate_group( __( 'Duplicate descriptions', 'seooptimierung-toolkit' ), (array) ( $scan['descriptions'] ?? array() ) );
 		}
 
 		echo '</div>';
@@ -169,12 +169,12 @@ final class DuplicateChecker {
 		echo '<h2>' . esc_html( $heading ) . '</h2>';
 
 		if ( array() === $duplicates ) {
-			echo '<p>' . esc_html__( 'No duplicates found.', 'seo-wp' ) . '</p>';
+			echo '<p>' . esc_html__( 'No duplicates found.', 'seooptimierung-toolkit' ) . '</p>';
 			return;
 		}
 
 		echo '<table class="widefat striped seo-wp-duplicate-table">';
-		echo '<thead><tr><th>' . esc_html__( 'Value', 'seo-wp' ) . '</th><th>' . esc_html__( 'Posts', 'seo-wp' ) . '</th></tr></thead><tbody>';
+		echo '<thead><tr><th>' . esc_html__( 'Value', 'seooptimierung-toolkit' ) . '</th><th>' . esc_html__( 'Posts', 'seooptimierung-toolkit' ) . '</th></tr></thead><tbody>';
 
 		foreach ( $duplicates as $value => $ids ) {
 			echo '<tr>';
@@ -203,11 +203,11 @@ final class DuplicateChecker {
 		check_ajax_referer( self::NONCE_ACTION, 'nonce' );
 
 		if ( ! current_user_can( self::CAPABILITY ) && ! current_user_can( 'manage_options' ) ) {
-			Ajax::error( array( 'message' => __( 'You are not allowed to do this.', 'seo-wp' ) ), 403 );
+			Ajax::error( array( 'message' => __( 'You are not allowed to do this.', 'seooptimierung-toolkit' ) ), 403 );
 		}
 
 		if ( get_transient( self::SCAN_LOCK ) ) {
-			Ajax::error( array( 'message' => __( 'A scan is already in progress.', 'seo-wp' ) ), 409 );
+			Ajax::error( array( 'message' => __( 'A scan is already in progress.', 'seooptimierung-toolkit' ) ), 409 );
 		}
 		set_transient( self::SCAN_LOCK, 1, 30 );
 

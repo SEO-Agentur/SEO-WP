@@ -3,15 +3,15 @@
  * Admin screen for IndexNow (Bing, Yandex, Seznam, Naver) settings, manual
  * URL submission and one-click bulk indexing.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Admin;
+namespace Seooptimierung\Toolkit\Admin;
 
-use SeoWp\Crawl\IndexNow;
-use SeoWp\Support\Ajax;
+use Seooptimierung\Toolkit\Crawl\IndexNow;
+use Seooptimierung\Toolkit\Support\Ajax;
 use WP_Post;
 use WP_Term;
 
@@ -28,7 +28,7 @@ final class IndexNowPage {
 	/**
 	 * Submenu page slug.
 	 */
-	private const PAGE_SLUG = 'seo-wp-instant-indexing';
+	private const PAGE_SLUG = 'seooptimierung-instant-indexing';
 
 	/**
 	 * Capability required to view or manage this page.
@@ -105,8 +105,8 @@ final class IndexNowPage {
 	public function add_menu(): void {
 		add_submenu_page(
 			Settings::PAGE_SLUG,
-			__( 'Instant Indexing', 'seo-wp' ),
-			__( 'Instant Indexing', 'seo-wp' ),
+			__( 'Instant Indexing', 'seooptimierung-toolkit' ),
+			__( 'Instant Indexing', 'seooptimierung-toolkit' ),
 			self::CAPABILITY,
 			self::PAGE_SLUG,
 			array( $this, 'render_page' )
@@ -124,8 +124,8 @@ final class IndexNowPage {
 			return;
 		}
 
-		wp_enqueue_style( 'seo-wp-admin', plugins_url( 'assets/admin/admin.css', \SeoWp\FILE ), array(), \SeoWp\VERSION );
-		wp_enqueue_script( 'seo-wp-indexnow', plugins_url( 'assets/admin/indexnow.js', \SeoWp\FILE ), array(), \SeoWp\VERSION, true );
+		wp_enqueue_style( 'seo-wp-admin', plugins_url( 'assets/admin/admin.css', \Seooptimierung\Toolkit\FILE ), array(), \Seooptimierung\Toolkit\VERSION );
+		wp_enqueue_script( 'seo-wp-indexnow', plugins_url( 'assets/admin/indexnow.js', \Seooptimierung\Toolkit\FILE ), array(), \Seooptimierung\Toolkit\VERSION, true );
 
 		wp_localize_script(
 			'seo-wp-indexnow',
@@ -135,12 +135,12 @@ final class IndexNowPage {
 				'nonce'   => wp_create_nonce( self::BULK_NONCE_ACTION ),
 				'action'  => 'seo_wp_indexnow_bulk_batch',
 				'i18n'    => array(
-					'starting'      => __( 'Starting…', 'seo-wp' ),
-					'done'          => __( 'Done.', 'seo-wp' ),
-					'error'         => __( 'Something went wrong — stopped early.', 'seo-wp' ),
-					'nothingPicked' => __( 'Pick at least one post type or taxonomy first.', 'seo-wp' ),
+					'starting'      => __( 'Starting…', 'seooptimierung-toolkit' ),
+					'done'          => __( 'Done.', 'seooptimierung-toolkit' ),
+					'error'         => __( 'Something went wrong — stopped early.', 'seooptimierung-toolkit' ),
+					'nothingPicked' => __( 'Pick at least one post type or taxonomy first.', 'seooptimierung-toolkit' ),
 					/* translators: 1: number of URLs submitted so far, 2: label of the content type currently being processed. */
-					'progress'      => __( '%1$d URLs submitted so far — working through %2$s…', 'seo-wp' ),
+					'progress'      => __( '%1$d URLs submitted so far — working through %2$s…', 'seooptimierung-toolkit' ),
 				),
 			)
 		);
@@ -159,8 +159,8 @@ final class IndexNowPage {
 		$settings = is_array( $settings ) ? $settings : array();
 
 		echo '<div class="wrap seo-wp-indexnow">';
-		echo '<h1>' . esc_html__( 'SEO-WP Instant Indexing (IndexNow)', 'seo-wp' ) . '</h1>';
-		echo '<p>' . esc_html__( 'Pings the IndexNow protocol on publish, update and delete, and lets you trigger a submission on demand. Supported by Bing, Yandex, Seznam and Naver. Google does not participate in IndexNow — see the separate Google Indexing API page for that.', 'seo-wp' ) . '</p>';
+		echo '<h1>' . esc_html__( 'Seooptimierung Toolkit Instant Indexing (IndexNow)', 'seooptimierung-toolkit' ) . '</h1>';
+		echo '<p>' . esc_html__( 'Pings the IndexNow protocol on publish, update and delete, and lets you trigger a submission on demand. Supported by Bing, Yandex, Seznam and Naver. Google does not participate in IndexNow — see the separate Google Indexing API page for that.', 'seooptimierung-toolkit' ) . '</p>';
 
 		$this->render_notices();
 
@@ -179,12 +179,12 @@ final class IndexNowPage {
 	private function render_notices(): void {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only banners reflecting a prior action's redirect, not a state-changing action themselves.
 		if ( isset( $_GET['updated'] ) ) {
-			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Settings saved.', 'seo-wp' ) . '</p></div>';
+			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Settings saved.', 'seooptimierung-toolkit' ) . '</p></div>';
 		}
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only banner.
 		if ( isset( $_GET['invalid_key'] ) ) {
-			echo '<div class="notice notice-error is-dismissible"><p>' . esc_html__( 'That API key was not saved — it must be 16-64 hexadecimal characters (0-9, a-f) so it matches the /{key}.txt verification URL. The previous key was kept.', 'seo-wp' ) . '</p></div>';
+			echo '<div class="notice notice-error is-dismissible"><p>' . esc_html__( 'That API key was not saved — it must be 16-64 hexadecimal characters (0-9, a-f) so it matches the /{key}.txt verification URL. The previous key was kept.', 'seooptimierung-toolkit' ) . '</p></div>';
 		}
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only banner.
@@ -198,16 +198,16 @@ final class IndexNowPage {
 				printf(
 					'<div class="notice notice-success is-dismissible"><p>%s</p></div>',
 					/* translators: %d: number of URLs submitted. */
-					esc_html( sprintf( _n( '%d URL submitted to IndexNow.', '%d URLs submitted to IndexNow.', $submitted, 'seo-wp' ), $submitted ) )
+					esc_html( sprintf( _n( '%d URL submitted to IndexNow.', '%d URLs submitted to IndexNow.', $submitted, 'seooptimierung-toolkit' ), $submitted ) )
 				);
 			} else {
-				echo '<div class="notice notice-error is-dismissible"><p>' . esc_html__( 'IndexNow submission failed — see the history table below for the error, or the Diagnostics page.', 'seo-wp' ) . '</p></div>';
+				echo '<div class="notice notice-error is-dismissible"><p>' . esc_html__( 'IndexNow submission failed — see the history table below for the error, or the Diagnostics page.', 'seooptimierung-toolkit' ) . '</p></div>';
 			}
 		}
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only banner.
 		if ( isset( $_GET['no_urls'] ) ) {
-			echo '<div class="notice notice-error is-dismissible"><p>' . esc_html__( 'No valid URLs found in the pasted list.', 'seo-wp' ) . '</p></div>';
+			echo '<div class="notice notice-error is-dismissible"><p>' . esc_html__( 'No valid URLs found in the pasted list.', 'seooptimierung-toolkit' ) . '</p></div>';
 		}
 	}
 
@@ -223,7 +223,7 @@ final class IndexNowPage {
 		$active_key = $indexnow->key();
 		$key_file   = home_url( '/' . $active_key . '.txt' );
 
-		echo '<h2>' . esc_html__( 'Settings', 'seo-wp' ) . '</h2>';
+		echo '<h2>' . esc_html__( 'Settings', 'seooptimierung-toolkit' ) . '</h2>';
 		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
 		echo '<input type="hidden" name="action" value="seo_wp_indexnow_save_settings" />';
 		wp_nonce_field( self::SETTINGS_NONCE_ACTION, self::SETTINGS_NONCE_NAME );
@@ -232,30 +232,30 @@ final class IndexNowPage {
 
 		printf(
 			'<tr><th scope="row">%1$s</th><td><label><input type="checkbox" name="enable_indexnow" value="1" %2$s /> %3$s</label></td></tr>',
-			esc_html__( 'Enable', 'seo-wp' ),
+			esc_html__( 'Enable', 'seooptimierung-toolkit' ),
 			checked( $enabled, true, false ),
-			esc_html__( 'Automatically ping IndexNow on publish, update and delete', 'seo-wp' )
+			esc_html__( 'Automatically ping IndexNow on publish, update and delete', 'seooptimierung-toolkit' )
 		);
 
 		printf(
 			'<tr><th scope="row"><label for="seo_wp_indexnow_key">%1$s</label></th><td><input type="text" id="seo_wp_indexnow_key" name="indexnow_key" value="%2$s" class="regular-text code" placeholder="%3$s" /><p class="description">%4$s</p></td></tr>',
-			esc_html__( 'API key (optional)', 'seo-wp' ),
+			esc_html__( 'API key (optional)', 'seooptimierung-toolkit' ),
 			esc_attr( $custom_key ),
 			esc_attr( $active_key ),
-			esc_html__( 'Leave blank to use an automatically generated key, or paste your own 16-64 character hexadecimal key (e.g. one already registered with Bing Webmaster Tools).', 'seo-wp' )
+			esc_html__( 'Leave blank to use an automatically generated key, or paste your own 16-64 character hexadecimal key (e.g. one already registered with Bing Webmaster Tools).', 'seooptimierung-toolkit' )
 		);
 
-		echo '<tr><th scope="row">' . esc_html__( 'Current key file', 'seo-wp' ) . '</th><td>';
+		echo '<tr><th scope="row">' . esc_html__( 'Current key file', 'seooptimierung-toolkit' ) . '</th><td>';
 		printf(
 			'<code>%1$s</code> — <a href="%1$s" target="_blank" rel="noopener noreferrer">%2$s</a>',
 			esc_url( $key_file ),
-			esc_html__( 'open', 'seo-wp' )
+			esc_html__( 'open', 'seooptimierung-toolkit' )
 		);
-		echo '<p class="description">' . esc_html__( 'This file must return your key as plain text for IndexNow to accept submissions — it is served automatically by this plugin.', 'seo-wp' ) . '</p>';
+		echo '<p class="description">' . esc_html__( 'This file must return your key as plain text for IndexNow to accept submissions — it is served automatically by this plugin.', 'seooptimierung-toolkit' ) . '</p>';
 		echo '</td></tr>';
 
 		echo '</tbody></table>';
-		submit_button( __( 'Save settings', 'seo-wp' ) );
+		submit_button( __( 'Save settings', 'seooptimierung-toolkit' ) );
 		echo '</form>';
 	}
 
@@ -263,8 +263,8 @@ final class IndexNowPage {
 	 * Renders the manual "paste a URL list" submission form.
 	 */
 	private function render_manual_submit_form(): void {
-		echo '<h2>' . esc_html__( 'Submit specific URLs', 'seo-wp' ) . '</h2>';
-		echo '<p class="description">' . esc_html__( 'One URL per line. Works even if automatic pinging above is disabled.', 'seo-wp' ) . '</p>';
+		echo '<h2>' . esc_html__( 'Submit specific URLs', 'seooptimierung-toolkit' ) . '</h2>';
+		echo '<p class="description">' . esc_html__( 'One URL per line. Works even if automatic pinging above is disabled.', 'seooptimierung-toolkit' ) . '</p>';
 
 		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
 		echo '<input type="hidden" name="action" value="seo_wp_indexnow_submit_urls" />';
@@ -272,10 +272,10 @@ final class IndexNowPage {
 
 		printf(
 			'<textarea name="urls" rows="8" class="large-text code" placeholder="%1$s"></textarea>',
-			esc_attr__( "https://example.com/page-one/\nhttps://example.com/page-two/", 'seo-wp' )
+			esc_attr__( "https://example.com/page-one/\nhttps://example.com/page-two/", 'seooptimierung-toolkit' )
 		);
 
-		submit_button( __( 'Submit URLs to IndexNow', 'seo-wp' ) );
+		submit_button( __( 'Submit URLs to IndexNow', 'seooptimierung-toolkit' ) );
 		echo '</form>';
 	}
 
@@ -286,12 +286,12 @@ final class IndexNowPage {
 	 * indexnow.js script fills in via AJAX.
 	 */
 	private function render_bulk_section(): void {
-		echo '<h2>' . esc_html__( 'Index everything (one click)', 'seo-wp' ) . '</h2>';
-		echo '<p class="description">' . esc_html__( 'Submits every published URL of the checked types, in small batches so the browser tab stays responsive. Untick anything you don\'t want included.', 'seo-wp' ) . '</p>';
+		echo '<h2>' . esc_html__( 'Index everything (one click)', 'seooptimierung-toolkit' ) . '</h2>';
+		echo '<p class="description">' . esc_html__( 'Submits every published URL of the checked types, in small batches so the browser tab stays responsive. Untick anything you don\'t want included.', 'seooptimierung-toolkit' ) . '</p>';
 
 		echo '<table class="form-table" role="presentation"><tbody>';
 
-		echo '<tr><th scope="row">' . esc_html__( 'Post types', 'seo-wp' ) . '</th><td>';
+		echo '<tr><th scope="row">' . esc_html__( 'Post types', 'seooptimierung-toolkit' ) . '</th><td>';
 		foreach ( get_post_types( array( 'public' => true ), 'objects' ) as $post_type ) {
 			printf(
 				'<label style="display:inline-block;margin:0 16px 8px 0;"><input type="checkbox" class="seo-wp-indexnow-bulk-post-type" value="%1$s" checked="checked" /> %2$s</label>',
@@ -301,7 +301,7 @@ final class IndexNowPage {
 		}
 		echo '</td></tr>';
 
-		echo '<tr><th scope="row">' . esc_html__( 'Taxonomies', 'seo-wp' ) . '</th><td>';
+		echo '<tr><th scope="row">' . esc_html__( 'Taxonomies', 'seooptimierung-toolkit' ) . '</th><td>';
 		foreach ( get_taxonomies( array( 'public' => true ), 'objects' ) as $taxonomy ) {
 			printf(
 				'<label style="display:inline-block;margin:0 16px 8px 0;"><input type="checkbox" class="seo-wp-indexnow-bulk-taxonomy" value="%1$s" checked="checked" /> %2$s</label>',
@@ -313,7 +313,7 @@ final class IndexNowPage {
 
 		echo '</tbody></table>';
 
-		echo '<p><button type="button" class="button button-primary seo-wp-indexnow-bulk-start">' . esc_html__( 'Start bulk indexing', 'seo-wp' ) . '</button></p>';
+		echo '<p><button type="button" class="button button-primary seo-wp-indexnow-bulk-start">' . esc_html__( 'Start bulk indexing', 'seooptimierung-toolkit' ) . '</button></p>';
 
 		echo '<div class="seo-wp-indexnow-progress" hidden>';
 		echo '<p class="seo-wp-indexnow-status"></p>';
@@ -327,31 +327,31 @@ final class IndexNowPage {
 	private function render_history(): void {
 		$entries = array_reverse( IndexNow::log_entries() );
 
-		echo '<h2>' . esc_html__( 'Submission history', 'seo-wp' ) . '</h2>';
+		echo '<h2>' . esc_html__( 'Submission history', 'seooptimierung-toolkit' ) . '</h2>';
 
 		if ( array() === $entries ) {
-			echo '<p>' . esc_html__( 'No submissions yet.', 'seo-wp' ) . '</p>';
+			echo '<p>' . esc_html__( 'No submissions yet.', 'seooptimierung-toolkit' ) . '</p>';
 			return;
 		}
 
 		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
 		echo '<input type="hidden" name="action" value="seo_wp_indexnow_clear" />';
 		wp_nonce_field( self::CLEAR_NONCE_ACTION, self::CLEAR_NONCE_NAME );
-		submit_button( __( 'Clear history', 'seo-wp' ), 'delete', 'submit', false );
+		submit_button( __( 'Clear history', 'seooptimierung-toolkit' ), 'delete', 'submit', false );
 		echo '</form>';
 
 		echo '<table class="widefat striped seo-wp-indexnow-table">';
 		echo '<thead><tr>';
-		echo '<th>' . esc_html__( 'Source', 'seo-wp' ) . '</th>';
-		echo '<th>' . esc_html__( 'URLs', 'seo-wp' ) . '</th>';
-		echo '<th>' . esc_html__( 'Status', 'seo-wp' ) . '</th>';
-		echo '<th>' . esc_html__( 'Submitted', 'seo-wp' ) . '</th>';
+		echo '<th>' . esc_html__( 'Source', 'seooptimierung-toolkit' ) . '</th>';
+		echo '<th>' . esc_html__( 'URLs', 'seooptimierung-toolkit' ) . '</th>';
+		echo '<th>' . esc_html__( 'Status', 'seooptimierung-toolkit' ) . '</th>';
+		echo '<th>' . esc_html__( 'Submitted', 'seooptimierung-toolkit' ) . '</th>';
 		echo '</tr></thead><tbody>';
 
 		foreach ( $entries as $entry ) {
 			$ok     = ! empty( $entry['ok'] );
 			$detail = (string) ( $entry['detail'] ?? '' );
-			$status = $ok ? __( 'OK', 'seo-wp' ) : __( 'Error', 'seo-wp' );
+			$status = $ok ? __( 'OK', 'seooptimierung-toolkit' ) : __( 'Error', 'seooptimierung-toolkit' );
 
 			printf(
 				'<tr><td>%1$s</td><td>%2$d</td><td><span style="color:%3$s;">%4$s</span>%5$s</td><td>%6$s</td></tr>',
@@ -372,7 +372,7 @@ final class IndexNowPage {
 	 */
 	public function handle_save_settings(): void {
 		if ( ! current_user_can( self::CAPABILITY ) ) {
-			wp_die( esc_html__( 'You are not allowed to do this.', 'seo-wp' ) );
+			wp_die( esc_html__( 'You are not allowed to do this.', 'seooptimierung-toolkit' ) );
 		}
 
 		check_admin_referer( self::SETTINGS_NONCE_ACTION, self::SETTINGS_NONCE_NAME );
@@ -414,7 +414,7 @@ final class IndexNowPage {
 	 */
 	public function handle_submit_urls(): void {
 		if ( ! current_user_can( self::CAPABILITY ) ) {
-			wp_die( esc_html__( 'You are not allowed to do this.', 'seo-wp' ) );
+			wp_die( esc_html__( 'You are not allowed to do this.', 'seooptimierung-toolkit' ) );
 		}
 
 		check_admin_referer( self::SUBMIT_NONCE_ACTION, self::SUBMIT_NONCE_NAME );
@@ -445,7 +445,7 @@ final class IndexNowPage {
 			exit;
 		}
 
-		$result = ( new IndexNow() )->submit_urls( $urls, __( 'Manual paste', 'seo-wp' ) );
+		$result = ( new IndexNow() )->submit_urls( $urls, __( 'Manual paste', 'seooptimierung-toolkit' ) );
 
 		wp_safe_redirect(
 			add_query_arg(
@@ -465,7 +465,7 @@ final class IndexNowPage {
 	 */
 	public function handle_clear(): void {
 		if ( ! current_user_can( self::CAPABILITY ) ) {
-			wp_die( esc_html__( 'You are not allowed to do this.', 'seo-wp' ) );
+			wp_die( esc_html__( 'You are not allowed to do this.', 'seooptimierung-toolkit' ) );
 		}
 
 		check_admin_referer( self::CLEAR_NONCE_ACTION, self::CLEAR_NONCE_NAME );
@@ -488,7 +488,7 @@ final class IndexNowPage {
 		check_ajax_referer( self::BULK_NONCE_ACTION, 'nonce' );
 
 		if ( ! current_user_can( self::CAPABILITY ) ) {
-			Ajax::error( array( 'message' => __( 'You are not allowed to do this.', 'seo-wp' ) ), 403 );
+			Ajax::error( array( 'message' => __( 'You are not allowed to do this.', 'seooptimierung-toolkit' ) ), 403 );
 		}
 
 		$kind   = isset( $_POST['kind'] ) ? sanitize_key( wp_unslash( (string) $_POST['kind'] ) ) : '';
@@ -500,7 +500,7 @@ final class IndexNowPage {
 		} elseif ( 'taxonomy' === $kind ) {
 			$this->handle_taxonomy_batch( $name, $offset );
 		} else {
-			Ajax::error( array( 'message' => __( 'Unknown batch kind.', 'seo-wp' ) ), 400 );
+			Ajax::error( array( 'message' => __( 'Unknown batch kind.', 'seooptimierung-toolkit' ) ), 400 );
 		}
 	}
 
@@ -513,7 +513,7 @@ final class IndexNowPage {
 	 */
 	private function handle_post_type_batch( string $post_type, int $offset ): void {
 		if ( ! in_array( $post_type, get_post_types( array( 'public' => true ), 'names' ), true ) ) {
-			Ajax::error( array( 'message' => __( 'Unknown post type.', 'seo-wp' ) ), 400 );
+			Ajax::error( array( 'message' => __( 'Unknown post type.', 'seooptimierung-toolkit' ) ), 400 );
 		}
 
 		$query = new \WP_Query(
@@ -544,7 +544,7 @@ final class IndexNowPage {
 		$label            = $post_type_object instanceof \WP_Post_Type ? $post_type_object->labels->name : $post_type;
 
 		/* translators: %s: post type label, e.g. "Products". */
-		$this->submit_and_report( $urls, $total, $offset, sprintf( __( 'Bulk: %s', 'seo-wp' ), $label ) );
+		$this->submit_and_report( $urls, $total, $offset, sprintf( __( 'Bulk: %s', 'seooptimierung-toolkit' ), $label ) );
 	}
 
 	/**
@@ -556,7 +556,7 @@ final class IndexNowPage {
 	 */
 	private function handle_taxonomy_batch( string $taxonomy, int $offset ): void {
 		if ( ! in_array( $taxonomy, get_taxonomies( array( 'public' => true ), 'names' ), true ) ) {
-			Ajax::error( array( 'message' => __( 'Unknown taxonomy.', 'seo-wp' ) ), 400 );
+			Ajax::error( array( 'message' => __( 'Unknown taxonomy.', 'seooptimierung-toolkit' ) ), 400 );
 		}
 
 		$terms = get_terms(
@@ -593,7 +593,7 @@ final class IndexNowPage {
 		$label           = false !== $taxonomy_object ? $taxonomy_object->labels->name : $taxonomy;
 
 		/* translators: %s: taxonomy label, e.g. "Product categories". */
-		$this->submit_and_report( $urls, $total, $offset, sprintf( __( 'Bulk: %s', 'seo-wp' ), $label ) );
+		$this->submit_and_report( $urls, $total, $offset, sprintf( __( 'Bulk: %s', 'seooptimierung-toolkit' ), $label ) );
 	}
 
 	/**

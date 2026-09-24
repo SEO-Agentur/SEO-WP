@@ -2,18 +2,18 @@
 /**
  * Tests for recognising staging/development host patterns.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Tests\Unit;
+namespace Seooptimierung\Toolkit\Tests\Unit;
 
-use SeoWp\Support\StagingDetector;
+use Seooptimierung\Toolkit\Support\StagingDetector;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \SeoWp\Support\StagingDetector
+ * @covers \Seooptimierung\Toolkit\Support\StagingDetector
  */
 final class StagingDetectorTest extends TestCase {
 

@@ -2,12 +2,12 @@
 /**
  * Virtual, editable robots.txt output.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Crawl;
+namespace Seooptimierung\Toolkit\Crawl;
 
 /**
  * Extends WordPress core's own virtual robots.txt (via the robots_txt

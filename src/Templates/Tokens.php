@@ -2,12 +2,12 @@
 /**
  * Internal {token} syntax and conversion from/to %token%, %%token%%, #token.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Templates;
+namespace Seooptimierung\Toolkit\Templates;
 
 /**
  * Resolves internal tokens and converts between the internal {token}

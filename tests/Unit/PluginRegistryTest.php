@@ -2,18 +2,18 @@
 /**
  * Tests for locating a competing SEO plugin's active file.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Tests\Unit;
+namespace Seooptimierung\Toolkit\Tests\Unit;
 
-use SeoWp\Import\PluginRegistry;
+use Seooptimierung\Toolkit\Import\PluginRegistry;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \SeoWp\Import\PluginRegistry
+ * @covers \Seooptimierung\Toolkit\Import\PluginRegistry
  */
 final class PluginRegistryTest extends TestCase {
 

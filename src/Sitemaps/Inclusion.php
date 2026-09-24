@@ -2,12 +2,12 @@
 /**
  * Per-post-type / per-taxonomy sitemap inclusion settings.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Sitemaps;
+namespace Seooptimierung\Toolkit\Sitemaps;
 
 /**
  * Reads the "sitemap_include_{type}" / "sitemap_include_tax_{taxonomy}"

@@ -2,15 +2,15 @@
 /**
  * Twitter Card meta tag output.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Social;
+namespace Seooptimierung\Toolkit\Social;
 
-use SeoWp\Meta\TitleDescription;
-use SeoWp\Support\CoexistenceMode;
+use Seooptimierung\Toolkit\Meta\TitleDescription;
+use Seooptimierung\Toolkit\Support\CoexistenceMode;
 use WP_Post;
 use WP_Term;
 

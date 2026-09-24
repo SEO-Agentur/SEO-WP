@@ -2,18 +2,18 @@
 /**
  * Tests for the persistent error log used across import and detection.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Tests\Unit;
+namespace Seooptimierung\Toolkit\Tests\Unit;
 
-use SeoWp\Support\ErrorLog;
+use Seooptimierung\Toolkit\Support\ErrorLog;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \SeoWp\Support\ErrorLog
+ * @covers \Seooptimierung\Toolkit\Support\ErrorLog
  */
 final class ErrorLogTest extends TestCase {
 

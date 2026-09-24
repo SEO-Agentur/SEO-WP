@@ -2,14 +2,14 @@
 /**
  * BreadcrumbList schema node.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Schema\Nodes;
+namespace Seooptimierung\Toolkit\Schema\Nodes;
 
-use SeoWp\Support\Url;
+use Seooptimierung\Toolkit\Support\Url;
 use WP_Post;
 use WP_Term;
 

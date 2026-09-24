@@ -2,14 +2,14 @@
 /**
  * IndexNow key file and publish/update/delete pings.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Crawl;
+namespace Seooptimierung\Toolkit\Crawl;
 
-use SeoWp\Meta\Robots;
+use Seooptimierung\Toolkit\Meta\Robots;
 use WP_Post;
 use WP_Post_Type;
 
@@ -19,7 +19,7 @@ use WP_Post_Type;
  * verification file at /{key}.txt, pings the shared endpoint on publish,
  * update and delete of any public, indexable post without hardcoding a
  * post type name, and additionally exposes submit_urls() so the admin
- * screen (SeoWp\Admin\IndexNowPage) can trigger a manual or one-click bulk
+ * screen (Seooptimierung\Toolkit\Admin\IndexNowPage) can trigger a manual or one-click bulk
  * submission for arbitrary URLs, post types and taxonomies. Not part of
  * the classic sitemap ping (Google/Bing retired those endpoints); this is
  * a separate, still-active protocol.
@@ -128,7 +128,7 @@ final class IndexNow {
 
 		$permalink = get_permalink( $post );
 		if ( is_string( $permalink ) && '' !== $permalink ) {
-			$this->submit_fire_and_forget( array( $permalink ), __( 'Publish/update', 'seo-wp' ) );
+			$this->submit_fire_and_forget( array( $permalink ), __( 'Publish/update', 'seooptimierung-toolkit' ) );
 		}
 	}
 
@@ -146,7 +146,7 @@ final class IndexNow {
 
 		$permalink = get_permalink( $post );
 		if ( is_string( $permalink ) && '' !== $permalink ) {
-			$this->submit_fire_and_forget( array( $permalink ), __( 'Delete', 'seo-wp' ) );
+			$this->submit_fire_and_forget( array( $permalink ), __( 'Delete', 'seooptimierung-toolkit' ) );
 		}
 	}
 
@@ -244,7 +244,7 @@ final class IndexNow {
 			if ( ! $chunk_ok ) {
 				$ok = false;
 				/* translators: %d: HTTP status code returned by the IndexNow endpoint. */
-				$error = sprintf( __( 'IndexNow responded with HTTP %d.', 'seo-wp' ), $code );
+				$error = sprintf( __( 'IndexNow responded with HTTP %d.', 'seooptimierung-toolkit' ), $code );
 			}
 
 			self::log( $source, count( $chunk ), $chunk_ok, $chunk_ok ? '' : $error );

@@ -4,12 +4,12 @@
  * caching (Expires/Cache-Control), hotlink protection and disabling
  * directory browsing.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Performance;
+namespace Seooptimierung\Toolkit\Performance;
 
 /**
  * Unlike ServerHeaders (pure PHP, works on any web server), these five
@@ -34,9 +34,9 @@ final class Htaccess {
 
 	/**
 	 * Marker this plugin's block is bounded by in .htaccess, e.g.
-	 * "# BEGIN SEO-WP Performance" / "# END SEO-WP Performance".
+	 * "# BEGIN Seooptimierung Toolkit Performance" / "# END Seooptimierung Toolkit Performance".
 	 */
-	public const MARKER = 'SEO-WP Performance';
+	public const MARKER = 'Seooptimierung Toolkit Performance';
 
 	/**
 	 * The plugin settings array.
@@ -175,7 +175,7 @@ final class Htaccess {
 		if ( ! $this->server_supports_htaccess() ) {
 			return new \WP_Error(
 				'seo_wp_htaccess_unsupported',
-				__( 'This server doesn\'t appear to be Apache or LiteSpeed — .htaccess has no effect here. Use the shown snippet in your server\'s own configuration instead.', 'seo-wp' )
+				__( 'This server doesn\'t appear to be Apache or LiteSpeed — .htaccess has no effect here. Use the shown snippet in your server\'s own configuration instead.', 'seooptimierung-toolkit' )
 			);
 		}
 
@@ -186,13 +186,13 @@ final class Htaccess {
 		if ( ! $file_exists && ! $directory_usable ) {
 			return new \WP_Error(
 				'seo_wp_htaccess_unwritable',
-				__( '.htaccess doesn\'t exist and its directory isn\'t writable by PHP — create the file manually and try again.', 'seo-wp' )
+				__( '.htaccess doesn\'t exist and its directory isn\'t writable by PHP — create the file manually and try again.', 'seooptimierung-toolkit' )
 			);
 		}
 		if ( $file_exists && ! is_writable( $path ) ) { // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_is_writable -- see above.
 			return new \WP_Error(
 				'seo_wp_htaccess_unwritable',
-				__( '.htaccess isn\'t writable by PHP — fix its file permissions and try again.', 'seo-wp' )
+				__( '.htaccess isn\'t writable by PHP — fix its file permissions and try again.', 'seooptimierung-toolkit' )
 			);
 		}
 
@@ -204,6 +204,6 @@ final class Htaccess {
 		$lines  = '' === $rules ? array() : explode( "\n", $rules );
 		$result = insert_with_markers( $path, self::MARKER, $lines );
 
-		return $result ? true : new \WP_Error( 'seo_wp_htaccess_write_failed', __( 'Writing to .htaccess failed for an unknown reason.', 'seo-wp' ) );
+		return $result ? true : new \WP_Error( 'seo_wp_htaccess_write_failed', __( 'Writing to .htaccess failed for an unknown reason.', 'seooptimierung-toolkit' ) );
 	}
 }

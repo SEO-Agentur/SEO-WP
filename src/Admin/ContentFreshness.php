@@ -2,12 +2,12 @@
 /**
  * Reports published posts that haven't been updated in a while.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Admin;
+namespace Seooptimierung\Toolkit\Admin;
 
 use DateTimeImmutable;
 use WP_Post_Type;
@@ -26,7 +26,7 @@ final class ContentFreshness {
 	/**
 	 * Submenu page slug.
 	 */
-	private const PAGE_SLUG = 'seo-wp-freshness';
+	private const PAGE_SLUG = 'seooptimierung-freshness';
 
 	/**
 	 * Capability required to view this page.
@@ -64,8 +64,8 @@ final class ContentFreshness {
 	public function add_menu(): void {
 		add_submenu_page(
 			Settings::PAGE_SLUG,
-			__( 'Content Freshness', 'seo-wp' ),
-			__( 'Content Freshness', 'seo-wp' ),
+			__( 'Content Freshness', 'seooptimierung-toolkit' ),
+			__( 'Content Freshness', 'seooptimierung-toolkit' ),
 			self::CAPABILITY,
 			self::PAGE_SLUG,
 			array( $this, 'render_page' )
@@ -83,8 +83,8 @@ final class ContentFreshness {
 			return;
 		}
 
-		wp_enqueue_style( 'seo-wp-admin', plugins_url( 'assets/admin/admin.css', \SeoWp\FILE ), array(), \SeoWp\VERSION );
-		wp_enqueue_script( 'seo-wp-content-freshness', plugins_url( 'assets/admin/content-freshness.js', \SeoWp\FILE ), array(), \SeoWp\VERSION, true );
+		wp_enqueue_style( 'seo-wp-admin', plugins_url( 'assets/admin/admin.css', \Seooptimierung\Toolkit\FILE ), array(), \Seooptimierung\Toolkit\VERSION );
+		wp_enqueue_script( 'seo-wp-content-freshness', plugins_url( 'assets/admin/content-freshness.js', \Seooptimierung\Toolkit\FILE ), array(), \Seooptimierung\Toolkit\VERSION, true );
 	}
 
 	/**
@@ -128,8 +128,8 @@ final class ContentFreshness {
 		$cutoff = self::cutoff_timestamp( $threshold, time() );
 
 		echo '<div class="wrap seo-wp-content-freshness">';
-		echo '<h1>' . esc_html__( 'SEO-WP Content Freshness', 'seo-wp' ) . '</h1>';
-		echo '<p>' . esc_html__( 'Published posts that haven\'t been updated in a while — a common signal both search engines and readers use to judge relevance. Purely informational: nothing here is changed automatically.', 'seo-wp' ) . '</p>';
+		echo '<h1>' . esc_html__( 'Seooptimierung Toolkit Content Freshness', 'seooptimierung-toolkit' ) . '</h1>';
+		echo '<p>' . esc_html__( 'Published posts that haven\'t been updated in a while — a common signal both search engines and readers use to judge relevance. Purely informational: nothing here is changed automatically.', 'seooptimierung-toolkit' ) . '</p>';
 
 		$this->render_threshold_form( $threshold );
 
@@ -167,7 +167,7 @@ final class ContentFreshness {
 	private function render_threshold_form( int $threshold ): void {
 		echo '<form method="get" action="' . esc_url( admin_url( 'admin.php' ) ) . '" class="seo-wp-freshness-filter">';
 		echo '<input type="hidden" name="page" value="' . esc_attr( self::PAGE_SLUG ) . '" />';
-		echo '<label for="seo-wp-freshness-months">' . esc_html__( 'Not updated in the last:', 'seo-wp' ) . '</label> ';
+		echo '<label for="seo-wp-freshness-months">' . esc_html__( 'Not updated in the last:', 'seooptimierung-toolkit' ) . '</label> ';
 		echo '<select name="months" id="seo-wp-freshness-months">';
 		foreach ( self::THRESHOLD_CHOICES as $choice ) {
 			printf(
@@ -177,14 +177,14 @@ final class ContentFreshness {
 				esc_html(
 					sprintf(
 						/* translators: %d: number of months. */
-						_n( '%d month', '%d months', $choice, 'seo-wp' ),
+						_n( '%d month', '%d months', $choice, 'seooptimierung-toolkit' ),
 						$choice
 					)
 				)
 			);
 		}
 		echo '</select> ';
-		echo '<button type="submit" class="button">' . esc_html__( 'Filter', 'seo-wp' ) . '</button>';
+		echo '<button type="submit" class="button">' . esc_html__( 'Filter', 'seooptimierung-toolkit' ) . '</button>';
 		echo '</form>';
 	}
 
@@ -195,15 +195,15 @@ final class ContentFreshness {
 	 */
 	private function render_results_table( WP_Query $query ): void {
 		if ( ! $query->have_posts() ) {
-			echo '<p>' . esc_html__( 'Nothing found — every post is within this threshold.', 'seo-wp' ) . '</p>';
+			echo '<p>' . esc_html__( 'Nothing found — every post is within this threshold.', 'seooptimierung-toolkit' ) . '</p>';
 			return;
 		}
 
 		echo '<table class="widefat striped seo-wp-freshness-table">';
 		echo '<thead><tr>';
-		echo '<th>' . esc_html__( 'Post', 'seo-wp' ) . '</th>';
-		echo '<th>' . esc_html__( 'Type', 'seo-wp' ) . '</th>';
-		echo '<th>' . esc_html__( 'Last updated', 'seo-wp' ) . '</th>';
+		echo '<th>' . esc_html__( 'Post', 'seooptimierung-toolkit' ) . '</th>';
+		echo '<th>' . esc_html__( 'Type', 'seooptimierung-toolkit' ) . '</th>';
+		echo '<th>' . esc_html__( 'Last updated', 'seooptimierung-toolkit' ) . '</th>';
 		echo '</tr></thead><tbody>';
 
 		foreach ( $query->posts as $post ) {

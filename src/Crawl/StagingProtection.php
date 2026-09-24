@@ -2,14 +2,14 @@
 /**
  * Site-wide noindex enforcement for staging/development environments.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Crawl;
+namespace Seooptimierung\Toolkit\Crawl;
 
-use SeoWp\Support\StagingDetector;
+use Seooptimierung\Toolkit\Support\StagingDetector;
 
 /**
  * Two independent pieces: an absolute, site-wide noindex/nofollow that
@@ -114,7 +114,7 @@ final class StagingProtection {
 			esc_html(
 				sprintf(
 					/* translators: %s: detected hostname. */
-					__( 'SEO-WP: "%s" looks like a staging or development site. If it is, search engines could index it and compete with your real site.', 'seo-wp' ),
+					__( 'Seooptimierung Toolkit: "%s" looks like a staging or development site. If it is, search engines could index it and compete with your real site.', 'seooptimierung-toolkit' ),
 					$host
 				)
 			)
@@ -122,9 +122,9 @@ final class StagingProtection {
 		printf(
 			'<p><a href="%1$s" class="button button-primary">%2$s</a> <a href="%3$s" class="button">%4$s</a></p>',
 			esc_url( $enable_url ),
-			esc_html__( 'Noindex this entire site now', 'seo-wp' ),
+			esc_html__( 'Noindex this entire site now', 'seooptimierung-toolkit' ),
 			esc_url( $dismiss_url ),
-			esc_html__( 'Dismiss (this is fine)', 'seo-wp' )
+			esc_html__( 'Dismiss (this is fine)', 'seooptimierung-toolkit' )
 		);
 		echo '</div>';
 	}
@@ -134,7 +134,7 @@ final class StagingProtection {
 	 */
 	public function handle_enable(): void {
 		if ( ! current_user_can( self::CAPABILITY ) ) {
-			wp_die( esc_html__( 'You are not allowed to do this.', 'seo-wp' ) );
+			wp_die( esc_html__( 'You are not allowed to do this.', 'seooptimierung-toolkit' ) );
 		}
 
 		check_admin_referer( 'seo_wp_enable_staging_noindex' );
@@ -153,7 +153,7 @@ final class StagingProtection {
 	 */
 	public function handle_dismiss(): void {
 		if ( ! current_user_can( self::CAPABILITY ) ) {
-			wp_die( esc_html__( 'You are not allowed to do this.', 'seo-wp' ) );
+			wp_die( esc_html__( 'You are not allowed to do this.', 'seooptimierung-toolkit' ) );
 		}
 
 		check_admin_referer( 'seo_wp_dismiss_staging_notice' );

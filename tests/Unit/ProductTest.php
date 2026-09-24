@@ -2,18 +2,18 @@
 /**
  * Tests for the Product schema node's pure logic.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Tests\Unit;
+namespace Seooptimierung\Toolkit\Tests\Unit;
 
-use SeoWp\Schema\Nodes\Product;
+use Seooptimierung\Toolkit\Schema\Nodes\Product;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \SeoWp\Schema\Nodes\Product
+ * @covers \Seooptimierung\Toolkit\Schema\Nodes\Product
  */
 final class ProductTest extends TestCase {
 

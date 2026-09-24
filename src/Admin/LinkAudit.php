@@ -2,15 +2,15 @@
 /**
  * Broken-link checker and orphan-page finder.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Admin;
+namespace Seooptimierung\Toolkit\Admin;
 
-use SeoWp\Support\Ajax;
-use SeoWp\Support\ContentRenderer;
+use Seooptimierung\Toolkit\Support\Ajax;
+use Seooptimierung\Toolkit\Support\ContentRenderer;
 use WP_Post;
 use WP_Query;
 
@@ -30,7 +30,7 @@ final class LinkAudit {
 	/**
 	 * Submenu page slug.
 	 */
-	private const PAGE_SLUG = 'seo-wp-link-audit';
+	private const PAGE_SLUG = 'seooptimierung-link-audit';
 
 	/**
 	 * Option key the completed scan's linked-post-ID set is stored under.
@@ -184,11 +184,11 @@ final class LinkAudit {
 	public function add_cron_schedules( array $schedules ): array {
 		$schedules['seo_wp_weekly']  = array(
 			'interval' => 7 * DAY_IN_SECONDS,
-			'display'  => __( 'Weekly (SEO-WP link checks)', 'seo-wp' ),
+			'display'  => __( 'Weekly (Seooptimierung Toolkit link checks)', 'seooptimierung-toolkit' ),
 		);
 		$schedules['seo_wp_monthly'] = array(
 			'interval' => 30 * DAY_IN_SECONDS,
-			'display'  => __( 'Monthly (SEO-WP link checks)', 'seo-wp' ),
+			'display'  => __( 'Monthly (Seooptimierung Toolkit link checks)', 'seooptimierung-toolkit' ),
 		);
 
 		return $schedules;
@@ -236,7 +236,7 @@ final class LinkAudit {
 	 */
 	public function handle_frequency_save(): void {
 		if ( ! current_user_can( self::CAPABILITY ) && ! current_user_can( 'manage_options' ) ) {
-			wp_die( esc_html__( 'You are not allowed to do this.', 'seo-wp' ) );
+			wp_die( esc_html__( 'You are not allowed to do this.', 'seooptimierung-toolkit' ) );
 		}
 
 		check_admin_referer( self::FREQUENCY_NONCE_ACTION, self::FREQUENCY_NONCE_NAME );
@@ -284,8 +284,8 @@ final class LinkAudit {
 
 		add_submenu_page(
 			Settings::PAGE_SLUG,
-			__( 'Link Audit', 'seo-wp' ),
-			__( 'Link Audit', 'seo-wp' ),
+			__( 'Link Audit', 'seooptimierung-toolkit' ),
+			__( 'Link Audit', 'seooptimierung-toolkit' ),
 			'read',
 			self::PAGE_SLUG,
 			array( $this, 'render_page' )
@@ -303,11 +303,11 @@ final class LinkAudit {
 			return;
 		}
 
-		wp_enqueue_style( 'seo-wp-admin', plugins_url( 'assets/admin/admin.css', \SeoWp\FILE ), array(), \SeoWp\VERSION );
-		wp_enqueue_script( 'seo-wp-link-audit', plugins_url( 'assets/admin/link-audit.js', \SeoWp\FILE ), array(), \SeoWp\VERSION, true );
+		wp_enqueue_style( 'seo-wp-admin', plugins_url( 'assets/admin/admin.css', \Seooptimierung\Toolkit\FILE ), array(), \Seooptimierung\Toolkit\VERSION );
+		wp_enqueue_script( 'seooptimierung-link-audit', plugins_url( 'assets/admin/link-audit.js', \Seooptimierung\Toolkit\FILE ), array(), \Seooptimierung\Toolkit\VERSION, true );
 
 		wp_localize_script(
-			'seo-wp-link-audit',
+			'seooptimierung-link-audit',
 			'seoWpLinkAudit',
 			array(
 				'ajaxUrl'        => admin_url( 'admin-ajax.php' ),
@@ -317,13 +317,13 @@ final class LinkAudit {
 				'startAction'    => self::START_AJAX_ACTION,
 				'statusAction'   => self::STATUS_AJAX_ACTION,
 				'i18n'           => array(
-					'scanning'          => __( 'Scanning', 'seo-wp' ),
-					'checking'          => __( 'Checking link', 'seo-wp' ),
-					'preparing'         => __( 'Preparing scan…', 'seo-wp' ),
-					'elapsed'           => __( 'elapsed', 'seo-wp' ),
-					'done'              => __( 'Done.', 'seo-wp' ),
-					'runningBackground' => __( 'The audit continues in the background. You may leave this page.', 'seo-wp' ),
-					'error'             => __( 'Something went wrong.', 'seo-wp' ),
+					'scanning'          => __( 'Scanning', 'seooptimierung-toolkit' ),
+					'checking'          => __( 'Checking link', 'seooptimierung-toolkit' ),
+					'preparing'         => __( 'Preparing scan…', 'seooptimierung-toolkit' ),
+					'elapsed'           => __( 'elapsed', 'seooptimierung-toolkit' ),
+					'done'              => __( 'Done.', 'seooptimierung-toolkit' ),
+					'runningBackground' => __( 'The audit continues in the background. You may leave this page.', 'seooptimierung-toolkit' ),
+					'error'             => __( 'Something went wrong.', 'seooptimierung-toolkit' ),
 				),
 			)
 		);
@@ -344,14 +344,14 @@ final class LinkAudit {
 		$job    = self::job_data();
 
 		echo '<div class="wrap seo-wp-link-audit">';
-		echo '<h1>' . esc_html__( 'SEO-WP Link Audit', 'seo-wp' ) . '</h1>';
-		echo '<p>' . esc_html__( 'Scans every published page\'s content and every navigation menu to find pages nothing links to (orphans), and queues every other link for a broken-link check — checked on demand with the button below, or automatically on whatever schedule you choose.', 'seo-wp' ) . '</p>';
+		echo '<h1>' . esc_html__( 'Seooptimierung Toolkit Link Audit', 'seooptimierung-toolkit' ) . '</h1>';
+		echo '<p>' . esc_html__( 'Scans every published page\'s content and every navigation menu to find pages nothing links to (orphans), and queues every other link for a broken-link check — checked on demand with the button below, or automatically on whatever schedule you choose.', 'seooptimierung-toolkit' ) . '</p>';
 
 		echo '<p>';
-		echo '<button type="button" class="button button-primary seo-wp-link-audit-scan">' . esc_html__( 'Run full link audit', 'seo-wp' ) . '</button> ';
+		echo '<button type="button" class="button button-primary seo-wp-link-audit-scan">' . esc_html__( 'Run full link audit', 'seooptimierung-toolkit' ) . '</button> ';
 		echo '<span class="seo-wp-link-audit-status" data-job-status="' . esc_attr( (string) ( $job['status'] ?? 'idle' ) ) . '"></span>';
 		echo '</p>';
-		echo '<p class="description">' . esc_html__( 'The audit is stored as a persistent background job. It continues after this tab is closed and resumes automatically after short interruptions.', 'seo-wp' ) . '</p>';
+		echo '<p class="description">' . esc_html__( 'The audit is stored as a persistent background job. It continues after this tab is closed and resumes automatically after short interruptions.', 'seooptimierung-toolkit' ) . '</p>';
 
 		$this->render_frequency_form();
 
@@ -361,7 +361,7 @@ final class LinkAudit {
 				esc_html(
 					sprintf(
 						/* translators: %d: number of links still waiting to be checked. */
-						_n( '%d link is still queued for a background check.', '%d links are still queued for a background check.', count( $queue ), 'seo-wp' ),
+						_n( '%d link is still queued for a background check.', '%d links are still queued for a background check.', count( $queue ), 'seooptimierung-toolkit' ),
 						count( $queue )
 					)
 				)
@@ -374,7 +374,7 @@ final class LinkAudit {
 				esc_html(
 					sprintf(
 						/* translators: %s: date and time of the last completed content scan. */
-						__( 'Last content scan: %s', 'seo-wp' ),
+						__( 'Last content scan: %s', 'seooptimierung-toolkit' ),
 						gmdate( 'Y-m-d H:i:s', (int) $scan['scanned_at'] )
 					)
 				)
@@ -394,23 +394,23 @@ final class LinkAudit {
 	private function render_frequency_form(): void {
 		$current = $this->configured_frequency();
 		$labels  = array(
-			'off'     => __( 'Only when a full audit is started manually', 'seo-wp' ),
-			'daily'   => __( 'Daily', 'seo-wp' ),
-			'weekly'  => __( 'Weekly', 'seo-wp' ),
-			'monthly' => __( 'Monthly', 'seo-wp' ),
+			'off'     => __( 'Only when a full audit is started manually', 'seooptimierung-toolkit' ),
+			'daily'   => __( 'Daily', 'seooptimierung-toolkit' ),
+			'weekly'  => __( 'Weekly', 'seooptimierung-toolkit' ),
+			'monthly' => __( 'Monthly', 'seooptimierung-toolkit' ),
 		);
 
 		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" class="seo-wp-link-audit-frequency-form">';
 		echo '<input type="hidden" name="action" value="seo_wp_link_audit_frequency_save" />';
 		wp_nonce_field( self::FREQUENCY_NONCE_ACTION, self::FREQUENCY_NONCE_NAME );
 
-		echo '<p><label for="seo_wp_link_audit_frequency">' . esc_html__( 'Automatic background check', 'seo-wp' ) . '</label> ';
+		echo '<p><label for="seo_wp_link_audit_frequency">' . esc_html__( 'Automatic background check', 'seooptimierung-toolkit' ) . '</label> ';
 		echo '<select id="seo_wp_link_audit_frequency" name="frequency">';
 		foreach ( $labels as $value => $label ) {
 			printf( '<option value="%1$s" %2$s>%3$s</option>', esc_attr( $value ), selected( $current, $value, false ), esc_html( $label ) );
 		}
 		echo '</select> ';
-		submit_button( __( 'Save', 'seo-wp' ), 'secondary', 'submit', false );
+		submit_button( __( 'Save', 'seooptimierung-toolkit' ), 'secondary', 'submit', false );
 		echo '</p>';
 		echo '</form>';
 	}
@@ -423,15 +423,15 @@ final class LinkAudit {
 	private function render_orphans( array $scan ): void {
 		$orphans = $this->orphan_post_ids( $scan );
 
-		echo '<h2>' . esc_html__( 'Orphan pages', 'seo-wp' ) . '</h2>';
+		echo '<h2>' . esc_html__( 'Orphan pages', 'seooptimierung-toolkit' ) . '</h2>';
 
 		if ( array() === $orphans ) {
-			echo '<p>' . esc_html__( 'No orphan pages found.', 'seo-wp' ) . '</p>';
+			echo '<p>' . esc_html__( 'No orphan pages found.', 'seooptimierung-toolkit' ) . '</p>';
 			return;
 		}
 
 		echo '<table class="widefat striped seo-wp-orphan-table">';
-		echo '<thead><tr><th>' . esc_html__( 'Page', 'seo-wp' ) . '</th></tr></thead><tbody>';
+		echo '<thead><tr><th>' . esc_html__( 'Page', 'seooptimierung-toolkit' ) . '</th></tr></thead><tbody>';
 
 		foreach ( $orphans as $id ) {
 			$edit_link = get_edit_post_link( $id, 'raw' );
@@ -452,13 +452,13 @@ final class LinkAudit {
 	 * @param array<string,array{sources:int[],status:string,checked_at:int}> $broken Broken-link results.
 	 */
 	private function render_broken_links( array $broken ): void {
-		echo '<h2>' . esc_html__( 'Link findings', 'seo-wp' ) . '</h2>';
+		echo '<h2>' . esc_html__( 'Link findings', 'seooptimierung-toolkit' ) . '</h2>';
 		if ( array() === $broken ) {
-			echo '<p>' . esc_html__( 'No broken links or redirects found yet.', 'seo-wp' ) . '</p>';
+			echo '<p>' . esc_html__( 'No broken links or redirects found yet.', 'seooptimierung-toolkit' ) . '</p>';
 			return;
 		}
 		echo '<table class="widefat striped seo-wp-broken-links-table"><thead><tr>';
-		echo '<th>' . esc_html__( 'URL', 'seo-wp' ) . '</th><th>' . esc_html__( 'Finding', 'seo-wp' ) . '</th><th>' . esc_html__( 'Destination / chain', 'seo-wp' ) . '</th><th>' . esc_html__( 'Linked from', 'seo-wp' ) . '</th><th>' . esc_html__( 'Source area', 'seo-wp' ) . '</th><th>' . esc_html__( 'Checked', 'seo-wp' ) . '</th></tr></thead><tbody>';
+		echo '<th>' . esc_html__( 'URL', 'seooptimierung-toolkit' ) . '</th><th>' . esc_html__( 'Finding', 'seooptimierung-toolkit' ) . '</th><th>' . esc_html__( 'Destination / chain', 'seooptimierung-toolkit' ) . '</th><th>' . esc_html__( 'Linked from', 'seooptimierung-toolkit' ) . '</th><th>' . esc_html__( 'Source area', 'seooptimierung-toolkit' ) . '</th><th>' . esc_html__( 'Checked', 'seooptimierung-toolkit' ) . '</th></tr></thead><tbody>';
 		foreach ( $broken as $url => $entry ) {
 			$sources      = self::normalise_sources( (array) ( $entry['sources'] ?? array() ) );
 			$source_links = array();
@@ -520,7 +520,7 @@ final class LinkAudit {
 		Ajax::begin( 'link-audit:start' );
 		check_ajax_referer( self::NONCE_ACTION, 'nonce' );
 		if ( ! current_user_can( self::CAPABILITY ) && ! current_user_can( 'manage_options' ) ) {
-			Ajax::error( array( 'message' => __( 'You are not allowed to do this.', 'seo-wp' ) ), 403 );
+			Ajax::error( array( 'message' => __( 'You are not allowed to do this.', 'seooptimierung-toolkit' ) ), 403 );
 		}
 
 		delete_option( self::SCAN_OPTION );
@@ -549,7 +549,7 @@ final class LinkAudit {
 			'processed_posts' => 0,
 			'total_links'     => 0,
 			'checked_links'   => 0,
-			'current'         => __( 'Preparing content scan…', 'seo-wp' ),
+			'current'         => __( 'Preparing content scan…', 'seooptimierung-toolkit' ),
 			'error'           => '',
 		);
 		update_option( self::JOB_OPTION, $job, false );
@@ -562,7 +562,7 @@ final class LinkAudit {
 		Ajax::begin( 'link-audit:status' );
 		check_ajax_referer( self::NONCE_ACTION, 'nonce' );
 		if ( ! current_user_can( self::CAPABILITY ) && ! current_user_can( 'manage_options' ) ) {
-			Ajax::error( array( 'message' => __( 'You are not allowed to do this.', 'seo-wp' ) ), 403 );
+			Ajax::error( array( 'message' => __( 'You are not allowed to do this.', 'seooptimierung-toolkit' ) ), 403 );
 		}
 		$job = self::job_data();
 		if ( in_array( (string) ( $job['status'] ?? '' ), array( 'scanning', 'checking' ), true ) && time() - (int) ( $job['updated_at'] ?? 0 ) > 45 ) {
@@ -718,7 +718,7 @@ final class LinkAudit {
 			if ( ! $post instanceof WP_Post ) {
 				continue; }
 			$title          = get_the_title( $post );
-			$job['current'] = sprintf( '%s (#%d)', '' !== $title ? $title : __( '(no title)', 'seo-wp' ), (int) $post_id );
+			$job['current'] = sprintf( '%s (#%d)', '' !== $title ? $title : __( '(no title)', 'seooptimierung-toolkit' ), (int) $post_id );
 			$raw_links      = self::extract_links( (string) $post->post_content );
 			$rendered_links = self::extract_links( ContentRenderer::render( $post ) );
 			foreach ( $raw_links as $link ) {
@@ -758,7 +758,7 @@ final class LinkAudit {
 			$job['status']        = 'checking';
 			$job['total_links']   = count( $queue );
 			$job['checked_links'] = 0;
-			$job['current']       = __( 'Preparing link checks…', 'seo-wp' );
+			$job['current']       = __( 'Preparing link checks…', 'seooptimierung-toolkit' );
 			if ( 0 === count( $queue ) ) {
 				self::finish_job( $job, 'completed' );
 			}
@@ -834,12 +834,12 @@ final class LinkAudit {
 		Ajax::begin( 'link-audit:scan' );
 		check_ajax_referer( self::NONCE_ACTION, 'nonce' );
 		if ( ! current_user_can( self::CAPABILITY ) && ! current_user_can( 'manage_options' ) ) {
-			Ajax::error( array( 'message' => __( 'You are not allowed to do this.', 'seo-wp' ) ), 403 ); }
+			Ajax::error( array( 'message' => __( 'You are not allowed to do this.', 'seooptimierung-toolkit' ) ), 403 ); }
 		// Guards against two concurrent batch steps (two admin tabs, or a
 		// slow request racing a client-side retry) interleaving their
 		// read-modify-write of SCAN_OPTION/QUEUE_OPTION.
 		if ( get_transient( self::SCAN_LOCK ) ) {
-			Ajax::error( array( 'message' => __( 'A scan is already in progress.', 'seo-wp' ) ), 409 ); }
+			Ajax::error( array( 'message' => __( 'A scan is already in progress.', 'seooptimierung-toolkit' ) ), 409 ); }
 		set_transient( self::SCAN_LOCK, 1, 30 );
 		$page = isset( $_POST['page'] ) ? max( 1, (int) $_POST['page'] ) : 1;
 		if ( 1 === $page ) {
@@ -869,7 +869,7 @@ final class LinkAudit {
 			if ( ! $post instanceof WP_Post ) {
 				continue; }
 			$title          = get_the_title( $post );
-			$last_item      = sprintf( '%s (#%d)', '' !== $title ? $title : __( '(no title)', 'seo-wp' ), (int) $post_id );
+			$last_item      = sprintf( '%s (#%d)', '' !== $title ? $title : __( '(no title)', 'seooptimierung-toolkit' ), (int) $post_id );
 			$raw_links      = self::extract_links( (string) $post->post_content );
 			$rendered_links = self::extract_links( ContentRenderer::render( $post ) );
 			foreach ( $raw_links as $link ) {
@@ -1104,10 +1104,10 @@ final class LinkAudit {
 	private static function source_area_label( array $source ): string {
 		$type   = (string) ( $source['type'] ?? 'content' );
 		$labels = array(
-			'content'  => __( 'Content', 'seo-wp' ),
-			'template' => __( 'Template / rendered element', 'seo-wp' ),
-			'menu'     => __( 'Navigation menu', 'seo-wp' ),
-			'widget'   => __( 'Widget', 'seo-wp' ),
+			'content'  => __( 'Content', 'seooptimierung-toolkit' ),
+			'template' => __( 'Template / rendered element', 'seooptimierung-toolkit' ),
+			'menu'     => __( 'Navigation menu', 'seooptimierung-toolkit' ),
+			'widget'   => __( 'Widget', 'seooptimierung-toolkit' ),
 		);
 
 		return $labels[ $type ] ?? ucfirst( $type );
@@ -1126,11 +1126,11 @@ final class LinkAudit {
 			$post_id   = (int) $source['post_id'];
 			$edit_link = get_edit_post_link( $post_id, 'raw' );
 			$title     = get_the_title( $post_id );
-			return sprintf( '<a href="%1$s">%2$s</a> <span class="description">#%3$d</span>', esc_url( is_string( $edit_link ) ? $edit_link : '' ), esc_html( '' !== $title ? $title : __( '(no title)', 'seo-wp' ) ), $post_id ); }
+			return sprintf( '<a href="%1$s">%2$s</a> <span class="description">#%3$d</span>', esc_url( is_string( $edit_link ) ? $edit_link : '' ), esc_html( '' !== $title ? $title : __( '(no title)', 'seooptimierung-toolkit' ) ), $post_id ); }
 		if ( 'menu' === $type ) {
-			return sprintf( '<a href="%1$s">%2$s</a>', esc_url( admin_url( 'nav-menus.php?action=edit&menu=' . (int) ( $source['menu_id'] ?? 0 ) ) ), esc_html( (string) ( $source['label'] ?? __( 'Menu', 'seo-wp' ) ) ) ); }
+			return sprintf( '<a href="%1$s">%2$s</a>', esc_url( admin_url( 'nav-menus.php?action=edit&menu=' . (int) ( $source['menu_id'] ?? 0 ) ) ), esc_html( (string) ( $source['label'] ?? __( 'Menu', 'seooptimierung-toolkit' ) ) ) ); }
 		if ( 'widget' === $type ) {
-			return sprintf( '<a href="%1$s">%2$s</a> <span class="description">%3$s</span>', esc_url( admin_url( 'widgets.php' ) ), esc_html( (string) ( $source['widget_id'] ?? __( 'Widget', 'seo-wp' ) ) ), esc_html( (string) ( $source['label'] ?? '' ) ) ); }
+			return sprintf( '<a href="%1$s">%2$s</a> <span class="description">%3$s</span>', esc_url( admin_url( 'widgets.php' ) ), esc_html( (string) ( $source['widget_id'] ?? __( 'Widget', 'seooptimierung-toolkit' ) ) ), esc_html( (string) ( $source['label'] ?? '' ) ) ); }
 		return esc_html( self::source_area_label( $source ) );
 	}
 
@@ -1143,7 +1143,7 @@ final class LinkAudit {
 		check_ajax_referer( self::NONCE_ACTION, 'nonce' );
 
 		if ( ! current_user_can( self::CAPABILITY ) && ! current_user_can( 'manage_options' ) ) {
-			Ajax::error( array( 'message' => __( 'You are not allowed to do this.', 'seo-wp' ) ), 403 );
+			Ajax::error( array( 'message' => __( 'You are not allowed to do this.', 'seooptimierung-toolkit' ) ), 403 );
 		}
 
 		$progress = $this->check_links_batch();
@@ -1265,7 +1265,7 @@ final class LinkAudit {
 			$args     = array(
 				'timeout'            => 5,
 				'redirection'        => 0,
-				'user-agent'         => 'SEO-WP Link Audit/' . \SeoWp\VERSION,
+				'user-agent'         => 'Seooptimierung Toolkit Link Audit/' . \Seooptimierung\Toolkit\VERSION,
 				// Every hop is a fresh call (redirects are followed manually,
 				// one step at a time, below) rather than delegated to core's
 				// own redirect-following — so wp_safe_remote_*() re-validates
@@ -1332,7 +1332,7 @@ final class LinkAudit {
 		}
 		return array(
 			'type'      => 'redirect chain',
-			'status'    => __( 'More than 10 redirects', 'seo-wp' ),
+			'status'    => __( 'More than 10 redirects', 'seooptimierung-toolkit' ),
 			'final_url' => $current,
 			'chain'     => $chain,
 		);

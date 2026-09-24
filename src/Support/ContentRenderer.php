@@ -3,12 +3,12 @@
  * Renders a post's content exactly as the front end would, outside the
  * main query.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Support;
+namespace Seooptimierung\Toolkit\Support;
 
 use WP_Post;
 

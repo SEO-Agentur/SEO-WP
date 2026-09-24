@@ -2,16 +2,16 @@
 /**
  * Open Graph meta tag output.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Social;
+namespace Seooptimierung\Toolkit\Social;
 
-use SeoWp\Meta\TitleDescription;
-use SeoWp\Support\CoexistenceMode;
-use SeoWp\Support\Url;
+use Seooptimierung\Toolkit\Meta\TitleDescription;
+use Seooptimierung\Toolkit\Support\CoexistenceMode;
+use Seooptimierung\Toolkit\Support\Url;
 use WP_Post;
 use WP_Term;
 
@@ -93,11 +93,11 @@ final class OpenGraph {
 		 * Filters the full set of og: tags (property => content) just
 		 * before they're printed — add, remove or change any of them.
 		 *
-		 * @param array<string,string> $tags    Tags SEO-WP would otherwise output.
+		 * @param array<string,string> $tags    Tags Seooptimierung Toolkit would otherwise output.
 		 * @param mixed                 $queried The current request's queried object (WP_Post, WP_Term, ...), or null.
 		 */
 		// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- namespaced public extension point, documented for third-party developers.
-		$tags = (array) apply_filters( 'seo_wp/opengraph/tags', $tags, get_queried_object() );
+		$tags = (array) apply_filters( 'seooptimierung/opengraph/tags', $tags, get_queried_object() );
 
 		foreach ( $tags as $property => $content ) {
 			if ( '' === $content ) {

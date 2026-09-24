@@ -2,18 +2,18 @@
 /**
  * Tests for stripping attachment-page links from inserted images.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Tests\Unit;
+namespace Seooptimierung\Toolkit\Tests\Unit;
 
-use SeoWp\Crawl\ImageLinks;
+use Seooptimierung\Toolkit\Crawl\ImageLinks;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \SeoWp\Crawl\ImageLinks
+ * @covers \Seooptimierung\Toolkit\Crawl\ImageLinks
  */
 final class ImageLinksTest extends TestCase {
 

@@ -2,15 +2,15 @@
 /**
  * Batched, cron/AJAX-driven import runner.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Import;
+namespace Seooptimierung\Toolkit\Import;
 
-use SeoWp\Support\ErrorLog;
-use SeoWp\Support\FragmentCache;
+use Seooptimierung\Toolkit\Support\ErrorLog;
+use Seooptimierung\Toolkit\Support\FragmentCache;
 use WP_Query;
 
 /**
@@ -346,7 +346,7 @@ final class Batch {
 				array(
 					'type'   => 'redirects-skipped',
 					'source' => $source,
-					'note'   => __( 'Redirects were found but are not migrated by this plugin.', 'seo-wp' ),
+					'note'   => __( 'Redirects were found but are not migrated by this plugin.', 'seooptimierung-toolkit' ),
 				),
 			)
 		);
@@ -375,11 +375,11 @@ final class Batch {
 	 * Drops any field a target already has a non-empty value for, so a
 	 * re-run of the import (or one that picks up newly-added source data)
 	 * never overwrites data that was already imported, or that a site
-	 * owner has since edited by hand in SEO-WP itself — an existing
+	 * owner has since edited by hand in Seooptimierung Toolkit itself — an existing
 	 * value, from wherever it came, always wins over the source plugin's.
 	 *
 	 * @param array<string,mixed> $mapped       Fields this import would otherwise write.
-	 * @param callable            $get_existing Given a field's key, returns its current value in SEO-WP.
+	 * @param callable            $get_existing Given a field's key, returns its current value in Seooptimierung Toolkit.
 	 * @return array<string,mixed>
 	 */
 	public static function filter_to_empty_fields( array $mapped, callable $get_existing ): array {
@@ -393,7 +393,7 @@ final class Batch {
 	}
 
 	/**
-	 * Whether an existing SEO-WP value counts as "not set yet" — an empty
+	 * Whether an existing Seooptimierung Toolkit value counts as "not set yet" — an empty
 	 * string or an empty array. A meaningful falsy-looking value like the
 	 * string '0' (e.g. Robots::META_NOINDEX explicitly forcing "indexed")
 	 * is not empty.
@@ -412,7 +412,7 @@ final class Batch {
 	 * there.
 	 *
 	 * Distinguishes, in the returned entry's 'skipped' field, "the source
-	 * plugin had a value here but SEO-WP already had one too, so it was
+	 * plugin had a value here but Seooptimierung Toolkit already had one too, so it was
 	 * left alone" from "the source plugin had nothing here" (the latter
 	 * never even reaches this method — see the early return below): a
 	 * social/schema field reading empty in RankMath's or Yoast's own admin

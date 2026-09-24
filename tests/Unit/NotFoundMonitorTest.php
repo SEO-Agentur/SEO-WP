@@ -2,18 +2,18 @@
 /**
  * Tests for 404 path normalisation.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Tests\Unit;
+namespace Seooptimierung\Toolkit\Tests\Unit;
 
-use SeoWp\Crawl\NotFoundMonitor;
+use Seooptimierung\Toolkit\Crawl\NotFoundMonitor;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \SeoWp\Crawl\NotFoundMonitor
+ * @covers \Seooptimierung\Toolkit\Crawl\NotFoundMonitor
  */
 final class NotFoundMonitorTest extends TestCase {
 

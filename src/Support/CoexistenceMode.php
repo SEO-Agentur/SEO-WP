@@ -2,12 +2,12 @@
 /**
  * Optional "run alongside Yoast/Rank Math instead of replacing them" mode.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Support;
+namespace Seooptimierung\Toolkit\Support;
 
 /**
  * Off by default — this plugin is normally meant to replace Yoast/Rank

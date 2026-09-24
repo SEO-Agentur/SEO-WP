@@ -2,12 +2,12 @@
 /**
  * Recognises common staging/development URL patterns.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Support;
+namespace Seooptimierung\Toolkit\Support;
 
 /**
  * A staging site accidentally left indexable is a classic, expensive SEO

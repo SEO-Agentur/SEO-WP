@@ -2,12 +2,12 @@
 /**
  * Site verification meta tags.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Crawl;
+namespace Seooptimierung\Toolkit\Crawl;
 
 /**
  * Renders google/bing/baidu/pinterest/yandex site verification meta tags

@@ -2,18 +2,18 @@
 /**
  * Tests for the video:video sitemap extraction logic.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Tests\Unit;
+namespace Seooptimierung\Toolkit\Tests\Unit;
 
-use SeoWp\Sitemaps\VideoSitemap;
+use Seooptimierung\Toolkit\Sitemaps\VideoSitemap;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \SeoWp\Sitemaps\VideoSitemap
+ * @covers \Seooptimierung\Toolkit\Sitemaps\VideoSitemap
  */
 final class VideoSitemapTest extends TestCase {
 

@@ -2,18 +2,18 @@
 /**
  * Tests for JSON-LD @graph node deduplication.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Tests\Unit;
+namespace Seooptimierung\Toolkit\Tests\Unit;
 
-use SeoWp\Schema\GraphBuilder;
+use Seooptimierung\Toolkit\Schema\GraphBuilder;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \SeoWp\Schema\GraphBuilder
+ * @covers \Seooptimierung\Toolkit\Schema\GraphBuilder
  */
 final class GraphBuilderTest extends TestCase {
 

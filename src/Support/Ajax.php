@@ -2,12 +2,12 @@
 /**
  * Guards AJAX JSON responses against stray output corrupting them.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Support;
+namespace Seooptimierung\Toolkit\Support;
 
 /**
  * A PHP notice/warning/deprecation triggered anywhere during a batch step
@@ -104,7 +104,7 @@ final class Ajax {
 
 		ErrorLog::record(
 			'ajax:' . self::$context,
-			__( 'PHP printed unexpected output during an AJAX request (typically a warning, notice or deprecation) — it was stripped from the JSON response so the request could still complete, but is recorded here for diagnosis.', 'seo-wp' ),
+			__( 'PHP printed unexpected output during an AJAX request (typically a warning, notice or deprecation) — it was stripped from the JSON response so the request could still complete, but is recorded here for diagnosis.', 'seooptimierung-toolkit' ),
 			array( 'output' => mb_substr( $captured, 0, 2000 ) )
 		);
 	}

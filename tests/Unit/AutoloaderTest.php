@@ -2,19 +2,19 @@
 /**
  * Tests for the plugin's PSR-4 style autoloader.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Tests\Unit;
+namespace Seooptimierung\Toolkit\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
-use SeoWp\Templates\Tokens;
-use SeoWp\Schema\Nodes\WebPage;
+use Seooptimierung\Toolkit\Templates\Tokens;
+use Seooptimierung\Toolkit\Schema\Nodes\WebPage;
 
 /**
- * @covers \SeoWp\Autoloader
+ * @covers \Seooptimierung\Toolkit\Autoloader
  */
 final class AutoloaderTest extends TestCase {
 
@@ -47,6 +47,6 @@ final class AutoloaderTest extends TestCase {
 	 * file path from it.
 	 */
 	public function test_rejects_path_traversal_in_class_name(): void {
-		$this->assertFalse( class_exists( 'SeoWp\\..\\..\\..\\..\\wp-config', true ) );
+		$this->assertFalse( class_exists( 'Seooptimierung\Toolkit\\..\\..\\..\\..\\wp-config', true ) );
 	}
 }

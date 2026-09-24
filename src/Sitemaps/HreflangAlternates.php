@@ -2,14 +2,14 @@
 /**
  * Renders xhtml:link hreflang alternates for sitemap entries.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Sitemaps;
+namespace Seooptimierung\Toolkit\Sitemaps;
 
-use SeoWp\Wpml\Hreflang;
+use Seooptimierung\Toolkit\Wpml\Hreflang;
 use WP_Post;
 
 /**

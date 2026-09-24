@@ -2,14 +2,14 @@
 /**
  * Adds the image:image sitemap extension.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Sitemaps;
+namespace Seooptimierung\Toolkit\Sitemaps;
 
-use SeoWp\Support\ContentRenderer;
+use Seooptimierung\Toolkit\Support\ContentRenderer;
 use WP_Post;
 
 /**

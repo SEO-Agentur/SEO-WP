@@ -3,12 +3,12 @@
  * Parses the Settings > General "Opening hours" field into
  * OpeningHoursSpecification nodes.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Schema;
+namespace Seooptimierung\Toolkit\Schema;
 
 /**
  * Deliberately supports one narrow, unambiguous format rather than

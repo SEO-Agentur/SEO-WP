@@ -2,12 +2,12 @@
 /**
  * Per-language translation of title/description templates via WPML String Translation.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Wpml;
+namespace Seooptimierung\Toolkit\Wpml;
 
 /**
  * Registers every *_template* setting (title/description templates for
@@ -26,7 +26,7 @@ final class StringTranslation {
 	/**
 	 * String Translation context every registered string is grouped under.
 	 */
-	private const CONTEXT = 'SEO-WP';
+	private const CONTEXT = 'Seooptimierung Toolkit';
 
 	/**
 	 * Registers strings whenever the settings are added or updated.

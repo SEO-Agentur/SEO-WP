@@ -2,18 +2,18 @@
 /**
  * Tests for DeepL free/pro tier endpoint selection.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Tests\Unit;
+namespace Seooptimierung\Toolkit\Tests\Unit;
 
-use SeoWp\Support\DeepLClient;
+use Seooptimierung\Toolkit\Support\DeepLClient;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \SeoWp\Support\DeepLClient
+ * @covers \Seooptimierung\Toolkit\Support\DeepLClient
  */
 final class DeepLClientTest extends TestCase {
 

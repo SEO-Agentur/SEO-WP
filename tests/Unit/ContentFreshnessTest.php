@@ -2,18 +2,18 @@
 /**
  * Tests for the Content Freshness threshold/cutoff logic.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Tests\Unit;
+namespace Seooptimierung\Toolkit\Tests\Unit;
 
-use SeoWp\Admin\ContentFreshness;
+use Seooptimierung\Toolkit\Admin\ContentFreshness;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \SeoWp\Admin\ContentFreshness
+ * @covers \Seooptimierung\Toolkit\Admin\ContentFreshness
  */
 final class ContentFreshnessTest extends TestCase {
 

@@ -2,14 +2,14 @@
 /**
  * Object-cache fragment storage for rendered head output, keyed per object and language.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Support;
+namespace Seooptimierung\Toolkit\Support;
 
-use SeoWp\Wpml\Hreflang;
+use Seooptimierung\Toolkit\Wpml\Hreflang;
 use WP_Post;
 use WP_Term;
 

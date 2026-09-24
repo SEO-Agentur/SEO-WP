@@ -2,12 +2,12 @@
 /**
  * Manually-supplied critical CSS and optional non-blocking stylesheet loading.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Frontend;
+namespace Seooptimierung\Toolkit\Frontend;
 
 /**
  * Deliberately manual, not auto-extracted: genuinely detecting which CSS
@@ -30,18 +30,28 @@ final class CriticalCss {
 	private const OPTION_KEY = 'seo_wp_settings';
 
 	/**
+	 * Handle the critical CSS is registered and enqueued under — a
+	 * source-less "carrier" style whose only purpose is to hold the
+	 * inline CSS wp_add_inline_style() attaches to it.
+	 */
+	private const STYLE_HANDLE = 'seooptimierung-critical-css';
+
+	/**
 	 * Registers the critical CSS output and the stylesheet-deferring filter.
 	 */
 	public function register(): void {
-		add_action( 'wp_head', array( $this, 'output_critical_css' ), 1 );
+		add_action( 'wp_enqueue_scripts', array( $this, 'maybe_enqueue_critical_css' ) );
 		add_filter( 'style_loader_tag', array( $this, 'maybe_defer_stylesheet' ), 10, 4 );
 	}
 
 	/**
-	 * Echoes the configured critical CSS inline, early in <head>, when
-	 * one is configured.
+	 * Registers a source-less style handle and attaches the configured
+	 * critical CSS to it as an inline style, when one is configured. Goes
+	 * through WordPress core's own style queue (wp_add_inline_style())
+	 * rather than a raw echoed <style> tag, per the plugin directory's
+	 * enqueue guidelines.
 	 */
-	public function output_critical_css(): void {
+	public function maybe_enqueue_critical_css(): void {
 		if ( is_admin() ) {
 			return;
 		}
@@ -52,12 +62,19 @@ final class CriticalCss {
 		}
 
 		// A literal "</style>" inside the stored CSS would otherwise close
-		// this tag early; nothing else needs escaping since raw CSS is the
-		// intended, admin-capability-gated content here (the same trust
-		// model as WordPress core's own Customizer "Additional CSS"). HTML
-		// end-tag matching is case-insensitive, so this has to match
+		// the <style> tag WordPress core wraps this inline CSS in early —
+		// core's own inline-style printing does no such escaping itself,
+		// so this is still needed even via wp_add_inline_style(). Nothing
+		// else needs escaping since raw CSS is the intended,
+		// admin-capability-gated content here (the same trust model as
+		// WordPress core's own Customizer "Additional CSS"). HTML end-tag
+		// matching is case-insensitive, so this has to match
 		// "</STYLE"/"</Style"/etc. too, not just the lowercase literal.
-		echo '<style id="seo-wp-critical-css">' . preg_replace( '#</style#i', '<\/style', $css ) . '</style>' . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- raw admin-supplied CSS, escaped for the one real risk (tag breakout) above; see docblock.
+		$safe_css = (string) preg_replace( '#</style#i', '<\/style', $css );
+
+		wp_register_style( self::STYLE_HANDLE, false, array(), \Seooptimierung\Toolkit\VERSION );
+		wp_enqueue_style( self::STYLE_HANDLE );
+		wp_add_inline_style( self::STYLE_HANDLE, $safe_css );
 	}
 
 	/**

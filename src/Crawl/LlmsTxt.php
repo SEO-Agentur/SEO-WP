@@ -2,14 +2,14 @@
 /**
  * /llms.txt (and optional /llms-full.txt) output.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Crawl;
+namespace Seooptimierung\Toolkit\Crawl;
 
-use SeoWp\Meta\Robots;
+use Seooptimierung\Toolkit\Meta\Robots;
 use WP_Query;
 
 /**

@@ -2,17 +2,17 @@
 /**
  * Guided import wizard UI.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Admin;
+namespace Seooptimierung\Toolkit\Admin;
 
-use SeoWp\Import\Batch;
-use SeoWp\Import\Detector;
-use SeoWp\Import\PluginRegistry;
-use SeoWp\Support\Ajax;
+use Seooptimierung\Toolkit\Import\Batch;
+use Seooptimierung\Toolkit\Import\Detector;
+use Seooptimierung\Toolkit\Import\PluginRegistry;
+use Seooptimierung\Toolkit\Support\Ajax;
 
 /**
  * Walks the site owner through detecting, dry-running and running the
@@ -25,7 +25,7 @@ final class ImportWizard {
 	/**
 	 * Submenu page slug.
 	 */
-	private const PAGE_SLUG = 'seo-wp-import';
+	private const PAGE_SLUG = 'seooptimierung-import';
 
 	/**
 	 * Capability required to run an import.
@@ -76,8 +76,8 @@ final class ImportWizard {
 	public function add_menu(): void {
 		add_submenu_page(
 			Settings::PAGE_SLUG,
-			__( 'Import', 'seo-wp' ),
-			__( 'Import', 'seo-wp' ),
+			__( 'Import', 'seooptimierung-toolkit' ),
+			__( 'Import', 'seooptimierung-toolkit' ),
 			self::CAPABILITY,
 			self::PAGE_SLUG,
 			array( $this, 'render_page' )
@@ -95,8 +95,8 @@ final class ImportWizard {
 			return;
 		}
 
-		wp_enqueue_style( 'seo-wp-admin', plugins_url( 'assets/admin/admin.css', \SeoWp\FILE ), array(), \SeoWp\VERSION );
-		wp_enqueue_script( 'seo-wp-import-wizard', plugins_url( 'assets/admin/import-wizard.js', \SeoWp\FILE ), array(), \SeoWp\VERSION, true );
+		wp_enqueue_style( 'seo-wp-admin', plugins_url( 'assets/admin/admin.css', \Seooptimierung\Toolkit\FILE ), array(), \Seooptimierung\Toolkit\VERSION );
+		wp_enqueue_script( 'seo-wp-import-wizard', plugins_url( 'assets/admin/import-wizard.js', \Seooptimierung\Toolkit\FILE ), array(), \Seooptimierung\Toolkit\VERSION, true );
 
 		wp_localize_script(
 			'seo-wp-import-wizard',
@@ -107,15 +107,15 @@ final class ImportWizard {
 				'action'           => self::AJAX_ACTION,
 				'deactivateAction' => self::DEACTIVATE_AJAX_ACTION,
 				'i18n'             => array(
-					'processing'        => __( 'Processing…', 'seo-wp' ),
-					'done'              => __( 'Done.', 'seo-wp' ),
-					'error'             => __( 'Something went wrong.', 'seo-wp' ),
-					'deactivating'      => __( 'Deactivating…', 'seo-wp' ),
-					'deactivated'       => __( 'Deactivated.', 'seo-wp' ),
-					'deactivateFailed'  => __( 'Could not deactivate it automatically — deactivate it from the Plugins screen.', 'seo-wp' ),
-					'confirmDeactivate' => __( 'Deactivate this plugin now?', 'seo-wp' ),
+					'processing'        => __( 'Processing…', 'seooptimierung-toolkit' ),
+					'done'              => __( 'Done.', 'seooptimierung-toolkit' ),
+					'error'             => __( 'Something went wrong.', 'seooptimierung-toolkit' ),
+					'deactivating'      => __( 'Deactivating…', 'seooptimierung-toolkit' ),
+					'deactivated'       => __( 'Deactivated.', 'seooptimierung-toolkit' ),
+					'deactivateFailed'  => __( 'Could not deactivate it automatically — deactivate it from the Plugins screen.', 'seooptimierung-toolkit' ),
+					'confirmDeactivate' => __( 'Deactivate this plugin now?', 'seooptimierung-toolkit' ),
 					/* translators: {{processed}} and {{found}} are placeholders filled in by JavaScript, not sprintf() — keep them exactly as-is. */
-					'progressSummary'   => __( '{{processed}} checked, {{found}} with data', 'seo-wp' ),
+					'progressSummary'   => __( '{{processed}} checked, {{found}} with data', 'seooptimierung-toolkit' ),
 				),
 			)
 		);
@@ -133,14 +133,14 @@ final class ImportWizard {
 		$detected = $detector->detected();
 
 		echo '<div class="wrap seo-wp-import-wizard">';
-		echo '<h1>' . esc_html__( 'SEO-WP Import', 'seo-wp' ) . '</h1>';
+		echo '<h1>' . esc_html__( 'Seooptimierung Toolkit Import', 'seooptimierung-toolkit' ) . '</h1>';
 
 		if ( array() === $detected ) {
-			echo '<p>' . esc_html__( 'No supported SEO plugin data was detected on this site.', 'seo-wp' ) . '</p></div>';
+			echo '<p>' . esc_html__( 'No supported SEO plugin data was detected on this site.', 'seooptimierung-toolkit' ) . '</p></div>';
 			return;
 		}
 
-		echo '<p>' . esc_html__( 'Data was found from the plugins below. Object meta, term meta and (Yoast/Rank Math) global settings are imported; redirects are never migrated. Safe to re-run: a field already set in SEO-WP — whether from a previous import or edited by hand — is never overwritten, so running this again only picks up new or previously-empty content.', 'seo-wp' ) . '</p>';
+		echo '<p>' . esc_html__( 'Data was found from the plugins below. Object meta, term meta and (Yoast/Rank Math) global settings are imported; redirects are never migrated. Safe to re-run: a field already set in Seooptimierung Toolkit — whether from a previous import or edited by hand — is never overwritten, so running this again only picks up new or previously-empty content.', 'seooptimierung-toolkit' ) . '</p>';
 
 		foreach ( $detected as $source ) {
 			$this->render_source_section( $source, $detector->redirects_present( $source ) );
@@ -160,12 +160,12 @@ final class ImportWizard {
 		printf( '<h2>%s</h2>', esc_html( self::SOURCES[ $source ] ?? $source ) );
 
 		if ( $has_redirects ) {
-			echo '<p class="description">' . esc_html__( 'Redirects were also found for this plugin and will not be imported.', 'seo-wp' ) . '</p>';
+			echo '<p class="description">' . esc_html__( 'Redirects were also found for this plugin and will not be imported.', 'seooptimierung-toolkit' ) . '</p>';
 		}
 
 		echo '<p>';
-		echo '<button type="button" class="button seo-wp-import-run" data-seo-wp-dry-run="1">' . esc_html__( 'Dry run (preview only)', 'seo-wp' ) . '</button> ';
-		echo '<button type="button" class="button button-primary seo-wp-import-run" data-seo-wp-dry-run="0">' . esc_html__( 'Import now', 'seo-wp' ) . '</button>';
+		echo '<button type="button" class="button seo-wp-import-run" data-seo-wp-dry-run="1">' . esc_html__( 'Dry run (preview only)', 'seooptimierung-toolkit' ) . '</button> ';
+		echo '<button type="button" class="button button-primary seo-wp-import-run" data-seo-wp-dry-run="0">' . esc_html__( 'Import now', 'seooptimierung-toolkit' ) . '</button>';
 		echo '</p>';
 		echo '<div class="seo-wp-import-progress" hidden><progress max="100" value="0"></progress> <span class="seo-wp-import-status"></span></div>';
 		echo '<div class="seo-wp-import-log"></div>';
@@ -176,7 +176,7 @@ final class ImportWizard {
 				esc_html(
 					sprintf(
 						/* translators: %s: plugin name, e.g. "Yoast SEO". */
-						__( 'Deactivate %s now', 'seo-wp' ),
+						__( 'Deactivate %s now', 'seooptimierung-toolkit' ),
 						PluginRegistry::label( $source )
 					)
 				)
@@ -195,7 +195,7 @@ final class ImportWizard {
 		check_ajax_referer( self::NONCE_ACTION, 'nonce' );
 
 		if ( ! current_user_can( self::CAPABILITY ) ) {
-			Ajax::error( array( 'message' => __( 'You are not allowed to do this.', 'seo-wp' ) ), 403 );
+			Ajax::error( array( 'message' => __( 'You are not allowed to do this.', 'seooptimierung-toolkit' ) ), 403 );
 		}
 
 		$source  = isset( $_POST['source'] ) ? sanitize_key( wp_unslash( $_POST['source'] ) ) : '';
@@ -204,7 +204,7 @@ final class ImportWizard {
 		$dry_run = ! empty( $_POST['dry_run'] );
 
 		if ( ! isset( self::SOURCES[ $source ] ) ) {
-			Ajax::error( array( 'message' => __( 'Unknown source.', 'seo-wp' ) ), 400 );
+			Ajax::error( array( 'message' => __( 'Unknown source.', 'seooptimierung-toolkit' ) ), 400 );
 		}
 
 		$batch = new Batch();
@@ -260,18 +260,18 @@ final class ImportWizard {
 		check_ajax_referer( self::NONCE_ACTION, 'nonce' );
 
 		if ( ! current_user_can( self::CAPABILITY ) || ! current_user_can( 'activate_plugins' ) ) {
-			Ajax::error( array( 'message' => __( 'You are not allowed to do this.', 'seo-wp' ) ), 403 );
+			Ajax::error( array( 'message' => __( 'You are not allowed to do this.', 'seooptimierung-toolkit' ) ), 403 );
 		}
 
 		$source = isset( $_POST['source'] ) ? sanitize_key( wp_unslash( $_POST['source'] ) ) : '';
 		if ( ! isset( self::SOURCES[ $source ] ) ) {
-			Ajax::error( array( 'message' => __( 'Unknown source.', 'seo-wp' ) ), 400 );
+			Ajax::error( array( 'message' => __( 'Unknown source.', 'seooptimierung-toolkit' ) ), 400 );
 		}
 
 		if ( ! PluginRegistry::deactivate( $source ) ) {
-			Ajax::error( array( 'message' => __( 'Could not deactivate it automatically — deactivate it from the Plugins screen.', 'seo-wp' ) ), 500 );
+			Ajax::error( array( 'message' => __( 'Could not deactivate it automatically — deactivate it from the Plugins screen.', 'seooptimierung-toolkit' ) ), 500 );
 		}
 
-		Ajax::success( array( 'message' => __( 'Deactivated.', 'seo-wp' ) ) );
+		Ajax::success( array( 'message' => __( 'Deactivated.', 'seooptimierung-toolkit' ) ) );
 	}
 }

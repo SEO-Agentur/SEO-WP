@@ -2,12 +2,12 @@
 /**
  * WebSite schema node.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Schema\Nodes;
+namespace Seooptimierung\Toolkit\Schema\Nodes;
 
 /**
  * Builds the WebSite JSON-LD node.

@@ -2,18 +2,18 @@
 /**
  * Tests for parsing Yoast's comma-separated advanced robots field.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Tests\Unit;
+namespace Seooptimierung\Toolkit\Tests\Unit;
 
-use SeoWp\Import\YoastImporter;
+use Seooptimierung\Toolkit\Import\YoastImporter;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \SeoWp\Import\YoastImporter
+ * @covers \Seooptimierung\Toolkit\Import\YoastImporter
  */
 final class YoastImporterTest extends TestCase {
 

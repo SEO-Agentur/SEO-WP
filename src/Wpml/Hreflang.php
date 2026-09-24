@@ -2,15 +2,15 @@
 /**
  * Hreflang alternates computation and rendering.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Wpml;
+namespace Seooptimierung\Toolkit\Wpml;
 
-use SeoWp\Support\FragmentCache;
-use SeoWp\Support\Url;
+use Seooptimierung\Toolkit\Support\FragmentCache;
+use Seooptimierung\Toolkit\Support\Url;
 use WP_Post;
 use WP_Term;
 
@@ -20,7 +20,7 @@ use WP_Term;
  * plugin exposes the wpml_active_languages filter — the two are never
  * active together in practice, and this order keeps this class the single
  * hreflang sender regardless of which is installed), applies the
- * seo_wp/hreflang/alternates and seo_wp/hreflang/managed_externally
+ * seooptimierung/hreflang/alternates and seooptimierung/hreflang/managed_externally
  * filters, and renders the head output. The sole hreflang sender for the
  * slim-hreflang plugin contract; apply_contract() is the shared entry
  * point the sitemap's xhtml:link output (Sitemaps\HreflangAlternates)
@@ -99,14 +99,14 @@ final class Hreflang {
 	 */
 	public static function apply_contract( array $alternates, array $context ): array {
 		// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- namespaced hook name is part of the binding slim-hreflang compatibility contract, fixed on both sides.
-		$managed_externally = apply_filters( 'seo_wp/hreflang/managed_externally', false, $context );
+		$managed_externally = apply_filters( 'seooptimierung/hreflang/managed_externally', false, $context );
 
 		if ( $managed_externally ) {
 			$alternates = array();
 		}
 
 		// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- namespaced hook name is part of the binding slim-hreflang compatibility contract, fixed on both sides.
-		return apply_filters( 'seo_wp/hreflang/alternates', $alternates, $context );
+		return apply_filters( 'seooptimierung/hreflang/alternates', $alternates, $context );
 	}
 
 	/**

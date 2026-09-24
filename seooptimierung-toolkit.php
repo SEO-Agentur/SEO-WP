@@ -1,32 +1,32 @@
 <?php
 /**
- * Plugin Name:       SEO-WP
- * Plugin URI:        https://seo-wp.net
+ * Plugin Name:       Seooptimierung Toolkit
+ * Plugin URI:        https://seooptimierung.de/seo-toolkit
  * Description:       A slim, page-type-agnostic SEO plugin with full WPML and Polylang compatibility: meta tags, social meta, JSON-LD schema, XML sitemaps and crawl control.
- * Version:           1.4.8
+ * Version:           1.5.0
  * Requires at least: 6.4
  * Requires PHP:      8.1
  * Author:            Cyrus Badde
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:       seo-wp
+ * Text Domain:       seooptimierung-toolkit
  * Domain Path:       /languages
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp;
+namespace Seooptimierung\Toolkit;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-const VERSION  = '1.4.8';
+const VERSION  = '1.5.0';
 const FILE     = __FILE__;
 const DIR      = __DIR__;
-const BASENAME = 'seo-wp/seo-wp.php';
+const BASENAME = 'seooptimierung-toolkit/seooptimierung-toolkit.php';
 
 require_once __DIR__ . '/src/Autoloader.php';
 Autoloader::register();

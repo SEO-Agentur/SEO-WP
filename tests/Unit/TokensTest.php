@@ -2,18 +2,18 @@
 /**
  * Tests for internal token resolution and cross-plugin template conversion.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Tests\Unit;
+namespace Seooptimierung\Toolkit\Tests\Unit;
 
-use SeoWp\Templates\Tokens;
+use Seooptimierung\Toolkit\Templates\Tokens;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \SeoWp\Templates\Tokens
+ * @covers \Seooptimierung\Toolkit\Templates\Tokens
  */
 final class TokensTest extends TestCase {
 

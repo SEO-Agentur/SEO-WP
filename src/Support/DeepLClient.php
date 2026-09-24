@@ -2,12 +2,12 @@
 /**
  * Minimal HTTP client for the DeepL translation API.
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Support;
+namespace Seooptimierung\Toolkit\Support;
 
 use WP_Error;
 
@@ -79,7 +79,7 @@ final class DeepLClient {
 
 		$translated = $body['translations'][0]['text'] ?? null;
 		if ( ! is_string( $translated ) || '' === $translated ) {
-			return new WP_Error( 'seo_wp_deepl_error', __( 'DeepL returned no translation.', 'seo-wp' ) );
+			return new WP_Error( 'seo_wp_deepl_error', __( 'DeepL returned no translation.', 'seooptimierung-toolkit' ) );
 		}
 
 		return $translated;

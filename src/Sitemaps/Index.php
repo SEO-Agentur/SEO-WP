@@ -2,12 +2,12 @@
 /**
  * Sitemap index (/sitemap.xml).
  *
- * @package SeoWp
+ * @package Seooptimierung\Toolkit
  */
 
 declare(strict_types=1);
 
-namespace SeoWp\Sitemaps;
+namespace Seooptimierung\Toolkit\Sitemaps;
 
 /**
  * Renders the top-level sitemap index listing every post type and
