@@ -258,12 +258,18 @@ final class Settings {
 	 * item is visible.
 	 */
 	public function enqueue_menu_icon_style(): void {
+		// WordPress renders a URL icon as an <img> inside .wp-menu-image. Both
+		// states are drawn here as a fixed 20px background instead, with that
+		// <img> hidden — without an explicit background-size the 256px source
+		// would otherwise be painted at its native size over the sidebar.
 		$css = sprintf(
-			'#toplevel_page_%1$s .wp-menu-image { opacity: 1; }' .
+			'#toplevel_page_%1$s .wp-menu-image { opacity: 1; background: url(%2$s) center / 20px 20px no-repeat !important; }' .
+			'#toplevel_page_%1$s .wp-menu-image img { display: none; }' .
 			'#toplevel_page_%1$s:hover .wp-menu-image,' .
 			'#toplevel_page_%1$s.wp-has-current-submenu .wp-menu-image,' .
-			'#toplevel_page_%1$s.current .wp-menu-image { background-image: url(%2$s) !important; }',
+			'#toplevel_page_%1$s.current .wp-menu-image { background-image: url(%3$s) !important; }',
 			self::PAGE_SLUG,
+			esc_url( plugins_url( 'assets/admin/icons/menu-icon.png', \Seooptimierung\Toolkit\FILE ) ),
 			esc_url( plugins_url( 'assets/admin/icons/menu-icon-hover.png', \Seooptimierung\Toolkit\FILE ) )
 		);
 

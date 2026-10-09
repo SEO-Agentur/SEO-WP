@@ -3,7 +3,7 @@
  * Plugin Name:       Seooptimierung Toolkit
  * Plugin URI:        https://seooptimierung.de/seo-toolkit
  * Description:       A slim, page-type-agnostic SEO plugin with full WPML and Polylang compatibility: meta tags, social meta, JSON-LD schema, XML sitemaps and crawl control.
- * Version:           1.5.0
+ * Version:           1.5.1
  * Requires at least: 6.4
  * Requires PHP:      8.1
  * Author:            Cyrus Badde
@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-const VERSION  = '1.5.0';
+const VERSION  = '1.5.1';
 const FILE     = __FILE__;
 const DIR      = __DIR__;
 const BASENAME = 'seooptimierung-toolkit/seooptimierung-toolkit.php';

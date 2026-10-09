@@ -5,7 +5,7 @@ Tags: seo, wpml, polylang, sitemap, schema
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.5.0
+Stable tag: 1.5.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -138,6 +138,9 @@ Seooptimierung Toolkit integrates with several third-party services. Every one i
 **Resource Hint Scanner** — contacted only when you click "Scan homepage for suggestions" under Settings > Performance. Fetches your *own* site's homepage (never a third party) to detect external script/stylesheet hosts worth preconnecting to. The result is a list of suggested lines you may choose to add to your own settings — nothing is applied automatically and nothing is sent anywhere else.
 
 == Changelog ==
+
+= 1.5.1 =
+* Fixed: the wp-admin menu icon was painted at its full 256px source size over the sidebar (visible bottom-left on every admin screen) instead of a 20px icon. Both icon states are now drawn as a fixed 20px background.
 
 = 1.5.0 =
 * Renamed the plugin from "SEO-WP" to "Seooptimierung Toolkit" (slug: `seooptimierung-toolkit`), following a WordPress.org review that flagged the discouraged term "wp" in the name/slug. The public filter API is renamed to match: `seo_wp/*` is now `seooptimierung/*` (`seooptimierung/title`, `seooptimierung/meta_description`, `seooptimierung/canonical`, `seooptimierung/opengraph/tags`, `seooptimierung/schema/graph`, `seooptimierung/sitemap/excluded_post_ids`, and the two-filter hreflang contract `seooptimierung/hreflang/alternates`/`seooptimierung/hreflang/managed_externally`) — a breaking change for any site using these filters or the slim-hreflang companion plugin, which needs a matching update.
