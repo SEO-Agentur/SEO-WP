@@ -58,13 +58,25 @@ final class Router {
 		add_action( 'deleted_post', array( $this, 'invalidate_cache' ) );
 		add_action( 'edited_term', array( $this, 'invalidate_cache' ) );
 		add_action( 'delete_term', array( $this, 'invalidate_cache' ) );
+		// Names, inclusion switches and the media sitemaps all live in the
+		// settings; without this a rename or switch would show up in the
+		// cached index only after the cache lifetime ran out.
+		add_action( 'update_option_' . self::OPTION_KEY, array( $this, 'invalidate_cache' ) );
 	}
 
 	/**
 	 * Adds the rewrite rules mapping sitemap URLs to query vars.
 	 */
 	public function add_rewrite_rules(): void {
+		add_rewrite_rule( '^index_sitemap\.xml$', 'index.php?seo_wp_sitemap=index', 'top' );
 		add_rewrite_rule( '^sitemap\.xml$', 'index.php?seo_wp_sitemap=index', 'top' );
+		// Configurable names: /sitemap_{name}.xml and /sitemap_{name}_{page}.xml,
+		// resolved against SitemapNames in maybe_render().
+		add_rewrite_rule(
+			'^sitemap_([a-z0-9-]+(?:_[a-z0-9-]+)*?)(?:_([0-9]+))?\.xml$',
+			'index.php?seo_wp_sitemap=named&seo_wp_sitemap_name=$matches[1]&seo_wp_sitemap_page=$matches[2]',
+			'top'
+		);
 		add_rewrite_rule( '^sitemap-news\.xml$', 'index.php?seo_wp_sitemap=news', 'top' );
 		add_rewrite_rule(
 			'^sitemap-posts-(.+)-([0-9]+)\.xml$',
@@ -105,9 +117,19 @@ final class Router {
 		$name = (string) get_query_var( 'seo_wp_sitemap_name' );
 		$page = max( 1, (int) get_query_var( 'seo_wp_sitemap_page' ) );
 
-		$xml = $this->cached_render( $type, $name, $page );
+		if ( 'named' === $type ) {
+			list( $type, $name ) = $this->resolve_named( $name );
+		}
+
+		$xml = '' === $type ? null : $this->cached_render( $type, $name, $page );
 
 		if ( null === $xml ) {
+			// Mark the main query as a real 404 as well: otherwise core's
+			// redirect_canonical() (priority 10, runs next) still sees a
+			// front-page-style request and 301s this URL to a trailing-slash
+			// variant that then 404s anyway.
+			global $wp_query;
+			$wp_query->set_404();
 			status_header( 404 );
 			nocache_headers();
 			return;
@@ -117,6 +139,40 @@ final class Router {
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- pre-built, self-escaping XML string from render().
 		echo $xml;
 		exit;
+	}
+
+	/**
+	 * Maps a /sitemap_{name}.xml name onto an internal sitemap type.
+	 * "index" (/sitemap_index.xml) is an alias for the index; an unknown
+	 * or switched-off name yields an empty type, answered with a 404.
+	 *
+	 * @param string $stem Name taken from the URL.
+	 * @return array{0:string,1:string} Internal type and post type/taxonomy slug.
+	 */
+	private function resolve_named( string $stem ): array {
+		if ( 'index' === $stem ) {
+			return array( 'index', '' );
+		}
+
+		$entry = SitemapNames::resolve( $stem );
+		if ( null === $entry || ! $entry['enabled'] ) {
+			return array( '', '' );
+		}
+
+		switch ( $entry['kind'] ) {
+			case SitemapNames::KIND_POST_TYPE:
+				return array( 'posts', $entry['slug'] );
+			case SitemapNames::KIND_TAXONOMY:
+				return array( 'taxonomies', $entry['slug'] );
+			case SitemapNames::KIND_IMAGES:
+				return array( 'images', '' );
+			case SitemapNames::KIND_VIDEO:
+				return array( 'video', '' );
+			case SitemapNames::KIND_NEWS:
+				return array( 'news', '' );
+			default:
+				return array( '', '' );
+		}
 	}
 
 	/**
@@ -187,6 +243,10 @@ final class Router {
 				return $page <= max( 1, ( new PostTypeSitemap() )->max_pages( $name ) );
 			case 'taxonomies':
 				return $page <= max( 1, ( new TaxonomySitemap() )->max_pages( $name ) );
+			case 'images':
+				return $page <= max( 1, ( new MediaSitemap() )->max_pages( SitemapNames::KIND_IMAGES ) );
+			case 'video':
+				return $page <= max( 1, ( new MediaSitemap() )->max_pages( SitemapNames::KIND_VIDEO ) );
 			default:
 				return false;
 		}
@@ -247,6 +307,10 @@ final class Router {
 				return ( new PostTypeSitemap() )->render( $name, $page );
 			case 'taxonomies':
 				return ( new TaxonomySitemap() )->render( $name, $page );
+			case 'images':
+				return ( new MediaSitemap() )->render( SitemapNames::KIND_IMAGES, $page );
+			case 'video':
+				return ( new MediaSitemap() )->render( SitemapNames::KIND_VIDEO, $page );
 			default:
 				return null;
 		}

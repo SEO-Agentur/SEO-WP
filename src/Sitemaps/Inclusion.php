@@ -43,10 +43,20 @@ final class Inclusion {
 	}
 
 	/**
-	 * Whether video:video entries should be added to sitemaps.
+	 * Whether the dedicated video sitemap exists. Off means no video:video
+	 * entries anywhere (they are never added to the post-type sitemaps).
 	 */
 	public static function video_sitemap(): bool {
 		return self::included( 'sitemap_include_video' );
+	}
+
+	/**
+	 * Whether the dedicated image sitemap exists. On moves the image:image
+	 * entries out of the post-type sitemaps into that file; off leaves
+	 * them where they were.
+	 */
+	public static function images_sitemap(): bool {
+		return self::included( 'sitemap_include_images' );
 	}
 
 	/**

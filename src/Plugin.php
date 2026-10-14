@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Seooptimierung\Toolkit;
 
 use Seooptimierung\Toolkit\Admin\AiSettings;
+use Seooptimierung\Toolkit\Admin\AuthorFields;
 use Seooptimierung\Toolkit\Admin\BulkEditor;
 use Seooptimierung\Toolkit\Admin\ContentFreshness;
 use Seooptimierung\Toolkit\Admin\Diagnostics;
@@ -71,7 +72,12 @@ final class Plugin {
 	 * Boot the plugin on plugins_loaded.
 	 */
 	public function init(): void {
-		load_plugin_textdomain( 'seooptimierung-toolkit', false, dirname( BASENAME ) . '/languages' );
+
+		// A plugin update replaces the files without running the activation
+		// hook, so rewrite rules added in a new version (sitemap names,
+		// llms.txt, ...) would stay unknown until someone flushed by hand.
+		// Runs after every other init callback has registered its rules.
+		add_action( 'init', array( self::class, 'maybe_flush_rewrite_rules' ), 99 );
 
 		( new Head() )->register();
 		( new Router() )->register();
@@ -99,6 +105,7 @@ final class Plugin {
 
 		if ( is_admin() ) {
 			( new Metabox() )->register();
+			( new AuthorFields() )->register();
 			( new Settings() )->register();
 			( new BulkEditor() )->register();
 			( new ImportWizard() )->register();
@@ -111,6 +118,18 @@ final class Plugin {
 			( new ContentFreshness() )->register();
 			( new AiSettings() )->register();
 		}
+	}
+
+	/**
+	 * Flushes rewrite rules once per plugin version.
+	 */
+	public static function maybe_flush_rewrite_rules(): void {
+		if ( VERSION === get_option( 'seo_wp_rewrite_version' ) ) {
+			return;
+		}
+
+		flush_rewrite_rules( false );
+		update_option( 'seo_wp_rewrite_version', VERSION, true );
 	}
 
 	/**

@@ -5,7 +5,7 @@ Tags: seo, wpml, polylang, sitemap, schema
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.5.1
+Stable tag: 1.6.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -17,85 +17,19 @@ Seooptimierung Toolkit covers the essentials of on-page and technical SEO withou
 
 Built and maintained by [Cyrus Badde](https://seooptimierung.de/seo-toolkit). If it saves you time, you can [buy me a coffee](https://buymeacoffee.com/cyrusbadde) — entirely optional, the plugin stays fully free either way.
 
-**Meta**
+**Meta & social:** title/description templates with Yoast/Rank Math/AIOSEO token syntax, robots meta, canonicals, Open Graph, Twitter Cards, live previews.
 
-* Title and meta description templates, with a token system compatible with Yoast, Rank Math and AIOSEO syntax (`%title%`, `%sitename%`, `%sep%`, `%excerpt%`, `%category%`, `%date%`, `%page%`, `%year%` — always the current year, for evergreen "{title} {year}" titles)
-* A read-only overview table at the top of the Content Types settings tab summarising every currently configured title/description template, so the full picture is visible without scrolling through the editable fields
-* Robots meta directives (noindex, nofollow, noarchive, nosnippet, noimageindex), layered on top of WordPress core's own `wp_robots` output rather than duplicating it
-* Self-referencing canonical URLs, correctly paginated, WPML/Polylang-aware
+**Structured data:** one deduplicated JSON-LD graph (WebSite, Organization/Person/LocalBusiness, WebPage, Article, BreadcrumbList, FAQPage, Product).
 
-**Social & structured data**
+**Sitemaps:** an index plus one readable, renamable sitemap per content type and taxonomy (`sitemap_page.xml`, `sitemap_posts.xml`, `sitemap_products.xml` …), dedicated image, video and news sitemaps, each switchable.
 
-* Open Graph and Twitter Card meta, with a shared image fallback (per-object override → featured image → site logo → site icon) — the same resolution, and the same override field, also supplies the Article/Product schema image, so social and structured data never disagree
-* A single deduplicated JSON-LD `@graph`: WebSite, Organization/Person/LocalBusiness, WebPage, Article (for non-hierarchical post types), BreadcrumbList, FAQPage, and Product when WooCommerce is active — exactly one primary content node per URL, never Article and Product stacked on the same page
-* Local business identity: set "Site represents" to "A local business" for a full LocalBusiness node (or any more specific Schema.org business type — Restaurant, Store, ProfessionalService, and so on) with address, geo coordinates, phone, price range and opening hours, on the same Organization node rather than a second competing one
-* The schema type of that primary content node is freely overridable per post *and* per taxonomy term (with autocomplete suggestions, but any Schema.org type name is accepted) — a specific article, product, product category, or plain category page can each be set independently
-* Product schema includes an `aggregateRating` node (star ratings in search results) whenever a WooCommerce product has reviews, sourced directly from WooCommerce's own rating data, plus optional brand/GTIN/MPN/price-valid-until fields and the full WooCommerce image gallery — none of which WooCommerce core has a field for, so they're edited in the Seooptimierung Toolkit metabox's Schema tab
-* A live Google search-result preview and social share-card preview in the metabox, updating as you type the title/description/social fields (falling back to the post title/excerpt when those are left empty) — mirrored in a block editor sidebar panel too, so the title/description fields and a live length traffic-light badge stay visible without scrolling down to the metabox
+**Crawl control:** robots.txt, llms.txt / llms-full.txt, redirects with a 404 monitor, IndexNow, Google Indexing API, staging protection.
 
-**Sitemaps**
+**Performance & security:** a WordPress Cleanup page for unused core features, critical CSS, a resource-hint scanner, and a Security Headers page (HSTS, CSP, X-Frame-Options, Referrer-Policy, Permissions-Policy, X-Content-Type-Options) with a live check.
 
-* Dynamic XML sitemaps (post types, taxonomies, images, videos, news) with no physical files written to the webroot, cached in the object cache — every public post type and taxonomy is included automatically, WooCommerce products and product categories among them, with no special-casing needed
-* Per-post-type and per-taxonomy inclusion toggles on the Sitemaps settings tab, so any type (including products/product categories) can be excluded individually
-* Image and video sitemap entries are extracted from the fully rendered page output, not raw post content — so pages built with Divi, WPBakery or other shortcode/dynamic-content builders still get their media listed, not just Gutenberg block markup. A video entry is only added when a real thumbnail is actually available (a self-hosted `<video poster>`, or a YouTube embed's own well-known thumbnail URL) rather than guessing one
-* An independent toggle to leave hreflang alternates out of sitemaps entirely (Settings > Sitemaps), for setups that want the per-page `<link rel="alternate">` tags to be the only source of truth
-* Optionally disables WordPress core's own `/wp-sitemap.xml`
+**Multilingual:** hreflang for WPML and Polylang, x-default control, optional companion plugin for separate installations.
 
-**Crawl control**
-
-* A virtual, editable robots.txt with an AI-crawler opt-out toggle (GPTBot, ClaudeBot, CCBot, PerplexityBot and others) and a Sitemap line
-* A virtual `/llms.txt` and optional `/llms-full.txt` — both auto-generated, plus a free-text field for content you write yourself, appended after the generated list
-* Google/Bing/Baidu/Pinterest/Yandex site verification meta tags
-* Optional author/date archive disabling
-* Attachment pages: redirect to the parent post (default), keep reachable but noindexed, or leave to WordPress core
-* Optionally strips the `<a>` WordPress wraps around an inserted image when it links to that image's own attachment page — the image itself is untouched, and only a genuine self-link is removed, never a deliberate link to something else
-* IndexNow support (Bing, Yandex, Seznam, Naver — Google does not participate): pings on publish/update/delete, serves the required key file
-* Google Instant Indexing: pings Google's Indexing API on publish/update/delete using a Google Cloud service account (signed JWT/OAuth2, no third-party library), per post type, with a submission history log
-* A redirect manager (exact source path or regular expression → target URL, with `$1`/`$2` backreferences in the target for pattern rules, 301/302/307/410/451) with CSV import/export, and a 404 monitor that logs real broken-link hits with a one-click "create redirect" action
-* Staging-site protection: a dismissible admin notice when the site's own URL looks like a staging/development environment (staging./dev./.local/.test subdomains, common host-provider staging domains, bare IP addresses), with a one-click "noindex this entire site" action — plus the same override as a plain settings checkbox, independent of detection. When on, it overrides every other robots setting on every page, site-wide
-
-**Performance**
-
-* A large set of opt-in, off-by-default toggles (Settings > Performance): strip WordPress's own generator/RSD/wlwmanifest/shortlink/adjacent-post links, disable emojis/embeds/Dashicons, limit or disable post revisions, override the autosave interval, control the Heartbeat API, disable comments sitewide, block Google Maps scripts, trim WooCommerce assets outside shop pages, disable XML-RPC, remove jQuery Migrate, disable or trim RSS feeds, disable self-pingbacks, and restrict the REST API to logged-in users
-* A hand-written Critical CSS field (inlined in `<head>`) with an independent toggle to load every other stylesheet non-blocking — this plugin never guesses at critical CSS itself, since that requires actually rendering the page
-* A manual resource-hints field (preconnect/dns-prefetch/preload/prefetch/prerender) plus a "Scan homepage for suggestions" button that fetches your own front page, lists every external script/stylesheet origin found, and lets you add the ones you want — never inserted automatically
-* Settings > Server: HTTPS/canonical-URL redirects and security headers (HSTS, CORS, modern MIME types) applied in pure PHP, working on any web server; gzip/Brotli/browser caching, hotlink protection and directory-browsing prevention via a reviewable, one-click-apply `.htaccess` block on Apache/LiteSpeed (only where PHP genuinely can't reach — a static asset request never runs WordPress at all)
-
-**WPML & Polylang**
-
-* Full hreflang support via WPML's own translation data, or natively via Polylang when WPML isn't active — only existing, translation-plugin-confirmed alternates are ever emitted, self-reference always included, `x-default` configurable. With neither (nor a compatible plugin) active, no hreflang or `x-default` tags are output at all
-* The *same* hreflang output (and the same third-party compatibility filters) in both the document head and every sitemap URL entry, for WPML and Polylang alike
-* Title/description templates are translatable per language via WPML String Translation
-* Designed as a companion to the separate `slim-hreflang` plugin: this plugin is the sole hreflang sender and exposes the `seooptimierung/hreflang/alternates` and `seooptimierung/hreflang/managed_externally` filters so other plugins can extend, override, or fully take over its output
-
-**Import**
-
-* Non-destructive, dry-run capable, paginated import from Yoast SEO, Rank Math and All in One SEO — object meta, term meta, and (Yoast and Rank Math) author archive noindex settings; AIOSEO has no per-author SEO settings to import. Rank Math's Schema.org type mapping specifically is best-effort — Rank Math's internal type slugs (both the legacy dropdown and the newer per-post Schema Generator) are translated via an inferred lookup that hasn't been verified against Rank Math's own source, so always spot-check imported schema types in the dry-run preview
-* Site-wide settings (title/description templates, separator, Twitter handle) are also imported from Yoast (high confidence — a stable option layout) and Rank Math (moderate confidence — flag any surprising result and adjust by hand); AIOSEO's settings format isn't imported, since it was never verified with enough confidence to map safely
-* Existing redirect rules from another plugin are never migrated automatically; the import wizard flags when a source has redirect data so you can recreate it in Seooptimierung Toolkit's own Redirects screen
-* An explicit "Deactivate {plugin} now" button appears after a real (non-dry-run) import completes — never automatic, and only shown when that plugin is actually confirmed active
-* Safe to re-run at any time: a field already set in Seooptimierung Toolkit — whether from an earlier import or edited by hand — is never overwritten, so running the import again only fills in what's still empty
-* Coexistence Mode (Settings > General): for when Yoast SEO or Rank Math needs to stay active instead of being replaced — Seooptimierung Toolkit stops printing its own title/meta description/canonical/Open Graph/Twitter Card/schema output, and the Bulk Editor redirects to that plugin's own fields instead
-
-**Admin**
-
-* A tabbed metabox (General/Social/Schema) on every public post type's edit screen, and the same General/Social/Schema fields on taxonomy term edit screens (the FAQ repeater is post-only) — the General tab also has an optional focus keyword field, used as a hint by the AI bulk-edit suggestions below, not for any scoring feature
-* A single settings screen (General/Content Types/Sitemaps/Crawl) — the Content Types tab is generated from your site's actual registered post types and taxonomies
-* A bulk editor for Title/Description/Canonical/Robots across every public post type
-* Bring-your-own-key AI in the Bulk Editor: Claude or OpenAI generate a title/description pair in a "{keyword}: {USP} | {USP} > {CTA}" template from the page's URL, content and focus keyword — written straight into the row's fields for review, never saved until you click "Save changes"; a one-click action offers suggestions for every still-empty field on the page. DeepL translates a row's title/description into every other WPML-linked translation of that post. Every provider is entirely optional, configured with your own API key on the new AI Settings page, and never called except on an explicit click — no proxying, no markup on your usage
-* A Duplicate Content Checker finding posts that share the exact same *effective* title or meta description — the value actually used on the front end, whether from a manual override or a rendered template
-* A Content Freshness report listing published posts that haven't been updated within a threshold you choose (3/6/12/24/36 months) — purely informational, nothing here changes anything automatically
-* A persistent Link Audit finding orphan pages, broken links and redirect chains across content, rendered templates, menus and widgets; large audits continue server-side after the browser tab is closed
-* A guided import wizard with a live progress log
-* A Diagnostics page recording anything that went wrong during detection or import (a database error, an unexpected data shape), with a site-wide admin notice when something needs attention
-* A Role Manager controlling which WordPress roles can access which parts of the plugin (settings, metabox editing, bulk editor, import, diagnostics, redirects, 404 monitor, duplicate checker, link audit, content freshness), via virtual capabilities rather than rewriting your roles — safe to enable/disable at any time, and a no-op until you actively configure it
-
-**Developers**
-
-* `seooptimierung/title`, `seooptimierung/meta_description` and `seooptimierung/canonical` filter the final title/description/canonical, after Seooptimierung Toolkit's own override and template resolution
-* `seooptimierung/opengraph/tags` filters the full set of `og:*` tags before they're printed; `seooptimierung/schema/graph` filters the collected JSON-LD nodes before `@id` deduplication, so another plugin can add or replace a node
-* None of the above are attached to anything by default — a site that never uses them pays no cost for their existence
-* Full parameter reference, examples and the public constants/methods worth calling directly (redirect matching, staging detection, Coexistence Mode's own state) are in `docs/DEVELOPERS.md` in the plugin's source repository
+**Import & admin:** non-destructive import from Yoast SEO, Rank Math and All in One SEO, bulk editor with optional AI suggestions (your own key), link audit, duplicate checker, role manager, public filters for developers.
 
 == Installation ==
 
@@ -135,9 +69,22 @@ Seooptimierung Toolkit integrates with several third-party services. Every one i
 
 **DeepL** — contacted only when you click "Translate" in the Bulk Editor on a WPML-enabled site with a DeepL API key configured. Sends the row's title/description text to DeepL's Translate API, once per target language, and writes the result straight into that language's own WPML-linked post. Bring-your-own-key. [DeepL Terms & Conditions](https://www.deepl.com/en/pro-license), [DeepL Privacy Policy](https://www.deepl.com/en/privacy).
 
-**Resource Hint Scanner** — contacted only when you click "Scan homepage for suggestions" under Settings > Performance. Fetches your *own* site's homepage (never a third party) to detect external script/stylesheet hosts worth preconnecting to. The result is a list of suggested lines you may choose to add to your own settings — nothing is applied automatically and nothing is sent anywhere else.
+**Resource Hint Scanner** — contacted only when you click "Scan site for suggestions" under Settings > Performance. Fetches your *own* site's pages (the home page and the newest post of a few content types) and your *own* stylesheets — never a third-party URL — to detect which external origins they load scripts, styles, fonts, images and media from. The result is a list of suggested lines you may choose to add to your own settings — nothing is applied automatically and nothing is sent anywhere else.
 
 == Changelog ==
+
+= 1.6.0 =
+* New: a dedicated **Security Headers** page. X-Content-Type-Options, Referrer-Policy (policy selectable), X-Frame-Options (SAMEORIGIN/DENY), Permissions-Policy (editable), HSTS (max-age, includeSubDomains, preload with validation) and a Content-Security-Policy (report-only by default, editable policy, public pages only) each have their own switch. A "Check headers now" button shows which headers the home page really sends and flags duplicates. Sites that used the old combined "security headers" / "HSTS" checkboxes keep the same behaviour until the page is saved.
+* New: sitemaps are served under readable, configurable names — `index_sitemap.xml` plus `sitemap_posts.xml`, `sitemap_page.xml`, `sitemap_category.xml`, `sitemap_tags.xml`, `sitemap_products.xml`, `sitemap_product-category.xml`, and dedicated `sitemap_images.xml` and `sitemap_video.xml` (image/video entries move out of the content sitemaps while those are on). The Sitemaps page has an on/off switch and an editable file name per sitemap. The old `sitemap.xml`, `sitemap-posts-*`, `sitemap-taxonomies-*` and `sitemap-news.xml` URLs keep working. robots.txt now advertises `index_sitemap.xml`.
+* New: a dedicated **WordPress Cleanup** page (the former "unused scripts and assets" toggles from the Performance tab, grouped, each with an "only needed if" note) with nine more switches: X-Pingback header, block-library CSS, global styles/SVG filters, application passwords, username enumeration, neutral login errors, `?ver=` removal, Recent Comments style and dashboard news widgets. All saved settings carry over unchanged.
+* Changed: the resource-hint scanner now loads the home page plus sample pages and their stylesheets, reports scripts, styles, fonts, images, embeds and media per origin with counts, page counts and "already hinted" markers, and suggests font preloads.
+* Changed: rewrite rules are flushed automatically once after a plugin update, so new sitemap URLs work without re-saving permalinks. Sitemap caches are cleared whenever settings are saved.
+* New: a "Noindex this author's archive" checkbox on every user profile (the setting existed internally and was only reachable through the Yoast/Rank Math importers), and the x-default hreflang setting can now be pinned to one specific active language, not just the translation plugin's default or off.
+* Fixed: sitemap and llms.txt URLs that answer "not found" (unknown, switched off or empty) now return a real 404 instead of a redirect to a trailing-slash URL. A video that appears twice in one post (pasted URL plus iframe) is listed once. The "Check headers now" result also tells apart headers a CDN or proxy replaces.
+* Removed: unused internal helpers (`Url::with_trailing_slash()`, `Url::equals()`, the previous scanner's host-count helpers).
+* Changed: every entry in `/llms.txt` now carries the page's meta description (override or template, falling back to the excerpt). `/llms-full.txt` additionally includes each page's plain-text body (shortcodes are stripped, never executed; capped at 3000 characters per entry).
+* Fixed: titles in `/llms.txt` showed raw HTML entities such as `&#038;`; they are now plain text.
+* Fixed: the Sitemaps settings tab only mentioned core's `/wp-sitemap.xml`; it now states this plugin's sitemap index URL.
 
 = 1.5.1 =
 * Fixed: the wp-admin menu icon was painted at its full 256px source size over the sidebar (visible bottom-left on every admin screen) instead of a 20px icon. Both icon states are now drawn as a fixed 20px background.

@@ -63,6 +63,18 @@ final class Optimizations {
 		add_action( 'init', array( $this, 'maybe_trim_head_output' ) );
 		add_action( 'pre_ping', array( $this, 'maybe_remove_self_pingbacks' ) );
 		add_filter( 'rest_authentication_errors', array( $this, 'maybe_restrict_rest_api' ) );
+
+		add_filter( 'wp_headers', array( $this, 'maybe_remove_x_pingback_header' ) );
+		add_action( 'wp_enqueue_scripts', array( $this, 'maybe_dequeue_block_library_css' ), 100 );
+		add_action( 'init', array( $this, 'maybe_disable_global_styles' ) );
+		add_filter( 'wp_is_application_passwords_available', array( $this, 'maybe_disable_application_passwords' ) );
+		add_action( 'template_redirect', array( $this, 'maybe_block_author_enumeration' ), 0 );
+		add_filter( 'rest_endpoints', array( $this, 'maybe_hide_rest_user_endpoints' ) );
+		add_filter( 'login_errors', array( $this, 'maybe_generic_login_errors' ) );
+		add_filter( 'script_loader_src', array( $this, 'maybe_remove_asset_version' ), 15 );
+		add_filter( 'style_loader_src', array( $this, 'maybe_remove_asset_version' ), 15 );
+		add_action( 'widgets_init', array( $this, 'maybe_remove_recent_comments_style' ) );
+		add_action( 'wp_dashboard_setup', array( $this, 'maybe_remove_dashboard_widgets' ), 999 );
 	}
 
 	/**
@@ -139,7 +151,7 @@ final class Optimizations {
 			array_filter(
 				$urls,
 				static function ( $url ): bool {
-					return false === strpos( (string) $url, 'https://s.w.org/images/core/emoji' );
+					return false === strpos( (string) $url, '/images/core/emoji' );
 				}
 			)
 		);
@@ -554,5 +566,147 @@ final class Optimizations {
 			__( 'The REST API is restricted to logged-in users on this site.', 'seooptimierung-toolkit' ),
 			array( 'status' => 401 )
 		);
+	}
+
+	// -- Further front-end and request clutter -------------------------
+
+	/**
+	 * Drops the X-Pingback response header that advertises xmlrpc.php.
+	 *
+	 * @param array<string,string> $headers Response headers about to be sent.
+	 * @return array<string,string>
+	 */
+	public function maybe_remove_x_pingback_header( array $headers ): array {
+		if ( $this->enabled( 'remove_x_pingback_header' ) ) {
+			unset( $headers['X-Pingback'] );
+		}
+
+		return $headers;
+	}
+
+	/**
+	 * Dequeues the block editor's front-end stylesheets, for classic
+	 * themes whose content doesn't use block styles at all.
+	 */
+	public function maybe_dequeue_block_library_css(): void {
+		if ( ! $this->enabled( 'disable_block_library_css' ) || is_admin() ) {
+			return;
+		}
+
+		foreach ( array( 'wp-block-library', 'wp-block-library-theme', 'classic-theme-styles', 'wc-blocks-style' ) as $handle ) {
+			wp_dequeue_style( $handle );
+		}
+	}
+
+	/**
+	 * Stops the inline "global styles" CSS and SVG duotone filters that
+	 * block themes (and theme.json) print on every page.
+	 */
+	public function maybe_disable_global_styles(): void {
+		if ( ! $this->enabled( 'disable_global_styles' ) ) {
+			return;
+		}
+
+		remove_action( 'wp_enqueue_scripts', 'wp_enqueue_global_styles' );
+		remove_action( 'wp_footer', 'wp_enqueue_global_styles', 1 );
+		remove_action( 'wp_body_open', 'wp_global_styles_render_svg_filters' );
+	}
+
+	/**
+	 * Turns off application passwords (REST API logins that bypass the
+	 * normal login form).
+	 *
+	 * @param bool $available Whether application passwords are available.
+	 */
+	public function maybe_disable_application_passwords( bool $available ): bool {
+		return $this->enabled( 'disable_application_passwords' ) ? false : $available;
+	}
+
+	/**
+	 * Sends visitors who probe /?author=1 back to the home page, so
+	 * usernames can't be enumerated that way.
+	 */
+	public function maybe_block_author_enumeration(): void {
+		if ( ! $this->enabled( 'block_user_enumeration' ) || is_user_logged_in() ) {
+			return;
+		}
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only probe detection on a public request, nothing is changed.
+		$author = isset( $_GET['author'] ) ? sanitize_text_field( wp_unslash( (string) $_GET['author'] ) ) : '';
+		if ( '' !== $author ) {
+			wp_safe_redirect( home_url( '/' ), 301 );
+			exit;
+		}
+	}
+
+	/**
+	 * Hides the REST user listing from anonymous requests.
+	 *
+	 * @param array<string,mixed> $endpoints Registered REST routes.
+	 * @return array<string,mixed>
+	 */
+	public function maybe_hide_rest_user_endpoints( array $endpoints ): array {
+		if ( ! $this->enabled( 'block_user_enumeration' ) || is_user_logged_in() ) {
+			return $endpoints;
+		}
+
+		unset( $endpoints['/wp/v2/users'], $endpoints['/wp/v2/users/(?P<id>[\d]+)'] );
+
+		return $endpoints;
+	}
+
+	/**
+	 * Replaces the login screen's detailed error ("unknown username",
+	 * "wrong password") with one neutral message.
+	 *
+	 * @param string $error Original error markup.
+	 */
+	public function maybe_generic_login_errors( string $error ): string {
+		if ( ! $this->enabled( 'generic_login_errors' ) ) {
+			return $error;
+		}
+
+		return esc_html__( 'The username or password is incorrect.', 'seooptimierung-toolkit' );
+	}
+
+	/**
+	 * Removes the "?ver=" query string from local script and style URLs.
+	 * Off by default: the version is what makes browsers re-download an
+	 * asset after an update.
+	 *
+	 * @param string $src Asset URL.
+	 */
+	public function maybe_remove_asset_version( string $src ): string {
+		if ( ! $this->enabled( 'remove_asset_versions' ) || is_admin() || false === strpos( $src, 'ver=' ) ) {
+			return $src;
+		}
+
+		return remove_query_arg( 'ver', $src );
+	}
+
+	/**
+	 * Removes the inline style the "Recent Comments" widget prints into
+	 * <head>.
+	 */
+	public function maybe_remove_recent_comments_style(): void {
+		if ( ! $this->enabled( 'remove_recent_comments_style' ) ) {
+			return;
+		}
+
+		add_filter( 'show_recent_comments_widget_style', '__return_false' );
+	}
+
+	/**
+	 * Removes the WordPress news/events and Quick Draft boxes from the
+	 * admin dashboard.
+	 */
+	public function maybe_remove_dashboard_widgets(): void {
+		if ( ! $this->enabled( 'remove_dashboard_widgets' ) ) {
+			return;
+		}
+
+		remove_meta_box( 'dashboard_primary', 'dashboard', 'side' );
+		remove_meta_box( 'dashboard_secondary', 'dashboard', 'side' );
+		remove_meta_box( 'dashboard_quick_press', 'dashboard', 'side' );
 	}
 }

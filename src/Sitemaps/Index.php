@@ -1,6 +1,6 @@
 <?php
 /**
- * Sitemap index (/sitemap.xml).
+ * Sitemap index (/index_sitemap.xml, also served at /sitemap.xml).
  *
  * @package Seooptimierung\Toolkit
  */
@@ -10,8 +10,10 @@ declare(strict_types=1);
 namespace Seooptimierung\Toolkit\Sitemaps;
 
 /**
- * Renders the top-level sitemap index listing every post type and
- * taxonomy sub-sitemap, plus the news sitemap when it has entries.
+ * Renders the top-level sitemap index: every enabled post type and
+ * taxonomy sub-sitemap, the image and video sitemaps when they have
+ * entries, and the news sitemap when it has entries. Each sitemap is
+ * listed under its configured name (see SitemapNames).
  */
 final class Index {
 
@@ -21,24 +23,48 @@ final class Index {
 	public function render(): string {
 		$sitemaps = array();
 
-		$post_sitemap = new PostTypeSitemap();
-		foreach ( get_post_types( array( 'public' => true ), 'names' ) as $post_type ) {
-			$pages = $post_sitemap->max_pages( $post_type );
-			for ( $page = 1; $page <= $pages; $page++ ) {
-				$sitemaps[] = home_url( "/sitemap-posts-{$post_type}-{$page}.xml" );
-			}
-		}
-
+		$post_sitemap     = new PostTypeSitemap();
 		$taxonomy_sitemap = new TaxonomySitemap();
-		foreach ( get_taxonomies( array( 'public' => true ), 'names' ) as $taxonomy ) {
-			$pages = $taxonomy_sitemap->max_pages( $taxonomy );
-			for ( $page = 1; $page <= $pages; $page++ ) {
-				$sitemaps[] = home_url( "/sitemap-taxonomies-{$taxonomy}-{$page}.xml" );
-			}
-		}
+		$media_sitemap    = new MediaSitemap();
 
-		if ( ( new NewsSitemap() )->has_entries() ) {
-			$sitemaps[] = home_url( '/sitemap-news.xml' );
+		foreach ( SitemapNames::entries() as $entry ) {
+			if ( ! $entry['enabled'] ) {
+				continue;
+			}
+
+			switch ( $entry['kind'] ) {
+				case SitemapNames::KIND_POST_TYPE:
+					$pages = $post_sitemap->max_pages( $entry['slug'] );
+					for ( $page = 1; $page <= $pages; $page++ ) {
+						$sitemaps[] = SitemapNames::url( $entry['stem'], $page );
+					}
+					break;
+
+				case SitemapNames::KIND_TAXONOMY:
+					$pages = $taxonomy_sitemap->max_pages( $entry['slug'] );
+					for ( $page = 1; $page <= $pages; $page++ ) {
+						$sitemaps[] = SitemapNames::url( $entry['stem'], $page );
+					}
+					break;
+
+				case SitemapNames::KIND_IMAGES:
+				case SitemapNames::KIND_VIDEO:
+					$pages = $media_sitemap->max_pages( $entry['kind'] );
+					for ( $page = 1; $page <= $pages; $page++ ) {
+						// A page of posts without any media renders as null; listing it
+						// would hand search engines a URL that answers 404.
+						if ( null !== $media_sitemap->render( $entry['kind'], $page ) ) {
+							$sitemaps[] = SitemapNames::url( $entry['stem'], $page );
+						}
+					}
+					break;
+
+				case SitemapNames::KIND_NEWS:
+					if ( ( new NewsSitemap() )->has_entries() ) {
+						$sitemaps[] = SitemapNames::url( $entry['stem'] );
+					}
+					break;
+			}
 		}
 
 		return $this->xml( $sitemaps );

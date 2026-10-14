@@ -67,7 +67,6 @@ final class PostTypeSitemap {
 		}
 
 		$image_sitemap = new ImageSitemap();
-		$video_sitemap = new VideoSitemap();
 		$hreflang      = new HreflangAlternates();
 		$urls          = array();
 
@@ -82,8 +81,12 @@ final class PostTypeSitemap {
 			$urls[] = array(
 				'loc'        => $permalink,
 				'lastmod'    => (string) get_post_modified_time( DATE_W3C, true, $post_id ),
-				'images'     => $image_sitemap->images_for( $post_id ),
-				'videos'     => Inclusion::video_sitemap() ? $video_sitemap->videos_for( $post_id ) : array(),
+				// Images and videos live in their own sitemaps (MediaSitemap)
+				// when those are switched on; the images stay inline only
+				// while the image sitemap is off, so turning it off never
+				// silently drops them.
+				'images'     => Inclusion::images_sitemap() ? array() : $image_sitemap->images_for( $post_id ),
+				'videos'     => array(),
 				'alternates' => Inclusion::hreflang_in_sitemap() ? $hreflang->for_post( $post_id ) : array(),
 			);
 		}
@@ -156,7 +159,7 @@ final class PostTypeSitemap {
 	 *
 	 * @return int[]
 	 */
-	private static function excluded_post_ids(): array {
+	public static function excluded_post_ids(): array {
 		static $cached = null;
 
 		if ( null !== $cached ) {
@@ -219,7 +222,7 @@ final class PostTypeSitemap {
 	 *
 	 * @param array{title:string,description:string,thumbnail_loc:string,content_loc?:string,player_loc?:string} $video Video entry.
 	 */
-	private function video_xml( array $video ): string {
+	public function video_xml( array $video ): string {
 		$xml  = '<video:video>' . "\n";
 		$xml .= '<video:thumbnail_loc>' . esc_url( $video['thumbnail_loc'] ) . '</video:thumbnail_loc>' . "\n";
 		$xml .= '<video:title>' . esc_html( $video['title'] ) . '</video:title>' . "\n";

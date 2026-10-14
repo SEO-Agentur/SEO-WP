@@ -244,22 +244,17 @@ final class ServerHeaders {
 	}
 
 	/**
-	 * Sends the configured security headers, HSTS and CORS headers.
+	 * Sends the configured security headers (see SecurityHeaderConfig),
+	 * HSTS, the Content-Security-Policy and CORS headers.
 	 */
 	public function maybe_send_headers(): void {
-		if ( $this->enabled( 'enable_security_headers' ) ) {
-			header( 'X-Content-Type-Options: nosniff' );
-			header( 'X-Frame-Options: SAMEORIGIN' );
-			header( 'Referrer-Policy: strict-origin-when-cross-origin' );
-			header( 'Permissions-Policy: geolocation=(), camera=(), microphone=()' );
-		}
+		// Only the Content-Security-Policy is front-end-only: a policy tuned for
+		// the public site would break the admin UI and the login screen.
+		$frontend = ! is_admin() && ! wp_doing_ajax() && ! wp_doing_cron()
+			&& 'wp-login.php' !== ( $GLOBALS['pagenow'] ?? '' );
 
-		if ( $this->enabled( 'enable_hsts' ) && is_ssl() ) {
-			$directive = 'max-age=31536000';
-			if ( $this->enabled( 'hsts_include_subdomains' ) ) {
-				$directive .= '; includeSubDomains';
-			}
-			header( 'Strict-Transport-Security: ' . $directive );
+		foreach ( SecurityHeaderConfig::headers( $this->settings(), is_ssl(), $frontend ) as $name => $value ) {
+			header( $name . ': ' . $value );
 		}
 
 		if ( $this->enabled( 'enable_cors' ) ) {

@@ -55,10 +55,16 @@ final class VideoSitemap {
 			$html = substr( $html, 0, self::MAX_SCAN_LENGTH );
 		}
 
-		$found = array_merge(
-			self::extract_self_hosted_videos( $html ),
-			self::extract_youtube_videos( $html )
-		);
+		// The same video is often present twice (a pasted YouTube URL that
+		// WordPress turned into an iframe, plus a hand-written iframe); one
+		// entry per distinct video, never duplicates.
+		$unique = array();
+		foreach ( array_merge( self::extract_self_hosted_videos( $html ), self::extract_youtube_videos( $html ) ) as $entry ) {
+			$key = (string) ( $entry['player_loc'] ?? $entry['content_loc'] ?? '' );
+			$key = (string) preg_replace( '/[?#].*$/', '', $key );
+			$unique[ '' !== $key ? $key : md5( (string) wp_json_encode( $entry ) ) ] = $entry;
+		}
+		$found = array_values( $unique );
 
 		if ( array() === $found ) {
 			return array();

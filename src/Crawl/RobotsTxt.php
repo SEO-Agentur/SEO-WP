@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace Seooptimierung\Toolkit\Crawl;
 
+use Seooptimierung\Toolkit\Sitemaps\SitemapNames;
+
 /**
  * Extends WordPress core's own virtual robots.txt (via the robots_txt
  * filter — no rewrite rule or physical file of our own) with a custom
@@ -73,7 +75,7 @@ final class RobotsTxt {
 			$output .= "\n" . self::ai_crawler_block() . "\n";
 		}
 
-		$output .= "\nSitemap: " . home_url( '/sitemap.xml' ) . "\n";
+		$output .= "\nSitemap: " . SitemapNames::index_url() . "\n";
 
 		return $output;
 	}

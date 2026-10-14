@@ -34,3 +34,4 @@ delete_option( 'seo_wp_google_indexing_log' );
 delete_option( 'seo_wp_404_log' );
 delete_option( 'seo_wp_redirects' );
 delete_option( 'seo_wp_staging_notice_dismissed' );
+delete_option( 'seo_wp_rewrite_version' );

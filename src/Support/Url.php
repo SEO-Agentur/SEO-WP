@@ -17,46 +17,6 @@ namespace Seooptimierung\Toolkit\Support;
 final class Url {
 
 	/**
-	 * Normalises the path portion of a URL to either have or not have a
-	 * trailing slash, leaving scheme, host, query and fragment untouched.
-	 *
-	 * @param string $url             URL to normalise.
-	 * @param bool   $trailing_slash  Whether the path should end with a slash.
-	 */
-	public static function with_trailing_slash( string $url, bool $trailing_slash ): string {
-		$parts = wp_parse_url( $url );
-
-		if ( false === $parts || ! isset( $parts['path'] ) ) {
-			$parts = array( 'path' => $url );
-		}
-
-		$path = $parts['path'];
-
-		if ( '' === $path ) {
-			$path = '/';
-		}
-
-		$path = $trailing_slash ? rtrim( $path, '/' ) . '/' : rtrim( $path, '/' );
-
-		if ( '' === $path ) {
-			$path = '/';
-		}
-
-		return self::rebuild( $parts, $path );
-	}
-
-	/**
-	 * Compares two URLs for equality, ignoring scheme and a trailing slash
-	 * difference on the path.
-	 *
-	 * @param string $a First URL.
-	 * @param string $b Second URL.
-	 */
-	public static function equals( string $a, string $b ): bool {
-		return self::comparable( $a ) === self::comparable( $b );
-	}
-
-	/**
 	 * Builds the current request's front-end URL from the main query,
 	 * without relying on any particular request type. Falls back to the
 	 * site's home URL when called outside of a parsed request (e.g. before
@@ -107,39 +67,5 @@ final class Url {
 		$query = isset( $parts['query'] ) ? '?' . $parts['query'] : '';
 
 		return $host . $path . $query;
-	}
-
-	/**
-	 * Rebuilds a URL from parsed components with a replacement path.
-	 *
-	 * @param array<string,string> $parts Components as returned by wp_parse_url().
-	 * @param string               $path  Replacement path.
-	 */
-	private static function rebuild( array $parts, string $path ): string {
-		$url = '';
-
-		if ( isset( $parts['scheme'] ) ) {
-			$url .= $parts['scheme'] . '://';
-		}
-
-		if ( isset( $parts['host'] ) ) {
-			$url .= $parts['host'];
-		}
-
-		if ( isset( $parts['port'] ) ) {
-			$url .= ':' . $parts['port'];
-		}
-
-		$url .= $path;
-
-		if ( isset( $parts['query'] ) ) {
-			$url .= '?' . $parts['query'];
-		}
-
-		if ( isset( $parts['fragment'] ) ) {
-			$url .= '#' . $parts['fragment'];
-		}
-
-		return $url;
 	}
 }

@@ -1,24 +1,37 @@
 /**
- * Drives the Performance tab's "Scan homepage for suggestions" button.
- * Vanilla JS, no dependencies; loaded only on SEO-WP's own admin pages.
+ * Drives the Performance tab's "Scan site for suggestions" button.
+ * Vanilla JS, no dependencies; loaded only on this plugin's own admin pages.
  *
- * Fetches suggested resource-hint lines from the server, lists them as
- * checkboxes (all checked by default), and an "Add checked" button
- * appends the selected ones to the Resource Hints textarea — nothing is
- * written until the admin also clicks the page's own "Save Settings".
+ * The server scans the home page and a few sample pages and returns, per
+ * external host, what is loaded from it. This lists those hosts in a table
+ * with a checkbox per suggested hint line (hosts that already have a hint
+ * start unchecked); "Add checked" appends the selected lines to the
+ * Resource Hints textarea — nothing is saved until the admin also clicks
+ * the page's own Save button.
  */
 ( function () {
 	'use strict';
 
+	function el( tag, text, className ) {
+		var node = document.createElement( tag );
+		if ( text ) {
+			node.textContent = text;
+		}
+		if ( className ) {
+			node.className = className;
+		}
+		return node;
+	}
+
 	function scan() {
 		var button = document.querySelector( '.seo-wp-scan-resource-hints' );
 		var status = document.querySelector( '.seo-wp-resource-hint-scan-status' );
-		var list = document.querySelector( '.seo-wp-resource-hint-suggestions' );
+		var result = document.querySelector( '.seo-wp-resource-hint-suggestions' );
 		var i18n = window.seoWpResourceHintScanner.i18n;
 
 		button.disabled = true;
 		status.textContent = i18n.scanning;
-		list.innerHTML = '';
+		result.innerHTML = '';
 
 		var params = new URLSearchParams();
 		params.append( 'action', 'seo_wp_scan_resource_hints' );
@@ -41,15 +54,16 @@
 					return;
 				}
 
-				var lines = response.data.lines || [];
+				var rows = response.data.rows || [];
 				status.textContent = '';
 
-				if ( 0 === lines.length ) {
+				if ( 0 === rows.length ) {
 					status.textContent = i18n.none;
 					return;
 				}
 
-				renderSuggestions( lines );
+				status.textContent = i18n.scanned.replace( '%d', response.data.pages || 1 );
+				renderRows( rows );
 			} )
 			.catch( function () {
 				button.disabled = false;
@@ -57,32 +71,63 @@
 			} );
 	}
 
-	function renderSuggestions( lines ) {
-		var list = document.querySelector( '.seo-wp-resource-hint-suggestions' );
-
-		lines.forEach( function ( line ) {
-			var item = document.createElement( 'li' );
-			var label = document.createElement( 'label' );
-			var checkbox = document.createElement( 'input' );
-
-			checkbox.type = 'checkbox';
-			checkbox.checked = true;
-			checkbox.value = line;
-
-			label.appendChild( checkbox );
-			label.appendChild( document.createTextNode( ' ' + line ) );
-			item.appendChild( label );
-			list.appendChild( item );
+	function describeTypes( types ) {
+		var parts = [];
+		Object.keys( types ).forEach( function ( type ) {
+			parts.push( types[ type ] + ' × ' + type );
 		} );
+		return parts.join( ', ' );
+	}
 
-		var addButton = document.createElement( 'button' );
+	function renderRows( rows ) {
+		var i18n = window.seoWpResourceHintScanner.i18n;
+		var result = document.querySelector( '.seo-wp-resource-hint-suggestions' );
+
+		var table = el( 'table', '', 'widefat striped' );
+		var head = el( 'tr' );
+		[ i18n.colHost, i18n.colLoads, i18n.colPages, i18n.colHint ].forEach( function ( label ) {
+			head.appendChild( el( 'th', label ) );
+		} );
+		var thead = el( 'thead' );
+		thead.appendChild( head );
+		table.appendChild( thead );
+
+		var tbody = el( 'tbody' );
+		rows.forEach( function ( row ) {
+			var tr = el( 'tr' );
+			var hostCell = el( 'td' );
+			hostCell.appendChild( el( 'code', row.host ) );
+			if ( row.hinted ) {
+				hostCell.appendChild( el( 'div', i18n.alreadyHinted, 'description' ) );
+			}
+			tr.appendChild( hostCell );
+			tr.appendChild( el( 'td', row.total + ' — ' + describeTypes( row.types ) ) );
+			tr.appendChild( el( 'td', String( row.pages ) ) );
+
+			var hintCell = el( 'td' );
+			row.suggestions.forEach( function ( line ) {
+				var label = el( 'label' );
+				var checkbox = document.createElement( 'input' );
+				checkbox.type = 'checkbox';
+				checkbox.checked = ! row.hinted;
+				checkbox.value = line;
+				label.appendChild( checkbox );
+				label.appendChild( el( 'code', ' ' + line ) );
+				hintCell.appendChild( label );
+				hintCell.appendChild( document.createElement( 'br' ) );
+			} );
+			tr.appendChild( hintCell );
+			tbody.appendChild( tr );
+		} );
+		table.appendChild( tbody );
+		result.appendChild( table );
+
+		var addButton = el( 'button', i18n.addChecked, 'button button-secondary seo-wp-add-resource-hints' );
 		addButton.type = 'button';
-		addButton.className = 'button button-secondary seo-wp-add-resource-hints';
-		addButton.textContent = 'Add checked to Resource Hints';
-
-		var addItem = document.createElement( 'li' );
-		addItem.appendChild( addButton );
-		list.appendChild( addItem );
+		var p = el( 'p' );
+		p.appendChild( addButton );
+		result.appendChild( p );
+		result.appendChild( el( 'p', i18n.advice, 'description' ) );
 	}
 
 	function addCheckedSuggestions() {
