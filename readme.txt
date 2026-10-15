@@ -5,7 +5,7 @@ Tags: seo, wpml, polylang, sitemap, schema
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.6.0
+Stable tag: 1.6.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -72,6 +72,9 @@ Seooptimierung Toolkit integrates with several third-party services. Every one i
 **Resource Hint Scanner** — contacted only when you click "Scan site for suggestions" under Settings > Performance. Fetches your *own* site's pages (the home page and the newest post of a few content types) and your *own* stylesheets — never a third-party URL — to detect which external origins they load scripts, styles, fonts, images and media from. The result is a list of suggested lines you may choose to add to your own settings — nothing is applied automatically and nothing is sent anywhere else.
 
 == Changelog ==
+
+= 1.6.1 =
+* Fixed: image (and video) sitemap entries could list a path that doesn't work, e.g. `/assets/photo.webp` instead of the theme's real image URL. Themes and plugins that rewrite such paths inside their `the_content` filter only do so when the page is the main query (`is_page_template()`, `is_singular()`), which is not the case while a sitemap is being built. Page content is now rendered inside a query for that very page, so the sitemap sees the same image URLs the page itself prints. The same renderer feeds the video sitemap and the link audit.
 
 = 1.6.0 =
 * New: a dedicated **Security Headers** page. X-Content-Type-Options, Referrer-Policy (policy selectable), X-Frame-Options (SAMEORIGIN/DENY), Permissions-Policy (editable), HSTS (max-age, includeSubDomains, preload with validation) and a Content-Security-Policy (report-only by default, editable policy, public pages only) each have their own switch. A "Check headers now" button shows which headers the home page really sends and flags duplicates. Sites that used the old combined "security headers" / "HSTS" checkboxes keep the same behaviour until the page is saved.
