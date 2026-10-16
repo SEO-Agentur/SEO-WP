@@ -220,3 +220,16 @@ if ( ! function_exists( 'apply_filters' ) ) {
 		return $value;
 	}
 }
+
+if ( ! function_exists( '__' ) ) {
+	/**
+	 * Identity stand-in for WordPress core's __(): no translations are
+	 * loaded in unit tests.
+	 *
+	 * @param string $text   Text to translate.
+	 * @param string $domain Text domain (ignored).
+	 */
+	function __( string $text, string $domain = 'default' ): string { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
+		return $text;
+	}
+}

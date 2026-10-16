@@ -5,7 +5,7 @@ Tags: seo, wpml, polylang, sitemap, schema
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.6.1
+Stable tag: 1.6.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -72,6 +72,10 @@ Seooptimierung Toolkit integrates with several third-party services. Every one i
 **Resource Hint Scanner** — contacted only when you click "Scan site for suggestions" under Settings > Performance. Fetches your *own* site's pages (the home page and the newest post of a few content types) and your *own* stylesheets — never a third-party URL — to detect which external origins they load scripts, styles, fonts, images and media from. The result is a list of suggested lines you may choose to add to your own settings — nothing is applied automatically and nothing is sent anywhere else.
 
 == Changelog ==
+
+= 1.6.2 =
+* Changed: the local business "Business type" is now a dropdown of the Schema.org LocalBusiness types (restaurants, shops, medical, legal, trades, hotels, automotive and more, grouped; the exact Schema.org name is shown in brackets) instead of a free-text field. A type saved earlier stays selectable.
+* Fixed: pasting the whole `<meta name="…" content="…" />` tag from Google Search Console, Bing Webmaster Tools, Yandex, Pinterest or Baidu into a verification field saved an empty value; the code is now taken from the tag.
 
 = 1.6.1 =
 * Fixed: image (and video) sitemap entries could list a path that doesn't work, e.g. `/assets/photo.webp` instead of the theme's real image URL. Themes and plugins that rewrite such paths inside their `the_content` filter only do so when the page is the main query (`is_page_template()`, `is_singular()`), which is not the case while a sitemap is being built. Page content is now rendered inside a query for that very page, so the sitemap sees the same image URLs the page itself prints. The same renderer feeds the video sitemap and the link audit.

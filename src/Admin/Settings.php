@@ -9,10 +9,12 @@ declare(strict_types=1);
 
 namespace Seooptimierung\Toolkit\Admin;
 
+use Seooptimierung\Toolkit\Crawl\Verification;
 use Seooptimierung\Toolkit\Performance\Htaccess;
 use Seooptimierung\Toolkit\Performance\ResourceHintScanner;
 use Seooptimierung\Toolkit\Performance\SecurityHeaderConfig;
 use Seooptimierung\Toolkit\Schema\GraphBuilder;
+use Seooptimierung\Toolkit\Schema\LocalBusinessTypes;
 use Seooptimierung\Toolkit\Sitemaps\SitemapNames;
 use Seooptimierung\Toolkit\Support\StagingDetector;
 use Seooptimierung\Toolkit\Templates\Tokens;
@@ -377,6 +379,12 @@ final class Settings {
 
 		$clean = $existing;
 
+		foreach ( Verification::settings_keys() as $key ) {
+			if ( array_key_exists( $key, $input ) ) {
+				$input[ $key ] = Verification::extract_code( wp_unslash( (string) $input[ $key ] ) );
+			}
+		}
+
 		foreach ( self::TEXT_FIELDS as $key ) {
 			if ( array_key_exists( $key, $input ) ) {
 				$clean[ $key ] = sanitize_text_field( wp_unslash( (string) $input[ $key ] ) );
@@ -701,8 +709,7 @@ final class Settings {
 
 		echo '<tr><td colspan="2"><hr /><p class="description"><strong>' . esc_html__( 'Local business details', 'seooptimierung-toolkit' ) . '</strong> — ' . esc_html__( 'only used when "Site represents" above is set to "A local business".', 'seooptimierung-toolkit' ) . '</p></td></tr>';
 
-		$this->text_field( 'local_business_type', __( 'Business type', 'seooptimierung-toolkit' ), 'LocalBusiness' );
-		echo '<tr><td colspan="2"><p class="description">' . esc_html__( 'Any Schema.org business type works, e.g. Restaurant, Store, ProfessionalService, MedicalBusiness, LegalService, RealEstateAgent, Attorney, AccountingService — LocalBusiness itself if none of the more specific ones fit.', 'seooptimierung-toolkit' ) . '</p></td></tr>';
+		$this->business_type_field();
 		$this->text_field( 'local_business_street_address', __( 'Street address', 'seooptimierung-toolkit' ), '' );
 		$this->text_field( 'local_business_locality', __( 'City', 'seooptimierung-toolkit' ), '' );
 		$this->text_field( 'local_business_region', __( 'State/region', 'seooptimierung-toolkit' ), '' );
@@ -1022,11 +1029,11 @@ final class Settings {
 		$this->checkbox_field( 'enable_llms_txt', __( 'Enable /llms.txt (links plus each page\'s meta description)', 'seooptimierung-toolkit' ), true );
 		$this->checkbox_field( 'enable_llms_full_txt', __( 'Enable /llms-full.txt (additionally includes each page\'s body text)', 'seooptimierung-toolkit' ), false );
 		$this->textarea_field( 'llms_txt_custom', __( 'Custom llms.txt content (appended after the generated list)', 'seooptimierung-toolkit' ) );
-		$this->text_field( 'verification_google', __( 'Google verification code', 'seooptimierung-toolkit' ), '' );
-		$this->text_field( 'verification_bing', __( 'Bing verification code', 'seooptimierung-toolkit' ), '' );
-		$this->text_field( 'verification_baidu', __( 'Baidu verification code', 'seooptimierung-toolkit' ), '' );
-		$this->text_field( 'verification_pinterest', __( 'Pinterest verification code', 'seooptimierung-toolkit' ), '' );
-		$this->text_field( 'verification_yandex', __( 'Yandex verification code', 'seooptimierung-toolkit' ), '' );
+		$this->text_field( 'verification_google', __( 'Google verification code', 'seooptimierung-toolkit' ), __( 'Code or the whole meta tag', 'seooptimierung-toolkit' ) );
+		$this->text_field( 'verification_bing', __( 'Bing verification code', 'seooptimierung-toolkit' ), __( 'Code or the whole meta tag', 'seooptimierung-toolkit' ) );
+		$this->text_field( 'verification_baidu', __( 'Baidu verification code', 'seooptimierung-toolkit' ), __( 'Code or the whole meta tag', 'seooptimierung-toolkit' ) );
+		$this->text_field( 'verification_pinterest', __( 'Pinterest verification code', 'seooptimierung-toolkit' ), __( 'Code or the whole meta tag', 'seooptimierung-toolkit' ) );
+		$this->text_field( 'verification_yandex', __( 'Yandex verification code', 'seooptimierung-toolkit' ), __( 'Code or the whole meta tag', 'seooptimierung-toolkit' ) );
 		$this->checkbox_field( 'disable_author_archives', __( 'Disable author archives', 'seooptimierung-toolkit' ), false );
 		$this->checkbox_field( 'disable_date_archives', __( 'Disable date archives', 'seooptimierung-toolkit' ), false );
 		$this->select_field(
@@ -1053,6 +1060,38 @@ final class Settings {
 			'default'
 		);
 		echo '<tr><td colspan="2"><p class="description">' . esc_html__( 'Only takes effect when WPML, Polylang, or a compatible plugin (e.g. slim-hreflang) actually provides alternate-language URLs — with none active, no hreflang or x-default tags are output at all.', 'seooptimierung-toolkit' ) . '</p></td></tr>';
+	}
+
+	/**
+	 * Renders the "Business type" dropdown: every Schema.org LocalBusiness
+	 * subtype, grouped. A type saved earlier that isn't in the list (it
+	 * used to be a free-text field) stays selectable, so nothing is lost.
+	 */
+	private function business_type_field(): void {
+		$current = $this->option( 'local_business_type' );
+		$current = '' === $current ? 'LocalBusiness' : $current;
+		$known   = LocalBusinessTypes::all();
+
+		printf( '<tr><th scope="row"><label for="local_business_type">%1$s</label></th><td><select id="local_business_type" name="%2$s[local_business_type]">', esc_html__( 'Business type', 'seooptimierung-toolkit' ), esc_attr( self::OPTION_KEY ) );
+
+		if ( ! isset( $known[ $current ] ) ) {
+			printf( '<option value="%1$s" selected="selected">%1$s</option>', esc_attr( $current ) );
+		}
+
+		foreach ( LocalBusinessTypes::groups() as $group => $types ) {
+			printf( '<optgroup label="%s">', esc_attr( $group ) );
+			foreach ( $types as $type => $label ) {
+				printf(
+					'<option value="%1$s" %2$s>%3$s (%1$s)</option>',
+					esc_attr( $type ),
+					selected( $current, $type, false ),
+					esc_html( $label )
+				);
+			}
+			echo '</optgroup>';
+		}
+
+		echo '</select><p class="description">' . esc_html__( 'The Schema.org type written into your structured data (the name in brackets is the exact value). Pick the most specific one that fits; "Local business (generic)" if none does.', 'seooptimierung-toolkit' ) . '</p></td></tr>';
 	}
 
 	/**
