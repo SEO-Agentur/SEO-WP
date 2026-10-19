@@ -1,0 +1,3902 @@
+# Copyright (C) 2026 Cyrus Badde
+# This file is distributed under the GPL-2.0-or-later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Seooptimierung Toolkit 1.7.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/seooptimierung-toolkit\n"
+"Last-Translator: Cyrus Badde\n"
+"Language-Team: German\n"
+"Language: de_DE\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-10-19T13:13:03+00:00\n"
+"PO-Revision-Date: 2026-10-19 12:00+0000\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: seooptimierung-toolkit\n"
+
+#. Plugin Name of the plugin
+#: seooptimierung-toolkit.php
+#: src/Admin/AuthorFields.php:49
+#: src/Admin/Metabox.php:112
+#: src/Admin/Metabox.php:217
+#: src/Admin/Settings.php:235
+#: src/Admin/Settings.php:236
+#: src/Frontend/Blocks.php:48
+msgid "Seooptimierung Toolkit"
+msgstr "Seooptimierung Toolkit"
+
+#. Plugin URI of the plugin
+#: seooptimierung-toolkit.php
+msgid "https://seooptimierung.de/seotoolkit/"
+msgstr "https://seooptimierung.de/seotoolkit/"
+
+#. Description of the plugin
+#: seooptimierung-toolkit.php
+msgid "A slim, page-type-agnostic SEO plugin with full WPML and Polylang compatibility: meta tags, social meta, JSON-LD schema, XML sitemaps and crawl control."
+msgstr "Ein schlankes, seitentyp-unabhängiges SEO-Plugin mit voller WPML- und Polylang-Unterstützung: Meta-Tags, Social-Meta, JSON-LD-Schema, XML-Sitemaps und Crawl-Steuerung."
+
+#. Author of the plugin
+#: seooptimierung-toolkit.php
+msgid "Cyrus Badde"
+msgstr "Cyrus Badde"
+
+#: src/Admin/AiSettings.php:81
+#: src/Admin/AiSettings.php:82
+msgid "AI Settings"
+msgstr "KI-Einstellungen"
+
+#: src/Admin/AiSettings.php:114
+msgid "Seooptimierung Toolkit AI Settings"
+msgstr "Seooptimierung Toolkit KI-Einstellungen"
+
+#: src/Admin/AiSettings.php:115
+msgid "AI is used only when you explicitly click an AI action (Bulk Editor suggestions, image alt text). Nothing is called automatically, and the plugin never proxies requests or adds a markup."
+msgstr "KI wird nur verwendet, wenn du ausdrücklich eine KI-Aktion anklickst (Vorschläge im Bulk-Editor, Alt-Texte für Bilder). Nichts wird automatisch aufgerufen, und das Plugin leitet Anfragen nie über eigene Server und schlägt nichts auf den Preis auf."
+
+#: src/Admin/AiSettings.php:117
+msgid "WordPress AI (recommended)"
+msgstr "WordPress-KI (empfohlen)"
+
+#: src/Admin/AiSettings.php:119
+msgid "WordPress has an AI provider connected. It is used automatically — no key has to be stored in this plugin."
+msgstr "WordPress hat einen KI-Anbieter verbunden. Er wird automatisch genutzt – in diesem Plugin muss kein Schlüssel gespeichert werden."
+
+#: src/Admin/AiSettings.php:121
+msgid "This WordPress supports AI, but no provider is connected yet. Connect one under Settings → Connectors in WordPress and it will show up here and in the Bulk Editor. Or use your own key below."
+msgstr "Dieses WordPress unterstützt KI, aber es ist noch kein Anbieter verbunden. Verbinde einen unter Einstellungen → Connectors in WordPress, dann erscheint er hier und im Bulk-Editor. Oder nutze unten deinen eigenen Schlüssel."
+
+#: src/Admin/AiSettings.php:123
+msgid "WordPress 7.0 and later can connect an AI provider once for the whole site. This site runs an older version, so use your own key below."
+msgstr "WordPress 7.0 und neuer kann einen KI-Anbieter einmal für die ganze Website verbinden. Diese Website läuft auf einer älteren Version – nutze also unten deinen eigenen Schlüssel."
+
+#: src/Admin/AiSettings.php:125
+msgid "Your own keys below are an alternative: billed directly by the provider."
+msgstr "Deine eigenen Schlüssel unten sind eine Alternative: Die Abrechnung erfolgt direkt über den Anbieter."
+
+#: src/Admin/AiSettings.php:128
+#: src/Admin/GoogleIndexingPage.php:115
+#: src/Admin/ImageSeo.php:154
+#: src/Admin/IndexNowPage.php:182
+msgid "Settings saved."
+msgstr "Einstellungen gespeichert."
+
+#: src/Admin/AiSettings.php:135
+msgid "Anthropic (Claude)"
+msgstr "Anthropic (Claude)"
+
+#: src/Admin/AiSettings.php:137
+#: src/Admin/AiSettings.php:143
+#: src/Admin/AiSettings.php:149
+msgid "API key"
+msgstr "API-Schlüssel"
+
+#: src/Admin/AiSettings.php:138
+#: src/Admin/AiSettings.php:144
+msgid "Model override"
+msgstr "Modell überschreiben"
+
+#: src/Admin/AiSettings.php:141
+#: src/Support/Ai.php:47
+msgid "OpenAI"
+msgstr "OpenAI"
+
+#: src/Admin/AiSettings.php:147
+msgid "DeepL"
+msgstr "DeepL"
+
+#: src/Admin/AiSettings.php:152
+#: src/Admin/GoogleIndexingPage.php:179
+#: src/Admin/IndexNowPage.php:258
+msgid "Save settings"
+msgstr "Einstellungen speichern"
+
+#: src/Admin/AiSettings.php:167
+msgid "•••••••• (saved — leave blank to keep)"
+msgstr "•••••••• (gespeichert – leer lassen, um ihn zu behalten)"
+
+#: src/Admin/AiSettings.php:168
+msgid "Not set"
+msgstr "Nicht gesetzt"
+
+#: src/Admin/AiSettings.php:203
+#: src/Admin/BulkEditor.php:304
+#: src/Admin/BulkEditor.php:356
+#: src/Admin/BulkEditor.php:433
+#: src/Admin/Diagnostics.php:189
+#: src/Admin/DuplicateChecker.php:206
+#: src/Admin/GoogleIndexingPage.php:226
+#: src/Admin/GoogleIndexingPage.php:277
+#: src/Admin/ImageSeo.php:295
+#: src/Admin/ImageSeo.php:496
+#: src/Admin/ImageSeo.php:523
+#: src/Admin/ImageSeo.php:560
+#: src/Admin/ImportWizard.php:198
+#: src/Admin/ImportWizard.php:263
+#: src/Admin/IndexNowPage.php:375
+#: src/Admin/IndexNowPage.php:417
+#: src/Admin/IndexNowPage.php:468
+#: src/Admin/IndexNowPage.php:491
+#: src/Admin/LinkAudit.php:239
+#: src/Admin/LinkAudit.php:523
+#: src/Admin/LinkAudit.php:565
+#: src/Admin/LinkAudit.php:837
+#: src/Admin/LinkAudit.php:1146
+#: src/Admin/LinkSuggestions.php:74
+#: src/Admin/NotFoundMonitorPage.php:171
+#: src/Admin/NotFoundMonitorPage.php:188
+#: src/Admin/RedirectsPage.php:403
+#: src/Admin/RedirectsPage.php:438
+#: src/Admin/RedirectsPage.php:455
+#: src/Admin/RedirectsPage.php:483
+#: src/Admin/RoleManager.php:348
+#: src/Admin/Settings.php:355
+#: src/Admin/Settings.php:1555
+#: src/Crawl/StagingProtection.php:137
+#: src/Crawl/StagingProtection.php:156
+msgid "You are not allowed to do this."
+msgstr "Du bist dazu nicht berechtigt."
+
+#: src/Admin/AuthorFields.php:51
+msgid "Author archive"
+msgstr "Autorenarchiv"
+
+#: src/Admin/AuthorFields.php:56
+msgid "Noindex this author's archive page"
+msgstr "Autorenarchiv auf noindex setzen"
+
+#: src/Admin/AuthorFields.php:58
+msgid "Keeps the page listing this author's posts out of search results. Useful for single-author sites or accounts that only exist for technical reasons."
+msgstr "Hält die Seite mit den Beiträgen dieses Autors aus den Suchergebnissen heraus. Sinnvoll bei Websites mit nur einem Autor oder Konten, die nur technisch existieren."
+
+#: src/Admin/BulkEditor.php:85
+#: src/Admin/BulkEditor.php:86
+#: src/Admin/RoleManager.php:277
+msgid "Bulk Editor"
+msgstr "Bulk-Editor"
+
+#: src/Admin/BulkEditor.php:121
+#: src/Admin/ImageSeo.php:121
+msgid "Asking AI…"
+msgstr "KI wird gefragt …"
+
+#: src/Admin/BulkEditor.php:122
+msgid "Translating…"
+msgstr "Wird übersetzt …"
+
+#: src/Admin/BulkEditor.php:123
+#: src/Admin/DuplicateChecker.php:115
+#: src/Admin/ImageSeo.php:122
+#: src/Admin/ImportWizard.php:112
+#: src/Admin/LinkAudit.php:326
+#: src/Admin/Settings.php:303
+#: assets/admin/link-suggestions.js:112
+#: assets/admin/link-suggestions.js:118
+msgid "Something went wrong."
+msgstr "Etwas ist schiefgelaufen."
+
+#: src/Admin/BulkEditor.php:124
+#: src/Admin/ImportWizard.php:111
+#: src/Admin/IndexNowPage.php:139
+#: src/Admin/LinkAudit.php:324
+msgid "Done."
+msgstr "Fertig."
+
+#: src/Admin/BulkEditor.php:125
+msgid "No AI provider configured — add a key on the AI Settings page."
+msgstr "Kein KI-Anbieter eingerichtet – füge auf der Seite „KI-Einstellungen“ einen Schlüssel hinzu."
+
+#: src/Admin/BulkEditor.php:126
+msgid "No DeepL API key configured — add one on the AI Settings page."
+msgstr "Kein DeepL-API-Schlüssel eingerichtet – füge ihn auf der Seite „KI-Einstellungen“ hinzu."
+
+#: src/Admin/BulkEditor.php:127
+#: src/Admin/BulkEditor.php:456
+msgid "WPML is not active."
+msgstr "WPML ist nicht aktiv."
+
+#: src/Admin/BulkEditor.php:157
+msgid "Seooptimierung Toolkit Bulk Editor"
+msgstr "Seooptimierung Toolkit Bulk-Editor"
+
+#: src/Admin/BulkEditor.php:160
+msgid "Changes saved."
+msgstr "Änderungen gespeichert."
+
+#: src/Admin/BulkEditor.php:164
+msgid "No content found."
+msgstr "Keine Inhalte gefunden."
+
+#: src/Admin/BulkEditor.php:172
+msgid "Suggest AI titles/descriptions for empty fields on this page"
+msgstr "KI-Titel/-Beschreibungen für leere Felder auf dieser Seite vorschlagen"
+
+#: src/Admin/BulkEditor.php:186
+#: src/Admin/LinkAudit.php:1107
+msgid "Content"
+msgstr "Inhalt"
+
+#: src/Admin/BulkEditor.php:187
+#: src/Admin/Metabox.php:430
+#: src/Schema/ContentTypes.php:63
+#: src/Schema/ContentTypes.php:251
+msgid "Title"
+msgstr "Titel"
+
+#: src/Admin/BulkEditor.php:188
+#: src/Schema/ContentTypes.php:201
+#: src/Schema/ContentTypes.php:213
+#: src/Schema/ContentTypes.php:252
+msgid "Description"
+msgstr "Beschreibung"
+
+#: src/Admin/BulkEditor.php:189
+msgid "Canonical"
+msgstr "Canonical"
+
+#: src/Admin/BulkEditor.php:190
+msgid "Robots"
+msgstr "Robots"
+
+#: src/Admin/BulkEditor.php:191
+msgid "AI"
+msgstr "KI"
+
+#: src/Admin/BulkEditor.php:202
+msgid "Save changes"
+msgstr "Änderungen speichern"
+
+#: src/Admin/BulkEditor.php:259
+#: src/Admin/Metabox.php:569
+msgid "Default"
+msgstr "Standard"
+
+#: src/Admin/BulkEditor.php:260
+#: src/Admin/Metabox.php:570
+msgid "Index"
+msgstr "Index"
+
+#: src/Admin/BulkEditor.php:261
+#: src/Admin/Metabox.php:571
+msgid "Noindex"
+msgstr "Noindex"
+
+#: src/Admin/BulkEditor.php:270
+#: src/Admin/ImageSeo.php:447
+msgid "Suggest"
+msgstr "Vorschlagen"
+
+#: src/Admin/BulkEditor.php:271
+msgid "Translate"
+msgstr "Übersetzen"
+
+#: src/Admin/BulkEditor.php:364
+#: src/Admin/BulkEditor.php:442
+msgid "Unknown post."
+msgstr "Unbekannter Beitrag."
+
+#: src/Admin/BulkEditor.php:368
+#: src/Admin/ImageSeo.php:528
+msgid "Unknown provider."
+msgstr "Unbekannter Anbieter."
+
+#: src/Admin/BulkEditor.php:379
+msgid "Could not parse the AI reply."
+msgstr "Die KI-Antwort konnte nicht gelesen werden."
+
+#: src/Admin/BulkEditor.php:446
+msgid "Nothing to translate — fill in a title or description first."
+msgstr "Nichts zu übersetzen – trage zuerst einen Titel oder eine Beschreibung ein."
+
+#: src/Admin/BulkEditor.php:451
+msgid "No DeepL API key configured."
+msgstr "Kein DeepL-API-Schlüssel eingerichtet."
+
+#. translators: 1: first item shown, 2: last item shown, 3: total matching items.
+#: src/Admin/BulkEditor.php:570
+#, php-format
+msgid "%1$d–%2$d of %3$d"
+msgstr "%1$d–%2$d von %3$d"
+
+#: src/Admin/BulkEditor.php:579
+msgid "Rows per page"
+msgstr "Zeilen pro Seite"
+
+#. translators: %d: number of rows shown per page.
+#: src/Admin/BulkEditor.php:589
+#, php-format
+msgid "%d per page"
+msgstr "%d pro Seite"
+
+#. translators: 1: page-number input, 2: total number of pages.
+#: src/Admin/BulkEditor.php:602
+#, php-format
+msgid "Page %1$s of %2$d"
+msgstr "Seite %1$s von %2$d"
+
+#: src/Admin/ContentFreshness.php:67
+#: src/Admin/ContentFreshness.php:68
+#: src/Admin/RoleManager.php:284
+msgid "Content Freshness"
+msgstr "Aktualität der Inhalte"
+
+#: src/Admin/ContentFreshness.php:131
+msgid "Seooptimierung Toolkit Content Freshness"
+msgstr "Seooptimierung Toolkit Aktualität der Inhalte"
+
+#: src/Admin/ContentFreshness.php:132
+msgid "Published posts that haven't been updated in a while — a common signal both search engines and readers use to judge relevance. Purely informational: nothing here is changed automatically."
+msgstr "Veröffentlichte Beiträge, die länger nicht aktualisiert wurden – ein verbreitetes Signal, an dem sich Suchmaschinen und Leser bei der Relevanz orientieren. Rein informativ: Hier wird nichts automatisch geändert."
+
+#: src/Admin/ContentFreshness.php:170
+msgid "Not updated in the last:"
+msgstr "Nicht aktualisiert in den letzten:"
+
+#. translators: %d: number of months.
+#: src/Admin/ContentFreshness.php:180
+#, php-format
+msgid "%d month"
+msgid_plural "%d months"
+msgstr[0] "%d Monat"
+msgstr[1] "%d Monaten"
+
+#: src/Admin/ContentFreshness.php:187
+msgid "Filter"
+msgstr "Filtern"
+
+#: src/Admin/ContentFreshness.php:198
+msgid "Nothing found — every post is within this threshold."
+msgstr "Nichts gefunden – jeder Beitrag liegt innerhalb dieser Grenze."
+
+#: src/Admin/ContentFreshness.php:204
+#: src/Admin/ImageSeo.php:475
+msgid "Post"
+msgstr "Beitrag"
+
+#: src/Admin/ContentFreshness.php:205
+#: src/Admin/GoogleIndexingPage.php:205
+#: src/Admin/RedirectsPage.php:255
+#: src/Admin/RedirectsPage.php:320
+#: src/Admin/Settings.php:794
+#: src/Schema/ContentTypes.php:1210
+msgid "Type"
+msgstr "Typ"
+
+#: src/Admin/ContentFreshness.php:206
+msgid "Last updated"
+msgstr "Zuletzt aktualisiert"
+
+#: src/Admin/Diagnostics.php:58
+#: src/Admin/Diagnostics.php:59
+#: src/Admin/RoleManager.php:279
+msgid "Diagnostics"
+msgstr "Diagnose"
+
+#: src/Admin/Diagnostics.php:90
+msgid "Seooptimierung Toolkit recorded one or more issues recently (import mapping or a database check)."
+msgstr "Seooptimierung Toolkit hat kürzlich ein oder mehrere Probleme festgehalten (Import-Zuordnung oder Datenbankprüfung)."
+
+#: src/Admin/Diagnostics.php:92
+msgid "View details"
+msgstr "Details ansehen"
+
+#: src/Admin/Diagnostics.php:108
+msgid "Seooptimierung Toolkit Diagnostics"
+msgstr "Seooptimierung Toolkit Diagnose"
+
+#: src/Admin/Diagnostics.php:111
+msgid "No issues recorded."
+msgstr "Keine Probleme festgehalten."
+
+#: src/Admin/Diagnostics.php:118
+#: src/Admin/NotFoundMonitorPage.php:105
+msgid "Clear log"
+msgstr "Protokoll leeren"
+
+#: src/Admin/Diagnostics.php:123
+msgid "Time"
+msgstr "Zeit"
+
+#: src/Admin/Diagnostics.php:124
+msgid "Where"
+msgstr "Wo"
+
+#: src/Admin/Diagnostics.php:125
+msgid "Message"
+msgstr "Meldung"
+
+#: src/Admin/Diagnostics.php:179
+msgid "Details"
+msgstr "Details"
+
+#: src/Admin/DuplicateChecker.php:83
+#: src/Admin/DuplicateChecker.php:84
+msgid "Duplicate Content"
+msgstr "Doppelte Inhalte"
+
+#: src/Admin/DuplicateChecker.php:113
+msgid "Scanning…"
+msgstr "Scan läuft …"
+
+#: src/Admin/DuplicateChecker.php:114
+msgid "Scan complete."
+msgstr "Scan abgeschlossen."
+
+#: src/Admin/DuplicateChecker.php:133
+msgid "Seooptimierung Toolkit Duplicate Content"
+msgstr "Seooptimierung Toolkit Doppelte Inhalte"
+
+#: src/Admin/DuplicateChecker.php:134
+msgid "Finds posts sharing the exact same effective title or meta description — the value actually used on the front end, whether from a manual override or a rendered template."
+msgstr "Findet Beiträge mit exakt demselben wirksamen Titel oder derselben Meta-Beschreibung – dem Wert, der tatsächlich im Frontend verwendet wird, ob aus einer manuellen Überschreibung oder einer Vorlage."
+
+#: src/Admin/DuplicateChecker.php:137
+msgid "Scan now"
+msgstr "Jetzt scannen"
+
+#. translators: %s: date and time of the last completed scan.
+#: src/Admin/DuplicateChecker.php:147
+#, php-format
+msgid "Last scanned: %s"
+msgstr "Zuletzt gescannt: %s"
+
+#: src/Admin/DuplicateChecker.php:153
+msgid "Duplicate titles"
+msgstr "Doppelte Titel"
+
+#: src/Admin/DuplicateChecker.php:154
+msgid "Duplicate descriptions"
+msgstr "Doppelte Beschreibungen"
+
+#: src/Admin/DuplicateChecker.php:172
+msgid "No duplicates found."
+msgstr "Keine Duplikate gefunden."
+
+#: src/Admin/DuplicateChecker.php:177
+#: src/Admin/Settings.php:1339
+msgid "Value"
+msgstr "Wert"
+
+#: src/Admin/DuplicateChecker.php:177
+msgid "Posts"
+msgstr "Beiträge"
+
+#: src/Admin/DuplicateChecker.php:210
+#: src/Admin/LinkAudit.php:842
+msgid "A scan is already in progress."
+msgstr "Ein Scan läuft bereits."
+
+#: src/Admin/GoogleIndexingPage.php:79
+#: src/Admin/GoogleIndexingPage.php:80
+msgid "Google Indexing API"
+msgstr "Google Indexing API"
+
+#: src/Admin/GoogleIndexingPage.php:111
+msgid "Seooptimierung Toolkit Google Indexing API"
+msgstr "Seooptimierung Toolkit Google Indexing API"
+
+#: src/Admin/GoogleIndexingPage.php:112
+msgid "Pings Google's Indexing API on publish, update and delete using a Google Cloud service account. Google supports this API only for pages with job postings (JobPosting) and live streams (a video with a BroadcastEvent) — use it for those, and see Sitemaps and Search Console for everything else. For Bing, Yandex, Seznam and Naver, see the separate Instant Indexing (IndexNow) page instead — Google does not participate in IndexNow."
+msgstr "Meldet Veröffentlichung, Aktualisierung und Löschen über ein Google-Cloud-Dienstkonto an die Indexing API von Google. Google unterstützt diese API nur für Seiten mit Stellenanzeigen (JobPosting) und Livestreams (ein Video mit BroadcastEvent) – nutze sie dafür, und für alles andere Sitemaps und die Search Console. Für Bing, Yandex, Seznam und Naver siehe stattdessen die separate Seite „Sofort-Indexierung“ (IndexNow) – Google nimmt an IndexNow nicht teil."
+
+#: src/Admin/GoogleIndexingPage.php:133
+msgid "•••••••• (a key is saved — paste a new one to replace it, or leave blank to keep it)"
+msgstr "•••••••• (ein Schlüssel ist gespeichert – füge einen neuen ein, um ihn zu ersetzen, oder lass das Feld leer, um ihn zu behalten)"
+
+#: src/Admin/GoogleIndexingPage.php:134
+msgid "Paste the full contents of the service account key file downloaded from Google Cloud Console."
+msgstr "Füge den vollständigen Inhalt der Schlüsseldatei des Dienstkontos ein, die du in der Google Cloud Console heruntergeladen hast."
+
+#: src/Admin/GoogleIndexingPage.php:147
+#: src/Admin/IndexNowPage.php:235
+msgid "Enable"
+msgstr "Aktivieren"
+
+#: src/Admin/GoogleIndexingPage.php:149
+msgid "Enable Google Instant Indexing"
+msgstr "Google Sofort-Indexierung aktivieren"
+
+#: src/Admin/GoogleIndexingPage.php:154
+msgid "Service account JSON key"
+msgstr "JSON-Schlüssel des Dienstkontos"
+
+#: src/Admin/GoogleIndexingPage.php:156
+msgid "Create a service account with the \"Owner\" role on a project with the Indexing API enabled, add its email as a delegated owner in Search Console, then paste its JSON key here. Never echoed back once saved — leave the field blank to keep the existing key."
+msgstr "Lege ein Dienstkonto mit der Rolle „Inhaber“ in einem Projekt mit aktivierter Indexing API an, füge dessen E-Mail-Adresse in der Search Console als delegierten Inhaber hinzu und füge dann hier den JSON-Schlüssel ein. Er wird nach dem Speichern nie wieder angezeigt – lass das Feld leer, um den vorhandenen Schlüssel zu behalten."
+
+#: src/Admin/GoogleIndexingPage.php:159
+#: src/Admin/IndexNowPage.php:294
+msgid "Post types"
+msgstr "Beitragstypen"
+
+#: src/Admin/GoogleIndexingPage.php:172
+msgid "Supported pages only"
+msgstr "Nur unterstützte Seiten"
+
+#: src/Admin/GoogleIndexingPage.php:174
+msgid "Only submit pages that contain a job posting or a live stream (recommended)"
+msgstr "Nur Seiten senden, die eine Stellenanzeige oder einen Livestream enthalten (empfohlen)"
+
+#: src/Admin/GoogleIndexingPage.php:175
+msgid "Recognised: the Job posting and Video (live stream) blocks, a page whose schema type is set to JobPosting, and anything you add with the seooptimierung/indexing/google_eligible filter. With this off, every page of the selected post types is sent, which Google does not support."
+msgstr "Erkannt werden: die Blöcke „Stellenanzeige“ und „Video“ (Livestream), eine Seite, deren Schema-Typ auf JobPosting steht, und alles, was du über den Filter seooptimierung/indexing/google_eligible ergänzt. Ist die Option aus, wird jede Seite der gewählten Beitragstypen gesendet – das unterstützt Google nicht."
+
+#: src/Admin/GoogleIndexingPage.php:189
+#: src/Admin/IndexNowPage.php:330
+msgid "Submission history"
+msgstr "Übermittlungsverlauf"
+
+#: src/Admin/GoogleIndexingPage.php:192
+#: src/Admin/IndexNowPage.php:333
+msgid "No submissions yet."
+msgstr "Noch keine Übermittlungen."
+
+#: src/Admin/GoogleIndexingPage.php:199
+#: src/Admin/IndexNowPage.php:340
+msgid "Clear history"
+msgstr "Verlauf leeren"
+
+#: src/Admin/GoogleIndexingPage.php:204
+#: src/Admin/LinkAudit.php:461
+#: src/Admin/NotFoundMonitorPage.php:110
+msgid "URL"
+msgstr "URL"
+
+#: src/Admin/GoogleIndexingPage.php:206
+#: src/Admin/IndexNowPage.php:348
+msgid "Submitted"
+msgstr "Übermittelt"
+
+#: src/Admin/ImageSeo.php:90
+#: src/Admin/ImageSeo.php:91
+msgid "Image SEO"
+msgstr "Bilder-SEO"
+
+#: src/Admin/ImageSeo.php:119
+msgid "Saving…"
+msgstr "Wird gespeichert …"
+
+#: src/Admin/ImageSeo.php:120
+msgid "Saved"
+msgstr "Gespeichert"
+
+#: src/Admin/ImageSeo.php:123
+msgid "Scanning content…"
+msgstr "Inhalte werden gescannt …"
+
+#. translators: 1: posts scanned so far, 2: total posts.
+#: src/Admin/ImageSeo.php:125
+#, php-format
+msgid "Scanned %1$s of %2$s…"
+msgstr "%1$s von %2$s gescannt …"
+
+#: src/Admin/ImageSeo.php:126
+msgid "Scan finished — reload the page to see the result."
+msgstr "Scan beendet – lade die Seite neu, um das Ergebnis zu sehen."
+
+#: src/Admin/ImageSeo.php:127
+msgid "Suggesting for all rows…"
+msgstr "Vorschläge für alle Zeilen werden geholt …"
+
+#: src/Admin/ImageSeo.php:150
+msgid "Seooptimierung Toolkit Image SEO"
+msgstr "Seooptimierung Toolkit Bilder-SEO"
+
+#. translators: 1: images in the media library, 2: images without alt text, 3: images marked decorative.
+#: src/Admin/ImageSeo.php:162
+#, php-format
+msgid "%1$s images in the media library — %2$s without alt text, %3$s marked decorative."
+msgstr "%1$s Bilder in der Mediathek – %2$s ohne Alt-Text, %3$s als dekorativ markiert."
+
+#: src/Admin/ImageSeo.php:169
+msgid "Alt text describes an image for screen readers and search engines. Describe what is visible, briefly; mark purely decorative images as decorative so they are not counted as missing."
+msgstr "Der Alt-Text beschreibt ein Bild für Screenreader und Suchmaschinen. Beschreibe kurz, was zu sehen ist; markiere rein dekorative Bilder als dekorativ, damit sie nicht als fehlend gezählt werden."
+
+#: src/Admin/ImageSeo.php:277
+msgid "Fill in alt text automatically when an image is uploaded (made from the file name; camera names like IMG_1234 are skipped)"
+msgstr "Alt-Text beim Hochladen eines Bildes automatisch eintragen (aus dem Dateinamen; Kameranamen wie IMG_1234 werden übersprungen)"
+
+#: src/Admin/ImageSeo.php:282
+msgid "Show the image title as alt text on the website for images that have no alt attribute at all"
+msgstr "Bildtitel als Alt-Text auf der Website anzeigen, wenn ein Bild gar kein Alt-Attribut hat"
+
+#: src/Admin/ImageSeo.php:283
+msgid "Only fills a missing attribute — an alt you set (even an empty one) is never replaced, and decorative images stay as they are. Fixing the alt text itself below is always better."
+msgstr "Ergänzt nur ein fehlendes Attribut – ein von dir gesetzter Alt-Text (auch ein leerer) wird nie ersetzt, dekorative Bilder bleiben unverändert. Den Alt-Text selbst unten zu pflegen ist immer besser."
+
+#: src/Admin/ImageSeo.php:286
+#: src/Admin/ImageSeo.php:442
+#: src/Admin/LinkAudit.php:413
+msgid "Save"
+msgstr "Speichern"
+
+#. translators: %s: number.
+#: src/Admin/ImageSeo.php:330
+#, php-format
+msgid "Missing alt text (%s)"
+msgstr "Alt-Text fehlt (%s)"
+
+#. translators: %s: number.
+#: src/Admin/ImageSeo.php:331
+#, php-format
+msgid "All images (%s)"
+msgstr "Alle Bilder (%s)"
+
+#. translators: %s: number.
+#: src/Admin/ImageSeo.php:332
+#, php-format
+msgid "Decorative (%s)"
+msgstr "Dekorativ (%s)"
+
+#: src/Admin/ImageSeo.php:366
+msgid "Every image has alt text. Nothing to fix here."
+msgstr "Jedes Bild hat einen Alt-Text. Hier gibt es nichts zu beheben."
+
+#: src/Admin/ImageSeo.php:366
+msgid "No images in this list."
+msgstr "Keine Bilder in dieser Liste."
+
+#: src/Admin/ImageSeo.php:371
+msgid "Suggest alt text for every image on this page"
+msgstr "Alt-Text für jedes Bild auf dieser Seite vorschlagen"
+
+#: src/Admin/ImageSeo.php:375
+#: src/Schema/ContentTypes.php:65
+#: src/Schema/ContentTypes.php:80
+#: src/Schema/ContentTypes.php:132
+#: src/Schema/ContentTypes.php:214
+msgid "Image"
+msgstr "Bild"
+
+#: src/Admin/ImageSeo.php:376
+msgid "File"
+msgstr "Datei"
+
+#: src/Admin/ImageSeo.php:377
+msgid "Alt text"
+msgstr "Alt-Text"
+
+#: src/Admin/ImageSeo.php:378
+#: src/Admin/ImageSeo.php:439
+msgid "Decorative"
+msgstr "Dekorativ"
+
+#: src/Admin/ImageSeo.php:444
+msgid "Use title"
+msgstr "Titel übernehmen"
+
+#: src/Admin/ImageSeo.php:460
+msgid "Images in content without an alt attribute"
+msgstr "Bilder in Inhalten ohne Alt-Attribut"
+
+#: src/Admin/ImageSeo.php:461
+msgid "Looks through the content of all published posts and pages for <img> tags that have no alt attribute at all (an empty alt=\"\" counts as a decision and is fine). Open the post to fix them."
+msgstr "Durchsucht den Inhalt aller veröffentlichten Beiträge und Seiten nach <img>-Tags, die gar kein Alt-Attribut haben (ein leeres alt=\"\" gilt als bewusste Entscheidung und ist in Ordnung). Öffne den Beitrag, um sie zu beheben."
+
+#: src/Admin/ImageSeo.php:462
+msgid "Scan content now"
+msgstr "Inhalte jetzt scannen"
+
+#: src/Admin/ImageSeo.php:471
+msgid "The last scan found no image without an alt attribute."
+msgstr "Der letzte Scan hat kein Bild ohne Alt-Attribut gefunden."
+
+#: src/Admin/ImageSeo.php:475
+msgid "Images without alt"
+msgstr "Bilder ohne Alt-Text"
+
+#: src/Admin/ImageSeo.php:546
+msgid "The AI returned no usable text."
+msgstr "Die KI hat keinen verwertbaren Text geliefert."
+
+#: src/Admin/ImportWizard.php:79
+#: src/Admin/ImportWizard.php:80
+#: src/Admin/RoleManager.php:278
+msgid "Import"
+msgstr "Import"
+
+#: src/Admin/ImportWizard.php:110
+msgid "Processing…"
+msgstr "Wird verarbeitet …"
+
+#: src/Admin/ImportWizard.php:113
+msgid "Deactivating…"
+msgstr "Wird deaktiviert …"
+
+#: src/Admin/ImportWizard.php:114
+#: src/Admin/ImportWizard.php:275
+msgid "Deactivated."
+msgstr "Deaktiviert."
+
+#: src/Admin/ImportWizard.php:115
+#: src/Admin/ImportWizard.php:272
+msgid "Could not deactivate it automatically — deactivate it from the Plugins screen."
+msgstr "Konnte nicht automatisch deaktiviert werden – deaktiviere es auf der Seite „Plugins“."
+
+#: src/Admin/ImportWizard.php:116
+msgid "Deactivate this plugin now?"
+msgstr "Dieses Plugin jetzt deaktivieren?"
+
+#. translators: {{processed}} and {{found}} are placeholders filled in by JavaScript, not sprintf() — keep them exactly as-is.
+#: src/Admin/ImportWizard.php:118
+msgid "{{processed}} checked, {{found}} with data"
+msgstr "{{processed}} geprüft, {{found}} mit Daten"
+
+#: src/Admin/ImportWizard.php:136
+msgid "Seooptimierung Toolkit Import"
+msgstr "Seooptimierung Toolkit Import"
+
+#: src/Admin/ImportWizard.php:139
+msgid "No supported SEO plugin data was detected on this site."
+msgstr "Auf dieser Website wurden keine Daten eines unterstützten SEO-Plugins gefunden."
+
+#: src/Admin/ImportWizard.php:143
+msgid "Data was found from the plugins below. Object meta, term meta and (Yoast/Rank Math) global settings are imported; redirects are never migrated. Safe to re-run: a field already set in Seooptimierung Toolkit — whether from a previous import or edited by hand — is never overwritten, so running this again only picks up new or previously-empty content."
+msgstr "Von den unten genannten Plugins wurden Daten gefunden. Objekt-Meta, Begriffs-Meta und (Yoast/Rank Math) globale Einstellungen werden importiert; Weiterleitungen werden nie übernommen. Der Import lässt sich gefahrlos wiederholen: Ein Feld, das in Seooptimierung Toolkit schon gesetzt ist – ob aus einem früheren Import oder von Hand – wird nie überschrieben, ein erneuter Lauf übernimmt also nur neue oder bisher leere Inhalte."
+
+#: src/Admin/ImportWizard.php:163
+msgid "Redirects were also found for this plugin and will not be imported."
+msgstr "Für dieses Plugin wurden auch Weiterleitungen gefunden; sie werden nicht importiert."
+
+#: src/Admin/ImportWizard.php:167
+msgid "Dry run (preview only)"
+msgstr "Testlauf (nur Vorschau)"
+
+#: src/Admin/ImportWizard.php:168
+msgid "Import now"
+msgstr "Jetzt importieren"
+
+#. translators: %s: plugin name, e.g. "Yoast SEO".
+#: src/Admin/ImportWizard.php:179
+#, php-format
+msgid "Deactivate %s now"
+msgstr "%s jetzt deaktivieren"
+
+#: src/Admin/ImportWizard.php:207
+#: src/Admin/ImportWizard.php:268
+msgid "Unknown source."
+msgstr "Unbekannte Quelle."
+
+#: src/Admin/IndexNowPage.php:108
+#: src/Admin/IndexNowPage.php:109
+#: src/Admin/Settings.php:1079
+msgid "Instant Indexing"
+msgstr "Sofort-Indexierung"
+
+#: src/Admin/IndexNowPage.php:138
+msgid "Starting…"
+msgstr "Wird gestartet …"
+
+#: src/Admin/IndexNowPage.php:140
+msgid "Something went wrong — stopped early."
+msgstr "Etwas ist schiefgelaufen – vorzeitig abgebrochen."
+
+#: src/Admin/IndexNowPage.php:141
+msgid "Pick at least one post type or taxonomy first."
+msgstr "Wähle zuerst mindestens einen Beitragstyp oder eine Taxonomie."
+
+#. translators: 1: number of URLs submitted so far, 2: label of the content type currently being processed.
+#: src/Admin/IndexNowPage.php:143
+#, php-format
+msgid "%1$d URLs submitted so far — working through %2$s…"
+msgstr "Bisher %1$d URLs übermittelt – bearbeite %2$s …"
+
+#: src/Admin/IndexNowPage.php:162
+msgid "Seooptimierung Toolkit Instant Indexing (IndexNow)"
+msgstr "Seooptimierung Toolkit Sofort-Indexierung (IndexNow)"
+
+#: src/Admin/IndexNowPage.php:163
+msgid "Pings the IndexNow protocol on publish, update and delete, and lets you trigger a submission on demand. Supported by Bing, Yandex, Seznam and Naver. Google does not participate in IndexNow — see the separate Google Indexing API page for that."
+msgstr "Meldet Veröffentlichung, Aktualisierung und Löschen per IndexNow-Protokoll und lässt dich eine Übermittlung auf Wunsch auslösen. Unterstützt von Bing, Yandex, Seznam und Naver. Google nimmt an IndexNow nicht teil – dafür siehe die separate Seite „Google Indexing API“."
+
+#: src/Admin/IndexNowPage.php:187
+msgid "That API key was not saved — it must be 16-64 hexadecimal characters (0-9, a-f) so it matches the /{key}.txt verification URL. The previous key was kept."
+msgstr "Dieser API-Schlüssel wurde nicht gespeichert – er muss aus 16–64 Hexadezimalzeichen (0–9, a–f) bestehen, damit er zur Prüf-URL /{key}.txt passt. Der vorherige Schlüssel wurde beibehalten."
+
+#. translators: %d: number of URLs submitted.
+#: src/Admin/IndexNowPage.php:201
+#, php-format
+msgid "%d URL submitted to IndexNow."
+msgid_plural "%d URLs submitted to IndexNow."
+msgstr[0] "%d URL an IndexNow übermittelt."
+msgstr[1] "%d URLs an IndexNow übermittelt."
+
+#: src/Admin/IndexNowPage.php:204
+msgid "IndexNow submission failed — see the history table below for the error, or the Diagnostics page."
+msgstr "Die IndexNow-Übermittlung ist fehlgeschlagen – den Fehler findest du in der Verlaufstabelle unten oder auf der Seite „Diagnose“."
+
+#: src/Admin/IndexNowPage.php:210
+msgid "No valid URLs found in the pasted list."
+msgstr "In der eingefügten Liste wurden keine gültigen URLs gefunden."
+
+#: src/Admin/IndexNowPage.php:226
+#: src/Admin/RoleManager.php:275
+#: src/Admin/Settings.php:246
+#: src/Admin/Settings.php:247
+msgid "Settings"
+msgstr "Einstellungen"
+
+#: src/Admin/IndexNowPage.php:237
+msgid "Automatically ping IndexNow on publish, update and delete"
+msgstr "IndexNow bei Veröffentlichung, Aktualisierung und Löschen automatisch benachrichtigen"
+
+#: src/Admin/IndexNowPage.php:242
+msgid "API key (optional)"
+msgstr "API-Schlüssel (optional)"
+
+#: src/Admin/IndexNowPage.php:245
+msgid "Leave blank to use an automatically generated key, or paste your own 16-64 character hexadecimal key (e.g. one already registered with Bing Webmaster Tools)."
+msgstr "Leer lassen, um einen automatisch erzeugten Schlüssel zu verwenden, oder füge einen eigenen hexadezimalen Schlüssel mit 16–64 Zeichen ein (z. B. einen, der bereits in den Bing Webmaster Tools registriert ist)."
+
+#: src/Admin/IndexNowPage.php:248
+msgid "Current key file"
+msgstr "Aktuelle Schlüsseldatei"
+
+#: src/Admin/IndexNowPage.php:252
+#: src/Admin/Settings.php:909
+msgid "open"
+msgstr "öffnen"
+
+#: src/Admin/IndexNowPage.php:254
+msgid "This file must return your key as plain text for IndexNow to accept submissions — it is served automatically by this plugin."
+msgstr "Diese Datei muss deinen Schlüssel als reinen Text zurückgeben, damit IndexNow Übermittlungen akzeptiert – das Plugin liefert sie automatisch aus."
+
+#: src/Admin/IndexNowPage.php:266
+msgid "Submit specific URLs"
+msgstr "Bestimmte URLs übermitteln"
+
+#: src/Admin/IndexNowPage.php:267
+msgid "One URL per line. Works even if automatic pinging above is disabled."
+msgstr "Eine URL pro Zeile. Funktioniert auch, wenn das automatische Benachrichtigen oben ausgeschaltet ist."
+
+#: src/Admin/IndexNowPage.php:275
+msgid "https://example.com/page-one/\nhttps://example.com/page-two/"
+msgstr "https://example.com/page-one/\nhttps://example.com/page-two/"
+
+#: src/Admin/IndexNowPage.php:278
+msgid "Submit URLs to IndexNow"
+msgstr "URLs an IndexNow übermitteln"
+
+#: src/Admin/IndexNowPage.php:289
+msgid "Index everything (one click)"
+msgstr "Alles indexieren (ein Klick)"
+
+#: src/Admin/IndexNowPage.php:290
+msgid "Submits every published URL of the checked types, in small batches so the browser tab stays responsive. Untick anything you don't want included."
+msgstr "Übermittelt jede veröffentlichte URL der angehakten Typen in kleinen Paketen, damit der Browser-Tab reaktionsfähig bleibt. Entferne den Haken bei allem, was nicht dabei sein soll."
+
+#: src/Admin/IndexNowPage.php:304
+msgid "Taxonomies"
+msgstr "Taxonomien"
+
+#: src/Admin/IndexNowPage.php:316
+msgid "Start bulk indexing"
+msgstr "Massen-Indexierung starten"
+
+#: src/Admin/IndexNowPage.php:345
+#: src/Admin/RedirectsPage.php:318
+msgid "Source"
+msgstr "Quelle"
+
+#: src/Admin/IndexNowPage.php:346
+msgid "URLs"
+msgstr "URLs"
+
+#: src/Admin/IndexNowPage.php:347
+#: src/Admin/Settings.php:1421
+#: src/Schema/ContentTypes.php:103
+msgid "Status"
+msgstr "Status"
+
+#: src/Admin/IndexNowPage.php:354
+msgid "OK"
+msgstr "OK"
+
+#: src/Admin/IndexNowPage.php:354
+msgid "Error"
+msgstr "Fehler"
+
+#: src/Admin/IndexNowPage.php:448
+msgid "Manual paste"
+msgstr "Manuell eingefügt"
+
+#: src/Admin/IndexNowPage.php:503
+msgid "Unknown batch kind."
+msgstr "Unbekannte Paketart."
+
+#: src/Admin/IndexNowPage.php:516
+msgid "Unknown post type."
+msgstr "Unbekannter Beitragstyp."
+
+#. translators: %s: post type label, e.g. "Products".
+#. translators: %s: taxonomy label, e.g. "Product categories".
+#: src/Admin/IndexNowPage.php:547
+#: src/Admin/IndexNowPage.php:596
+#, php-format
+msgid "Bulk: %s"
+msgstr "Bulk: %s"
+
+#: src/Admin/IndexNowPage.php:559
+msgid "Unknown taxonomy."
+msgstr "Unbekannte Taxonomie."
+
+#: src/Admin/LinkAudit.php:187
+msgid "Weekly (Seooptimierung Toolkit link checks)"
+msgstr "Wöchentlich (Linkprüfungen von Seooptimierung Toolkit)"
+
+#: src/Admin/LinkAudit.php:191
+msgid "Monthly (Seooptimierung Toolkit link checks)"
+msgstr "Monatlich (Linkprüfungen von Seooptimierung Toolkit)"
+
+#: src/Admin/LinkAudit.php:287
+#: src/Admin/LinkAudit.php:288
+msgid "Link Audit"
+msgstr "Link-Audit"
+
+#: src/Admin/LinkAudit.php:320
+msgid "Scanning"
+msgstr "Wird gescannt"
+
+#: src/Admin/LinkAudit.php:321
+msgid "Checking link"
+msgstr "Link wird geprüft"
+
+#: src/Admin/LinkAudit.php:322
+msgid "Preparing scan…"
+msgstr "Scan wird vorbereitet …"
+
+#: src/Admin/LinkAudit.php:323
+msgid "elapsed"
+msgstr "vergangen"
+
+#: src/Admin/LinkAudit.php:325
+msgid "The audit continues in the background. You may leave this page."
+msgstr "Das Audit läuft im Hintergrund weiter. Du kannst diese Seite verlassen."
+
+#: src/Admin/LinkAudit.php:347
+msgid "Seooptimierung Toolkit Link Audit"
+msgstr "Seooptimierung Toolkit Link-Audit"
+
+#: src/Admin/LinkAudit.php:348
+msgid "Scans every published page's content and every navigation menu to find pages nothing links to (orphans), and queues every other link for a broken-link check — checked on demand with the button below, or automatically on whatever schedule you choose."
+msgstr "Durchsucht den Inhalt jeder veröffentlichten Seite und jedes Navigationsmenü, um Seiten zu finden, auf die nichts verlinkt (verwaiste Seiten), und stellt jeden anderen Link zur Prüfung auf defekte Links in die Warteschlange – auf Knopfdruck unten oder automatisch nach einem Zeitplan deiner Wahl."
+
+#: src/Admin/LinkAudit.php:351
+msgid "Run full link audit"
+msgstr "Vollständiges Link-Audit starten"
+
+#: src/Admin/LinkAudit.php:354
+msgid "The audit is stored as a persistent background job. It continues after this tab is closed and resumes automatically after short interruptions."
+msgstr "Das Audit wird als dauerhafter Hintergrundauftrag gespeichert. Es läuft weiter, wenn du den Tab schließt, und setzt sich nach kurzen Unterbrechungen automatisch fort."
+
+#. translators: %d: number of links still waiting to be checked.
+#: src/Admin/LinkAudit.php:364
+#, php-format
+msgid "%d link is still queued for a background check."
+msgid_plural "%d links are still queued for a background check."
+msgstr[0] "%d Link wartet noch auf die Prüfung im Hintergrund."
+msgstr[1] "%d Links warten noch auf die Prüfung im Hintergrund."
+
+#. translators: %s: date and time of the last completed content scan.
+#: src/Admin/LinkAudit.php:377
+#, php-format
+msgid "Last content scan: %s"
+msgstr "Letzter Inhalts-Scan: %s"
+
+#: src/Admin/LinkAudit.php:397
+msgid "Only when a full audit is started manually"
+msgstr "Nur wenn ein vollständiges Audit von Hand gestartet wird"
+
+#: src/Admin/LinkAudit.php:398
+msgid "Daily"
+msgstr "Täglich"
+
+#: src/Admin/LinkAudit.php:399
+msgid "Weekly"
+msgstr "Wöchentlich"
+
+#: src/Admin/LinkAudit.php:400
+msgid "Monthly"
+msgstr "Monatlich"
+
+#: src/Admin/LinkAudit.php:407
+msgid "Automatic background check"
+msgstr "Automatische Hintergrundprüfung"
+
+#: src/Admin/LinkAudit.php:426
+msgid "Orphan pages"
+msgstr "Verwaiste Seiten"
+
+#: src/Admin/LinkAudit.php:429
+msgid "No orphan pages found."
+msgstr "Keine verwaisten Seiten gefunden."
+
+#: src/Admin/LinkAudit.php:434
+msgid "Page"
+msgstr "Seite"
+
+#: src/Admin/LinkAudit.php:455
+msgid "Link findings"
+msgstr "Link-Befunde"
+
+#: src/Admin/LinkAudit.php:457
+msgid "No broken links or redirects found yet."
+msgstr "Bisher keine defekten Links oder Weiterleitungen gefunden."
+
+#: src/Admin/LinkAudit.php:461
+msgid "Finding"
+msgstr "Befund"
+
+#: src/Admin/LinkAudit.php:461
+msgid "Destination / chain"
+msgstr "Ziel / Kette"
+
+#: src/Admin/LinkAudit.php:461
+msgid "Linked from"
+msgstr "Verlinkt von"
+
+#: src/Admin/LinkAudit.php:461
+msgid "Source area"
+msgstr "Quellbereich"
+
+#: src/Admin/LinkAudit.php:461
+msgid "Checked"
+msgstr "Geprüft"
+
+#: src/Admin/LinkAudit.php:552
+msgid "Preparing content scan…"
+msgstr "Inhalts-Scan wird vorbereitet …"
+
+#: src/Admin/LinkAudit.php:721
+#: src/Admin/LinkAudit.php:872
+#: src/Admin/LinkAudit.php:1129
+msgid "(no title)"
+msgstr "(kein Titel)"
+
+#: src/Admin/LinkAudit.php:761
+msgid "Preparing link checks…"
+msgstr "Linkprüfungen werden vorbereitet …"
+
+#: src/Admin/LinkAudit.php:1108
+msgid "Template / rendered element"
+msgstr "Template / gerendertes Element"
+
+#: src/Admin/LinkAudit.php:1109
+msgid "Navigation menu"
+msgstr "Navigationsmenü"
+
+#: src/Admin/LinkAudit.php:1110
+#: src/Admin/LinkAudit.php:1133
+msgid "Widget"
+msgstr "Widget"
+
+#: src/Admin/LinkAudit.php:1131
+msgid "Menu"
+msgstr "Menü"
+
+#: src/Admin/LinkAudit.php:1335
+msgid "More than 10 redirects"
+msgstr "Mehr als 10 Weiterleitungen"
+
+#: src/Admin/Metabox.php:74
+msgid "No archive"
+msgstr "Kein Archiv"
+
+#: src/Admin/Metabox.php:75
+msgid "No snippet"
+msgstr "Kein Snippet"
+
+#: src/Admin/Metabox.php:76
+msgid "No image index"
+msgstr "Kein Bildindex"
+
+#: src/Admin/Metabox.php:140
+#: src/Admin/Metabox.php:691
+#: src/Frontend/Blocks.php:75
+msgid "Question"
+msgstr "Frage"
+
+#: src/Admin/Metabox.php:141
+#: src/Admin/Metabox.php:692
+#: src/Frontend/Blocks.php:76
+msgid "Answer"
+msgstr "Antwort"
+
+#: src/Admin/Metabox.php:142
+#: src/Admin/Metabox.php:694
+#: src/Frontend/Blocks.php:74
+msgid "Remove"
+msgstr "Entfernen"
+
+#: src/Admin/Metabox.php:143
+msgid "No image set"
+msgstr "Kein Bild gesetzt"
+
+#: src/Admin/Metabox.php:424
+#: src/Admin/Settings.php:579
+#: src/Schema/LocalBusinessTypes.php:27
+msgid "General"
+msgstr "Allgemein"
+
+#: src/Admin/Metabox.php:425
+msgid "Social"
+msgstr "Social"
+
+#: src/Admin/Metabox.php:426
+msgid "Schema"
+msgstr "Schema"
+
+#: src/Admin/Metabox.php:431
+msgid "Meta description"
+msgstr "Meta-Beschreibung"
+
+#: src/Admin/Metabox.php:432
+msgid "Focus keyword (optional)"
+msgstr "Fokus-Keyword (optional)"
+
+#: src/Admin/Metabox.php:433
+msgid "Canonical URL"
+msgstr "Canonical-URL"
+
+#: src/Admin/Metabox.php:439
+msgid "Open Graph title"
+msgstr "Open-Graph-Titel"
+
+#: src/Admin/Metabox.php:440
+msgid "Open Graph description"
+msgstr "Open-Graph-Beschreibung"
+
+#: src/Admin/Metabox.php:441
+msgid "Open Graph image URL"
+msgstr "Open-Graph-Bild-URL"
+
+#: src/Admin/Metabox.php:442
+msgid "Twitter title"
+msgstr "Twitter-Titel"
+
+#: src/Admin/Metabox.php:443
+msgid "Twitter description"
+msgstr "Twitter-Beschreibung"
+
+#: src/Admin/Metabox.php:444
+msgid "Twitter image URL"
+msgstr "Twitter-Bild-URL"
+
+#: src/Admin/Metabox.php:532
+msgid "Search result preview"
+msgstr "Vorschau in den Suchergebnissen"
+
+#: src/Admin/Metabox.php:548
+msgid "Social share preview"
+msgstr "Social-Share-Vorschau"
+
+#: src/Admin/Metabox.php:588
+msgid "Nofollow"
+msgstr "Nofollow"
+
+#: src/Admin/Metabox.php:625
+msgid "Schema type"
+msgstr "Schema-Typ"
+
+#: src/Admin/Metabox.php:631
+msgid "Automatic"
+msgstr "Automatisch"
+
+#: src/Admin/Metabox.php:640
+msgid "Leave empty to use the automatic type (Article or WebPage). Any Schema.org type name works, not just the suggestions."
+msgstr "Leer lassen, um den automatischen Typ (Article oder WebPage) zu verwenden. Jeder Schema.org-Typname funktioniert, nicht nur die Vorschläge."
+
+#: src/Admin/Metabox.php:654
+msgid "Brand"
+msgstr "Marke"
+
+#: src/Admin/Metabox.php:655
+msgid "GTIN"
+msgstr "GTIN"
+
+#: src/Admin/Metabox.php:656
+msgid "MPN (manufacturer part number)"
+msgstr "MPN (Herstellerteilenummer)"
+
+#: src/Admin/Metabox.php:661
+msgid "Price valid until"
+msgstr "Preis gültig bis"
+
+#: src/Admin/Metabox.php:663
+msgid "Optional. Leave empty unless the current price is a limited-time offer."
+msgstr "Optional. Leer lassen, außer der aktuelle Preis ist ein zeitlich begrenztes Angebot."
+
+#: src/Admin/Metabox.php:678
+#: src/Frontend/Blocks.php:73
+msgid "Add question"
+msgstr "Frage hinzufügen"
+
+#: src/Admin/NotFoundMonitorPage.php:62
+#: src/Admin/NotFoundMonitorPage.php:63
+#: src/Admin/RoleManager.php:281
+msgid "404 Monitor"
+msgstr "404-Monitor"
+
+#: src/Admin/NotFoundMonitorPage.php:95
+msgid "Seooptimierung Toolkit 404 Monitor"
+msgstr "Seooptimierung Toolkit 404-Monitor"
+
+#: src/Admin/NotFoundMonitorPage.php:98
+msgid "No 404s recorded."
+msgstr "Keine 404-Fehler aufgezeichnet."
+
+#: src/Admin/NotFoundMonitorPage.php:111
+#: src/Admin/RedirectsPage.php:322
+msgid "Hits"
+msgstr "Aufrufe"
+
+#: src/Admin/NotFoundMonitorPage.php:112
+msgid "Referrer"
+msgstr "Referrer"
+
+#: src/Admin/NotFoundMonitorPage.php:113
+msgid "Last seen"
+msgstr "Zuletzt gesehen"
+
+#: src/Admin/NotFoundMonitorPage.php:114
+#: src/Admin/RedirectsPage.php:323
+msgid "Actions"
+msgstr "Aktionen"
+
+#: src/Admin/NotFoundMonitorPage.php:159
+msgid "Create redirect"
+msgstr "Weiterleitung erstellen"
+
+#: src/Admin/NotFoundMonitorPage.php:161
+msgid "Dismiss"
+msgstr "Ausblenden"
+
+#: src/Admin/RedirectsPage.php:81
+#: src/Admin/RedirectsPage.php:82
+#: src/Admin/RoleManager.php:280
+msgid "Redirects"
+msgstr "Weiterleitungen"
+
+#: src/Admin/RedirectsPage.php:118
+msgid "Seooptimierung Toolkit Redirects"
+msgstr "Seooptimierung Toolkit Weiterleitungen"
+
+#: src/Admin/RedirectsPage.php:121
+msgid "Redirect saved."
+msgstr "Weiterleitung gespeichert."
+
+#: src/Admin/RedirectsPage.php:141
+msgid "Automatic changes after an address change"
+msgstr "Automatische Änderungen nach einer Adressänderung"
+
+#: src/Admin/RedirectsPage.php:142
+msgid "When you change the address of a published page, the plugin redirects the old address and updates internal links to it (switch either off under Settings > Crawl)."
+msgstr "Wenn du die Adresse einer veröffentlichten Seite änderst, leitet das Plugin die alte Adresse weiter und aktualisiert interne Links darauf (beides lässt sich unter Einstellungen > Crawl ausschalten)."
+
+#: src/Admin/RedirectsPage.php:145
+msgid "Nothing yet."
+msgstr "Noch nichts."
+
+#: src/Admin/RedirectsPage.php:149
+msgid "When"
+msgstr "Wann"
+
+#: src/Admin/RedirectsPage.php:149
+msgid "Old address"
+msgstr "Alte Adresse"
+
+#: src/Admin/RedirectsPage.php:149
+msgid "New address"
+msgstr "Neue Adresse"
+
+#: src/Admin/RedirectsPage.php:149
+msgid "Addresses"
+msgstr "Adressen"
+
+#: src/Admin/RedirectsPage.php:149
+msgid "Posts/menu items with links updated"
+msgstr "Beiträge/Menüpunkte mit aktualisierten Links"
+
+#. translators: %s: maximum accepted upload size, e.g. "2 MB".
+#: src/Admin/RedirectsPage.php:174
+#, php-format
+msgid "Import stopped: the uploaded file is larger than the %s limit. Split it into smaller files and import them one at a time."
+msgstr "Import abgebrochen: Die hochgeladene Datei ist größer als das Limit von %s. Teile sie in kleinere Dateien auf und importiere sie nacheinander."
+
+#. translators: 1: number of rows imported, 2: number of rows skipped, 3: maximum field length, 4: maximum rows read per file.
+#: src/Admin/RedirectsPage.php:197
+#, php-format
+msgid "Import complete: %1$d redirect(s) imported, %2$d row(s) skipped (missing source, or a field over the %3$s length limit). At most %4$d rows are read from one file — split a larger export into multiple files if needed."
+msgstr "Import abgeschlossen: %1$d Weiterleitung(en) importiert, %2$d Zeile(n) übersprungen (Quelle fehlt oder ein Feld überschreitet das Längenlimit von %3$s). Pro Datei werden höchstens %4$d Zeilen gelesen – teile einen größeren Export bei Bedarf auf mehrere Dateien auf."
+
+#: src/Admin/RedirectsPage.php:221
+msgid "Edit redirect"
+msgstr "Weiterleitung bearbeiten"
+
+#: src/Admin/RedirectsPage.php:221
+#: src/Admin/RedirectsPage.php:269
+msgid "Add redirect"
+msgstr "Weiterleitung hinzufügen"
+
+#: src/Admin/RedirectsPage.php:232
+msgid "Source path"
+msgstr "Quellpfad"
+
+#: src/Admin/RedirectsPage.php:234
+msgid "The exact site-relative path to match, e.g. /old-page/."
+msgstr "Der genaue seitenrelative Pfad, der gefunden werden soll, z. B. /alte-seite/."
+
+#: src/Admin/RedirectsPage.php:238
+msgid "Target URL"
+msgstr "Ziel-URL"
+
+#: src/Admin/RedirectsPage.php:240
+msgid "Can reference capture groups from the pattern above as $1, $2, …"
+msgstr "Kann Erfassungsgruppen des obigen Musters als $1, $2, … verwenden."
+
+#: src/Admin/RedirectsPage.php:245
+msgid "Pattern"
+msgstr "Muster"
+
+#: src/Admin/RedirectsPage.php:247
+msgid "This is a regular expression, not a fixed path"
+msgstr "Das ist ein regulärer Ausdruck, kein fester Pfad"
+
+#: src/Admin/RedirectsPage.php:248
+msgid "E.g. ^/blog/(.+)$ — no delimiters needed, they're added automatically. An invalid pattern is saved but will never match anything, and is flagged below."
+msgstr "Z. B. ^/blog/(.+)$ – Begrenzer sind nicht nötig, sie werden automatisch ergänzt. Ein ungültiges Muster wird gespeichert, trifft aber nie etwas und wird unten markiert."
+
+#: src/Admin/RedirectsPage.php:252
+msgid "This pattern is not valid regex and will never match — double-check it."
+msgstr "Dieses Muster ist kein gültiger regulärer Ausdruck und wird nie etwas treffen – prüfe es noch einmal."
+
+#: src/Admin/RedirectsPage.php:263
+#: src/Admin/RedirectsPage.php:265
+#: src/Admin/RedirectsPage.php:321
+msgid "Active"
+msgstr "Aktiv"
+
+#: src/Admin/RedirectsPage.php:269
+msgid "Update redirect"
+msgstr "Weiterleitung aktualisieren"
+
+#: src/Admin/RedirectsPage.php:282
+msgid "Import / export"
+msgstr "Import / Export"
+
+#. translators: %s: CSV column list.
+#: src/Admin/RedirectsPage.php:286
+#, php-format
+msgid "CSV columns: %s. Importing always adds new rows — it never overwrites or deduplicates existing ones, so review the list afterwards."
+msgstr "CSV-Spalten: %s. Beim Import werden immer neue Zeilen hinzugefügt – vorhandene werden nie überschrieben oder zusammengeführt, prüfe die Liste also anschließend."
+
+#: src/Admin/RedirectsPage.php:291
+msgid "Export CSV"
+msgstr "CSV exportieren"
+
+#: src/Admin/RedirectsPage.php:297
+msgid "Import CSV"
+msgstr "CSV importieren"
+
+#: src/Admin/RedirectsPage.php:307
+msgid "Existing redirects"
+msgstr "Vorhandene Weiterleitungen"
+
+#: src/Admin/RedirectsPage.php:310
+msgid "No redirects yet."
+msgstr "Noch keine Weiterleitungen."
+
+#: src/Admin/RedirectsPage.php:319
+msgid "Target"
+msgstr "Ziel"
+
+#: src/Admin/RedirectsPage.php:353
+msgid "Regular expression"
+msgstr "Regulärer Ausdruck"
+
+#: src/Admin/RedirectsPage.php:353
+msgid "Invalid pattern — never matches"
+msgstr "Ungültiges Muster – trifft nie"
+
+#: src/Admin/RedirectsPage.php:354
+msgid "regex"
+msgstr "Regex"
+
+#: src/Admin/RedirectsPage.php:354
+msgid "invalid regex"
+msgstr "ungültiger Regex"
+
+#: src/Admin/RedirectsPage.php:360
+msgid "Deactivated automatically: this pattern repeatedly hit PHP's PCRE backtrack/recursion limit against real requests, a sign it may be exploitable for denial-of-service. Rewrite it (avoid nested quantifiers like (a+)+) before reactivating."
+msgstr "Automatisch deaktiviert: Dieses Muster hat bei echten Anfragen wiederholt das Backtrack-/Rekursionslimit von PHPs PCRE erreicht – ein Zeichen, dass es für Denial-of-Service missbraucht werden könnte. Schreibe es um (vermeide verschachtelte Quantifizierer wie (a+)+), bevor du es wieder aktivierst."
+
+#: src/Admin/RedirectsPage.php:361
+msgid "auto-deactivated: unsafe pattern"
+msgstr "automatisch deaktiviert: unsicheres Muster"
+
+#: src/Admin/RedirectsPage.php:367
+#: src/Admin/Settings.php:995
+msgid "Yes"
+msgstr "Ja"
+
+#: src/Admin/RedirectsPage.php:367
+msgid "No"
+msgstr "Nein"
+
+#: src/Admin/RedirectsPage.php:372
+msgid "Edit"
+msgstr "Bearbeiten"
+
+#: src/Admin/RedirectsPage.php:374
+msgid "Delete this redirect?"
+msgstr "Diese Weiterleitung löschen?"
+
+#: src/Admin/RedirectsPage.php:375
+#: src/Crawl/IndexNow.php:149
+msgid "Delete"
+msgstr "Löschen"
+
+#: src/Admin/RedirectsPage.php:390
+msgid "301 Permanent Redirect"
+msgstr "301 Dauerhafte Weiterleitung"
+
+#: src/Admin/RedirectsPage.php:391
+msgid "302 Temporary Redirect"
+msgstr "302 Temporäre Weiterleitung"
+
+#: src/Admin/RedirectsPage.php:392
+msgid "307 Temporary Redirect (method preserved)"
+msgstr "307 Temporäre Weiterleitung (Methode bleibt erhalten)"
+
+#: src/Admin/RedirectsPage.php:393
+msgid "410 Gone"
+msgstr "410 Gone (dauerhaft entfernt)"
+
+#: src/Admin/RedirectsPage.php:394
+msgid "451 Unavailable For Legal Reasons"
+msgstr "451 Aus rechtlichen Gründen nicht verfügbar"
+
+#: src/Admin/RoleManager.php:247
+#: src/Admin/RoleManager.php:248
+#: src/Admin/RoleManager.php:285
+msgid "Role Manager"
+msgstr "Rollenverwaltung"
+
+#: src/Admin/RoleManager.php:276
+msgid "Edit SEO metabox fields"
+msgstr "SEO-Metabox-Felder bearbeiten"
+
+#: src/Admin/RoleManager.php:282
+msgid "Duplicate Content Checker"
+msgstr "Duplicate-Content-Prüfung"
+
+#: src/Admin/RoleManager.php:283
+msgid "Link Audit (Broken Links / Orphan Pages)"
+msgstr "Link-Audit (defekte Links / verwaiste Seiten)"
+
+#: src/Admin/RoleManager.php:306
+msgid "Seooptimierung Toolkit Role Manager"
+msgstr "Seooptimierung Toolkit Rollenverwaltung"
+
+#: src/Admin/RoleManager.php:307
+msgid "Control which roles can access which parts of Seooptimierung Toolkit. The Administrator role always keeps access to this page."
+msgstr "Lege fest, welche Rollen auf welche Bereiche von Seooptimierung Toolkit zugreifen dürfen. Die Administrator-Rolle behält immer Zugriff auf diese Seite."
+
+#: src/Admin/RoleManager.php:310
+msgid "Roles saved."
+msgstr "Rollen gespeichert."
+
+#: src/Admin/RoleManager.php:338
+msgid "Save roles"
+msgstr "Rollen speichern"
+
+#: src/Admin/Settings.php:47
+#: src/Admin/Settings.php:581
+msgid "Sitemaps"
+msgstr "Sitemaps"
+
+#: src/Admin/Settings.php:48
+#: src/Admin/Settings.php:585
+#: src/Admin/Settings.php:1488
+msgid "Security Headers"
+msgstr "Sicherheits-Header"
+
+#: src/Admin/Settings.php:49
+#: src/Admin/Settings.php:584
+#: src/Admin/Settings.php:1203
+msgid "WordPress Cleanup"
+msgstr "WordPress-Aufräumen"
+
+#: src/Admin/Settings.php:300
+msgid "Scanning your home page and a few sample pages…"
+msgstr "Startseite und einige Beispielseiten werden gescannt …"
+
+#. translators: %d: number of pages scanned.
+#: src/Admin/Settings.php:302
+#, php-format
+msgid "Scanned %d page(s)."
+msgstr "%d Seite(n) gescannt."
+
+#: src/Admin/Settings.php:304
+msgid "No external resources found — nothing to suggest."
+msgstr "Keine externen Ressourcen gefunden – nichts vorzuschlagen."
+
+#: src/Admin/Settings.php:305
+msgid "Origin"
+msgstr "Ursprung"
+
+#: src/Admin/Settings.php:306
+msgid "What loads from it"
+msgstr "Was davon geladen wird"
+
+#: src/Admin/Settings.php:307
+msgid "Pages"
+msgstr "Seiten"
+
+#: src/Admin/Settings.php:308
+msgid "Suggested hint"
+msgstr "Vorgeschlagener Hint"
+
+#: src/Admin/Settings.php:309
+msgid "already in your hints"
+msgstr "bereits in deinen Hints"
+
+#: src/Admin/Settings.php:310
+msgid "Add checked to Resource Hints"
+msgstr "Angehakte zu den Resource Hints hinzufügen"
+
+#: src/Admin/Settings.php:311
+msgid "preconnect opens the connection early (use it for the few origins that block rendering: stylesheets, scripts, fonts); dns-prefetch only resolves the name and suits images and embeds; preload fetches a specific file (a font) before the browser would find it. Keep the list short — a handful of well-chosen hints beats many."
+msgstr "preconnect baut die Verbindung früh auf (für die wenigen Ursprünge, die das Rendern blockieren: Stylesheets, Skripte, Schriften); dns-prefetch löst nur den Namen auf und passt zu Bildern und Einbettungen; preload lädt eine bestimmte Datei (eine Schrift) vor, bevor der Browser sie selbst findet. Halte die Liste kurz – ein paar gut gewählte Hints sind besser als viele."
+
+#: src/Admin/Settings.php:539
+msgid "HSTS preload was switched off: it requires \"includeSubDomains\" and a max-age of at least 31536000 seconds (one year)."
+msgstr "HSTS-Preload wurde ausgeschaltet: Es erfordert „includeSubDomains“ und ein max-age von mindestens 31536000 Sekunden (ein Jahr)."
+
+#: src/Admin/Settings.php:580
+msgid "Content Types"
+msgstr "Inhaltstypen"
+
+#: src/Admin/Settings.php:582
+msgid "Crawl"
+msgstr "Crawl"
+
+#: src/Admin/Settings.php:583
+msgid "Performance"
+msgstr "Performance"
+
+#: src/Admin/Settings.php:586
+msgid "Server"
+msgstr "Server"
+
+#: src/Admin/Settings.php:592
+msgid "Seooptimierung Toolkit Settings"
+msgstr "Seooptimierung Toolkit Einstellungen"
+
+#: src/Admin/Settings.php:696
+msgid "Coexistence with another SEO plugin"
+msgstr "Koexistenz mit einem anderen SEO-Plugin"
+
+#: src/Admin/Settings.php:696
+msgid "Seooptimierung Toolkit is meant to replace Yoast SEO or Rank Math, not run alongside them. If you need to keep one of them active anyway (e.g. for a feature Seooptimierung Toolkit doesn't have), set this to stop Seooptimierung Toolkit printing its own title/meta description/canonical/Open Graph/Twitter Card/schema output — leaving all of that to the other plugin, so you never get duplicate tags. The Bulk Editor's Title/Description/Canonical columns then read and write that plugin's own fields instead of Seooptimierung Toolkit's. Everything else (sitemaps, hreflang, redirects, 404 monitor, IndexNow, Link Audit, Duplicate Checker, Role Manager, Performance) is unaffected."
+msgstr "Seooptimierung Toolkit soll Yoast SEO oder Rank Math ersetzen, nicht neben ihnen laufen. Wenn du eines davon trotzdem aktiv lassen musst (z. B. für eine Funktion, die Seooptimierung Toolkit nicht hat), verhindert diese Einstellung, dass Seooptimierung Toolkit eigene Titel-/Meta-Beschreibungs-/Canonical-/Open-Graph-/Twitter-Card-/Schema-Ausgaben schreibt – das überlässt du dem anderen Plugin, sodass keine doppelten Tags entstehen. Die Spalten Titel/Beschreibung/Canonical im Bulk-Editor lesen und schreiben dann die Felder dieses Plugins statt die von Seooptimierung Toolkit. Alles andere (Sitemaps, hreflang, Weiterleitungen, 404-Monitor, IndexNow, Link-Audit, Duplikat-Prüfung, Rollenverwaltung, Performance) bleibt unberührt."
+
+#: src/Admin/Settings.php:699
+msgid "Leave title/meta output to"
+msgstr "Titel-/Meta-Ausgabe überlassen an"
+
+#: src/Admin/Settings.php:701
+msgid "Seooptimierung Toolkit itself (default)"
+msgstr "Seooptimierung Toolkit selbst (Standard)"
+
+#: src/Admin/Settings.php:702
+msgid "Yoast SEO"
+msgstr "Yoast SEO"
+
+#: src/Admin/Settings.php:703
+msgid "Rank Math"
+msgstr "Rank Math"
+
+#: src/Admin/Settings.php:708
+#: src/Admin/Settings.php:730
+msgid "Separator"
+msgstr "Trennzeichen"
+
+#: src/Admin/Settings.php:709
+msgid "Home title template"
+msgstr "Titelvorlage der Startseite"
+
+#: src/Admin/Settings.php:710
+msgid "Home description template"
+msgstr "Beschreibungsvorlage der Startseite"
+
+#: src/Admin/Settings.php:713
+msgid "Site represents"
+msgstr "Die Website steht für"
+
+#: src/Admin/Settings.php:715
+msgid "An organization"
+msgstr "Eine Organisation"
+
+#: src/Admin/Settings.php:716
+msgid "A person"
+msgstr "Eine Person"
+
+#: src/Admin/Settings.php:717
+msgid "A local business"
+msgstr "Ein lokales Unternehmen"
+
+#: src/Admin/Settings.php:721
+msgid "Organization/person/business name"
+msgstr "Name der Organisation/Person/des Unternehmens"
+
+#: src/Admin/Settings.php:722
+msgid "Twitter/X @handle for the site"
+msgstr "Twitter/X-@Handle der Website"
+
+#: src/Admin/Settings.php:723
+msgid "Default Twitter/X @handle for authors"
+msgstr "Standard-Twitter/X-@Handle für Autoren"
+
+#: src/Admin/Settings.php:726
+#: src/Frontend/Blocks.php:87
+#: assets/blocks/blocks.js:37
+msgid "Breadcrumbs"
+msgstr "Breadcrumbs"
+
+#: src/Admin/Settings.php:727
+msgid "Show the trail from the home page to the current page with the \"Breadcrumbs\" block, the [seooptimierung_breadcrumbs] shortcode, or seooptimierung_breadcrumbs() in your theme. The same trail is written into the structured data (BreadcrumbList)."
+msgstr "Zeige den Pfad von der Startseite zur aktuellen Seite mit dem Block „Breadcrumbs“, dem Shortcode [seooptimierung_breadcrumbs] oder seooptimierung_breadcrumbs() in deinem Theme. Derselbe Pfad wird in die strukturierten Daten (BreadcrumbList) geschrieben."
+
+#: src/Admin/Settings.php:729
+msgid "Label of the first crumb"
+msgstr "Beschriftung des ersten Eintrags"
+
+#: src/Admin/Settings.php:731
+msgid "For posts and products, include the category (deepest one and its parents)"
+msgstr "Bei Beiträgen und Produkten die Kategorie einbeziehen (die tiefste samt Elternkategorien)"
+
+#: src/Admin/Settings.php:732
+msgid "Link the current page in the trail"
+msgstr "Die aktuelle Seite im Pfad verlinken"
+
+#: src/Admin/Settings.php:734
+msgid "Local business details"
+msgstr "Details zum lokalen Unternehmen"
+
+#: src/Admin/Settings.php:734
+msgid "only used when \"Site represents\" above is set to \"A local business\"."
+msgstr "wird nur verwendet, wenn „Die Website steht für“ oben auf „Ein lokales Unternehmen“ steht."
+
+#: src/Admin/Settings.php:737
+#: src/Schema/ContentTypes.php:169
+msgid "Street address"
+msgstr "Straße und Hausnummer"
+
+#: src/Admin/Settings.php:738
+#: src/Schema/ContentTypes.php:171
+msgid "City"
+msgstr "Stadt"
+
+#: src/Admin/Settings.php:739
+msgid "State/region"
+msgstr "Bundesland/Region"
+
+#: src/Admin/Settings.php:740
+#: src/Schema/ContentTypes.php:170
+msgid "Postal code"
+msgstr "Postleitzahl"
+
+#: src/Admin/Settings.php:741
+msgid "Country (ISO 3166-1 alpha-2, e.g. DE, CH, US)"
+msgstr "Land (ISO 3166-1 alpha-2, z. B. DE, CH, US)"
+
+#: src/Admin/Settings.php:742
+msgid "Telephone"
+msgstr "Telefon"
+
+#: src/Admin/Settings.php:743
+msgid "Price range (e.g. $$ or €€)"
+msgstr "Preisklasse (z. B. $$ oder €€)"
+
+#: src/Admin/Settings.php:744
+msgid "Latitude"
+msgstr "Breitengrad"
+
+#: src/Admin/Settings.php:745
+msgid "Longitude"
+msgstr "Längengrad"
+
+#: src/Admin/Settings.php:747
+msgid "Opening hours — one line per rule: comma-separated two-letter days, a space, then HH:MM-HH:MM. Example: \"Mo,Tu,We,Th,Fr 09:00-18:00\" and \"Sa 10:00-14:00\" on two lines."
+msgstr "Öffnungszeiten – eine Zeile pro Regel: zweibuchstabige Tage durch Kommas getrennt, ein Leerzeichen, dann HH:MM-HH:MM. Beispiel: „Mo,Tu,We,Th,Fr 09:00-18:00“ und „Sa 10:00-14:00“ in zwei Zeilen."
+
+#: src/Admin/Settings.php:748
+msgid "Opening hours"
+msgstr "Öffnungszeiten"
+
+#. translators: %s: post type label.
+#. translators: %s: taxonomy label.
+#: src/Admin/Settings.php:764
+#: src/Admin/Settings.php:779
+#, php-format
+msgid "%s title template"
+msgstr "Titelvorlage: %s"
+
+#. translators: %s: post type label.
+#: src/Admin/Settings.php:770
+#, php-format
+msgid "%s description template"
+msgstr "Beschreibungsvorlage: %s"
+
+#: src/Admin/Settings.php:795
+msgid "Title template"
+msgstr "Titelvorlage"
+
+#: src/Admin/Settings.php:796
+msgid "Description template"
+msgstr "Beschreibungsvorlage"
+
+#. translators: 1: link to the sitemap index, 2: link to the legacy sitemap.xml alias.
+#: src/Admin/Settings.php:857
+#, php-format
+msgid "Sitemap index: %1$s (also reachable as %2$s). Submit the index to Google Search Console and Bing Webmaster Tools — it lists every sitemap switched on below."
+msgstr "Sitemap-Index: %1$s (auch erreichbar als %2$s). Reiche den Index in der Google Search Console und den Bing Webmaster Tools ein – er listet jede unten eingeschaltete Sitemap."
+
+#: src/Admin/Settings.php:865
+msgid "Disable WordPress core's own /wp-sitemap.xml (this plugin's sitemaps replace it)"
+msgstr "Die eigene /wp-sitemap.xml von WordPress abschalten (die Sitemaps dieses Plugins ersetzen sie)"
+
+#: src/Admin/Settings.php:871
+msgid "Include hreflang alternates (xhtml:link) in sitemaps"
+msgstr "hreflang-Alternativen (xhtml:link) in Sitemaps aufnehmen"
+
+#: src/Admin/Settings.php:875
+msgid "When WPML, Polylang or slim-hreflang provides alternate-language URLs, this plugin's sitemaps normally list them as xhtml:link entries alongside the per-page <link rel=\"alternate\"> tags in the document head. Turn this off to have hreflang live only on the pages themselves — some setups prefer one single source of truth rather than two places search engines could theoretically disagree on."
+msgstr "Wenn WPML, Polylang oder slim-hreflang URLs in anderen Sprachen liefern, listen die Sitemaps dieses Plugins sie normalerweise als xhtml:link-Einträge neben den <link rel=\"alternate\">-Tags im Dokumentkopf jeder Seite. Schalte das aus, wenn hreflang nur auf den Seiten selbst stehen soll – manche Setups bevorzugen eine einzige Quelle der Wahrheit statt zwei Stellen, an denen Suchmaschinen theoretisch Widersprüche finden könnten."
+
+#: src/Admin/Settings.php:880
+msgid "On"
+msgstr "An"
+
+#: src/Admin/Settings.php:881
+msgid "Sitemap"
+msgstr "Sitemap"
+
+#: src/Admin/Settings.php:882
+msgid "File name"
+msgstr "Dateiname"
+
+#: src/Admin/Settings.php:888
+msgid "Sitemap index"
+msgstr "Sitemap-Index"
+
+#: src/Admin/Settings.php:915
+msgid "Leave a file name empty to use its default (shown greyed out). Names may contain lowercase letters, digits, \"-\" and \"_\"; a name that clashes with another sitemap is replaced by the default. Pages beyond the first one get a number appended automatically (sitemap_posts_2.xml)."
+msgstr "Lass einen Dateinamen leer, um den Standard zu verwenden (grau angezeigt). Namen dürfen Kleinbuchstaben, Ziffern, „-“ und „_“ enthalten; ein Name, der mit einer anderen Sitemap kollidiert, wird durch den Standard ersetzt. Seiten ab der zweiten bekommen automatisch eine Nummer angehängt (sitemap_posts_2.xml)."
+
+#: src/Admin/Settings.php:918
+msgid "Images: switching the image sitemap on moves the image entries out of the page/post sitemaps into sitemap_images.xml; switching it off keeps them inside the page/post sitemaps. Videos: the video sitemap lists self-hosted <video poster> elements and YouTube embeds, but only with a real thumbnail (Vimeo currently doesn't qualify); switched off, no video entries are written anywhere."
+msgstr "Bilder: Schaltest du die Bild-Sitemap ein, wandern die Bildeinträge aus den Seiten-/Beitrags-Sitemaps nach sitemap_images.xml; schaltest du sie aus, bleiben sie in den Seiten-/Beitrags-Sitemaps. Videos: Die Video-Sitemap listet selbst gehostete <video poster>-Elemente und YouTube-Einbettungen, aber nur mit einem echten Vorschaubild (Vimeo qualifiziert sich derzeit nicht); ist sie aus, werden nirgends Videoeinträge geschrieben."
+
+#: src/Admin/Settings.php:921
+msgid "Google News: a separate sitemap listing only article-like content (non-hierarchical public post types) published in the last 48 hours, capped at 1000 URLs. It disappears from the index automatically whenever nothing currently qualifies — Google News enrollment itself is a separate application."
+msgstr "Google News: eine eigene Sitemap, die nur artikelartige Inhalte (nicht hierarchische öffentliche Beitragstypen) der letzten 48 Stunden mit höchstens 1000 URLs listet. Sie verschwindet automatisch aus dem Index, sobald nichts mehr infrage kommt – die Aufnahme bei Google News ist ein eigener Antrag."
+
+#. translators: %s: post type label, e.g. "Products".
+#: src/Admin/Settings.php:954
+#, php-format
+msgid "%s (content type)"
+msgstr "%s (Inhaltstyp)"
+
+#. translators: %s: taxonomy label, e.g. "Product categories".
+#: src/Admin/Settings.php:957
+#, php-format
+msgid "%s (taxonomy)"
+msgstr "%s (Taxonomie)"
+
+#: src/Admin/Settings.php:984
+msgid "Detected environment"
+msgstr "Erkannte Umgebung"
+
+#: src/Admin/Settings.php:986
+msgid "Looks like staging/development"
+msgstr "Sieht nach Staging/Entwicklung aus"
+
+#: src/Admin/Settings.php:987
+msgid "Looks like production"
+msgstr "Sieht nach Produktion aus"
+
+#: src/Admin/Settings.php:993
+msgid "Currently indexable by search engines"
+msgstr "Derzeit für Suchmaschinen indexierbar"
+
+#. translators: %s: reason the site is noindexed.
+#: src/Admin/Settings.php:999
+#, php-format
+msgid "No — noindexed (%s)"
+msgstr "Nein – auf noindex gesetzt (%s)"
+
+#: src/Admin/Settings.php:1019
+msgid "this plugin's staging override, and WordPress' own \"Discourage search engines\" setting"
+msgstr "die Staging-Überschreibung dieses Plugins und die WordPress-Einstellung „Suchmaschinen davon abhalten, diese Website zu indexieren“"
+
+#: src/Admin/Settings.php:1023
+msgid "this plugin's staging override, above"
+msgstr "die Staging-Überschreibung dieses Plugins (oben)"
+
+#: src/Admin/Settings.php:1026
+msgid "WordPress' own Settings > Reading > \"Discourage search engines\""
+msgstr "die WordPress-Einstellung Einstellungen > Lesen > „Suchmaschinen davon abhalten, diese Website zu indexieren“"
+
+#: src/Admin/Settings.php:1048
+msgid "A staging/development site is also automatically flagged with a dismissible admin notice suggesting this same setting — this checkbox is the same override, just reachable without waiting for that notice."
+msgstr "Eine Staging-/Entwicklungsseite wird außerdem automatisch mit einem ausblendbaren Admin-Hinweis markiert, der genau diese Einstellung vorschlägt – diese Checkbox ist dieselbe Überschreibung, nur ohne auf den Hinweis warten zu müssen."
+
+#: src/Admin/Settings.php:1049
+msgid "Noindex this entire site (staging/development override) — overrides every other robots setting on every page"
+msgstr "Die gesamte Website auf noindex setzen (Staging-/Entwicklungs-Überschreibung) – überschreibt jede andere Robots-Einstellung auf jeder Seite"
+
+#: src/Admin/Settings.php:1051
+msgid "Custom robots.txt rules"
+msgstr "Eigene robots.txt-Regeln"
+
+#: src/Admin/Settings.php:1052
+msgid "Block known AI training crawlers"
+msgstr "Bekannte KI-Trainings-Crawler blockieren"
+
+#: src/Admin/Settings.php:1053
+msgid "Enable /llms.txt (links plus each page's meta description)"
+msgstr "/llms.txt aktivieren (Links plus die Meta-Beschreibung jeder Seite)"
+
+#: src/Admin/Settings.php:1054
+msgid "Enable /llms-full.txt (additionally includes each page's body text)"
+msgstr "/llms-full.txt aktivieren (enthält zusätzlich den Text jeder Seite)"
+
+#: src/Admin/Settings.php:1055
+msgid "Custom llms.txt content (appended after the generated list)"
+msgstr "Eigener llms.txt-Inhalt (wird nach der erzeugten Liste angehängt)"
+
+#: src/Admin/Settings.php:1056
+msgid "Google verification code"
+msgstr "Google-Verifizierungscode"
+
+#: src/Admin/Settings.php:1056
+#: src/Admin/Settings.php:1057
+#: src/Admin/Settings.php:1058
+#: src/Admin/Settings.php:1059
+#: src/Admin/Settings.php:1060
+msgid "Code or the whole meta tag"
+msgstr "Code oder der ganze Meta-Tag"
+
+#: src/Admin/Settings.php:1057
+msgid "Bing verification code"
+msgstr "Bing-Verifizierungscode"
+
+#: src/Admin/Settings.php:1058
+msgid "Baidu verification code"
+msgstr "Baidu-Verifizierungscode"
+
+#: src/Admin/Settings.php:1059
+msgid "Pinterest verification code"
+msgstr "Pinterest-Verifizierungscode"
+
+#: src/Admin/Settings.php:1060
+msgid "Yandex verification code"
+msgstr "Yandex-Verifizierungscode"
+
+#: src/Admin/Settings.php:1061
+msgid "When a published page's address changes, redirect the old address to the new one (301)"
+msgstr "Ändert sich die Adresse einer veröffentlichten Seite, die alte Adresse auf die neue weiterleiten (301)"
+
+#: src/Admin/Settings.php:1062
+msgid "...and change links to the old address in your content and menus to the new one"
+msgstr "… und Links auf die alte Adresse in deinen Inhalten und Menüs auf die neue ändern"
+
+#: src/Admin/Settings.php:1063
+msgid "Disable author archives"
+msgstr "Autorenarchive deaktivieren"
+
+#: src/Admin/Settings.php:1064
+msgid "Disable date archives"
+msgstr "Datumsarchive deaktivieren"
+
+#: src/Admin/Settings.php:1067
+msgid "Attachment pages"
+msgstr "Anhangsseiten"
+
+#: src/Admin/Settings.php:1069
+msgid "Redirect to the parent post (recommended)"
+msgstr "Auf den übergeordneten Beitrag weiterleiten (empfohlen)"
+
+#: src/Admin/Settings.php:1070
+msgid "Keep accessible, but noindex them"
+msgstr "Erreichbar lassen, aber auf noindex setzen"
+
+#: src/Admin/Settings.php:1071
+msgid "Leave to WordPress core"
+msgstr "Dem WordPress-Core überlassen"
+
+#: src/Admin/Settings.php:1075
+msgid "IndexNow (Bing, Yandex, Seznam, Naver)"
+msgstr "IndexNow (Bing, Yandex, Seznam, Naver)"
+
+#. translators: %s: link to the Instant Indexing admin page.
+#: src/Admin/Settings.php:1078
+#, php-format
+msgid "Moved to the %s page — enable it, optionally set a custom API key, and submit URLs manually or in one click there."
+msgstr "Auf die Seite „%s“ umgezogen – dort aktivieren, optional einen eigenen API-Schlüssel setzen und URLs von Hand oder mit einem Klick übermitteln."
+
+#: src/Admin/Settings.php:1084
+msgid "x-default hreflang"
+msgstr "x-default-hreflang"
+
+#: src/Admin/Settings.php:1088
+msgid "Only takes effect when WPML, Polylang, or a compatible plugin (e.g. slim-hreflang) actually provides alternate-language URLs — with none active, no hreflang or x-default tags are output at all."
+msgstr "Wirkt nur, wenn WPML, Polylang oder ein kompatibles Plugin (z. B. slim-hreflang) tatsächlich URLs in anderen Sprachen liefert – ist keines aktiv, werden überhaupt keine hreflang- oder x-default-Tags ausgegeben."
+
+#: src/Admin/Settings.php:1101
+msgid "Business type"
+msgstr "Geschäftsart"
+
+#: src/Admin/Settings.php:1120
+msgid "The Schema.org type written into your structured data (the name in brackets is the exact value). Pick the most specific one that fits; \"Local business (generic)\" if none does."
+msgstr "Der Schema.org-Typ, der in deine strukturierten Daten geschrieben wird (der Name in Klammern ist der exakte Wert). Wähle den spezifischsten passenden; „Lokales Unternehmen (allgemein)“, wenn keiner passt."
+
+#: src/Admin/Settings.php:1131
+msgid "WPML/Polylang's default language"
+msgstr "Standardsprache von WPML/Polylang"
+
+#: src/Admin/Settings.php:1132
+msgid "Off"
+msgstr "Aus"
+
+#. translators: 1: language name, 2: language code.
+#: src/Admin/Settings.php:1155
+#, php-format
+msgid "Always %1$s (%2$s)"
+msgstr "Immer %1$s (%2$s)"
+
+#: src/Admin/Settings.php:1174
+msgid "This plugin cannot auto-detect critical CSS — that requires actually rendering the page (real layout, real box positions), which no CSS parsing pass can do. Paste critical CSS from a tool of your choice, or write it by hand."
+msgstr "Dieses Plugin kann kritisches CSS nicht automatisch erkennen – dazu muss die Seite tatsächlich gerendert werden (echtes Layout, echte Boxpositionen), was kein CSS-Parser leisten kann. Füge kritisches CSS aus einem Werkzeug deiner Wahl ein oder schreibe es von Hand."
+
+#: src/Admin/Settings.php:1177
+msgid "Critical CSS (inlined in <head>)"
+msgstr "Kritisches CSS (im <head> eingebettet)"
+
+#: src/Admin/Settings.php:1180
+msgid "Independent of the above: without critical CSS in place, deferring every other stylesheet will show a flash of unstyled content until they finish loading — enable this once you have critical CSS covering what visitors see immediately, or if you've decided that tradeoff is acceptable for your site."
+msgstr "Unabhängig vom Obigen: Ohne kritisches CSS zeigt das Zurückstellen aller anderen Stylesheets einen kurzen Moment ungestylte Inhalte, bis sie geladen sind – aktiviere das, sobald du kritisches CSS für das hast, was Besucher sofort sehen, oder wenn du diesen Kompromiss für deine Website akzeptabel findest."
+
+#: src/Admin/Settings.php:1183
+msgid "Load all other stylesheets non-blocking"
+msgstr "Alle anderen Stylesheets nicht blockierend laden"
+
+#: src/Admin/Settings.php:1185
+msgid "Resource hints"
+msgstr "Resource Hints"
+
+#: src/Admin/Settings.php:1185
+msgid "one per line: preconnect/dns-prefetch/preload/prefetch/prerender, a URL, and optional as=…, type=… and crossorigin — e.g. the two lines below cover a typical Google Fonts setup."
+msgstr "einer pro Zeile: preconnect/dns-prefetch/preload/prefetch/prerender, eine URL und optional as=…, type=… und crossorigin – z. B. decken die zwei Zeilen unten ein typisches Google-Fonts-Setup ab."
+
+#: src/Admin/Settings.php:1190
+msgid "Resource hints (output early in <head>)"
+msgstr "Resource Hints (früh im <head> ausgegeben)"
+
+#: src/Admin/Settings.php:1193
+msgid "Scan site for suggestions"
+msgstr "Website nach Vorschlägen scannen"
+
+#: src/Admin/Settings.php:1195
+msgid "Loads your home page and the newest post of a few content types, plus the stylesheets they use, and lists every external origin they pull scripts, styles, fonts, images, embeds and media from — with how often, on how many pages, and whether a hint already exists. Pick which suggested hints to add; nothing is inserted or saved automatically."
+msgstr "Lädt deine Startseite und den neuesten Beitrag einiger Inhaltstypen samt der verwendeten Stylesheets und listet jeden externen Ursprung, von dem Skripte, Styles, Schriften, Bilder, Einbettungen und Medien geladen werden – mit Häufigkeit, Anzahl der Seiten und ob schon ein Hint existiert. Wähle, welche vorgeschlagenen Hints du hinzufügen willst; nichts wird automatisch eingefügt oder gespeichert."
+
+#. translators: %s: link to the WordPress Cleanup page.
+#: src/Admin/Settings.php:1202
+#, php-format
+msgid "Emoji, embeds, Dashicons, revisions, Heartbeat, comments and the other \"unused WordPress features\" switches now have their own page: %s."
+msgstr "Emojis, Einbettungen, Dashicons, Revisionen, Heartbeat, Kommentare und die anderen Schalter für „ungenutzte WordPress-Funktionen“ haben jetzt eine eigene Seite: %s."
+
+#: src/Admin/Settings.php:1242
+msgid "WordPress ships with features that many sites never use but that still add markup, requests or attack surface. Every switch below is off by default — turn on only what your site genuinely does without, and read the \"only needed if\" note first."
+msgstr "WordPress bringt Funktionen mit, die viele Websites nie nutzen, die aber trotzdem Markup, Anfragen oder Angriffsfläche hinzufügen. Jeder Schalter unten ist standardmäßig aus – schalte nur ein, worauf deine Website wirklich verzichten kann, und lies vorher den Hinweis „nur nötig, wenn“."
+
+#: src/Admin/Settings.php:1245
+msgid "Page source (<head> and headers)"
+msgstr "Seitenquelltext (<head> und Header)"
+
+#: src/Admin/Settings.php:1245
+msgid "Invisible clutter that crawlers and visitors never need."
+msgstr "Unsichtbarer Ballast, den Crawler und Besucher nie brauchen."
+
+#: src/Admin/Settings.php:1246
+msgid "Remove the WordPress version (generator tag)"
+msgstr "Die WordPress-Version entfernen (Generator-Tag)"
+
+#: src/Admin/Settings.php:1246
+msgid "Harmless to remove. The version can still leak through \"?ver=\" asset URLs unless you also strip those below."
+msgstr "Unbedenklich. Die Version kann weiterhin über „?ver=“ in Asset-URLs durchsickern, wenn du diese unten nicht auch entfernst."
+
+#: src/Admin/Settings.php:1247
+msgid "Remove the RSD (Really Simple Discovery) link"
+msgstr "Den RSD-Link (Really Simple Discovery) entfernen"
+
+#: src/Admin/Settings.php:1247
+msgid "Only needed if you publish with an old desktop blogging client or XML-RPC based tool."
+msgstr "Nur nötig, wenn du mit einem alten Desktop-Blogging-Programm oder einem XML-RPC-Werkzeug veröffentlichst."
+
+#: src/Admin/Settings.php:1248
+msgid "Remove the wlwmanifest (Windows Live Writer) link"
+msgstr "Den wlwmanifest-Link (Windows Live Writer) entfernen"
+
+#: src/Admin/Settings.php:1248
+msgid "Windows Live Writer is discontinued; there is practically no case where this is still needed."
+msgstr "Windows Live Writer wurde eingestellt; es gibt praktisch keinen Fall, in dem das noch gebraucht wird."
+
+#: src/Admin/Settings.php:1249
+msgid "Remove the shortlink (<head> tag and Link header)"
+msgstr "Den Shortlink entfernen (<head>-Tag und Link-Header)"
+
+#: src/Admin/Settings.php:1249
+msgid "Only needed if you or a tool relies on the \"?p=123\" short URL of posts."
+msgstr "Nur nötig, wenn du oder ein Werkzeug auf die Kurz-URL „?p=123“ von Beiträgen angewiesen ist."
+
+#: src/Admin/Settings.php:1250
+msgid "Remove rel=\"prev\"/\"next\" links to neighbouring posts"
+msgstr "rel=\"prev\"/\"next\"-Links zu Nachbarbeiträgen entfernen"
+
+#: src/Admin/Settings.php:1250
+msgid "Search engines and browsers no longer use these for ordinary posts."
+msgstr "Suchmaschinen und Browser nutzen diese bei gewöhnlichen Beiträgen nicht mehr."
+
+#: src/Admin/Settings.php:1251
+msgid "Remove RSS feed auto-discovery links"
+msgstr "RSS-Feed-Erkennungslinks entfernen"
+
+#: src/Admin/Settings.php:1251
+msgid "Only needed if visitors subscribe by pasting your site address into a feed reader; the feeds themselves keep working."
+msgstr "Nur nötig, wenn Besucher abonnieren, indem sie die Adresse deiner Website in einen Feedreader einfügen; die Feeds selbst funktionieren weiter."
+
+#: src/Admin/Settings.php:1252
+msgid "Remove REST API discovery links (<head> and HTTP headers)"
+msgstr "REST-API-Erkennungslinks entfernen (<head> und HTTP-Header)"
+
+#: src/Admin/Settings.php:1252
+msgid "Only needed if an app or tool finds your REST API by discovery; the API itself stays reachable."
+msgstr "Nur nötig, wenn eine App oder ein Werkzeug deine REST-API über die Erkennung findet; die API selbst bleibt erreichbar."
+
+#: src/Admin/Settings.php:1253
+msgid "Remove the X-Pingback header"
+msgstr "Den X-Pingback-Header entfernen"
+
+#: src/Admin/Settings.php:1253
+msgid "Only needed if other blogs should be able to send you pingbacks."
+msgstr "Nur nötig, wenn andere Blogs dir Pingbacks senden dürfen sollen."
+
+#: src/Admin/Settings.php:1254
+msgid "Disable embeds (oEmbed discovery, the oEmbed JSON endpoint and wp-embed.js)"
+msgstr "Einbettungen deaktivieren (oEmbed-Erkennung, der oEmbed-JSON-Endpunkt und wp-embed.js)"
+
+#: src/Admin/Settings.php:1254
+msgid "Only needed if other sites embed your posts as preview cards, or you paste links to your own posts into the editor and expect a card."
+msgstr "Nur nötig, wenn andere Websites deine Beiträge als Vorschaukarten einbetten oder du Links auf eigene Beiträge in den Editor einfügst und eine Karte erwartest."
+
+#: src/Admin/Settings.php:1255
+msgid "Remove the inline style of the \"Recent Comments\" widget"
+msgstr "Den Inline-Stil des Widgets „Letzte Kommentare“ entfernen"
+
+#: src/Admin/Settings.php:1255
+msgid "Only matters if you use that widget and rely on its default spacing."
+msgstr "Nur relevant, wenn du dieses Widget nutzt und dich auf dessen Standardabstände verlässt."
+
+#: src/Admin/Settings.php:1257
+msgid "Scripts and styles loaded on every page"
+msgstr "Auf jeder Seite geladene Skripte und Styles"
+
+#: src/Admin/Settings.php:1258
+msgid "Disable emoji scripts and styles"
+msgstr "Emoji-Skripte und -Styles deaktivieren"
+
+#: src/Admin/Settings.php:1258
+msgid "Modern browsers draw emoji natively; only very old browsers lose the emoji images."
+msgstr "Moderne Browser zeichnen Emojis selbst; nur sehr alte Browser verlieren die Emoji-Bilder."
+
+#: src/Admin/Settings.php:1259
+msgid "Disable Dashicons for visitors who aren't logged in"
+msgstr "Dashicons für nicht angemeldete Besucher deaktivieren"
+
+#: src/Admin/Settings.php:1259
+msgid "Only needed if your theme or a plugin shows Dashicons icons on the public site."
+msgstr "Nur nötig, wenn dein Theme oder ein Plugin Dashicons-Symbole auf der öffentlichen Website zeigt."
+
+#: src/Admin/Settings.php:1260
+msgid "Remove the block editor's front-end stylesheets (wp-block-library)"
+msgstr "Die Frontend-Stylesheets des Block-Editors entfernen (wp-block-library)"
+
+#: src/Admin/Settings.php:1260
+msgid "Only for classic themes whose content does not use block styling. Block themes and block-built pages need these styles — test before enabling."
+msgstr "Nur für klassische Themes, deren Inhalte kein Block-Styling nutzen. Block-Themes und mit Blöcken gebaute Seiten brauchen diese Styles – vor dem Einschalten testen."
+
+#: src/Admin/Settings.php:1261
+msgid "Remove inline \"global styles\" and SVG duotone filters"
+msgstr "Inline-„Global Styles“ und SVG-Duotone-Filter entfernen"
+
+#: src/Admin/Settings.php:1261
+msgid "Only for classic themes without theme.json. Block themes build their whole look from these styles — leave off there."
+msgstr "Nur für klassische Themes ohne theme.json. Block-Themes bauen ihr ganzes Aussehen aus diesen Styles – dort ausgeschaltet lassen."
+
+#: src/Admin/Settings.php:1262
+msgid "Remove jQuery Migrate"
+msgstr "jQuery Migrate entfernen"
+
+#: src/Admin/Settings.php:1262
+msgid "Only needed if an old theme or plugin still uses jQuery functions that were removed from current jQuery. If something on the page breaks, switch it back off."
+msgstr "Nur nötig, wenn ein altes Theme oder Plugin noch jQuery-Funktionen nutzt, die aus dem aktuellen jQuery entfernt wurden. Wenn auf der Seite etwas kaputtgeht, schalte es wieder aus."
+
+#: src/Admin/Settings.php:1263
+msgid "Remove \"?ver=\" from script and style URLs"
+msgstr "„?ver=“ aus Skript- und Style-URLs entfernen"
+
+#: src/Admin/Settings.php:1263
+msgid "Some caches and CDNs then store assets more aggressively, but browsers also no longer re-download a file automatically after a plugin or theme update — purge your cache after updates."
+msgstr "Manche Caches und CDNs speichern Assets dann aggressiver, aber Browser laden eine Datei nach einem Plugin- oder Theme-Update auch nicht mehr automatisch neu – leere nach Updates deinen Cache."
+
+#: src/Admin/Settings.php:1264
+msgid "Block Google Maps scripts from loading"
+msgstr "Google-Maps-Skripte am Laden hindern"
+
+#: src/Admin/Settings.php:1264
+msgid "Only needed if a theme or plugin shows a Google map. Use it when a plugin loads the Maps API on pages that have no map."
+msgstr "Nur nötig, wenn ein Theme oder Plugin eine Google-Karte zeigt. Nutze es, wenn ein Plugin die Maps-API auf Seiten ohne Karte lädt."
+
+#: src/Admin/Settings.php:1266
+#: src/Sitemaps/SitemapNames.php:168
+msgid "Images"
+msgstr "Bilder"
+
+#: src/Admin/Settings.php:1267
+msgid "Don't link inserted images to their attachment page"
+msgstr "Eingefügte Bilder nicht mit ihrer Anhangsseite verlinken"
+
+#: src/Admin/Settings.php:1267
+msgid "Stops images in content from linking to a thin attachment page. Only needed if you actually want visitors to land on attachment pages."
+msgstr "Verhindert, dass Bilder in Inhalten auf eine dünne Anhangsseite verlinken. Nur nötig, wenn Besucher tatsächlich auf Anhangsseiten landen sollen."
+
+#: src/Admin/Settings.php:1269
+msgid "Features and endpoints"
+msgstr "Funktionen und Endpunkte"
+
+#: src/Admin/Settings.php:1269
+msgid "Interfaces WordPress exposes by default; several are common attack targets."
+msgstr "Schnittstellen, die WordPress standardmäßig bereitstellt; mehrere sind häufige Angriffsziele."
+
+#: src/Admin/Settings.php:1270
+msgid "Disable XML-RPC"
+msgstr "XML-RPC deaktivieren"
+
+#: src/Admin/Settings.php:1270
+msgid "Only needed for Jetpack, some old mobile/desktop publishing apps and pingbacks."
+msgstr "Nur nötig für Jetpack, einige alte Mobil-/Desktop-Veröffentlichungs-Apps und Pingbacks."
+
+#: src/Admin/Settings.php:1271
+msgid "Disable self-pingbacks"
+msgstr "Selbst-Pingbacks deaktivieren"
+
+#: src/Admin/Settings.php:1271
+msgid "Linking to your own posts no longer pings them. There is rarely a reason to want those pings."
+msgstr "Links auf eigene Beiträge pingen diese nicht mehr an. Es gibt selten einen Grund, diese Pings zu wollen."
+
+#: src/Admin/Settings.php:1272
+msgid "Disable RSS feeds entirely (visitors get a message instead)"
+msgstr "RSS-Feeds komplett deaktivieren (Besucher sehen stattdessen eine Meldung)"
+
+#: src/Admin/Settings.php:1272
+msgid "Only needed if you want people or aggregators to subscribe to your content."
+msgstr "Nur nötig, wenn Personen oder Aggregatoren deine Inhalte abonnieren sollen."
+
+#: src/Admin/Settings.php:1273
+msgid "Restrict the REST API to logged-in users"
+msgstr "Die REST-API auf angemeldete Benutzer beschränken"
+
+#: src/Admin/Settings.php:1273
+msgid "Careful: many themes, page builders and the block editor itself rely on the REST API, including for visitors who aren't logged in — test thoroughly before relying on this in production. This also blocks the slim-hreflang companion plugin's multisite manifest route, so hreflang sync between your sites stops unless you exempt that route yourself."
+msgstr "Vorsicht: Viele Themes, Page Builder und der Block-Editor selbst nutzen die REST-API, auch für nicht angemeldete Besucher – teste gründlich, bevor du dich im Livebetrieb darauf verlässt. Das blockiert auch die Multisite-Manifest-Route des Begleit-Plugins slim-hreflang, sodass der hreflang-Abgleich zwischen deinen Websites stoppt, wenn du diese Route nicht selbst ausnimmst."
+
+#: src/Admin/Settings.php:1274
+msgid "Disable application passwords"
+msgstr "Anwendungspasswörter deaktivieren"
+
+#: src/Admin/Settings.php:1274
+msgid "Only needed if an app, script or integration logs in to the REST API with an application password (e.g. a headless front end or an automation tool)."
+msgstr "Nur nötig, wenn eine App, ein Skript oder eine Integration sich mit einem Anwendungspasswort bei der REST-API anmeldet (z. B. ein Headless-Frontend oder ein Automatisierungswerkzeug)."
+
+#: src/Admin/Settings.php:1275
+msgid "Block username enumeration (?author=1 and the public REST user list)"
+msgstr "Benutzernamen-Abfragen blockieren (?author=1 und die öffentliche REST-Benutzerliste)"
+
+#: src/Admin/Settings.php:1275
+msgid "Only needed if a front end or app reads author data from the public REST API. Author archive pages keep working at their normal URLs."
+msgstr "Nur nötig, wenn ein Frontend oder eine App Autorendaten aus der öffentlichen REST-API liest. Autorenarchive funktionieren unter ihren normalen URLs weiter."
+
+#: src/Admin/Settings.php:1276
+msgid "Show one neutral login error message"
+msgstr "Eine neutrale Login-Fehlermeldung anzeigen"
+
+#: src/Admin/Settings.php:1276
+msgid "Replaces \"unknown username\" / \"wrong password\" with a single message so the login form doesn't reveal which usernames exist."
+msgstr "Ersetzt „unbekannter Benutzername“ / „falsches Passwort“ durch eine einzige Meldung, damit das Login-Formular nicht verrät, welche Benutzernamen existieren."
+
+#: src/Admin/Settings.php:1278
+msgid "Comments"
+msgstr "Kommentare"
+
+#: src/Admin/Settings.php:1279
+msgid "Disable comments sitewide (closes comments and pings, hides the Comments admin menu)"
+msgstr "Kommentare websiteweit deaktivieren (schließt Kommentare und Pings, blendet das Kommentare-Menü aus)"
+
+#: src/Admin/Settings.php:1279
+msgid "Only needed if your site has a discussion. Existing comments are kept in the database."
+msgstr "Nur nötig, wenn deine Website eine Diskussion hat. Vorhandene Kommentare bleiben in der Datenbank."
+
+#: src/Admin/Settings.php:1280
+msgid "Show comment author names as plain text, without a link to their URL"
+msgstr "Namen von Kommentarautoren als einfachen Text ohne Link zu ihrer URL anzeigen"
+
+#: src/Admin/Settings.php:1280
+msgid "Takes away the main incentive for link-spam comments; commenters' links are only ever useful on a very open community blog."
+msgstr "Nimmt den Hauptanreiz für Link-Spam-Kommentare; Links von Kommentierenden sind nur in einem sehr offenen Community-Blog nützlich."
+
+#: src/Admin/Settings.php:1282
+msgid "Database and admin load"
+msgstr "Datenbank und Admin-Last"
+
+#: src/Admin/Settings.php:1283
+msgid "Post revisions to keep"
+msgstr "Aufzubewahrende Beitragsrevisionen"
+
+#: src/Admin/Settings.php:1283
+msgid "Leave empty for WordPress' own default (unlimited). 0 disables revisions entirely — only do that if nobody ever needs to roll back an edit."
+msgstr "Leer lassen für den Standard von WordPress (unbegrenzt). 0 schaltet Revisionen ganz ab – tu das nur, wenn nie jemand eine Änderung zurücknehmen muss."
+
+#: src/Admin/Settings.php:1284
+msgid "Autosave interval (seconds)"
+msgstr "Autospeicher-Intervall (Sekunden)"
+
+#: src/Admin/Settings.php:1284
+msgid "Leave empty for WordPress' own default (60 seconds)."
+msgstr "Leer lassen für den Standard von WordPress (60 Sekunden)."
+
+#: src/Admin/Settings.php:1287
+msgid "Heartbeat API"
+msgstr "Heartbeat-API"
+
+#: src/Admin/Settings.php:1289
+#: src/Admin/Settings.php:1464
+#: src/Admin/Settings.php:1474
+msgid "Leave as-is"
+msgstr "Unverändert lassen"
+
+#: src/Admin/Settings.php:1290
+msgid "Disable everywhere in wp-admin except the post editor"
+msgstr "Überall im Admin außer im Beitragseditor deaktivieren"
+
+#: src/Admin/Settings.php:1291
+msgid "Disable on the public site"
+msgstr "Auf der öffentlichen Website deaktivieren"
+
+#: src/Admin/Settings.php:1292
+msgid "Disable everywhere"
+msgstr "Überall deaktivieren"
+
+#: src/Admin/Settings.php:1296
+msgid "The Heartbeat polls admin-ajax.php on a timer for post locks, autosave and the dashboard widgets. Only needed in the editor: switching it off elsewhere saves server load, switching it off there too means no post-lock warning when two people edit the same post."
+msgstr "Der Heartbeat fragt admin-ajax.php in festen Abständen nach Beitragssperren, Autospeichern und Dashboard-Widgets ab. Nur im Editor nötig: Anderswo ausgeschaltet spart er Serverlast; auch dort ausgeschaltet gibt es keine Sperrwarnung mehr, wenn zwei Personen denselben Beitrag bearbeiten."
+
+#: src/Admin/Settings.php:1297
+msgid "Heartbeat frequency (seconds)"
+msgstr "Heartbeat-Häufigkeit (Sekunden)"
+
+#: src/Admin/Settings.php:1297
+msgid "Leave empty for WordPress' own default. Ignored when Heartbeat is fully disabled above."
+msgstr "Leer lassen für den Standard von WordPress. Wird ignoriert, wenn der Heartbeat oben ganz deaktiviert ist."
+
+#: src/Admin/Settings.php:1298
+msgid "Remove the WordPress news, events and Quick Draft boxes from the dashboard"
+msgstr "Die Boxen WordPress-Neuigkeiten, Veranstaltungen und Schnellentwurf aus dem Dashboard entfernen"
+
+#: src/Admin/Settings.php:1298
+msgid "Only affects the admin dashboard; the boxes load external content on every dashboard visit."
+msgstr "Betrifft nur das Admin-Dashboard; die Boxen laden bei jedem Aufruf des Dashboards externe Inhalte."
+
+#: src/Admin/Settings.php:1301
+msgid "WooCommerce"
+msgstr "WooCommerce"
+
+#: src/Admin/Settings.php:1302
+msgid "Disable cart fragments (the wc-ajax=get_refreshed_fragments request)"
+msgstr "Warenkorb-Fragmente deaktivieren (die Anfrage wc-ajax=get_refreshed_fragments)"
+
+#: src/Admin/Settings.php:1302
+msgid "Only needed if a mini-cart or cart counter must update live on every page without a reload."
+msgstr "Nur nötig, wenn sich ein Mini-Warenkorb oder Warenkorbzähler auf jeder Seite ohne Neuladen live aktualisieren muss."
+
+#: src/Admin/Settings.php:1303
+msgid "Only load WooCommerce scripts/styles on shop, cart, checkout and account pages"
+msgstr "WooCommerce-Skripte/-Styles nur auf Shop-, Warenkorb-, Kassen- und Kontoseiten laden"
+
+#: src/Admin/Settings.php:1303
+msgid "Only needed if you use WooCommerce blocks or shortcodes (e.g. add-to-cart buttons) on other pages."
+msgstr "Nur nötig, wenn du WooCommerce-Blöcke oder -Shortcodes (z. B. „In den Warenkorb“-Buttons) auf anderen Seiten nutzt."
+
+#: src/Admin/Settings.php:1318
+msgid "Response headers that tell browsers how to treat your pages. Each one can be switched on individually. Use \"Check headers now\" below the Save button to see what your site actually sends — including headers sent twice because a security plugin or the web server sends the same ones."
+msgstr "Antwort-Header, die Browsern sagen, wie sie deine Seiten behandeln sollen. Jeder lässt sich einzeln einschalten. Nutze „Header jetzt prüfen“ unter dem Speichern-Button, um zu sehen, was deine Website tatsächlich sendet – auch Header, die doppelt gesendet werden, weil ein Sicherheits-Plugin oder der Webserver dieselben sendet."
+
+#: src/Admin/Settings.php:1322
+msgid "Send X-Content-Type-Options: nosniff"
+msgstr "X-Content-Type-Options: nosniff senden"
+
+#: src/Admin/Settings.php:1323
+msgid "Stops browsers from guessing a file's type against the declared Content-Type. Safe to enable on practically every site."
+msgstr "Verhindert, dass Browser den Typ einer Datei entgegen dem angegebenen Content-Type erraten. Auf praktisch jeder Website unbedenklich."
+
+#: src/Admin/Settings.php:1326
+msgid "Send the Referrer-Policy header"
+msgstr "Den Referrer-Policy-Header senden"
+
+#: src/Admin/Settings.php:1329
+#: src/Admin/Settings.php:1352
+#: src/Admin/Settings.php:1378
+msgid "Policy"
+msgstr "Richtlinie"
+
+#: src/Admin/Settings.php:1333
+msgid "How much of the page address is passed on when a visitor follows a link. \"strict-origin-when-cross-origin\" is the current browser default and a sensible choice; analytics or affiliate partners that need the full address on cross-site links may need a looser value."
+msgstr "Wie viel der Seitenadresse weitergegeben wird, wenn ein Besucher einem Link folgt. „strict-origin-when-cross-origin“ ist der aktuelle Browser-Standard und eine vernünftige Wahl; Analyse- oder Affiliate-Partner, die auf Links zwischen Websites die volle Adresse brauchen, benötigen ggf. einen großzügigeren Wert."
+
+#: src/Admin/Settings.php:1336
+msgid "Send the X-Frame-Options header"
+msgstr "Den X-Frame-Options-Header senden"
+
+#: src/Admin/Settings.php:1341
+msgid "SAMEORIGIN (recommended)"
+msgstr "SAMEORIGIN (empfohlen)"
+
+#: src/Admin/Settings.php:1342
+msgid "DENY"
+msgstr "DENY"
+
+#: src/Admin/Settings.php:1346
+msgid "Protects against clickjacking. SAMEORIGIN lets your own site frame itself; DENY blocks all framing, which also stops your own page builder's or customizer's preview from working on the front end."
+msgstr "Schützt vor Clickjacking. SAMEORIGIN erlaubt deiner eigenen Website, sich selbst einzubetten; DENY blockiert jedes Einbetten, was auch die Vorschau deines Page Builders oder Customizers im Frontend verhindert."
+
+#: src/Admin/Settings.php:1349
+msgid "Send the Permissions-Policy header"
+msgstr "Den Permissions-Policy-Header senden"
+
+#: src/Admin/Settings.php:1356
+msgid "Switches off browser features for your pages. The default turns off geolocation, camera and microphone — remove an entry if your site uses it (e.g. a store locator needs geolocation)."
+msgstr "Schaltet Browserfunktionen für deine Seiten ab. Der Standard deaktiviert Standort, Kamera und Mikrofon – entferne einen Eintrag, wenn deine Website die Funktion nutzt (z. B. braucht eine Filialsuche den Standort)."
+
+#: src/Admin/Settings.php:1359
+msgid "Send the Strict-Transport-Security header (only sent over HTTPS)"
+msgstr "Den Strict-Transport-Security-Header senden (nur über HTTPS)"
+
+#: src/Admin/Settings.php:1362
+msgid "max-age (seconds)"
+msgstr "max-age (Sekunden)"
+
+#: src/Admin/Settings.php:1365
+msgid "How long browsers remember to use HTTPS only. 31536000 = one year (recommended once HTTPS works everywhere)."
+msgstr "Wie lange Browser sich merken, nur HTTPS zu verwenden. 31536000 = ein Jahr (empfohlen, sobald HTTPS überall funktioniert)."
+
+#: src/Admin/Settings.php:1367
+msgid "Include subdomains (includeSubDomains)"
+msgstr "Subdomains einbeziehen (includeSubDomains)"
+
+#: src/Admin/Settings.php:1368
+msgid "Applies HSTS to every subdomain. Only enable it if every subdomain serves HTTPS."
+msgstr "Wendet HSTS auf jede Subdomain an. Nur einschalten, wenn jede Subdomain HTTPS ausliefert."
+
+#: src/Admin/Settings.php:1369
+msgid "Allow preloading (preload)"
+msgstr "Preloading erlauben (preload)"
+
+#: src/Admin/Settings.php:1370
+msgid "Marks the domain for the browsers' built-in HSTS list; needs includeSubDomains and a max-age of at least one year, and is hard to undo — submit the domain at hstspreload.org afterwards. HSTS itself is cached by browsers for the whole max-age, so make sure HTTPS works sitewide first."
+msgstr "Markiert die Domain für die in Browser eingebaute HSTS-Liste; erfordert includeSubDomains und ein max-age von mindestens einem Jahr und ist schwer rückgängig zu machen – melde die Domain danach auf hstspreload.org an. HSTS selbst wird von Browsern für das gesamte max-age gespeichert, stelle also zuerst sicher, dass HTTPS websiteweit funktioniert."
+
+#: src/Admin/Settings.php:1373
+msgid "Send the Content-Security-Policy header (public pages only, never wp-admin or the login screen)"
+msgstr "Den Content-Security-Policy-Header senden (nur öffentliche Seiten, nie wp-admin oder die Login-Seite)"
+
+#: src/Admin/Settings.php:1374
+msgid "Report-only mode (recommended while tuning)"
+msgstr "Nur-Bericht-Modus (empfohlen beim Feinabstimmen)"
+
+#: src/Admin/Settings.php:1375
+msgid "In report-only mode the browser only logs violations in its developer console and blocks nothing. Switch it off once you have confirmed that nothing on your site is reported."
+msgstr "Im Nur-Bericht-Modus protokolliert der Browser Verstöße nur in seiner Entwicklerkonsole und blockiert nichts. Schalte ihn aus, sobald du bestätigt hast, dass auf deiner Website nichts gemeldet wird."
+
+#: src/Admin/Settings.php:1381
+msgid "The default suits a typical WordPress site (inline scripts/styles allowed, https images and embeds). Add the hosts you really load from, e.g. fonts.googleapis.com in style-src and fonts.gstatic.com in font-src for Google Fonts, or your analytics and video providers."
+msgstr "Der Standard passt zu einer typischen WordPress-Website (Inline-Skripte/-Styles erlaubt, https-Bilder und -Einbettungen). Ergänze die Hosts, von denen du wirklich lädst, z. B. fonts.googleapis.com in style-src und fonts.gstatic.com in font-src für Google Fonts oder deine Analyse- und Videoanbieter."
+
+#: src/Admin/Settings.php:1393
+msgid "Check headers now"
+msgstr "Header jetzt prüfen"
+
+#: src/Admin/Settings.php:1421
+msgid "Header"
+msgstr "Header"
+
+#: src/Admin/Settings.php:1421
+msgid "Value sent"
+msgstr "Gesendeter Wert"
+
+#: src/Admin/Settings.php:1428
+msgid "sent, as configured"
+msgstr "gesendet, wie eingestellt"
+
+#: src/Admin/Settings.php:1431
+msgid "sent more than once — another plugin or the server sends it too"
+msgstr "mehrfach gesendet – ein anderes Plugin oder der Server sendet ihn ebenfalls"
+
+#: src/Admin/Settings.php:1434
+msgid "arrives with a different value than configured — a CDN, proxy or the web server replaces it"
+msgstr "kommt mit einem anderen Wert an als eingestellt – ein CDN, Proxy oder der Webserver ersetzt ihn"
+
+#: src/Admin/Settings.php:1437
+msgid "configured, but not arriving — a cache or the server strips it"
+msgstr "eingestellt, kommt aber nicht an – ein Cache oder der Server entfernt ihn"
+
+#: src/Admin/Settings.php:1440
+msgid "sent, but not by this plugin (another plugin, the server or a CDN)"
+msgstr "gesendet, aber nicht von diesem Plugin (anderes Plugin, Server oder CDN)"
+
+#: src/Admin/Settings.php:1443
+msgid "not configured, not sent"
+msgstr "nicht eingestellt, nicht gesendet"
+
+#: src/Admin/Settings.php:1448
+msgid "The check requests your home page from the server itself; a CDN or caching layer in front of the site may add or remove headers that this request does or doesn't see. Only one of the two CSP rows is expected to be sent."
+msgstr "Die Prüfung ruft deine Startseite vom Server selbst ab; ein CDN oder eine Cache-Schicht vor der Website kann Header hinzufügen oder entfernen, die diese Anfrage sieht oder nicht sieht. Erwartet wird nur eine der beiden CSP-Zeilen."
+
+#: src/Admin/Settings.php:1457
+msgid "Redirects & URL normalization"
+msgstr "Weiterleitungen & URL-Normalisierung"
+
+#: src/Admin/Settings.php:1459
+msgid "Redirect HTTP to HTTPS"
+msgstr "HTTP auf HTTPS umleiten"
+
+#: src/Admin/Settings.php:1462
+msgid "WWW ↔ non-WWW"
+msgstr "WWW ↔ ohne WWW"
+
+#: src/Admin/Settings.php:1465
+msgid "Redirect to www."
+msgstr "Auf www. weiterleiten"
+
+#: src/Admin/Settings.php:1466
+msgid "Redirect to the bare domain (non-www)"
+msgstr "Auf die Domain ohne www weiterleiten"
+
+#: src/Admin/Settings.php:1472
+msgid "Trailing slash"
+msgstr "Schrägstrich am Ende"
+
+#: src/Admin/Settings.php:1475
+msgid "Force a trailing slash"
+msgstr "Schrägstrich am Ende erzwingen"
+
+#: src/Admin/Settings.php:1476
+msgid "Remove the trailing slash"
+msgstr "Schrägstrich am Ende entfernen"
+
+#: src/Admin/Settings.php:1480
+msgid "Collapse duplicate slashes in the URL path"
+msgstr "Doppelte Schrägstriche im URL-Pfad zusammenfassen"
+
+#: src/Admin/Settings.php:1482
+msgid "Response headers"
+msgstr "Antwort-Header"
+
+#. translators: %s: link to the Security Headers page.
+#: src/Admin/Settings.php:1487
+#, php-format
+msgid "X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy, HSTS and the Content-Security-Policy are configured on their own page: %s."
+msgstr "X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy, HSTS und die Content-Security-Policy werden auf einer eigenen Seite eingestellt: %s."
+
+#: src/Admin/Settings.php:1491
+msgid "Send Access-Control-Allow-Origin (CORS)"
+msgstr "Access-Control-Allow-Origin (CORS) senden"
+
+#: src/Admin/Settings.php:1492
+msgid "Allowed origin"
+msgstr "Erlaubter Ursprung"
+
+#: src/Admin/Settings.php:1492
+msgid "e.g. https://example.com — left blank, no CORS header is sent at all"
+msgstr "z. B. https://example.com – leer gelassen wird gar kein CORS-Header gesendet"
+
+#: src/Admin/Settings.php:1493
+msgid "Allow uploading WebP, AVIF, WOFF/WOFF2 and JSON files"
+msgstr "Hochladen von WebP-, AVIF-, WOFF/WOFF2- und JSON-Dateien erlauben"
+
+#: src/Admin/Settings.php:1495
+msgid "Gzip, Brotli, browser caching, hotlink protection & directory browsing"
+msgstr "Gzip, Brotli, Browser-Caching, Hotlink-Schutz & Verzeichnislisting"
+
+#: src/Admin/Settings.php:1495
+msgid "these need actual web-server configuration, not just a PHP hook — see below the Save button for how they're applied."
+msgstr "dafür ist echte Webserver-Konfiguration nötig, nicht nur ein PHP-Hook – unter dem Speichern-Button steht, wie sie angewendet werden."
+
+#: src/Admin/Settings.php:1497
+msgid "Gzip compression"
+msgstr "Gzip-Komprimierung"
+
+#: src/Admin/Settings.php:1498
+msgid "Brotli compression (only takes effect if the server supports it)"
+msgstr "Brotli-Komprimierung (wirkt nur, wenn der Server sie unterstützt)"
+
+#: src/Admin/Settings.php:1499
+msgid "Browser caching (Expires / Cache-Control) for static assets"
+msgstr "Browser-Caching (Expires / Cache-Control) für statische Assets"
+
+#: src/Admin/Settings.php:1500
+msgid "Hotlink protection for images"
+msgstr "Hotlink-Schutz für Bilder"
+
+#: src/Admin/Settings.php:1501
+msgid "Disable directory browsing (Options -Indexes)"
+msgstr "Verzeichnislisting deaktivieren (Options -Indexes)"
+
+#: src/Admin/Settings.php:1514
+#: src/Admin/Settings.php:1545
+msgid "Apply to .htaccess"
+msgstr "In .htaccess übernehmen"
+
+#: src/Admin/Settings.php:1517
+msgid "This server doesn't look like Apache or LiteSpeed, so .htaccess has no effect here (this is normal on Nginx). Paste the rules below into your server's own configuration and reload it instead — this plugin can't do that part for you."
+msgstr "Dieser Server sieht nicht nach Apache oder LiteSpeed aus, daher hat .htaccess hier keine Wirkung (bei Nginx normal). Füge die Regeln unten in die eigene Konfiguration deines Servers ein und lade sie neu – diesen Teil kann das Plugin nicht für dich erledigen."
+
+#: src/Admin/Settings.php:1519
+msgid "Writes the rules below into a marked block in this site's .htaccess (only that block is ever touched), using the checkboxes above — save them first, then apply."
+msgstr "Schreibt die Regeln unten in einen markierten Block der .htaccess dieser Website (nur dieser Block wird angefasst), anhand der Checkboxen oben – speichere sie zuerst, übernimm dann."
+
+#: src/Admin/Settings.php:1524
+msgid ".htaccess updated."
+msgstr ".htaccess aktualisiert."
+
+#: src/Admin/Settings.php:1538
+msgid "(No .htaccess-backed toggle is currently enabled — save the checkboxes above first.)"
+msgstr "(Derzeit ist kein .htaccess-gestützter Schalter aktiv – speichere zuerst die Checkboxen oben.)"
+
+#: src/Crawl/IndexNow.php:131
+msgid "Publish/update"
+msgstr "Veröffentlichen/Aktualisieren"
+
+#. translators: %d: HTTP status code returned by the IndexNow endpoint.
+#: src/Crawl/IndexNow.php:247
+#, php-format
+msgid "IndexNow responded with HTTP %d."
+msgstr "IndexNow hat mit HTTP %d geantwortet."
+
+#: src/Crawl/Redirects.php:81
+msgid "This content is no longer available."
+msgstr "Dieser Inhalt ist nicht mehr verfügbar."
+
+#. translators: %s: detected hostname.
+#: src/Crawl/StagingProtection.php:117
+#, php-format
+msgid "Seooptimierung Toolkit: \"%s\" looks like a staging or development site. If it is, search engines could index it and compete with your real site."
+msgstr "Seooptimierung Toolkit: „%s“ sieht nach einer Staging- oder Entwicklungsseite aus. Falls ja, könnten Suchmaschinen sie indexieren und mit deiner echten Website konkurrieren."
+
+#: src/Crawl/StagingProtection.php:125
+msgid "Noindex this entire site now"
+msgstr "Die gesamte Website jetzt auf noindex setzen"
+
+#: src/Crawl/StagingProtection.php:127
+msgid "Dismiss (this is fine)"
+msgstr "Ausblenden (ist in Ordnung)"
+
+#: src/Frontend/Blocks.php:72
+msgid "Add item"
+msgstr "Eintrag hinzufügen"
+
+#: src/Frontend/Blocks.php:77
+msgid "Choose image"
+msgstr "Bild auswählen"
+
+#: src/Frontend/Blocks.php:78
+msgid "Shown on the page and added to the structured data (JSON-LD)."
+msgstr "Wird auf der Seite angezeigt und den strukturierten Daten (JSON-LD) hinzugefügt."
+
+#: src/Frontend/Blocks.php:88
+msgid "The trail from the home page to the current page."
+msgstr "Der Pfad von der Startseite zur aktuellen Seite."
+
+#: src/Import/Batch.php:349
+msgid "Redirects were found but are not migrated by this plugin."
+msgstr "Weiterleitungen wurden gefunden, werden von diesem Plugin aber nicht übernommen."
+
+#: src/Meta/TitleDescription.php:277
+msgid "Page not found"
+msgstr "Seite nicht gefunden"
+
+#. translators: %d: page number.
+#: src/Meta/TitleDescription.php:282
+#, php-format
+msgid "Page %d"
+msgstr "Seite %d"
+
+#: src/Performance/Htaccess.php:178
+msgid "This server doesn't appear to be Apache or LiteSpeed — .htaccess has no effect here. Use the shown snippet in your server's own configuration instead."
+msgstr "Dieser Server scheint weder Apache noch LiteSpeed zu sein – .htaccess hat hier keine Wirkung. Nutze stattdessen den angezeigten Ausschnitt in der eigenen Konfiguration deines Servers."
+
+#: src/Performance/Htaccess.php:189
+msgid ".htaccess doesn't exist and its directory isn't writable by PHP — create the file manually and try again."
+msgstr ".htaccess existiert nicht und ihr Verzeichnis ist für PHP nicht beschreibbar – lege die Datei von Hand an und versuche es erneut."
+
+#: src/Performance/Htaccess.php:195
+msgid ".htaccess isn't writable by PHP — fix its file permissions and try again."
+msgstr ".htaccess ist für PHP nicht beschreibbar – korrigiere die Dateirechte und versuche es erneut."
+
+#: src/Performance/Htaccess.php:207
+msgid "Writing to .htaccess failed for an unknown reason."
+msgstr "Das Schreiben in die .htaccess ist aus unbekanntem Grund fehlgeschlagen."
+
+#: src/Performance/Optimizations.php:517
+msgid "No feed available, please visit our homepage."
+msgstr "Kein Feed verfügbar, bitte besuche unsere Startseite."
+
+#: src/Performance/Optimizations.php:566
+msgid "The REST API is restricted to logged-in users on this site."
+msgstr "Die REST-API ist auf dieser Website auf angemeldete Benutzer beschränkt."
+
+#: src/Performance/Optimizations.php:669
+msgid "The username or password is incorrect."
+msgstr "Benutzername oder Passwort ist falsch."
+
+#. translators: %d: HTTP status code.
+#: src/Performance/ResourceHintScanner.php:75
+#, php-format
+msgid "The homepage returned HTTP %d."
+msgstr "Die Startseite hat HTTP %d geliefert."
+
+#: src/Schema/ContentTypes.php:50
+msgid "FAQ (structured data)"
+msgstr "FAQ (strukturierte Daten)"
+
+#: src/Schema/ContentTypes.php:51
+msgid "Questions and answers, shown on the page and marked up as FAQ."
+msgstr "Fragen und Antworten, auf der Seite angezeigt und als FAQ ausgezeichnet."
+
+#: src/Schema/ContentTypes.php:54
+msgid "Questions and answers"
+msgstr "Fragen und Antworten"
+
+#: src/Schema/ContentTypes.php:59
+msgid "How-to (structured data)"
+msgstr "Anleitung (strukturierte Daten)"
+
+#: src/Schema/ContentTypes.php:60
+msgid "Step-by-step instructions, shown on the page and marked up as HowTo."
+msgstr "Schritt-für-Schritt-Anleitung, auf der Seite angezeigt und als HowTo ausgezeichnet."
+
+#: src/Schema/ContentTypes.php:64
+#: src/Schema/ContentTypes.php:79
+#: src/Schema/ContentTypes.php:98
+msgid "Short description"
+msgstr "Kurzbeschreibung"
+
+#: src/Schema/ContentTypes.php:66
+msgid "Total time (minutes)"
+msgstr "Gesamtdauer (Minuten)"
+
+#: src/Schema/ContentTypes.php:67
+#: src/Schema/ContentTypes.php:1119
+msgid "Materials"
+msgstr "Material"
+
+#: src/Schema/ContentTypes.php:68
+#: src/Schema/ContentTypes.php:1122
+msgid "Tools"
+msgstr "Werkzeuge"
+
+#: src/Schema/ContentTypes.php:69
+#: src/Schema/ContentTypes.php:1125
+msgid "Steps"
+msgstr "Schritte"
+
+#: src/Schema/ContentTypes.php:69
+#: src/Schema/ContentTypes.php:88
+msgid "One step per entry, in order."
+msgstr "Ein Schritt pro Eintrag, in der richtigen Reihenfolge."
+
+#: src/Schema/ContentTypes.php:74
+msgid "Recipe (structured data)"
+msgstr "Rezept (strukturierte Daten)"
+
+#: src/Schema/ContentTypes.php:75
+msgid "A recipe card, shown on the page and marked up as Recipe."
+msgstr "Eine Rezeptkarte, auf der Seite angezeigt und als Recipe ausgezeichnet."
+
+#: src/Schema/ContentTypes.php:78
+msgid "Recipe name"
+msgstr "Rezeptname"
+
+#: src/Schema/ContentTypes.php:81
+msgid "Preparation time (minutes)"
+msgstr "Zubereitungszeit (Minuten)"
+
+#: src/Schema/ContentTypes.php:82
+msgid "Cooking time (minutes)"
+msgstr "Kochzeit (Minuten)"
+
+#: src/Schema/ContentTypes.php:83
+msgid "Yield"
+msgstr "Ergibt"
+
+#: src/Schema/ContentTypes.php:83
+msgid "e.g. 4 servings"
+msgstr "z. B. 4 Portionen"
+
+#: src/Schema/ContentTypes.php:84
+#: src/Schema/ContentTypes.php:217
+msgid "Category"
+msgstr "Kategorie"
+
+#: src/Schema/ContentTypes.php:84
+msgid "e.g. Main course"
+msgstr "z. B. Hauptgericht"
+
+#: src/Schema/ContentTypes.php:85
+msgid "Cuisine"
+msgstr "Küche"
+
+#: src/Schema/ContentTypes.php:85
+msgid "e.g. Italian"
+msgstr "z. B. Italienisch"
+
+#: src/Schema/ContentTypes.php:86
+msgid "Calories per serving"
+msgstr "Kalorien pro Portion"
+
+#: src/Schema/ContentTypes.php:86
+msgid "e.g. 320 calories"
+msgstr "z. B. 320 Kalorien"
+
+#: src/Schema/ContentTypes.php:87
+#: src/Schema/ContentTypes.php:1154
+msgid "Ingredients"
+msgstr "Zutaten"
+
+#: src/Schema/ContentTypes.php:88
+#: src/Schema/ContentTypes.php:1157
+msgid "Instructions"
+msgstr "Zubereitung"
+
+#: src/Schema/ContentTypes.php:93
+msgid "Event (structured data)"
+msgstr "Veranstaltung (strukturierte Daten)"
+
+#: src/Schema/ContentTypes.php:94
+msgid "Date, place and tickets of an event, shown on the page and marked up as Event."
+msgstr "Datum, Ort und Tickets einer Veranstaltung, auf der Seite angezeigt und als Event ausgezeichnet."
+
+#: src/Schema/ContentTypes.php:97
+msgid "Event name"
+msgstr "Name der Veranstaltung"
+
+#: src/Schema/ContentTypes.php:99
+#: src/Schema/ContentTypes.php:1175
+msgid "Starts"
+msgstr "Beginnt"
+
+#: src/Schema/ContentTypes.php:100
+#: src/Schema/ContentTypes.php:1176
+msgid "Ends"
+msgstr "Endet"
+
+#: src/Schema/ContentTypes.php:107
+msgid "Scheduled"
+msgstr "Findet statt"
+
+#: src/Schema/ContentTypes.php:108
+msgid "Cancelled"
+msgstr "Abgesagt"
+
+#: src/Schema/ContentTypes.php:109
+msgid "Postponed"
+msgstr "Verschoben"
+
+#: src/Schema/ContentTypes.php:110
+msgid "Rescheduled"
+msgstr "Neu terminiert"
+
+#: src/Schema/ContentTypes.php:111
+msgid "Moved online"
+msgstr "Online verlegt"
+
+#: src/Schema/ContentTypes.php:117
+msgid "Attendance"
+msgstr "Teilnahme"
+
+#: src/Schema/ContentTypes.php:121
+msgid "In person"
+msgstr "Vor Ort"
+
+#: src/Schema/ContentTypes.php:122
+#: src/Schema/ContentTypes.php:1178
+msgid "Online"
+msgstr "Online"
+
+#: src/Schema/ContentTypes.php:123
+msgid "In person and online"
+msgstr "Vor Ort und online"
+
+#: src/Schema/ContentTypes.php:127
+msgid "Venue name"
+msgstr "Name des Veranstaltungsorts"
+
+#: src/Schema/ContentTypes.php:128
+msgid "Venue address"
+msgstr "Adresse des Veranstaltungsorts"
+
+#: src/Schema/ContentTypes.php:129
+msgid "Online link"
+msgstr "Online-Link"
+
+#: src/Schema/ContentTypes.php:130
+#: src/Schema/ContentTypes.php:1179
+msgid "Organizer"
+msgstr "Veranstalter"
+
+#: src/Schema/ContentTypes.php:131
+msgid "Organizer website"
+msgstr "Website des Veranstalters"
+
+#: src/Schema/ContentTypes.php:133
+msgid "Ticket price"
+msgstr "Ticketpreis"
+
+#: src/Schema/ContentTypes.php:133
+msgid "e.g. 25 (0 for free)"
+msgstr "z. B. 25 (0 für kostenlos)"
+
+#: src/Schema/ContentTypes.php:134
+#: src/Schema/ContentTypes.php:239
+msgid "Currency"
+msgstr "Währung"
+
+#: src/Schema/ContentTypes.php:135
+msgid "Ticket link"
+msgstr "Ticket-Link"
+
+#: src/Schema/ContentTypes.php:140
+msgid "Job posting (structured data)"
+msgstr "Stellenanzeige (strukturierte Daten)"
+
+#: src/Schema/ContentTypes.php:141
+msgid "A job ad, shown on the page and marked up as JobPosting."
+msgstr "Eine Stellenanzeige, auf der Seite angezeigt und als JobPosting ausgezeichnet."
+
+#: src/Schema/ContentTypes.php:144
+msgid "Job title"
+msgstr "Berufsbezeichnung"
+
+#: src/Schema/ContentTypes.php:145
+msgid "Job description"
+msgstr "Stellenbeschreibung"
+
+#: src/Schema/ContentTypes.php:146
+msgid "Posted on"
+msgstr "Veröffentlicht am"
+
+#: src/Schema/ContentTypes.php:147
+#: src/Schema/ContentTypes.php:1213
+msgid "Apply until"
+msgstr "Bewerbung bis"
+
+#: src/Schema/ContentTypes.php:150
+msgid "Employment type"
+msgstr "Beschäftigungsart"
+
+#: src/Schema/ContentTypes.php:154
+msgid "Full time"
+msgstr "Vollzeit"
+
+#: src/Schema/ContentTypes.php:155
+msgid "Part time"
+msgstr "Teilzeit"
+
+#: src/Schema/ContentTypes.php:156
+msgid "Contractor"
+msgstr "Freiberuflich"
+
+#: src/Schema/ContentTypes.php:157
+msgid "Temporary"
+msgstr "Befristet"
+
+#: src/Schema/ContentTypes.php:158
+msgid "Internship"
+msgstr "Praktikum"
+
+#: src/Schema/ContentTypes.php:159
+msgid "Volunteer"
+msgstr "Ehrenamt"
+
+#: src/Schema/ContentTypes.php:160
+msgid "Per diem"
+msgstr "Tagesweise"
+
+#: src/Schema/ContentTypes.php:161
+msgid "Other"
+msgstr "Sonstiges"
+
+#: src/Schema/ContentTypes.php:165
+msgid "Hiring company"
+msgstr "Einstellendes Unternehmen"
+
+#: src/Schema/ContentTypes.php:166
+msgid "Company website"
+msgstr "Website des Unternehmens"
+
+#: src/Schema/ContentTypes.php:167
+msgid "Company logo"
+msgstr "Logo des Unternehmens"
+
+#: src/Schema/ContentTypes.php:168
+msgid "Fully remote"
+msgstr "Vollständig remote"
+
+#: src/Schema/ContentTypes.php:172
+msgid "State / region"
+msgstr "Bundesland / Region"
+
+#: src/Schema/ContentTypes.php:173
+msgid "Country (2-letter code)"
+msgstr "Land (Zwei-Buchstaben-Code)"
+
+#: src/Schema/ContentTypes.php:174
+msgid "Salary from"
+msgstr "Gehalt ab"
+
+#: src/Schema/ContentTypes.php:175
+msgid "Salary up to"
+msgstr "Gehalt bis"
+
+#: src/Schema/ContentTypes.php:176
+msgid "Salary currency"
+msgstr "Währung des Gehalts"
+
+#: src/Schema/ContentTypes.php:179
+msgid "Salary per"
+msgstr "Gehalt pro"
+
+#: src/Schema/ContentTypes.php:183
+msgid "Year"
+msgstr "Jahr"
+
+#: src/Schema/ContentTypes.php:184
+msgid "Month"
+msgstr "Monat"
+
+#: src/Schema/ContentTypes.php:185
+msgid "Week"
+msgstr "Woche"
+
+#: src/Schema/ContentTypes.php:186
+msgid "Day"
+msgstr "Tag"
+
+#: src/Schema/ContentTypes.php:187
+msgid "Hour"
+msgstr "Stunde"
+
+#: src/Schema/ContentTypes.php:191
+msgid "Application link"
+msgstr "Bewerbungslink"
+
+#: src/Schema/ContentTypes.php:196
+msgid "Course (structured data)"
+msgstr "Kurs (strukturierte Daten)"
+
+#: src/Schema/ContentTypes.php:197
+msgid "A course or training, shown on the page and marked up as Course."
+msgstr "Ein Kurs oder eine Schulung, auf der Seite angezeigt und als Course ausgezeichnet."
+
+#: src/Schema/ContentTypes.php:200
+msgid "Course name"
+msgstr "Kursname"
+
+#: src/Schema/ContentTypes.php:202
+#: src/Schema/ContentTypes.php:1229
+msgid "Provider"
+msgstr "Anbieter"
+
+#: src/Schema/ContentTypes.php:203
+msgid "Provider website"
+msgstr "Website des Anbieters"
+
+#: src/Schema/ContentTypes.php:208
+msgid "Software (structured data)"
+msgstr "Software (strukturierte Daten)"
+
+#: src/Schema/ContentTypes.php:209
+msgid "An app or program, shown on the page and marked up as SoftwareApplication."
+msgstr "Eine App oder ein Programm, auf der Seite angezeigt und als SoftwareApplication ausgezeichnet."
+
+#: src/Schema/ContentTypes.php:212
+msgid "Name"
+msgstr "Name"
+
+#: src/Schema/ContentTypes.php:221
+msgid "Business"
+msgstr "Business"
+
+#: src/Schema/ContentTypes.php:222
+msgid "Developer tools"
+msgstr "Entwicklerwerkzeuge"
+
+#: src/Schema/ContentTypes.php:223
+msgid "Design"
+msgstr "Design"
+
+#: src/Schema/ContentTypes.php:224
+msgid "Education"
+msgstr "Bildung"
+
+#: src/Schema/ContentTypes.php:225
+msgid "Entertainment"
+msgstr "Unterhaltung"
+
+#: src/Schema/ContentTypes.php:226
+msgid "Finance"
+msgstr "Finanzen"
+
+#: src/Schema/ContentTypes.php:227
+msgid "Game"
+msgstr "Spiel"
+
+#: src/Schema/ContentTypes.php:228
+msgid "Health"
+msgstr "Gesundheit"
+
+#: src/Schema/ContentTypes.php:229
+msgid "Lifestyle"
+msgstr "Lifestyle"
+
+#: src/Schema/ContentTypes.php:230
+msgid "Multimedia"
+msgstr "Multimedia"
+
+#: src/Schema/ContentTypes.php:231
+msgid "Security"
+msgstr "Sicherheit"
+
+#: src/Schema/ContentTypes.php:232
+msgid "Shopping"
+msgstr "Shopping"
+
+#: src/Schema/ContentTypes.php:233
+msgid "Utilities"
+msgstr "Dienstprogramme"
+
+#: src/Schema/ContentTypes.php:237
+#: src/Schema/ContentTypes.php:1246
+msgid "Operating system"
+msgstr "Betriebssystem"
+
+#: src/Schema/ContentTypes.php:238
+#: src/Schema/ContentTypes.php:1180
+#: src/Schema/ContentTypes.php:1247
+msgid "Price"
+msgstr "Preis"
+
+#: src/Schema/ContentTypes.php:238
+msgid "0 for free"
+msgstr "0 für kostenlos"
+
+#: src/Schema/ContentTypes.php:240
+msgid "Download link"
+msgstr "Download-Link"
+
+#: src/Schema/ContentTypes.php:241
+msgid "Average rating"
+msgstr "Durchschnittliche Bewertung"
+
+#: src/Schema/ContentTypes.php:241
+msgid "Only if you really collect ratings — never invent them. Google shows a rich result for software only with a rating or review."
+msgstr "Nur, wenn du wirklich Bewertungen sammelst – erfinde sie nie. Google zeigt für Software nur mit einer Bewertung oder Rezension ein Rich Result an."
+
+#: src/Schema/ContentTypes.php:242
+msgid "Number of ratings"
+msgstr "Anzahl der Bewertungen"
+
+#: src/Schema/ContentTypes.php:247
+msgid "Video (structured data)"
+msgstr "Video (strukturierte Daten)"
+
+#: src/Schema/ContentTypes.php:248
+msgid "A video with its details, shown on the page and marked up as VideoObject."
+msgstr "Ein Video mit seinen Angaben, auf der Seite angezeigt und als VideoObject ausgezeichnet."
+
+#: src/Schema/ContentTypes.php:253
+msgid "Thumbnail"
+msgstr "Vorschaubild"
+
+#: src/Schema/ContentTypes.php:254
+msgid "Published"
+msgstr "Veröffentlicht"
+
+#: src/Schema/ContentTypes.php:255
+msgid "Video file URL"
+msgstr "URL der Videodatei"
+
+#: src/Schema/ContentTypes.php:256
+msgid "Embed URL"
+msgstr "Einbettungs-URL"
+
+#: src/Schema/ContentTypes.php:256
+msgid "e.g. https://www.youtube.com/embed/… — shown as the player."
+msgstr "z. B. https://www.youtube.com/embed/… – wird als Player angezeigt."
+
+#: src/Schema/ContentTypes.php:257
+msgid "Length (seconds)"
+msgstr "Länge (Sekunden)"
+
+#: src/Schema/ContentTypes.php:258
+msgid "Live stream"
+msgstr "Livestream"
+
+#: src/Schema/ContentTypes.php:258
+msgid "Marks the page as a live broadcast (BroadcastEvent)."
+msgstr "Markiert die Seite als Live-Übertragung (BroadcastEvent)."
+
+#: src/Schema/ContentTypes.php:259
+msgid "Live stream starts"
+msgstr "Livestream beginnt"
+
+#: src/Schema/ContentTypes.php:260
+msgid "Live stream ends"
+msgstr "Livestream endet"
+
+#: src/Schema/ContentTypes.php:1116
+msgid "Time:"
+msgstr "Dauer:"
+
+#: src/Schema/ContentTypes.php:1139
+msgid "Prep:"
+msgstr "Vorbereitung:"
+
+#: src/Schema/ContentTypes.php:1140
+msgid "Cook:"
+msgstr "Kochen:"
+
+#: src/Schema/ContentTypes.php:1141
+msgid "Yield:"
+msgstr "Ergibt:"
+
+#: src/Schema/ContentTypes.php:1142
+msgid "Calories:"
+msgstr "Kalorien:"
+
+#: src/Schema/ContentTypes.php:1169
+#: src/Schema/ContentTypes.php:1181
+msgid "Tickets"
+msgstr "Tickets"
+
+#: src/Schema/ContentTypes.php:1177
+msgid "Venue"
+msgstr "Ort"
+
+#: src/Schema/ContentTypes.php:1194
+msgid "Remote"
+msgstr "Remote"
+
+#: src/Schema/ContentTypes.php:1204
+msgid "Apply now"
+msgstr "Jetzt bewerben"
+
+#: src/Schema/ContentTypes.php:1208
+msgid "Company"
+msgstr "Unternehmen"
+
+#: src/Schema/ContentTypes.php:1209
+msgid "Location"
+msgstr "Standort"
+
+#: src/Schema/ContentTypes.php:1211
+msgid "Salary"
+msgstr "Gehalt"
+
+#: src/Schema/ContentTypes.php:1212
+msgid "Posted"
+msgstr "Veröffentlicht"
+
+#: src/Schema/ContentTypes.php:1240
+#: src/Schema/ContentTypes.php:1249
+msgid "Download"
+msgstr "Download"
+
+#: src/Schema/ContentTypes.php:1248
+msgid "Rating"
+msgstr "Bewertung"
+
+#: src/Schema/LocalBusinessTypes.php:28
+msgid "Local business (generic)"
+msgstr "Lokales Unternehmen (allgemein)"
+
+#: src/Schema/LocalBusinessTypes.php:29
+msgid "Professional service"
+msgstr "Dienstleistung (freiberuflich/beratend)"
+
+#: src/Schema/LocalBusinessTypes.php:30
+msgid "Employment agency"
+msgstr "Arbeitsvermittlung"
+
+#: src/Schema/LocalBusinessTypes.php:31
+msgid "Government office"
+msgstr "Behörde"
+
+#: src/Schema/LocalBusinessTypes.php:32
+msgid "Internet café"
+msgstr "Internetcafé"
+
+#: src/Schema/LocalBusinessTypes.php:33
+msgid "Library"
+msgstr "Bibliothek"
+
+#: src/Schema/LocalBusinessTypes.php:34
+msgid "Recycling center"
+msgstr "Recyclinghof"
+
+#: src/Schema/LocalBusinessTypes.php:35
+msgid "Self storage"
+msgstr "Selfstorage / Lagerraum"
+
+#: src/Schema/LocalBusinessTypes.php:36
+msgid "Child care"
+msgstr "Kinderbetreuung"
+
+#: src/Schema/LocalBusinessTypes.php:37
+msgid "Animal shelter"
+msgstr "Tierheim"
+
+#: src/Schema/LocalBusinessTypes.php:38
+msgid "Dry cleaning or laundry"
+msgstr "Reinigung oder Wäscherei"
+
+#: src/Schema/LocalBusinessTypes.php:39
+msgid "Tourist information center"
+msgstr "Touristeninformation"
+
+#: src/Schema/LocalBusinessTypes.php:41
+msgid "Food and drink"
+msgstr "Essen und Trinken"
+
+#: src/Schema/LocalBusinessTypes.php:42
+msgid "Food establishment (generic)"
+msgstr "Gastronomiebetrieb (allgemein)"
+
+#: src/Schema/LocalBusinessTypes.php:43
+msgid "Restaurant"
+msgstr "Restaurant"
+
+#: src/Schema/LocalBusinessTypes.php:44
+msgid "Café or coffee shop"
+msgstr "Café oder Kaffeehaus"
+
+#: src/Schema/LocalBusinessTypes.php:45
+msgid "Bakery"
+msgstr "Bäckerei"
+
+#: src/Schema/LocalBusinessTypes.php:46
+msgid "Bar or pub"
+msgstr "Bar oder Kneipe"
+
+#: src/Schema/LocalBusinessTypes.php:47
+msgid "Brewery"
+msgstr "Brauerei"
+
+#: src/Schema/LocalBusinessTypes.php:48
+msgid "Distillery"
+msgstr "Brennerei"
+
+#: src/Schema/LocalBusinessTypes.php:49
+msgid "Winery"
+msgstr "Weingut"
+
+#: src/Schema/LocalBusinessTypes.php:50
+msgid "Fast food restaurant"
+msgstr "Fast-Food-Restaurant"
+
+#: src/Schema/LocalBusinessTypes.php:51
+msgid "Ice cream shop"
+msgstr "Eisdiele"
+
+#: src/Schema/LocalBusinessTypes.php:53
+msgid "Legal and financial"
+msgstr "Recht und Finanzen"
+
+#: src/Schema/LocalBusinessTypes.php:54
+msgid "Legal service"
+msgstr "Rechtsdienstleistung"
+
+#: src/Schema/LocalBusinessTypes.php:55
+msgid "Attorney"
+msgstr "Rechtsanwalt"
+
+#: src/Schema/LocalBusinessTypes.php:56
+msgid "Notary"
+msgstr "Notar"
+
+#: src/Schema/LocalBusinessTypes.php:57
+msgid "Financial service"
+msgstr "Finanzdienstleistung"
+
+#: src/Schema/LocalBusinessTypes.php:58
+msgid "Accounting service"
+msgstr "Buchhaltung / Steuerberatung"
+
+#: src/Schema/LocalBusinessTypes.php:59
+msgid "Bank or credit union"
+msgstr "Bank oder Kreditgenossenschaft"
+
+#: src/Schema/LocalBusinessTypes.php:60
+msgid "Insurance agency"
+msgstr "Versicherungsagentur"
+
+#: src/Schema/LocalBusinessTypes.php:61
+msgid "Automated teller (ATM)"
+msgstr "Geldautomat"
+
+#: src/Schema/LocalBusinessTypes.php:63
+msgid "Health and medical"
+msgstr "Gesundheit und Medizin"
+
+#: src/Schema/LocalBusinessTypes.php:64
+msgid "Medical business (generic)"
+msgstr "Medizinischer Betrieb (allgemein)"
+
+#: src/Schema/LocalBusinessTypes.php:65
+msgid "Physician"
+msgstr "Arzt / Ärztin"
+
+#: src/Schema/LocalBusinessTypes.php:66
+msgid "Dentist"
+msgstr "Zahnarzt"
+
+#: src/Schema/LocalBusinessTypes.php:67
+msgid "Medical clinic"
+msgstr "Arztpraxis / Klinik"
+
+#: src/Schema/LocalBusinessTypes.php:68
+msgid "Pharmacy"
+msgstr "Apotheke"
+
+#: src/Schema/LocalBusinessTypes.php:69
+msgid "Optician"
+msgstr "Optiker"
+
+#: src/Schema/LocalBusinessTypes.php:70
+msgid "Physiotherapy"
+msgstr "Physiotherapie"
+
+#: src/Schema/LocalBusinessTypes.php:71
+msgid "Diet and nutrition"
+msgstr "Ernährungsberatung"
+
+#: src/Schema/LocalBusinessTypes.php:72
+msgid "Hospital"
+msgstr "Krankenhaus"
+
+#: src/Schema/LocalBusinessTypes.php:73
+msgid "Community health"
+msgstr "Gemeindegesundheit"
+
+#: src/Schema/LocalBusinessTypes.php:74
+msgid "Plastic surgery"
+msgstr "Plastische Chirurgie"
+
+#: src/Schema/LocalBusinessTypes.php:75
+msgid "Psychiatric"
+msgstr "Psychiatrie"
+
+#: src/Schema/LocalBusinessTypes.php:76
+msgid "Dermatology"
+msgstr "Dermatologie"
+
+#: src/Schema/LocalBusinessTypes.php:77
+msgid "Pediatric"
+msgstr "Kinderheilkunde"
+
+#: src/Schema/LocalBusinessTypes.php:78
+msgid "Podiatric"
+msgstr "Podologie"
+
+#: src/Schema/LocalBusinessTypes.php:80
+msgid "Beauty, wellness and sport"
+msgstr "Beauty, Wellness und Sport"
+
+#: src/Schema/LocalBusinessTypes.php:81
+msgid "Health and beauty business (generic)"
+msgstr "Gesundheits- und Schönheitsbetrieb (allgemein)"
+
+#: src/Schema/LocalBusinessTypes.php:82
+msgid "Hair salon"
+msgstr "Friseursalon"
+
+#: src/Schema/LocalBusinessTypes.php:83
+msgid "Beauty salon"
+msgstr "Kosmetiksalon"
+
+#: src/Schema/LocalBusinessTypes.php:84
+msgid "Nail salon"
+msgstr "Nagelstudio"
+
+#: src/Schema/LocalBusinessTypes.php:85
+msgid "Day spa"
+msgstr "Day Spa"
+
+#: src/Schema/LocalBusinessTypes.php:86
+msgid "Tattoo parlor"
+msgstr "Tattoo-Studio"
+
+#: src/Schema/LocalBusinessTypes.php:87
+msgid "Health club"
+msgstr "Fitnessclub"
+
+#: src/Schema/LocalBusinessTypes.php:88
+msgid "Gym"
+msgstr "Fitnessstudio"
+
+#: src/Schema/LocalBusinessTypes.php:89
+msgid "Sports club"
+msgstr "Sportverein"
+
+#: src/Schema/LocalBusinessTypes.php:90
+msgid "Sports activity location"
+msgstr "Sportstätte"
+
+#: src/Schema/LocalBusinessTypes.php:91
+msgid "Golf course"
+msgstr "Golfplatz"
+
+#: src/Schema/LocalBusinessTypes.php:92
+msgid "Tennis complex"
+msgstr "Tennisanlage"
+
+#: src/Schema/LocalBusinessTypes.php:93
+msgid "Bowling alley"
+msgstr "Kegelbahn"
+
+#: src/Schema/LocalBusinessTypes.php:94
+msgid "Public swimming pool"
+msgstr "Öffentliches Schwimmbad"
+
+#: src/Schema/LocalBusinessTypes.php:95
+msgid "Ski resort"
+msgstr "Skigebiet"
+
+#: src/Schema/LocalBusinessTypes.php:96
+msgid "Stadium or arena"
+msgstr "Stadion oder Arena"
+
+#: src/Schema/LocalBusinessTypes.php:98
+msgid "Home, construction and trades"
+msgstr "Haus, Bau und Handwerk"
+
+#: src/Schema/LocalBusinessTypes.php:99
+msgid "Home and construction business (generic)"
+msgstr "Haus- und Baubetrieb (allgemein)"
+
+#: src/Schema/LocalBusinessTypes.php:100
+msgid "General contractor"
+msgstr "Generalunternehmer"
+
+#: src/Schema/LocalBusinessTypes.php:101
+msgid "Electrician"
+msgstr "Elektriker"
+
+#: src/Schema/LocalBusinessTypes.php:102
+msgid "Plumber"
+msgstr "Klempner / Installateur"
+
+#: src/Schema/LocalBusinessTypes.php:103
+msgid "Heating and air conditioning (HVAC)"
+msgstr "Heizung und Klimaanlage"
+
+#: src/Schema/LocalBusinessTypes.php:104
+msgid "Roofing contractor"
+msgstr "Dachdecker"
+
+#: src/Schema/LocalBusinessTypes.php:105
+msgid "House painter"
+msgstr "Maler"
+
+#: src/Schema/LocalBusinessTypes.php:106
+msgid "Locksmith"
+msgstr "Schlüsseldienst"
+
+#: src/Schema/LocalBusinessTypes.php:107
+msgid "Moving company"
+msgstr "Umzugsunternehmen"
+
+#: src/Schema/LocalBusinessTypes.php:109
+msgid "Real estate and travel"
+msgstr "Immobilien und Reisen"
+
+#: src/Schema/LocalBusinessTypes.php:110
+msgid "Real estate agent"
+msgstr "Immobilienmakler"
+
+#: src/Schema/LocalBusinessTypes.php:111
+msgid "Travel agency"
+msgstr "Reisebüro"
+
+#: src/Schema/LocalBusinessTypes.php:112
+msgid "Lodging business (generic)"
+msgstr "Beherbergungsbetrieb (allgemein)"
+
+#: src/Schema/LocalBusinessTypes.php:113
+msgid "Hotel"
+msgstr "Hotel"
+
+#: src/Schema/LocalBusinessTypes.php:114
+msgid "Motel"
+msgstr "Motel"
+
+#: src/Schema/LocalBusinessTypes.php:115
+msgid "Hostel"
+msgstr "Hostel"
+
+#: src/Schema/LocalBusinessTypes.php:116
+msgid "Bed and breakfast"
+msgstr "Pension (Bed & Breakfast)"
+
+#: src/Schema/LocalBusinessTypes.php:117
+msgid "Resort"
+msgstr "Ferienanlage / Resort"
+
+#: src/Schema/LocalBusinessTypes.php:118
+msgid "Campground"
+msgstr "Campingplatz"
+
+#: src/Schema/LocalBusinessTypes.php:119
+msgid "Vacation rental"
+msgstr "Ferienwohnung"
+
+#: src/Schema/LocalBusinessTypes.php:121
+msgid "Shops"
+msgstr "Geschäfte"
+
+#: src/Schema/LocalBusinessTypes.php:122
+msgid "Store (generic)"
+msgstr "Geschäft (allgemein)"
+
+#: src/Schema/LocalBusinessTypes.php:123
+msgid "Grocery store"
+msgstr "Lebensmittelgeschäft"
+
+#: src/Schema/LocalBusinessTypes.php:124
+msgid "Convenience store"
+msgstr "Convenience-Store / Kiosk"
+
+#: src/Schema/LocalBusinessTypes.php:125
+msgid "Clothing store"
+msgstr "Bekleidungsgeschäft"
+
+#: src/Schema/LocalBusinessTypes.php:126
+msgid "Shoe store"
+msgstr "Schuhgeschäft"
+
+#: src/Schema/LocalBusinessTypes.php:127
+msgid "Jewelry store"
+msgstr "Juwelier"
+
+#: src/Schema/LocalBusinessTypes.php:128
+msgid "Electronics store"
+msgstr "Elektronikgeschäft"
+
+#: src/Schema/LocalBusinessTypes.php:129
+msgid "Computer store"
+msgstr "Computergeschäft"
+
+#: src/Schema/LocalBusinessTypes.php:130
+msgid "Mobile phone store"
+msgstr "Handyshop"
+
+#: src/Schema/LocalBusinessTypes.php:131
+msgid "Furniture store"
+msgstr "Möbelhaus"
+
+#: src/Schema/LocalBusinessTypes.php:132
+msgid "Home goods store"
+msgstr "Haushaltswarengeschäft"
+
+#: src/Schema/LocalBusinessTypes.php:133
+msgid "Hardware store"
+msgstr "Baumarkt / Eisenwaren"
+
+#: src/Schema/LocalBusinessTypes.php:134
+msgid "Garden store"
+msgstr "Gartencenter"
+
+#: src/Schema/LocalBusinessTypes.php:135
+msgid "Florist"
+msgstr "Blumengeschäft"
+
+#: src/Schema/LocalBusinessTypes.php:136
+msgid "Book store"
+msgstr "Buchhandlung"
+
+#: src/Schema/LocalBusinessTypes.php:137
+msgid "Toy store"
+msgstr "Spielwarengeschäft"
+
+#: src/Schema/LocalBusinessTypes.php:138
+msgid "Pet store"
+msgstr "Zoohandlung"
+
+#: src/Schema/LocalBusinessTypes.php:139
+msgid "Bike store"
+msgstr "Fahrradgeschäft"
+
+#: src/Schema/LocalBusinessTypes.php:140
+msgid "Sporting goods store"
+msgstr "Sportgeschäft"
+
+#: src/Schema/LocalBusinessTypes.php:141
+msgid "Liquor store"
+msgstr "Spirituosengeschäft"
+
+#: src/Schema/LocalBusinessTypes.php:142
+msgid "Department store"
+msgstr "Kaufhaus"
+
+#: src/Schema/LocalBusinessTypes.php:143
+msgid "Shopping center"
+msgstr "Einkaufszentrum"
+
+#: src/Schema/LocalBusinessTypes.php:144
+msgid "Office equipment store"
+msgstr "Bürobedarf"
+
+#: src/Schema/LocalBusinessTypes.php:145
+msgid "Wholesale store"
+msgstr "Großhandel"
+
+#: src/Schema/LocalBusinessTypes.php:147
+msgid "Automotive"
+msgstr "Automobil"
+
+#: src/Schema/LocalBusinessTypes.php:148
+msgid "Automotive business (generic)"
+msgstr "Automobilbetrieb (allgemein)"
+
+#: src/Schema/LocalBusinessTypes.php:149
+msgid "Auto repair"
+msgstr "Autowerkstatt"
+
+#: src/Schema/LocalBusinessTypes.php:150
+msgid "Auto body shop"
+msgstr "Karosseriewerkstatt"
+
+#: src/Schema/LocalBusinessTypes.php:151
+msgid "Auto dealer"
+msgstr "Autohändler"
+
+#: src/Schema/LocalBusinessTypes.php:152
+msgid "Auto rental"
+msgstr "Autovermietung"
+
+#: src/Schema/LocalBusinessTypes.php:153
+msgid "Car wash"
+msgstr "Autowaschanlage"
+
+#: src/Schema/LocalBusinessTypes.php:154
+msgid "Auto parts store"
+msgstr "Autoteilehandel"
+
+#: src/Schema/LocalBusinessTypes.php:155
+msgid "Gas station"
+msgstr "Tankstelle"
+
+#: src/Schema/LocalBusinessTypes.php:156
+msgid "Motorcycle dealer"
+msgstr "Motorradhändler"
+
+#: src/Schema/LocalBusinessTypes.php:157
+msgid "Motorcycle repair"
+msgstr "Motorradwerkstatt"
+
+#: src/Schema/LocalBusinessTypes.php:158
+msgid "Tire shop"
+msgstr "Reifenhandel"
+
+#: src/Schema/LocalBusinessTypes.php:160
+msgid "Entertainment and media"
+msgstr "Unterhaltung und Medien"
+
+#: src/Schema/LocalBusinessTypes.php:161
+msgid "Entertainment business (generic)"
+msgstr "Unterhaltungsbetrieb (allgemein)"
+
+#: src/Schema/LocalBusinessTypes.php:162
+msgid "Movie theater"
+msgstr "Kino"
+
+#: src/Schema/LocalBusinessTypes.php:163
+msgid "Night club"
+msgstr "Nachtclub"
+
+#: src/Schema/LocalBusinessTypes.php:164
+msgid "Art gallery"
+msgstr "Kunstgalerie"
+
+#: src/Schema/LocalBusinessTypes.php:165
+msgid "Amusement park"
+msgstr "Freizeitpark"
+
+#: src/Schema/LocalBusinessTypes.php:166
+msgid "Comedy club"
+msgstr "Comedy-Club"
+
+#: src/Schema/LocalBusinessTypes.php:167
+msgid "Casino"
+msgstr "Spielbank"
+
+#: src/Schema/LocalBusinessTypes.php:168
+msgid "Radio station"
+msgstr "Radiosender"
+
+#: src/Schema/LocalBusinessTypes.php:169
+msgid "Television station"
+msgstr "Fernsehsender"
+
+#: src/Schema/LocalBusinessTypes.php:171
+msgid "Emergency services"
+msgstr "Notdienste"
+
+#: src/Schema/LocalBusinessTypes.php:172
+msgid "Emergency service (generic)"
+msgstr "Notdienst (allgemein)"
+
+#: src/Schema/LocalBusinessTypes.php:173
+msgid "Fire station"
+msgstr "Feuerwehr"
+
+#: src/Schema/LocalBusinessTypes.php:174
+msgid "Police station"
+msgstr "Polizeiwache"
+
+#: src/Sitemaps/SitemapNames.php:169
+msgid "Videos"
+msgstr "Videos"
+
+#: src/Sitemaps/SitemapNames.php:170
+msgid "Google News"
+msgstr "Google News"
+
+#: src/Support/Ai.php:41
+msgid "WordPress AI"
+msgstr "WordPress-KI"
+
+#: src/Support/Ai.php:44
+msgid "Claude"
+msgstr "Claude"
+
+#: src/Support/Ai.php:108
+msgid "No Anthropic API key configured."
+msgstr "Kein Anthropic-API-Schlüssel eingerichtet."
+
+#: src/Support/Ai.php:115
+msgid "No OpenAI API key configured."
+msgstr "Kein OpenAI-API-Schlüssel eingerichtet."
+
+#: src/Support/Ai.php:120
+msgid "No AI provider available — connect one in WordPress (Settings → Connectors) or add a key on the AI Settings page."
+msgstr "Kein KI-Anbieter verfügbar – verbinde einen in WordPress (Einstellungen → Connectors) oder füge auf der Seite „KI-Einstellungen“ einen Schlüssel hinzu."
+
+#: src/Support/Ai.php:134
+msgid "WordPress has no AI provider connected."
+msgstr "In WordPress ist kein KI-Anbieter verbunden."
+
+#: src/Support/Ai.php:155
+msgid "WordPress AI returned no text."
+msgstr "WordPress-KI hat keinen Text geliefert."
+
+#: src/Support/AiClient.php:110
+msgid "Claude returned no text."
+msgstr "Claude hat keinen Text geliefert."
+
+#: src/Support/AiClient.php:174
+msgid "OpenAI returned no text."
+msgstr "OpenAI hat keinen Text geliefert."
+
+#: src/Support/Ajax.php:107
+msgid "PHP printed unexpected output during an AJAX request (typically a warning, notice or deprecation) — it was stripped from the JSON response so the request could still complete, but is recorded here for diagnosis."
+msgstr "PHP hat während einer AJAX-Anfrage unerwartete Ausgaben erzeugt (meist eine Warnung, ein Hinweis oder eine Deprecation) – sie wurden aus der JSON-Antwort entfernt, damit die Anfrage trotzdem abgeschlossen werden konnte, werden hier aber zur Diagnose festgehalten."
+
+#: src/Support/Breadcrumbs.php:103
+msgid "Breadcrumb"
+msgstr "Breadcrumb"
+
+#: src/Support/DeepLClient.php:82
+msgid "DeepL returned no translation."
+msgstr "DeepL hat keine Übersetzung geliefert."
+
+#: assets/admin/link-suggestions.js:132
+msgid "The phrase was not found in a text block — copy the link instead."
+msgstr "Die Formulierung wurde in keinem Textblock gefunden – kopiere stattdessen den Link."
+
+#: assets/admin/link-suggestions.js:139
+msgid "Pages on this site that fit the text. Where a phrase in your text matches, one click turns it into a link."
+msgstr "Seiten dieser Website, die zum Text passen. Wo eine Formulierung in deinem Text passt, macht ein Klick daraus einen Link."
+
+#: assets/admin/link-suggestions.js:140
+msgid "Searching…"
+msgstr "Suche läuft …"
+
+#: assets/admin/link-suggestions.js:140
+msgid "Find link suggestions"
+msgstr "Link-Vorschläge finden"
+
+#: assets/admin/link-suggestions.js:143
+msgid "No further suggestions."
+msgstr "Keine weiteren Vorschläge."
+
+#: assets/admin/link-suggestions.js:149
+msgid "Shared:"
+msgstr "Gemeinsam:"
+
+#: assets/admin/link-suggestions.js:150
+msgid "Link the phrase:"
+msgstr "Formulierung verlinken:"
+
+#: assets/admin/link-suggestions.js:154
+msgid "Link it"
+msgstr "Verlinken"
+
+#: assets/admin/link-suggestions.js:155
+msgid "Copy link"
+msgstr "Link kopieren"
+
+#: assets/admin/link-suggestions.js:164
+msgid "Link suggestions"
+msgstr "Link-Vorschläge"
+
+#: assets/blocks/blocks.js:39
+msgid "Link the current page"
+msgstr "Die aktuelle Seite verlinken"
+
+#: assets/blocks/blocks.js:51
+msgid "Breadcrumbs appear here on pages that have a trail (not on the home page)."
+msgstr "Breadcrumbs erscheinen hier auf Seiten, die einen Pfad haben (nicht auf der Startseite)."

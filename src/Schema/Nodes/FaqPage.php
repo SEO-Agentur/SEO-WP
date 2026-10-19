@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Seooptimierung\Toolkit\Schema\Nodes;
 
+use Seooptimierung\Toolkit\Schema\EmbeddedSchema;
 use WP_Post;
 
 /**
@@ -59,11 +60,10 @@ final class FaqPage {
 	 */
 	private function entities( WP_Post $post ): array {
 		$raw = get_post_meta( $post->ID, self::META_FAQ, true );
-		if ( ! is_array( $raw ) ) {
-			return array();
-		}
+		$raw = is_array( $raw ) ? $raw : array();
 
-		$entities = array();
+		// FAQ blocks placed in the content add their questions to the same page node.
+		$entities = EmbeddedSchema::faq_entities_for( $post );
 		foreach ( $raw as $item ) {
 			$question = isset( $item['question'] ) ? trim( (string) $item['question'] ) : '';
 			$answer   = isset( $item['answer'] ) ? trim( (string) $item['answer'] ) : '';

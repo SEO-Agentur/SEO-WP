@@ -17,8 +17,10 @@ use Seooptimierung\Toolkit\Admin\Diagnostics;
 use Seooptimierung\Toolkit\Admin\DuplicateChecker;
 use Seooptimierung\Toolkit\Admin\GoogleIndexingPage;
 use Seooptimierung\Toolkit\Admin\ImportWizard;
+use Seooptimierung\Toolkit\Admin\ImageSeo;
 use Seooptimierung\Toolkit\Admin\IndexNowPage;
 use Seooptimierung\Toolkit\Admin\LinkAudit;
+use Seooptimierung\Toolkit\Admin\LinkSuggestions;
 use Seooptimierung\Toolkit\Admin\Metabox;
 use Seooptimierung\Toolkit\Admin\NotFoundMonitorPage;
 use Seooptimierung\Toolkit\Admin\RedirectsPage;
@@ -31,10 +33,13 @@ use Seooptimierung\Toolkit\Crawl\LlmsTxt;
 use Seooptimierung\Toolkit\Crawl\NotFoundMonitor;
 use Seooptimierung\Toolkit\Crawl\Redirects;
 use Seooptimierung\Toolkit\Crawl\RobotsTxt;
+use Seooptimierung\Toolkit\Crawl\SlugRedirects;
 use Seooptimierung\Toolkit\Crawl\SpecialArchives;
 use Seooptimierung\Toolkit\Crawl\StagingProtection;
 use Seooptimierung\Toolkit\Crawl\Verification;
+use Seooptimierung\Toolkit\Frontend\Blocks;
 use Seooptimierung\Toolkit\Frontend\Head;
+use Seooptimierung\Toolkit\Media\AltText;
 use Seooptimierung\Toolkit\Performance\Optimizations;
 use Seooptimierung\Toolkit\Performance\ServerHeaders;
 use Seooptimierung\Toolkit\Sitemaps\Router;
@@ -73,6 +78,10 @@ final class Plugin {
 	 */
 	public function init(): void {
 
+		// Translations shipped inside the plugin (languages/). Runs before any
+		// string is used; a language pack from WordPress.org still works as well.
+		add_action( 'init', array( self::class, 'load_bundled_translations' ), 0 );
+
 		// A plugin update replaces the files without running the activation
 		// hook, so rewrite rules added in a new version (sitemap names,
 		// llms.txt, ...) would stay unknown until someone flushed by hand.
@@ -80,6 +89,8 @@ final class Plugin {
 		add_action( 'init', array( self::class, 'maybe_flush_rewrite_rules' ), 99 );
 
 		( new Head() )->register();
+		( new AltText() )->register();
+		( new Blocks() )->register();
 		( new Router() )->register();
 		( new StringTranslation() )->register();
 		// Registered unconditionally (not only under is_admin()): the
@@ -97,6 +108,7 @@ final class Plugin {
 		( new IndexNow() )->register();
 		( new ImageLinks() )->register();
 		( new Redirects() )->register();
+		( new SlugRedirects() )->register();
 		( new NotFoundMonitor() )->register();
 		( new GoogleIndexing() )->register();
 		( new ServerHeaders() )->register();
@@ -106,6 +118,8 @@ final class Plugin {
 		if ( is_admin() ) {
 			( new Metabox() )->register();
 			( new AuthorFields() )->register();
+			( new ImageSeo() )->register();
+			( new LinkSuggestions() )->register();
 			( new Settings() )->register();
 			( new BulkEditor() )->register();
 			( new ImportWizard() )->register();
@@ -117,6 +131,28 @@ final class Plugin {
 			( new DuplicateChecker() )->register();
 			( new ContentFreshness() )->register();
 			( new AiSettings() )->register();
+		}
+	}
+
+	/**
+	 * Loads the translation bundled in languages/ for the current locale; any
+	 * German locale (de_AT, de_CH, ...) falls back to the German file.
+	 */
+	public static function load_bundled_translations(): void {
+		$locale = determine_locale();
+
+		$candidates = array( $locale );
+		if ( 0 === strpos( $locale, 'de_' ) ) {
+			$candidates[] = 'de_DE';
+		}
+
+		foreach ( $candidates as $candidate ) {
+			$file = DIR . '/languages/seooptimierung-toolkit-' . $candidate . '.mo';
+
+			if ( is_readable( $file ) ) {
+				load_textdomain( 'seooptimierung-toolkit', $file, $locale );
+				return;
+			}
 		}
 	}
 

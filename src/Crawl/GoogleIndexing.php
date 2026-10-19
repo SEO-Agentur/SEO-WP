@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Seooptimierung\Toolkit\Crawl;
 
+use Seooptimierung\Toolkit\Schema\EmbeddedSchema;
 use Seooptimierung\Toolkit\Meta\Robots;
 use Seooptimierung\Toolkit\Support\ErrorLog;
 use Seooptimierung\Toolkit\Support\Secrets;
@@ -120,7 +121,28 @@ final class GoogleIndexing {
 			return false;
 		}
 
-		return '1' !== get_post_meta( $post->ID, Robots::META_NOINDEX, true );
+		if ( '1' === get_post_meta( $post->ID, Robots::META_NOINDEX, true ) ) {
+			return false;
+		}
+
+		// Google supports this API only for job postings and live streams. By
+		// default only such pages are submitted; switching that off sends every
+		// page of the configured post types (unsupported by Google).
+		$settings = get_option( 'seo_wp_settings', array() );
+		if ( is_array( $settings ) && array_key_exists( 'google_indexing_only_eligible', $settings ) && empty( $settings['google_indexing_only_eligible'] ) ) {
+			return true;
+		}
+
+		/**
+		 * Filters whether a page counts as a job posting or live stream page
+		 * for the Google Indexing API — for markup this plugin does not know
+		 * about (a theme's own JobPosting output, say).
+		 *
+		 * @param bool    $eligible Whether the page is supported, as far as this plugin can tell.
+		 * @param WP_Post $post     The page.
+		 */
+		// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- namespaced public extension point, documented for third-party developers.
+		return (bool) apply_filters( 'seooptimierung/indexing/google_eligible', EmbeddedSchema::is_indexing_api_page( $post ), $post );
 	}
 
 	/**

@@ -5,7 +5,7 @@ Tags: seo, wpml, polylang, sitemap, schema
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.6.2
+Stable tag: 1.7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -19,11 +19,13 @@ Built and maintained by [Cyrus Badde](https://seooptimierung.de/seotoolkit/). If
 
 **Meta & social:** title/description templates with Yoast/Rank Math/AIOSEO token syntax, robots meta, canonicals, Open Graph, Twitter Cards, live previews.
 
-**Structured data:** one deduplicated JSON-LD graph (WebSite, Organization/Person/LocalBusiness, WebPage, Article, BreadcrumbList, FAQPage, Product).
+**Structured data:** one deduplicated JSON-LD graph (WebSite, Organization/Person/LocalBusiness with a type dropdown, WebPage, Article, BreadcrumbList, FAQPage, Product), plus content blocks to place FAQ, How-to, Recipe, Event, Job posting, Course, Software and Video markup inside any page.
+
+**Links & images:** breadcrumbs (block, shortcode, template function), internal link suggestions in the editor, automatic 301 redirects and link updates when a page's address changes, and an Image SEO screen that finds images without alt text.
 
 **Sitemaps:** an index plus one readable, renamable sitemap per content type and taxonomy (`sitemap_page.xml`, `sitemap_posts.xml`, `sitemap_products.xml` …), dedicated image, video and news sitemaps, each switchable.
 
-**Crawl control:** robots.txt, llms.txt / llms-full.txt, redirects with a 404 monitor, IndexNow, Google Indexing API, staging protection.
+**Crawl control:** robots.txt, llms.txt / llms-full.txt, redirects with a 404 monitor, IndexNow, Google Indexing API (for job and live-stream pages), staging protection.
 
 **Performance & security:** a WordPress Cleanup page for unused core features, critical CSS, a resource-hint scanner, and a Security Headers page (HSTS, CSP, X-Frame-Options, Referrer-Policy, Permissions-Policy, X-Content-Type-Options) with a live check.
 
@@ -63,7 +65,9 @@ Seooptimierung Toolkit integrates with several third-party services. Every one i
 
 **IndexNow** (Bing, Yandex, Seznam, Naver) — pings the shared IndexNow endpoint (api.indexnow.org) on publish/update/delete if enabled under Seooptimierung Toolkit > Instant Indexing, or when you manually submit URLs there. Sends the affected page URL(s) and your site's IndexNow key (auto-generated, or one you choose). [IndexNow protocol & privacy](https://www.indexnow.org/privacy).
 
-**Anthropic (Claude)** — contacted only when you click "Suggest" or "Translate" in the Bulk Editor with an Anthropic API key configured under Seooptimierung Toolkit > AI Settings and Anthropic selected as the provider. Sends the edited page's URL, your focus keyword, and up to roughly 1200 characters of its rendered content to Anthropic's Messages API, to generate a title/description suggestion. Bring-your-own-key: billed directly by Anthropic, never proxied or marked up by Seooptimierung Toolkit. [Anthropic Consumer Terms](https://www.anthropic.com/legal/consumer-terms), [Anthropic Privacy Policy](https://www.anthropic.com/legal/privacy).
+**WordPress AI** — on WordPress 7.0+ the plugin can use the AI provider you connected in WordPress itself (Settings → Connectors). The same click-only rule applies; which service receives the request is whatever you connected there.
+
+**Anthropic (Claude)** — contacted only when you click "Suggest" or "Translate" in the Bulk Editor or "Suggest" on the Image SEO screen with an Anthropic API key configured under Seooptimierung Toolkit > AI Settings and Anthropic selected as the provider. Sends the edited page's URL, your focus keyword, and up to roughly 1200 characters of its rendered content to Anthropic's Messages API, to generate a title/description suggestion; for an alt-text suggestion it sends the image itself (a resized copy up to 4 MB) with its title, caption and the title of the page it is used on. Bring-your-own-key: billed directly by Anthropic, never proxied or marked up by Seooptimierung Toolkit. [Anthropic Consumer Terms](https://www.anthropic.com/legal/consumer-terms), [Anthropic Privacy Policy](https://www.anthropic.com/legal/privacy).
 
 **OpenAI** — same trigger and the same data as the Anthropic integration above, sent to OpenAI's Chat Completions API instead, only when an OpenAI key is configured and OpenAI is the selected provider. Bring-your-own-key, same as Anthropic. [OpenAI Terms of Use](https://openai.com/policies/terms-of-use), [OpenAI Privacy Policy](https://openai.com/policies/privacy-policy).
 
@@ -72,6 +76,17 @@ Seooptimierung Toolkit integrates with several third-party services. Every one i
 **Resource Hint Scanner** — contacted only when you click "Scan site for suggestions" under Settings > Performance. Fetches your *own* site's pages (the home page and the newest post of a few content types) and your *own* stylesheets — never a third-party URL — to detect which external origins they load scripts, styles, fonts, images and media from. The result is a list of suggested lines you may choose to add to your own settings — nothing is applied automatically and nothing is sent anywhere else.
 
 == Changelog ==
+
+= 1.7.0 =
+* New: **structured-data content blocks** — FAQ, How-to, Recipe, Event, Job posting, Course, Software and Video (with live-stream support). Each shows its content on the page and adds a matching node to the page's single JSON-LD graph, so an article can carry an FAQ and a recipe at the same time. FAQ questions join the page's one FAQPage node. A `[seooptimierung_schema]` shortcode covers editors without the block editor.
+* New: **breadcrumbs** — a Breadcrumbs block, the `[seooptimierung_breadcrumbs]` shortcode and `seooptimierung_breadcrumbs()` for themes. The trail (including the deepest category of a post and the archive of a post type) is the same one written into the BreadcrumbList schema. Label, separator, category use and current-page link are set under Settings > General.
+* New: **internal link suggestions** — a block editor panel proposes pages that fit the text and, where a matching phrase already exists, links it with one click. Pages that nothing links to are listed by the existing Link Audit.
+* New: **automatic redirect and link update on address change** — changing the slug of a published page (or of a parent page) creates a 301 redirect, re-points existing redirects instead of chaining them, and rewrites internal links in content and menu links to the new address. Both are switchable under Settings > Crawl; every change is logged on the Redirects screen.
+* New: **Image SEO** screen — lists images without alt text (inline editing, "use title", mark as decorative), optional AI suggestions (the image is sent only when you click), a scan for `<img>` tags without an alt attribute in your content, and two opt-in helpers: fill alt text from the file name on upload, and show the image title where an image has no alt attribute at all.
+* New: **WordPress AI** — on WordPress 7.0 and later the plugin uses the AI provider connected in WordPress (no key stored here); your own Anthropic or OpenAI key remains available.
+* New: German translation (de_DE) and a translation template (.pot).
+* Changed: the Google Indexing API screen now submits only job posting and live-stream pages by default, which is what Google supports; the old behaviour (any page) is one checkbox away.
+* Fixed: **settings saved by the Google Indexing, Instant Indexing, AI Settings and Staging screens were silently dropped** (for example the "Enable Google Instant Indexing" box came back unchecked after saving, and a custom IndexNow key or an imported setting did not stick). The settings whitelist now applies only to the form posted to options.php.
 
 = 1.6.2 =
 * Changed: the local business "Business type" is now a dropdown of the Schema.org LocalBusiness types (restaurants, shops, medical, legal, trades, hotels, automotive and more, grouped; the exact Schema.org name is shown in brackets) instead of a free-text field. A type saved earlier stays selectable.

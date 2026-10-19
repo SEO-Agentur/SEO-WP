@@ -63,7 +63,7 @@ final class Settings {
 	 * @var array<string,string[]>
 	 */
 	private const CHECKBOX_FIELDS_BY_TAB = array(
-		'general'     => array(),
+		'general'     => array( 'breadcrumb_include_category', 'breadcrumb_link_current' ),
 		'content'     => array(),
 		'sitemaps'    => array( 'disable_core_sitemap', 'enable_news_sitemap', 'sitemap_include_video', 'sitemap_include_images', 'sitemap_include_hreflang' ),
 		'crawl'       => array(
@@ -73,6 +73,8 @@ final class Settings {
 			'disable_author_archives',
 			'disable_date_archives',
 			'staging_noindex',
+			'auto_redirect_slug_change',
+			'auto_update_internal_links',
 		),
 		'performance' => array(
 			'defer_noncritical_css',
@@ -146,6 +148,8 @@ final class Settings {
 	 */
 	private const TEXT_FIELDS = array(
 		'separator',
+		'breadcrumb_separator',
+		'breadcrumb_home_label',
 		'identity_name',
 		'twitter_site',
 		'twitter_creator',
@@ -375,6 +379,17 @@ final class Settings {
 
 		if ( ! is_array( $input ) ) {
 			return $existing;
+		}
+
+		// Only a form posted to options.php carries untrusted values that need
+		// this whitelist. The other screens (Google Indexing, Instant Indexing,
+		// AI Settings, Image SEO, ...) save through their own admin-post
+		// handlers, which build the complete array themselves and call
+		// update_option(): running that through the whitelist silently dropped
+		// every key this class doesn't manage — an enabled Google Indexing box
+		// came back unchecked after saving.
+		if ( 'options.php' !== ( $GLOBALS['pagenow'] ?? '' ) ) {
+			return $input;
 		}
 
 		$clean = $existing;
@@ -707,6 +722,15 @@ final class Settings {
 		$this->text_field( 'twitter_site', __( 'Twitter/X @handle for the site', 'seooptimierung-toolkit' ), '' );
 		$this->text_field( 'twitter_creator', __( 'Default Twitter/X @handle for authors', 'seooptimierung-toolkit' ), '' );
 
+		$this->section_heading(
+			__( 'Breadcrumbs', 'seooptimierung-toolkit' ),
+			__( 'Show the trail from the home page to the current page with the "Breadcrumbs" block, the [seooptimierung_breadcrumbs] shortcode, or seooptimierung_breadcrumbs() in your theme. The same trail is written into the structured data (BreadcrumbList).', 'seooptimierung-toolkit' )
+		);
+		$this->text_field( 'breadcrumb_home_label', __( 'Label of the first crumb', 'seooptimierung-toolkit' ), (string) get_bloginfo( 'name' ) );
+		$this->text_field( 'breadcrumb_separator', __( 'Separator', 'seooptimierung-toolkit' ), '›' );
+		$this->checkbox_field( 'breadcrumb_include_category', __( 'For posts and products, include the category (deepest one and its parents)', 'seooptimierung-toolkit' ), true );
+		$this->checkbox_field( 'breadcrumb_link_current', __( 'Link the current page in the trail', 'seooptimierung-toolkit' ), false );
+
 		echo '<tr><td colspan="2"><hr /><p class="description"><strong>' . esc_html__( 'Local business details', 'seooptimierung-toolkit' ) . '</strong> — ' . esc_html__( 'only used when "Site represents" above is set to "A local business".', 'seooptimierung-toolkit' ) . '</p></td></tr>';
 
 		$this->business_type_field();
@@ -1034,6 +1058,8 @@ final class Settings {
 		$this->text_field( 'verification_baidu', __( 'Baidu verification code', 'seooptimierung-toolkit' ), __( 'Code or the whole meta tag', 'seooptimierung-toolkit' ) );
 		$this->text_field( 'verification_pinterest', __( 'Pinterest verification code', 'seooptimierung-toolkit' ), __( 'Code or the whole meta tag', 'seooptimierung-toolkit' ) );
 		$this->text_field( 'verification_yandex', __( 'Yandex verification code', 'seooptimierung-toolkit' ), __( 'Code or the whole meta tag', 'seooptimierung-toolkit' ) );
+		$this->checkbox_field( 'auto_redirect_slug_change', __( 'When a published page\'s address changes, redirect the old address to the new one (301)', 'seooptimierung-toolkit' ), true );
+		$this->checkbox_field( 'auto_update_internal_links', __( '...and change links to the old address in your content and menus to the new one', 'seooptimierung-toolkit' ), true );
 		$this->checkbox_field( 'disable_author_archives', __( 'Disable author archives', 'seooptimierung-toolkit' ), false );
 		$this->checkbox_field( 'disable_date_archives', __( 'Disable date archives', 'seooptimierung-toolkit' ), false );
 		$this->select_field(

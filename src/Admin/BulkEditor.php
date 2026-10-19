@@ -12,6 +12,7 @@ namespace Seooptimierung\Toolkit\Admin;
 use Seooptimierung\Toolkit\Meta\Canonical;
 use Seooptimierung\Toolkit\Meta\Robots;
 use Seooptimierung\Toolkit\Meta\TitleDescription;
+use Seooptimierung\Toolkit\Support\Ai;
 use Seooptimierung\Toolkit\Support\AiClient;
 use Seooptimierung\Toolkit\Support\Ajax;
 use Seooptimierung\Toolkit\Support\CoexistenceMode;
@@ -103,13 +104,7 @@ final class BulkEditor {
 		wp_enqueue_script( 'seo-wp-bulk-editor-ai', plugins_url( 'assets/admin/bulk-editor-ai.js', \Seooptimierung\Toolkit\FILE ), array(), \Seooptimierung\Toolkit\VERSION, true );
 		wp_enqueue_script( 'seo-wp-bulk-editor-ux', plugins_url( 'assets/admin/bulk-editor-ux.js', \Seooptimierung\Toolkit\FILE ), array(), \Seooptimierung\Toolkit\VERSION, true );
 
-		$providers = array();
-		if ( Secrets::has( 'ai_anthropic_key' ) ) {
-			$providers['anthropic'] = __( 'Claude', 'seooptimierung-toolkit' );
-		}
-		if ( Secrets::has( 'ai_openai_key' ) ) {
-			$providers['openai'] = __( 'OpenAI', 'seooptimierung-toolkit' );
-		}
+		$providers = Ai::providers();
 
 		wp_localize_script(
 			'seo-wp-bulk-editor-ai',
@@ -369,25 +364,11 @@ final class BulkEditor {
 			Ajax::error( array( 'message' => __( 'Unknown post.', 'seooptimierung-toolkit' ) ), 400 );
 		}
 
-		$settings = get_option( 'seo_wp_settings', array() );
-		$settings = is_array( $settings ) ? $settings : array();
-		$prompt   = self::build_ai_prompt( $post );
-
-		if ( 'anthropic' === $provider ) {
-			$key = Secrets::get( 'ai_anthropic_key' );
-			if ( '' === $key ) {
-				Ajax::error( array( 'message' => __( 'No Anthropic API key configured.', 'seooptimierung-toolkit' ) ), 400 );
-			}
-			$reply = AiClient::anthropic( $key, $prompt, isset( $settings['ai_anthropic_model'] ) ? (string) $settings['ai_anthropic_model'] : '' );
-		} elseif ( 'openai' === $provider ) {
-			$key = Secrets::get( 'ai_openai_key' );
-			if ( '' === $key ) {
-				Ajax::error( array( 'message' => __( 'No OpenAI API key configured.', 'seooptimierung-toolkit' ) ), 400 );
-			}
-			$reply = AiClient::openai( $key, $prompt, isset( $settings['ai_openai_model'] ) ? (string) $settings['ai_openai_model'] : '' );
-		} else {
+		if ( ! isset( Ai::providers()[ $provider ] ) ) {
 			Ajax::error( array( 'message' => __( 'Unknown provider.', 'seooptimierung-toolkit' ) ), 400 );
 		}
+
+		$reply = Ai::generate( $provider, self::build_ai_prompt( $post ) );
 
 		if ( is_wp_error( $reply ) ) {
 			Ajax::error( array( 'message' => $reply->get_error_message() ) );

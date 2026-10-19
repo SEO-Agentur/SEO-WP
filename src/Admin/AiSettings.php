@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Seooptimierung\Toolkit\Admin;
 
+use Seooptimierung\Toolkit\Support\Ai;
 use Seooptimierung\Toolkit\Support\Secrets;
 
 /**
@@ -111,7 +112,17 @@ final class AiSettings {
 
 		echo '<div class="wrap seo-wp-ai-settings">';
 		echo '<h1>' . esc_html__( 'Seooptimierung Toolkit AI Settings', 'seooptimierung-toolkit' ) . '</h1>';
-		echo '<p>' . esc_html__( 'Bring your own API key for each provider you want to use in the Bulk Editor. Nothing here is called automatically — only when you explicitly click an AI action. Your key is billed directly by the provider; this plugin never proxies requests or adds a markup.', 'seooptimierung-toolkit' ) . '</p>';
+		echo '<p>' . esc_html__( 'AI is used only when you explicitly click an AI action (Bulk Editor suggestions, image alt text). Nothing is called automatically, and the plugin never proxies requests or adds a markup.', 'seooptimierung-toolkit' ) . '</p>';
+
+		echo '<h2>' . esc_html__( 'WordPress AI (recommended)', 'seooptimierung-toolkit' ) . '</h2>';
+		if ( Ai::core_available() ) {
+			echo '<p><span style="color:#00a32a;">&#10003;</span> ' . esc_html__( 'WordPress has an AI provider connected. It is used automatically — no key has to be stored in this plugin.', 'seooptimierung-toolkit' ) . '</p>';
+		} elseif ( function_exists( 'wp_ai_client_prompt' ) ) {
+			echo '<p>' . esc_html__( 'This WordPress supports AI, but no provider is connected yet. Connect one under Settings → Connectors in WordPress and it will show up here and in the Bulk Editor. Or use your own key below.', 'seooptimierung-toolkit' ) . '</p>';
+		} else {
+			echo '<p>' . esc_html__( 'WordPress 7.0 and later can connect an AI provider once for the whole site. This site runs an older version, so use your own key below.', 'seooptimierung-toolkit' ) . '</p>';
+		}
+		echo '<p class="description">' . esc_html__( 'Your own keys below are an alternative: billed directly by the provider.', 'seooptimierung-toolkit' ) . '</p>';
 
 		if ( isset( $_GET['updated'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only success banner, not a state-changing action.
 			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Settings saved.', 'seooptimierung-toolkit' ) . '</p></div>';

@@ -1,6 +1,6 @@
 <?php
 /**
- * Minimal HTTP clients for the Anthropic and OpenAI text-generation APIs.
+ * Minimal HTTP clients for the Anthropic and OpenAI APIs (text, optionally with one image).
  *
  * @package Seooptimierung\Toolkit
  */
@@ -48,12 +48,14 @@ final class AiClient {
 	/**
 	 * Sends a prompt to Anthropic's Claude and returns its text reply.
 	 *
-	 * @param string $api_key Anthropic API key.
-	 * @param string $prompt  User prompt.
-	 * @param string $model   Model override, or '' to use the default.
+	 * @param string                              $api_key Anthropic API key.
+	 * @param string                              $prompt  User prompt.
+	 * @param string                              $model      Model override, or '' to use the default.
+	 * @param array{mime:string,data:string}|null $image      Optional image (MIME type, base64 bytes).
+	 * @param int                                 $max_tokens Upper bound for the reply length.
 	 * @return string|\WP_Error Reply text, or a WP_Error describing what went wrong.
 	 */
-	public static function anthropic( string $api_key, string $prompt, string $model = '' ) {
+	public static function anthropic( string $api_key, string $prompt, string $model = '', ?array $image = null, int $max_tokens = 300 ) {
 		$response = wp_remote_post(
 			self::ANTHROPIC_ENDPOINT,
 			array(
@@ -66,11 +68,26 @@ final class AiClient {
 				'body'    => wp_json_encode(
 					array(
 						'model'      => '' !== $model ? $model : self::DEFAULT_MODELS['anthropic'],
-						'max_tokens' => 300,
+						'max_tokens' => $max_tokens,
 						'messages'   => array(
 							array(
 								'role'    => 'user',
-								'content' => $prompt,
+								'content' => null === $image
+									? $prompt
+									: array(
+										array(
+											'type'   => 'image',
+											'source' => array(
+												'type' => 'base64',
+												'media_type' => $image['mime'],
+												'data' => $image['data'],
+											),
+										),
+										array(
+											'type' => 'text',
+											'text' => $prompt,
+										),
+									),
 							),
 						),
 					)
@@ -100,12 +117,14 @@ final class AiClient {
 	 * Sends a prompt to OpenAI's Chat Completions API and returns its
 	 * text reply.
 	 *
-	 * @param string $api_key OpenAI API key.
-	 * @param string $prompt  User prompt.
-	 * @param string $model   Model override, or '' to use the default.
+	 * @param string                              $api_key OpenAI API key.
+	 * @param string                              $prompt  User prompt.
+	 * @param string                              $model      Model override, or '' to use the default.
+	 * @param array{mime:string,data:string}|null $image      Optional image (MIME type, base64 bytes).
+	 * @param int                                 $max_tokens Upper bound for the reply length.
 	 * @return string|\WP_Error Reply text, or a WP_Error describing what went wrong.
 	 */
-	public static function openai( string $api_key, string $prompt, string $model = '' ) {
+	public static function openai( string $api_key, string $prompt, string $model = '', ?array $image = null, int $max_tokens = 300 ) {
 		$response = wp_remote_post(
 			self::OPENAI_ENDPOINT,
 			array(
@@ -120,10 +139,21 @@ final class AiClient {
 						'messages'   => array(
 							array(
 								'role'    => 'user',
-								'content' => $prompt,
+								'content' => null === $image
+									? $prompt
+									: array(
+										array(
+											'type' => 'text',
+											'text' => $prompt,
+										),
+										array(
+											'type'      => 'image_url',
+											'image_url' => array( 'url' => 'data:' . $image['mime'] . ';base64,' . $image['data'] ),
+										),
+									),
 							),
 						),
-						'max_tokens' => 300,
+						'max_tokens' => $max_tokens,
 					)
 				),
 			)

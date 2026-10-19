@@ -1,6 +1,6 @@
 # Seooptimierung Toolkit — full feature list
 
-Moved out of `readme.txt` (WordPress.org truncates the Description tab at 2500 characters). Current as of 1.6.0.
+Moved out of `readme.txt` (WordPress.org truncates the Description tab at 2500 characters). Current as of 1.7.0.
 
 **Meta**
 
@@ -83,3 +83,15 @@ Moved out of `readme.txt` (WordPress.org truncates the Description tab at 2500 c
 * None of the above are attached to anything by default — a site that never uses them pays no cost for their existence
 * Full parameter reference, examples and the public constants/methods worth calling directly (redirect matching, staging detection, Coexistence Mode's own state) are in `docs/DEVELOPERS.md` in the plugin's source repository
 
+
+**Content blocks and structured data (1.7.0)**
+
+* Blocks for FAQ, How-to, Recipe, Event, Job posting, Course, Software and Video (incl. live stream): visible markup on the page plus a node in the single JSON-LD `@graph`; several per page are fine (an article with an FAQ and a recipe). FAQ questions join the one FAQPage node. `[seooptimierung_schema type="faq" q1="…" a1="…"]` as a shortcode fallback.
+* Breadcrumbs: block, `[seooptimierung_breadcrumbs]`, `seooptimierung_breadcrumbs()`; same trail as the BreadcrumbList schema (posts include their deepest category, post types their archive).
+
+**Links and images (1.7.0)**
+
+* Internal link suggestions in the block editor (scored from title, focus keyword and category words; one-click link on a phrase already in the text) (orphan pages are listed by the Link Audit).
+* Automatic 301 redirect and internal-link rewrite when a published page's address (or a parent's) changes; chain-free; logged.
+* Image SEO: images without alt text (inline edit, decorative flag, AI suggestion on click, optional fill on upload / output fallback) and a scan for `<img>` without alt in content.
+* AI: WordPress 7.0's AI client when a provider is connected, otherwise your own Anthropic/OpenAI key.

@@ -109,7 +109,7 @@ final class GoogleIndexingPage {
 
 		echo '<div class="wrap seo-wp-google-indexing">';
 		echo '<h1>' . esc_html__( 'Seooptimierung Toolkit Google Indexing API', 'seooptimierung-toolkit' ) . '</h1>';
-		echo '<p>' . esc_html__( 'Pings Google\'s Indexing API on publish, update and delete using a Google Cloud service account. Google officially scopes this API to job posting and livestream pages, but accepts submissions for any URL. For Bing, Yandex, Seznam and Naver, see the separate Instant Indexing (IndexNow) page instead — Google does not participate in IndexNow.', 'seooptimierung-toolkit' ) . '</p>';
+		echo '<p>' . esc_html__( 'Pings Google\'s Indexing API on publish, update and delete using a Google Cloud service account. Google supports this API only for pages with job postings (JobPosting) and live streams (a video with a BroadcastEvent) — use it for those, and see Sitemaps and Search Console for everything else. For Bing, Yandex, Seznam and Naver, see the separate Instant Indexing (IndexNow) page instead — Google does not participate in IndexNow.', 'seooptimierung-toolkit' ) . '</p>';
 
 		if ( isset( $_GET['updated'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only success banner, not a state-changing action.
 			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Settings saved.', 'seooptimierung-toolkit' ) . '</p></div>';
@@ -166,6 +166,14 @@ final class GoogleIndexingPage {
 			);
 		}
 		echo '</td></tr>';
+
+		printf(
+			'<tr><th scope="row">%1$s</th><td><label><input type="checkbox" name="google_indexing_only_eligible" value="1" %2$s /> %3$s</label><p class="description">%4$s</p></td></tr>',
+			esc_html__( 'Supported pages only', 'seooptimierung-toolkit' ),
+			checked( ! array_key_exists( 'google_indexing_only_eligible', $settings ) || ! empty( $settings['google_indexing_only_eligible'] ), true, false ),
+			esc_html__( 'Only submit pages that contain a job posting or a live stream (recommended)', 'seooptimierung-toolkit' ),
+			esc_html__( 'Recognised: the Job posting and Video (live stream) blocks, a page whose schema type is set to JobPosting, and anything you add with the seooptimierung/indexing/google_eligible filter. With this off, every page of the selected post types is sent, which Google does not support.', 'seooptimierung-toolkit' )
+		);
 
 		echo '</tbody></table>';
 		submit_button( __( 'Save settings', 'seooptimierung-toolkit' ) );
@@ -225,7 +233,8 @@ final class GoogleIndexingPage {
 			$settings = array();
 		}
 
-		$settings['enable_google_indexing'] = ! empty( $_POST['enable_google_indexing'] );
+		$settings['enable_google_indexing']        = ! empty( $_POST['enable_google_indexing'] );
+		$settings['google_indexing_only_eligible'] = ! empty( $_POST['google_indexing_only_eligible'] );
 
 		// A blank submission keeps the existing key rather than clearing it —
 		// the field is write-only (never re-populated with the stored value,

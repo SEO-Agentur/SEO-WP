@@ -197,6 +197,12 @@ final class GraphBuilder {
 			}
 		}
 
+		// Content blocks placed inside the post (recipe, how-to, event, ...).
+		$post = is_singular() ? get_queried_object() : null;
+		if ( $post instanceof WP_Post ) {
+			$nodes = array_merge( $nodes, EmbeddedSchema::nodes_for( $post ) );
+		}
+
 		return $nodes;
 	}
 

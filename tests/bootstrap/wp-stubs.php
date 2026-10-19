@@ -233,3 +233,102 @@ if ( ! function_exists( '__' ) ) {
 		return $text;
 	}
 }
+
+// Minimal stand-ins used by the content-block tests (markup and JSON-LD building).
+if ( ! function_exists( 'wp_strip_all_tags' ) ) {
+	/**
+	 * Strips tags, collapses whitespace.
+	 *
+	 * @param string $text Text.
+	 */
+	function wp_strip_all_tags( string $text ): string {
+		return trim( (string) preg_replace( '/\s+/', ' ', strip_tags( $text ) ) );
+	}
+}
+
+if ( ! function_exists( 'wp_kses_post' ) ) {
+	/**
+	 * Identity: tests do not exercise the HTML allow-list.
+	 *
+	 * @param string $text Text.
+	 */
+	function wp_kses_post( string $text ): string {
+		return $text;
+	}
+}
+
+if ( ! function_exists( 'wpautop' ) ) {
+	/**
+	 * Wraps text in a paragraph.
+	 *
+	 * @param string $text Text.
+	 */
+	function wpautop( string $text ): string {
+		return '' === trim( $text ) ? '' : '<p>' . trim( $text ) . '</p>';
+	}
+}
+
+if ( ! function_exists( 'esc_html' ) ) {
+	/**
+	 * HTML-escapes.
+	 *
+	 * @param string $text Text.
+	 */
+	function esc_html( $text ): string {
+		return htmlspecialchars( (string) $text, ENT_QUOTES, 'UTF-8' );
+	}
+}
+
+if ( ! function_exists( 'esc_attr' ) ) {
+	/**
+	 * Attribute-escapes.
+	 *
+	 * @param string $text Text.
+	 */
+	function esc_attr( $text ): string {
+		return htmlspecialchars( (string) $text, ENT_QUOTES, 'UTF-8' );
+	}
+}
+
+if ( ! function_exists( 'esc_url' ) ) {
+	/**
+	 * URL-escapes.
+	 *
+	 * @param string $url URL.
+	 */
+	function esc_url( $url ): string {
+		return htmlspecialchars( (string) $url, ENT_QUOTES, 'UTF-8' );
+	}
+}
+
+if ( ! function_exists( 'esc_html__' ) ) {
+	/**
+	 * Identity translation plus escaping.
+	 *
+	 * @param string $text   Text.
+	 * @param string $domain Domain (ignored).
+	 */
+	function esc_html__( string $text, string $domain = 'default' ): string { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
+		return htmlspecialchars( $text, ENT_QUOTES, 'UTF-8' );
+	}
+}
+
+if ( ! function_exists( 'wp_timezone' ) ) {
+	/**
+	 * The site's time zone: Berlin in tests.
+	 */
+	function wp_timezone(): \DateTimeZone {
+		return new \DateTimeZone( 'Europe/Berlin' );
+	}
+}
+
+if ( ! function_exists( 'home_url' ) ) {
+	/**
+	 * Fixed home URL for tests.
+	 *
+	 * @param string $path Path.
+	 */
+	function home_url( string $path = '' ): string {
+		return 'https://example.com' . $path;
+	}
+}

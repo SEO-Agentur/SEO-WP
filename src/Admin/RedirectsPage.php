@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Seooptimierung\Toolkit\Admin;
 
 use Seooptimierung\Toolkit\Crawl\Redirects;
+use Seooptimierung\Toolkit\Crawl\SlugRedirects;
 
 /**
  * Add/edit/delete screen for Crawl\Redirects rules: a form (add, or edit
@@ -125,8 +126,38 @@ final class RedirectsPage {
 		$this->render_form( $edit_id, $editing, $prefill_src );
 		$this->render_import_export();
 		$this->render_table( $rules );
+		$this->render_auto_log();
 
 		echo '</div>';
+	}
+
+	/**
+	 * Renders the log of automatic redirects and link updates made when a
+	 * published page's address changed.
+	 */
+	private function render_auto_log(): void {
+		$entries = SlugRedirects::log_entries();
+
+		echo '<h2>' . esc_html__( 'Automatic changes after an address change', 'seooptimierung-toolkit' ) . '</h2>';
+		echo '<p class="description">' . esc_html__( 'When you change the address of a published page, the plugin redirects the old address and updates internal links to it (switch either off under Settings > Crawl).', 'seooptimierung-toolkit' ) . '</p>';
+
+		if ( array() === $entries ) {
+			echo '<p>' . esc_html__( 'Nothing yet.', 'seooptimierung-toolkit' ) . '</p>';
+			return;
+		}
+
+		echo '<table class="widefat striped"><thead><tr><th>' . esc_html__( 'When', 'seooptimierung-toolkit' ) . '</th><th>' . esc_html__( 'Old address', 'seooptimierung-toolkit' ) . '</th><th>' . esc_html__( 'New address', 'seooptimierung-toolkit' ) . '</th><th>' . esc_html__( 'Addresses', 'seooptimierung-toolkit' ) . '</th><th>' . esc_html__( 'Posts/menu items with links updated', 'seooptimierung-toolkit' ) . '</th></tr></thead><tbody>';
+		foreach ( $entries as $entry ) {
+			printf(
+				'<tr><td>%1$s</td><td><code>%2$s</code></td><td><code>%3$s</code></td><td>%4$d</td><td>%5$d</td></tr>',
+				esc_html( wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), (int) ( $entry['time'] ?? 0 ) ) ),
+				esc_html( (string) ( $entry['old'] ?? '' ) ),
+				esc_html( (string) ( $entry['new'] ?? '' ) ),
+				(int) ( $entry['pages'] ?? 1 ),
+				(int) ( $entry['updated'] ?? 0 )
+			);
+		}
+		echo '</tbody></table>';
 	}
 
 	/**

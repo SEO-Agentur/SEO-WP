@@ -213,3 +213,15 @@ without a corresponding changelog entry and, for a breaking rename, a major
 version bump (see the `seooptimierung/hreflang/*` rename in 1.4.1/slim-hreflang 1.2.2
 for what that looks like: both sides of a contract updated together, old
 name never left dangling).
+
+
+## Filters added in 1.7.0
+
+| Filter | Arguments | Purpose |
+|---|---|---|
+| `seooptimierung/breadcrumbs/items` | `array $items` (`name`, `url`; home first) | Change the trail for both the visible breadcrumbs and the BreadcrumbList schema. |
+| `seooptimierung/breadcrumbs/html` | `string $html, array $items` | Change the visible breadcrumb markup. |
+| `seooptimierung/schema/block_html` | `string $html, string $slug, array $attrs` | Change the visible markup of a content block (`faq`, `howto`, `recipe`, `event`, `job-posting`, `course`, `software-application`, `video`). |
+| `seooptimierung/indexing/google_eligible` | `bool $eligible, WP_Post $post` | Mark a page as a job/live-stream page for the Google Indexing API when the markup comes from somewhere else. |
+
+Template function: `seooptimierung_breadcrumbs( array $args = [], bool $display = true ): string` — args: `separator`, `home_label`, `link_current`, `class`.
