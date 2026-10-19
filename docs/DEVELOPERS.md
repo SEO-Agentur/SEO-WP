@@ -129,7 +129,7 @@ active, or natively from Polylang when it's active and WPML isn't (the two
 are mutually exclusive in practice). With neither installed, it also exposes
 two of its own filters, `seooptimierung/hreflang/alternates` and
 `seooptimierung/hreflang/managed_externally`, used by the companion
-[slim-hreflang](https://seooptimierung.de/seo-toolkit) plugin to feed cross-domain hreflang data
+[slim-hreflang](https://seooptimierung.de/seotoolkit/) plugin to feed cross-domain hreflang data
 into Seooptimierung Toolkit's output. It's the same mechanism as the filters above, just
 plugin-to-plugin instead of theme-to-plugin — worth reading
 `Seooptimierung\Toolkit\Wpml\Hreflang::apply_contract()` as a second example if you're

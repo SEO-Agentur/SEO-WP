@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name:       Seooptimierung Toolkit
- * Plugin URI:        https://seooptimierung.de/seo-toolkit
+ * Plugin URI:        https://seooptimierung.de/seotoolkit/
  * Description:       A slim, page-type-agnostic SEO plugin with full WPML and Polylang compatibility: meta tags, social meta, JSON-LD schema, XML sitemaps and crawl control.
  * Version:           1.6.2
  * Requires at least: 6.4

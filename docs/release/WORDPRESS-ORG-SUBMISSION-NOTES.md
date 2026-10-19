@@ -12,7 +12,7 @@ Thanks for the detailed review. I've renamed the plugin to **"Seooptimierung
 Toolkit"**, slug **`seooptimierung-toolkit`** — please reserve that slug.
 
 This also resolves the ownership question: the plugin's Plugin URI is now
-`https://seooptimierung.de/seo-toolkit`, matching this account's email
+`https://seooptimierung.de/seotoolkit/`, matching this account's email
 domain (`hallo@seooptimierung.de`) directly, so no separate DNS/ownership
 verification should be needed.
 

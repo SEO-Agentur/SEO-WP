@@ -15,7 +15,7 @@ A slim SEO plugin with full WPML and Polylang support: meta tags, JSON-LD schema
 
 Seooptimierung Toolkit covers the essentials of on-page and technical SEO without a scoring UI, nag screens or external tracking. It works out of the box with sensible defaults, and stays out of the way for any public post type or taxonomy your site adds — nothing here is hardcoded to "post" or "page".
 
-Built and maintained by [Cyrus Badde](https://seooptimierung.de/seo-toolkit). If it saves you time, you can [buy me a coffee](https://buymeacoffee.com/cyrusbadde) — entirely optional, the plugin stays fully free either way.
+Built and maintained by [Cyrus Badde](https://seooptimierung.de/seotoolkit/). If it saves you time, you can [buy me a coffee](https://buymeacoffee.com/cyrusbadde) — entirely optional, the plugin stays fully free either way.
 
 **Meta & social:** title/description templates with Yoast/Rank Math/AIOSEO token syntax, robots meta, canonicals, Open Graph, Twitter Cards, live previews.
 
