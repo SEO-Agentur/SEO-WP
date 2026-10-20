@@ -5,7 +5,7 @@ Tags: seo, wpml, polylang, sitemap, schema
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.8.0
+Stable tag: 1.9.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -19,7 +19,7 @@ Built and maintained by [Cyrus Badde](https://seooptimierung.de/seotoolkit/). If
 
 **Meta & social:** title/description templates with Yoast/Rank Math/AIOSEO token syntax, robots meta, canonicals, Open Graph, Twitter Cards, live previews.
 
-**Structured data:** one deduplicated JSON-LD graph (WebSite, Organization/Person/LocalBusiness with a type dropdown, WebPage, Article, BreadcrumbList, FAQPage, Product), plus 28 content blocks (FAQ, How-to, Recipe, Event, Job posting, Product, Review, Local business, Person, Q&A page and more) to place structured data inside any page.
+**Structured data:** one deduplicated JSON-LD graph (WebSite, Organization/Person/LocalBusiness with a type dropdown, WebPage, Article, BreadcrumbList, FAQPage, Product), plus 42 content blocks (FAQ, How-to, Recipe, Event, Job posting, Product, Review, Local business, Holiday rental, Quiz, Q&A page, Paywall and more) to place structured data inside any page.
 
 **Links & images:** breadcrumbs (block, shortcode, template function), internal link suggestions in the editor, automatic 301 redirects and link updates when a page's address changes, and an Image SEO screen that finds images without alt text.
 
@@ -76,6 +76,11 @@ Seooptimierung Toolkit integrates with several third-party services. Every one i
 **Resource Hint Scanner** — contacted only when you click "Scan site for suggestions" under Settings > Performance. Fetches your *own* site's pages (the home page and the newest post of a few content types) and your *own* stylesheets — never a third-party URL — to detect which external origins they load scripts, styles, fonts, images and media from. The result is a list of suggested lines you may choose to add to your own settings — nothing is applied automatically and nothing is sent anywhere else.
 
 == Changelog ==
+
+= 1.9.0 =
+* New: **14 more structured-data blocks** (42 in total): Holiday rental (VacationRental), Quiz with flashcards, Math solver, Profile page, Estimated salary, Product with variants (ProductGroup), Subscription content (paywall markup), Menu, TV series, Trip or tour, Sports event, Certificate or award, Scientific article and Law or regulation.
+* The paywall block adds `isAccessibleForFree` and the locked part's CSS selector to the page's own Article/WebPage node instead of creating a node of its own.
+* Estimated salary is only written with a median, and flashcards only when they have both a front and a back — nothing is filled in for you.
 
 = 1.8.0 =
 * New: **20 more structured-data blocks** (28 in total): Product, Review, Book, Movie, Person, Organization, Local business (full business-type list), Service, Place, Podcast episode, Dataset, Q&A page, Fact check (ClaimReview), Property listing, Vehicle, Learning resource, Music album, Item list (for "Top 10" pages), Licensable image and Forum post. Each shows its content on the page and adds a matching node to the page's single JSON-LD graph; the `[seooptimierung_schema]` shortcode covers them all.

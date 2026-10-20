@@ -1,8 +1,8 @@
-# Notes for the WordPress.org "Add your plugin" form (Additional Information) — v1.8.0
+# Notes for the WordPress.org "Add your plugin" form (Additional Information) — v1.9.0
 
 Paste the text between the lines into the "Additional Information" box on
 https://wordpress.org/plugins/developers/add/ together with the upload of
-`seooptimierung-toolkit-1.8.0.zip`. Reply on the original review email thread
+`seooptimierung-toolkit-1.9.0.zip`. Reply on the original review email thread
 (Review in Progress: SEO-WP, 2026-09-18) with the first two paragraphs as well.
 
 ---
@@ -17,9 +17,9 @@ this upload replaces the previously reviewed "SEO-WP" 1.4.8 and addresses the po
 
 **Technical points from the review.** Inline CSS now goes through `wp_register_style()` / `wp_add_inline_style()` (no echoed `<style>` tags). Both admin notices (staging-site notice, diagnostics notice) are capability-gated, only shown when relevant and dismissible with the dismissal stored; I believe they comply with Guideline 11.
 
-**Plugin Check (official tool, v1.8.0 zip):** 0 errors, 0 warnings. Form and server input is sanitized where it is read, the importers pass table names as `%i` identifiers, and the few intentional notes (noindex meta query in the sitemaps/llms.txt, the optional own-key AI fallback behind the WordPress AI client) carry an inline reason. The readme Description is under 2500 characters.
+**Plugin Check (official tool, v1.9.0 zip):** 0 errors, 0 warnings. Form and server input is sanitized where it is read, the importers pass table names as `%i` identifiers, and the few intentional notes (noindex meta query in the sitemaps/llms.txt, the optional own-key AI fallback behind the WordPress AI client) carry an inline reason. The readme Description is under 2500 characters.
 
-**What the plugin does:** meta tags and templates, Open Graph/Twitter, one JSON-LD graph (plus 28 content blocks such as FAQ, How-to, Recipe, Event, Job, Product, Review, Local business, Person and Q&A page), XML sitemaps (index, per type, image, video, news) with configurable names, robots.txt / llms.txt, redirects with a 404 monitor and automatic redirects when a page address changes, breadcrumbs, internal link suggestions, an image alt-text screen, security headers, WordPress clean-up switches, WPML/Polylang hreflang, import from Yoast SEO / Rank Math / All in One SEO. No tracking, no ads, no upsell, no nag screens; GPL-2.0-or-later, `license.txt` included, no bundled third-party code.
+**What the plugin does:** meta tags and templates, Open Graph/Twitter, one JSON-LD graph (plus 42 content blocks such as FAQ, How-to, Recipe, Event, Job, Product, Review, Local business, Person and Q&A page), XML sitemaps (index, per type, image, video, news) with configurable names, robots.txt / llms.txt, redirects with a 404 monitor and automatic redirects when a page address changes, breadcrumbs, internal link suggestions, an image alt-text screen, security headers, WordPress clean-up switches, WPML/Polylang hreflang, import from Yoast SEO / Rank Math / All in One SEO. No tracking, no ads, no upsell, no nag screens; GPL-2.0-or-later, `license.txt` included, no bundled third-party code.
 
 **External services — all optional, off by default, only after the site owner enables them / clicks an action (documented in the readme under "External services"):**
 - Google Indexing API (own service-account key; sends the page URL; restricted by default to job-posting and live-stream pages, which is what Google supports)
@@ -42,7 +42,7 @@ Thank you for the review.
 ---
 
 ## Checklist before pressing Upload
-- Zip: `/Users/cyrusbadde/projects/plugins/seooptimierung-toolkit-1.8.0.zip` (readme Stable tag 1.8.0, header Version 1.8.0).
+- Zip: `/Users/cyrusbadde/projects/plugins/seooptimierung-toolkit-1.9.0.zip` (readme Stable tag 1.9.0, header Version 1.9.0).
 - Readme `Contributors:` shows the real username; `Donate link` is the intended one.
 - Screenshots are optional for the review (assets can be added later via SVN).
 - If more schema types are added before submission, rebuild the zip, bump the version and change the version in the first paragraph.

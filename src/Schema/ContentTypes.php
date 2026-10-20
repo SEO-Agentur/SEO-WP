@@ -612,6 +612,13 @@ final class ContentTypes {
 			return null;
 		}
 
+		// A "patch" adds properties to the page's own node (paywall markup) instead of being a node of its own.
+		if ( ! empty( $definition['patch'] ) ) {
+			$node['@patch'] = true;
+
+			return self::without_empty( $node );
+		}
+
 		$node['@id'] = ( $ctx['url'] ?? '' ) . '#' . $slug . ( $index > 1 ? '-' . $index : '' );
 
 		// A QAPage or property listing is itself a kind of web page, so it is not "the main entity of" one.
@@ -619,6 +626,16 @@ final class ContentTypes {
 			$node['mainEntityOfPage'] = array( '@id' => ( $ctx['url'] ?? '' ) . '#webpage' );
 		}
 
+		return self::without_empty( $node );
+	}
+
+	/**
+	 * A node without its empty properties (false and 0 are kept).
+	 *
+	 * @param array<string,mixed> $node Node.
+	 * @return array<string,mixed>
+	 */
+	private static function without_empty( array $node ): array {
 		return array_filter(
 			$node,
 			static function ( $value ): bool {

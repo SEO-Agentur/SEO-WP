@@ -12,6 +12,7 @@ namespace Seooptimierung\Toolkit\Tests\Unit;
 
 use Seooptimierung\Toolkit\Schema\ContentTypes;
 use Seooptimierung\Toolkit\Schema\ExtraContentTypes;
+use Seooptimierung\Toolkit\Schema\GraphBuilder;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -42,7 +43,7 @@ final class ExtraContentTypesTest extends TestCase {
 	public function test_registry_contains_the_declared_types(): void {
 		$all = ContentTypes::all();
 
-		$this->assertGreaterThanOrEqual( 28, count( $all ) );
+		$this->assertGreaterThanOrEqual( 42, count( $all ) );
 		foreach ( array_keys( ExtraContentTypes::all() ) as $slug ) {
 			$this->assertArrayHasKey( $slug, $all );
 			$this->assertArrayHasKey( 'build', $all[ $slug ], $slug );
@@ -57,7 +58,7 @@ final class ExtraContentTypesTest extends TestCase {
 	 * every field a rule reads exists in the type's field list.
 	 */
 	public function test_build_maps_only_read_existing_fields(): void {
-		$kinds = array( 'text', 'price', 'url', 'image', 'date', 'datetime', 'minutes', 'seconds', 'number', 'posint', 'itemcount', 'list', 'enum', 'boolenum', 'bool', 'upper', 'currency', 'type', 'countif', 'const', 'ctx', 'listitems', 'entities', 'entity' );
+		$kinds = array( 'text', 'price', 'url', 'image', 'date', 'datetime', 'minutes', 'seconds', 'number', 'posint', 'itemcount', 'list', 'enum', 'boolenum', 'bool', 'upper', 'currency', 'type', 'countif', 'const', 'ctx', 'listitems', 'entities', 'entity', 'constif', 'urltemplate', 'imagelist', 'features', 'flashcards', 'enumlist', 'variants', 'menusections' );
 
 		$check = function ( array $rule, array $keys, string $where ) use ( &$check, $kinds ): void {
 			$kind = $rule[0];
@@ -74,6 +75,9 @@ final class ExtraContentTypesTest extends TestCase {
 			}
 			if ( ! in_array( $kind, array( 'const', 'ctx' ), true ) ) {
 				$this->assertContains( $rule[1], $keys, $where );
+			}
+			if ( in_array( $kind, array( 'imagelist', 'variants' ), true ) ) {
+				$this->assertContains( $rule[2], $keys, $where . ' (second field)' );
 			}
 		};
 
@@ -335,5 +339,278 @@ final class ExtraContentTypesTest extends TestCase {
 		$this->assertSame( '0', ExtraContentTypes::normalise_price( '0' ) );
 		$this->assertSame( '', ExtraContentTypes::normalise_price( 'on request' ) );
 		$this->assertSame( '', ExtraContentTypes::normalise_price( '' ) );
+	}
+
+	/**
+	 * A holiday rental: main image first, then the others without duplicates;
+	 * the accommodation carries guests, rooms, size and amenities.
+	 */
+	public function test_vacation_rental_node(): void {
+		$node = ContentTypes::node(
+			'vacation-rental',
+			array(
+				'name'              => 'Sea view flat',
+				'image'             => 'https://example.com/1.jpg',
+				'moreImages'        => array( 'https://example.com/2.jpg', 'https://example.com/1.jpg', 'javascript:alert(1)' ),
+				'accommodationType' => 'EntirePlace',
+				'maxGuests'         => '4',
+				'bedrooms'          => '2',
+				'bathrooms'         => '1',
+				'floorSize'         => '55',
+				'amenities'         => array( 'Wi-Fi', 'Pool' ),
+				'latitude'          => '54.1',
+				'longitude'         => '10.5',
+				'locality'          => 'Kiel',
+			),
+			$this->ctx()
+		);
+
+		$this->assertSame( 'VacationRental', $node['@type'] );
+		$this->assertSame( array( 'https://example.com/1.jpg', 'https://example.com/2.jpg' ), $node['image'] );
+		$this->assertSame( 'EntirePlace', $node['containsPlace']['additionalType'] );
+		$this->assertSame( 4, $node['containsPlace']['occupancy']['value'] );
+		$this->assertSame( 2, $node['containsPlace']['numberOfBedrooms'] );
+		$this->assertSame( 'Wi-Fi', $node['containsPlace']['amenityFeature'][0]['name'] );
+		$this->assertTrue( $node['containsPlace']['amenityFeature'][0]['value'] );
+		$this->assertSame( 54.1, $node['latitude'] );
+	}
+
+	/**
+	 * Flashcards need both a front and a back.
+	 */
+	public function test_quiz_node(): void {
+		$node = ContentTypes::node(
+			'quiz',
+			array(
+				'name'    => 'Cells',
+				'subject' => 'Biology',
+				'cards'   => array( 'Powerhouse of the cell? | Mitochondria', 'Only a front', ' | only a back' ),
+			),
+			$this->ctx()
+		);
+
+		$this->assertSame( 'Quiz', $node['@type'] );
+		$this->assertSame( 'Biology', $node['about']['name'] );
+		$this->assertCount( 1, $node['hasPart'] );
+		$this->assertSame( 'Flashcard', $node['hasPart'][0]['eduQuestionType'] );
+		$this->assertSame( 'Mitochondria', $node['hasPart'][0]['acceptedAnswer']['text'] );
+	}
+
+	/**
+	 * A maths solver has two types; the address pattern is only accepted
+	 * as a web address, with its {placeholder}.
+	 */
+	public function test_math_solver_node(): void {
+		$node = ContentTypes::node(
+			'math-solver',
+			array(
+				'name'          => 'Solver',
+				'url'           => 'https://example.com/solver/',
+				'target'        => 'https://example.com/solve?q={math_expression_string}',
+				'questionTypes' => array( 'Derivative' ),
+			),
+			$this->ctx()
+		);
+
+		$this->assertSame( array( 'MathSolver', 'LearningResource' ), $node['@type'] );
+		$this->assertSame( 'https://example.com/solve?q={math_expression_string}', $node['potentialAction']['target'] );
+		$this->assertSame( 'required name=math_expression_string', $node['potentialAction']['mathExpression-input'] );
+
+		$bad = ContentTypes::node( 'math-solver', array( 'name' => 'S', 'target' => 'javascript:alert({math_expression_string})' ), $this->ctx() );
+		$this->assertArrayNotHasKey( 'potentialAction', $bad );
+	}
+
+	/**
+	 * A profile page is a web page with the person as its main entity.
+	 */
+	public function test_profile_page_node(): void {
+		$node = ContentTypes::node(
+			'profile-page',
+			array(
+				'name'      => 'Anna',
+				'sameAs'    => array( 'https://example.com/anna' ),
+				'followers' => '120',
+			),
+			$this->ctx()
+		);
+
+		$this->assertSame( 'ProfilePage', $node['@type'] );
+		$this->assertArrayNotHasKey( 'mainEntityOfPage', $node );
+		$this->assertSame( 'Person', $node['mainEntity']['@type'] );
+		$this->assertSame( 120, $node['mainEntity']['interactionStatistic']['userInteractionCount'] );
+	}
+
+	/**
+	 * Estimated salary needs the median; without it there is no salary node.
+	 */
+	public function test_estimated_salary_node(): void {
+		$node = ContentTypes::node(
+			'estimated-salary',
+			array(
+				'name'     => 'Nurse',
+				'location' => 'Hamburg',
+				'period'   => 'P1Y',
+				'median'   => '48000',
+				'percentile10' => '38000',
+			),
+			$this->ctx()
+		);
+
+		$this->assertSame( 'Occupation', $node['@type'] );
+		$this->assertSame( 'City', $node['occupationLocation']['@type'] );
+		$this->assertSame( 48000, $node['estimatedSalary']['median'] );
+		$this->assertSame( 'P1Y', $node['estimatedSalary']['duration'] );
+		$this->assertSame( 'EUR', $node['estimatedSalary']['currency'] );
+
+		$no_median = ContentTypes::node( 'estimated-salary', array( 'name' => 'Nurse', 'period' => 'P1Y', 'percentile10' => '1' ), $this->ctx() );
+		$this->assertArrayNotHasKey( 'estimatedSalary', $no_median );
+	}
+
+	/**
+	 * Variants: the fifth column fills the first "varies by" property.
+	 */
+	public function test_product_group_node(): void {
+		$node = ContentTypes::node(
+			'product-group',
+			array(
+				'name'         => 'T-shirt',
+				'groupId'      => 'TS-1',
+				'variesBy'     => array( 'color', 'size' ),
+				'currency'     => 'eur',
+				'availability' => 'OutOfStock',
+				'variants'     => array(
+					'T-shirt red | TS-R | 19,90 | https://example.com/r/ | Red',
+					'T-shirt blue | TS-B',
+					' | no name',
+				),
+			),
+			$this->ctx()
+		);
+
+		$this->assertSame( 'ProductGroup', $node['@type'] );
+		$this->assertSame( array( 'https://schema.org/color', 'https://schema.org/size' ), $node['variesBy'] );
+		$this->assertCount( 2, $node['hasVariant'] );
+		$this->assertSame( 'Red', $node['hasVariant'][0]['color'] );
+		$this->assertSame( '19.90', $node['hasVariant'][0]['offers']['price'] );
+		$this->assertSame( 'https://schema.org/OutOfStock', $node['hasVariant'][0]['offers']['availability'] );
+		$this->assertArrayNotHasKey( 'offers', $node['hasVariant'][1] );
+	}
+
+	/**
+	 * Paywall markup is a patch: it needs a selector, is not a node of its
+	 * own, and lands on the Article (or else the WebPage).
+	 */
+	public function test_paywall_patch(): void {
+		$patch = ContentTypes::node( 'paywall', array( 'cssSelector' => '.paywall' ), $this->ctx() );
+
+		$this->assertTrue( $patch['@patch'] );
+		$this->assertArrayNotHasKey( '@id', $patch );
+		$this->assertFalse( $patch['isAccessibleForFree'] );
+		$this->assertSame( '.paywall', $patch['hasPart']['cssSelector'] );
+		$this->assertFalse( $patch['hasPart']['isAccessibleForFree'] );
+
+		$nodes = GraphBuilder::apply_patches(
+			array(
+				array( '@type' => 'WebPage', '@id' => 'https://example.com/page/#webpage' ),
+				array( '@type' => 'Article', '@id' => 'https://example.com/page/#article', 'headline' => 'H' ),
+				$patch,
+			)
+		);
+
+		$this->assertCount( 2, $nodes );
+		$this->assertFalse( $nodes[1]['isAccessibleForFree'] );
+		$this->assertSame( 'H', $nodes[1]['headline'] );
+		$this->assertArrayNotHasKey( 'isAccessibleForFree', $nodes[0] );
+		$this->assertArrayNotHasKey( '@patch', $nodes[1] );
+
+		$page_only = GraphBuilder::apply_patches( array( array( '@type' => 'WebPage', '@id' => 'https://example.com/page/#webpage' ), $patch ) );
+		$this->assertFalse( $page_only[0]['isAccessibleForFree'] );
+
+		$orphan = GraphBuilder::apply_patches( array( $patch ) );
+		$this->assertSame( array(), $orphan, 'a patch with nothing to patch is dropped' );
+
+		$this->assertNull( ContentTypes::node( 'paywall', array(), $this->ctx() ) );
+		$this->assertArrayNotHasKey( 'hasPart', ContentTypes::node( 'paywall', array( 'notice' => 'Members only' ), $this->ctx() ) );
+	}
+
+	/**
+	 * A menu groups its dishes by section, in order of appearance.
+	 */
+	public function test_menu_node(): void {
+		$node = ContentTypes::node(
+			'menu',
+			array(
+				'name'   => 'Dinner',
+				'dishes' => array(
+					'Starters | Soup | 6,50 | Tomato',
+					'Mains | Pasta | 12',
+					'Starters | Salad',
+					'Desserts',
+				),
+			),
+			$this->ctx()
+		);
+
+		$this->assertSame( 'Menu', $node['@type'] );
+		$this->assertCount( 2, $node['hasMenuSection'] );
+		$this->assertSame( 'Starters', $node['hasMenuSection'][0]['name'] );
+		$this->assertCount( 2, $node['hasMenuSection'][0]['hasMenuItem'] );
+		$this->assertSame( '6.50', $node['hasMenuSection'][0]['hasMenuItem'][0]['offers']['price'] );
+		$this->assertSame( 'Tomato', $node['hasMenuSection'][0]['hasMenuItem'][0]['description'] );
+		$this->assertArrayNotHasKey( 'offers', $node['hasMenuSection'][0]['hasMenuItem'][1] );
+	}
+
+	/**
+	 * The simpler content types: series, trip, sports event, certificate,
+	 * paper and law each produce their own type with their own properties.
+	 */
+	public function test_remaining_types(): void {
+		$series = ContentTypes::node( 'tv-series', array( 'name' => 'Show', 'seasons' => '3', 'actors' => array( 'A', 'B' ), 'startDate' => '2020-05-01' ), $this->ctx() );
+		$this->assertSame( 'TVSeries', $series['@type'] );
+		$this->assertSame( 3, $series['numberOfSeasons'] );
+		$this->assertCount( 2, $series['actor'] );
+
+		$trip = ContentTypes::node( 'trip', array( 'name' => 'Harbour tour', 'stops' => array( 'Pier | https://example.com/pier/', 'Lighthouse' ), 'price' => '25', 'provider' => 'Tours Ltd' ), $this->ctx() );
+		$this->assertSame( 'TouristTrip', $trip['@type'] );
+		$this->assertSame( 'ItemList', $trip['itinerary']['@type'] );
+		$this->assertCount( 2, $trip['itinerary']['itemListElement'] );
+		$this->assertSame( '25', $trip['offers']['price'] );
+
+		$match = ContentTypes::node( 'sports-event', array( 'name' => 'Final', 'homeTeam' => 'A', 'awayTeam' => 'B', 'startDate' => '2026-11-05T18:00', 'locationName' => 'Arena' ), $this->ctx() );
+		$this->assertSame( 'SportsEvent', $match['@type'] );
+		$this->assertSame( 'SportsTeam', $match['homeTeam']['@type'] );
+		$this->assertSame( 'https://schema.org/EventScheduled', $match['eventStatus'] );
+
+		$cert = ContentTypes::node( 'certification', array( 'name' => 'ISO 9001', 'issuedBy' => 'TÜV', 'identification' => '123', 'expires' => '2027-01-01' ), $this->ctx() );
+		$this->assertSame( 'Certification', $cert['@type'] );
+		$this->assertSame( 'TÜV', $cert['issuedBy']['name'] );
+		$this->assertSame( '123', $cert['certificationIdentification'] );
+
+		$paper = ContentTypes::node( 'scholarly-article', array( 'name' => 'On cells', 'authors' => array( 'A. Smith', 'B. Jones' ), 'journal' => 'Nature', 'doi' => '10.1000/x1' ), $this->ctx() );
+		$this->assertSame( 'ScholarlyArticle', $paper['@type'] );
+		$this->assertSame( 'On cells', $paper['headline'] );
+		$this->assertCount( 2, $paper['author'] );
+		$this->assertSame( 'Periodical', $paper['isPartOf']['@type'] );
+		$this->assertSame( '10.1000/x1', $paper['identifier']['value'] );
+
+		$law = ContentTypes::node( 'legislation', array( 'name' => 'Data Act', 'identifier' => 'X 1', 'legalForce' => 'InForce', 'legislationDate' => '2023-12-01' ), $this->ctx() );
+		$this->assertSame( 'Legislation', $law['@type'] );
+		$this->assertSame( 'https://schema.org/InForce', $law['legislationLegalForce'] );
+		$this->assertSame( '2023-12-01', $law['legislationDate'] );
+	}
+
+	/**
+	 * Flashcards and variants read as lists in the markup.
+	 */
+	public function test_markup_of_pair_lists(): void {
+		$quiz = ContentTypes::html( 'quiz', array( 'name' => 'Cells', 'cards' => array( 'Front | Back' ) ) );
+		$this->assertStringContainsString( '<strong>Front</strong> – Back', $quiz );
+
+		$group = ContentTypes::html( 'product-group', array( 'name' => 'T-shirt', 'variants' => array( 'Red | TS-R | 19,90' ) ) );
+		$this->assertStringContainsString( 'Red · TS-R · 19,90', $group );
+
+		$paywall = ContentTypes::html( 'paywall', array( 'cssSelector' => '.paywall', 'notice' => 'For subscribers' ) );
+		$this->assertStringContainsString( 'For subscribers', $paywall );
+		$this->assertStringNotContainsString( '.paywall', $paywall, 'the selector is not shown to visitors' );
 	}
 }

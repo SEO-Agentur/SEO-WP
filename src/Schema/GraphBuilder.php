@@ -227,7 +227,47 @@ final class GraphBuilder {
 			$nodes = array_merge( $nodes, EmbeddedSchema::nodes_for( $post ) );
 		}
 
-		return $nodes;
+		return self::apply_patches( $nodes );
+	}
+
+	/**
+	 * Folds "patch" nodes (paywall markup) into the page's Article node, or
+	 * its WebPage node when there is no Article; a patch with no target is dropped.
+	 *
+	 * @param array<int,array<string,mixed>> $nodes Collected nodes.
+	 * @return array<int,array<string,mixed>>
+	 */
+	public static function apply_patches( array $nodes ): array {
+		$patches = array();
+		$rest    = array();
+
+		foreach ( $nodes as $node ) {
+			if ( ! empty( $node['@patch'] ) ) {
+				unset( $node['@patch'], $node['@type'], $node['@id'] );
+				$patches[] = $node;
+			} else {
+				$rest[] = $node;
+			}
+		}
+
+		if ( array() === $patches ) {
+			return $nodes;
+		}
+
+		foreach ( array( '#article', '#webpage' ) as $suffix ) {
+			foreach ( $rest as $index => $node ) {
+				if ( isset( $node['@id'] ) && substr( (string) $node['@id'], -strlen( $suffix ) ) === $suffix ) {
+					foreach ( $patches as $patch ) {
+						$rest[ $index ] = array_merge( $node, $patch );
+						$node           = $rest[ $index ];
+					}
+
+					return $rest;
+				}
+			}
+		}
+
+		return $rest;
 	}
 
 	/**
