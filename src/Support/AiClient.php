@@ -23,7 +23,7 @@ final class AiClient {
 	/**
 	 * Anthropic's Messages API endpoint.
 	 */
-	private const ANTHROPIC_ENDPOINT = 'https://api.anthropic.com/v1/messages';
+	private const ANTHROPIC_ENDPOINT = 'https://api.anthropic.com/v1/messages'; // phpcs:ignore PluginCheck.CodeAnalysis.AIProvider.DirectIntegration -- bring-your-own-key fallback for sites without the WordPress 7.0 AI client; Support\Ai tries wp_ai_client_prompt() first and only calls this after the site owner clicked an action and stored a key.
 
 	/**
 	 * Anthropic API version header required by the Messages API.
@@ -33,7 +33,7 @@ final class AiClient {
 	/**
 	 * OpenAI's Chat Completions endpoint.
 	 */
-	private const OPENAI_ENDPOINT = 'https://api.openai.com/v1/chat/completions';
+	private const OPENAI_ENDPOINT = 'https://api.openai.com/v1/chat/completions'; // phpcs:ignore PluginCheck.CodeAnalysis.AIProvider.DirectIntegration -- bring-your-own-key fallback for sites without the WordPress 7.0 AI client; Support\Ai tries wp_ai_client_prompt() first and only calls this after the site owner clicked an action and stored a key.
 
 	/**
 	 * Default model per provider, used when no override is configured.

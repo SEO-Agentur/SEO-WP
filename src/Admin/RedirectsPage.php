@@ -489,7 +489,7 @@ final class RedirectsPage {
 		$skipped  = 0;
 		$oversize = false;
 
-		$tmp_name  = isset( $_FILES['csv_file']['tmp_name'] ) ? (string) $_FILES['csv_file']['tmp_name'] : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- covered by check_admin_referer() above; $_FILES has no slashing to unslash.
+		$tmp_name  = isset( $_FILES['csv_file']['tmp_name'] ) ? sanitize_text_field( (string) $_FILES['csv_file']['tmp_name'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- covered by check_admin_referer() above; $_FILES has no slashing to unslash.
 		$file_size = isset( $_FILES['csv_file']['size'] ) ? (int) $_FILES['csv_file']['size'] : 0; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- covered by check_admin_referer() above.
 		if ( '' !== $tmp_name && is_uploaded_file( $tmp_name ) && $file_size > self::MAX_IMPORT_FILE_SIZE ) {
 			$oversize = true;

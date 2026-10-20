@@ -5,7 +5,7 @@ Tags: seo, wpml, polylang, sitemap, schema
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.7.0
+Stable tag: 1.7.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -76,6 +76,11 @@ Seooptimierung Toolkit integrates with several third-party services. Every one i
 **Resource Hint Scanner** — contacted only when you click "Scan site for suggestions" under Settings > Performance. Fetches your *own* site's pages (the home page and the newest post of a few content types) and your *own* stylesheets — never a third-party URL — to detect which external origins they load scripts, styles, fonts, images and media from. The result is a list of suggested lines you may choose to add to your own settings — nothing is applied automatically and nothing is sent anywhere else.
 
 == Changelog ==
+
+= 1.7.1 =
+* Code quality: every value read from a form or from the server environment is now sanitized where it is read (URL list, bulk editor, FAQ fields, role matrix, API-key form, CSV upload, request method, host and URI).
+* Code quality: the importers pass table names to `$wpdb->prepare()` as identifiers (`%i`).
+* The remaining Plugin Check notes (noindex meta query in the sitemaps and llms.txt, the optional own-key AI fallback) are marked in the code with their reason.
 
 = 1.7.0 =
 * New: **structured-data content blocks** — FAQ, How-to, Recipe, Event, Job posting, Course, Software and Video (with live-stream support). Each shows its content on the page and adds a matching node to the page's single JSON-LD graph, so an article can carry an FAQ and a recipe at the same time. FAQ questions join the page's one FAQPage node. A `[seooptimierung_schema]` shortcode covers editors without the block editor.

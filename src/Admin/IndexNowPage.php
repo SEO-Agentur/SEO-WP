@@ -419,7 +419,7 @@ final class IndexNowPage {
 
 		check_admin_referer( self::SUBMIT_NONCE_ACTION, self::SUBMIT_NONCE_NAME );
 
-		$raw   = isset( $_POST['urls'] ) ? (string) wp_unslash( $_POST['urls'] ) : '';
+		$raw   = isset( $_POST['urls'] ) ? sanitize_textarea_field( wp_unslash( $_POST['urls'] ) ) : '';
 		$lines = preg_split( '/[\r\n]+/', $raw );
 		$lines = is_array( $lines ) ? $lines : array();
 

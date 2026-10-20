@@ -121,7 +121,7 @@ final class PostTypeSitemap {
 			'ignore_sticky_posts'    => true,
 			'update_post_meta_cache' => false,
 			'update_post_term_cache' => false,
-			'meta_query'             => array(
+			'meta_query'             => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- the noindex flag lives in post meta; there is no cheaper way to leave those posts out, and the query runs only when the sitemap or llms.txt is generated.
 				'relation' => 'OR',
 				array(
 					'key'     => Robots::META_NOINDEX,
@@ -137,7 +137,7 @@ final class PostTypeSitemap {
 
 		$excluded = self::excluded_post_ids();
 		if ( array() !== $excluded ) {
-			$args['post__not_in'] = $excluded;
+			$args['post__not_in'] = $excluded; // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_post__not_in -- the list is an explicit, filterable set of IDs the site owner chose to leave out, not a growing exclusion list.
 		}
 
 		return $args;

@@ -194,7 +194,7 @@ final class LlmsTxt {
 				'no_found_rows'          => true,
 				'update_post_meta_cache' => true,
 				'update_post_term_cache' => false,
-				'meta_query'             => array(
+				'meta_query'             => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- the noindex flag lives in post meta; there is no cheaper way to leave those posts out, and the query runs only when the sitemap or llms.txt is generated.
 					'relation' => 'OR',
 					array(
 						'key'     => Robots::META_NOINDEX,

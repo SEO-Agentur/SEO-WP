@@ -350,7 +350,7 @@ final class RoleManager {
 
 		check_admin_referer( self::NONCE_ACTION, self::NONCE_NAME );
 
-		$submitted = isset( $_POST['seo_wp_roles'] ) && is_array( $_POST['seo_wp_roles'] ) ? wp_unslash( $_POST['seo_wp_roles'] ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- wp_unslash() is called here; every value is reduced to a boolean below.
+		$submitted = isset( $_POST['seo_wp_roles'] ) && is_array( $_POST['seo_wp_roles'] ) ? map_deep( wp_unslash( $_POST['seo_wp_roles'] ), 'sanitize_text_field' ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- wp_unslash() is called inside map_deep(); every value is reduced to a boolean below.
 
 		$matrix = array();
 		foreach ( array_keys( wp_roles()->roles ) as $role_slug ) {

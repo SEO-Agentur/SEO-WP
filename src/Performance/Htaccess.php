@@ -64,7 +64,7 @@ final class Htaccess {
 	 * would do nothing.
 	 */
 	public function server_supports_htaccess(): bool {
-		$software = isset( $_SERVER['SERVER_SOFTWARE'] ) ? (string) $_SERVER['SERVER_SOFTWARE'] : '';
+		$software = isset( $_SERVER['SERVER_SOFTWARE'] ) ? sanitize_text_field( wp_unslash( $_SERVER['SERVER_SOFTWARE'] ) ) : '';
 
 		return false !== stripos( $software, 'apache' ) || false !== stripos( $software, 'litespeed' );
 	}

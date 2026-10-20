@@ -120,7 +120,7 @@ final class NewsSitemap {
 				'no_found_rows'          => true,
 				'update_post_meta_cache' => false,
 				'update_post_term_cache' => false,
-				'meta_query'             => array(
+				'meta_query'             => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- the noindex flag lives in meta; there is no cheaper way to leave those items out, and the query runs only when the sitemap is generated.
 					'relation' => 'OR',
 					array(
 						'key'     => Robots::META_NOINDEX,

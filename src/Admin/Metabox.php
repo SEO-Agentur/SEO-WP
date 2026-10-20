@@ -235,9 +235,9 @@ final class Metabox {
 
 		$this->save_common_fields( $post_id, true );
 
-		// phpcs:disable WordPress.Security.NonceVerification.Missing -- nonce already verified by has_valid_nonce() above; sanitized field-by-field in sanitize_faq().
-		$questions = isset( $_POST['seo_wp_faq_question'] ) && is_array( $_POST['seo_wp_faq_question'] ) ? wp_unslash( $_POST['seo_wp_faq_question'] ) : array();
-		$answers   = isset( $_POST['seo_wp_faq_answer'] ) && is_array( $_POST['seo_wp_faq_answer'] ) ? wp_unslash( $_POST['seo_wp_faq_answer'] ) : array();
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- nonce already verified by has_valid_nonce() above; sanitize_faq() then applies the per-field sanitizer.
+		$questions = isset( $_POST['seo_wp_faq_question'] ) && is_array( $_POST['seo_wp_faq_question'] ) ? map_deep( wp_unslash( $_POST['seo_wp_faq_question'] ), 'sanitize_textarea_field' ) : array();
+		$answers   = isset( $_POST['seo_wp_faq_answer'] ) && is_array( $_POST['seo_wp_faq_answer'] ) ? map_deep( wp_unslash( $_POST['seo_wp_faq_answer'] ), 'sanitize_textarea_field' ) : array();
 		// phpcs:enable
 
 		$this->update_meta( $post_id, true, FaqPage::META_FAQ, $this->sanitize_faq( $questions, $answers ) );

@@ -306,7 +306,7 @@ final class BulkEditor {
 
 		check_admin_referer( self::NONCE_ACTION, self::NONCE_NAME );
 
-		$rows = isset( $_POST['seo_wp_bulk'] ) && is_array( $_POST['seo_wp_bulk'] ) ? wp_unslash( $_POST['seo_wp_bulk'] ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- wp_unslash() is called here; sanitized field-by-field below.
+		$rows = isset( $_POST['seo_wp_bulk'] ) && is_array( $_POST['seo_wp_bulk'] ) ? map_deep( wp_unslash( $_POST['seo_wp_bulk'] ), 'sanitize_textarea_field' ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- wp_unslash() is called inside map_deep(); each field gets its own, stricter sanitizer below.
 
 		foreach ( $rows as $post_id => $fields ) {
 			$post_id = (int) $post_id;

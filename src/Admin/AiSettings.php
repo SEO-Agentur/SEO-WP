@@ -209,7 +209,7 @@ final class AiSettings {
 		$settings = is_array( $settings ) ? $settings : array();
 
 		foreach ( self::SECRET_KEYS as $key ) {
-			$submitted = isset( $_POST[ $key ] ) ? trim( (string) wp_unslash( $_POST[ $key ] ) ) : '';
+			$submitted = isset( $_POST[ $key ] ) ? trim( sanitize_text_field( wp_unslash( $_POST[ $key ] ) ) ) : '';
 			if ( '' !== $submitted ) {
 				Secrets::set( $key, $submitted );
 			}

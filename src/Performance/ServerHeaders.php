@@ -66,7 +66,7 @@ final class ServerHeaders {
 			return;
 		}
 
-		if ( 'GET' !== ( isset( $_SERVER['REQUEST_METHOD'] ) ? (string) $_SERVER['REQUEST_METHOD'] : 'GET' ) ) {
+		if ( 'GET' !== ( isset( $_SERVER['REQUEST_METHOD'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_METHOD'] ) ) : 'GET' ) ) {
 			return;
 		}
 
@@ -92,7 +92,7 @@ final class ServerHeaders {
 	 * host, since this value is used to build a redirect target.
 	 */
 	private function current_url(): string {
-		$host = isset( $_SERVER['HTTP_HOST'] ) ? (string) $_SERVER['HTTP_HOST'] : '';
+		$host = isset( $_SERVER['HTTP_HOST'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) ) : '';
 		if ( 1 !== preg_match( '/^[a-zA-Z0-9.-]+(:\d+)?$/', $host ) ) {
 			$parsed = wp_parse_url( home_url() );
 			$host   = is_array( $parsed ) && isset( $parsed['host'] ) ? (string) $parsed['host'] : '';
@@ -101,7 +101,7 @@ final class ServerHeaders {
 			return '';
 		}
 
-		$uri    = isset( $_SERVER['REQUEST_URI'] ) ? (string) $_SERVER['REQUEST_URI'] : '/';
+		$uri    = isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '/';
 		$scheme = is_ssl() ? 'https' : 'http';
 
 		return $scheme . '://' . $host . $uri;

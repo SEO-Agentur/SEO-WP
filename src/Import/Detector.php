@@ -141,8 +141,8 @@ final class Detector {
 			return false;
 		}
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared -- table name already validated to exist just above, not user input.
-		$result = $wpdb->get_var( "SELECT 1 FROM `{$table}` LIMIT 1" );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- table name already validated to exist just above, not user input; passed as an identifier placeholder.
+		$result = $wpdb->get_var( $wpdb->prepare( 'SELECT 1 FROM %i LIMIT 1', $table ) );
 
 		$this->maybe_record_db_error( "detector:table_has_rows:{$table_suffix}" );
 
