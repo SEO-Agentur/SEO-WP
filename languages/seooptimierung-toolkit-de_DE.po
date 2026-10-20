@@ -2,7 +2,7 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Seooptimierung Toolkit 1.7.0\n"
+"Project-Id-Version: Seooptimierung Toolkit 1.8.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/seooptimierung-toolkit\n"
 "Last-Translator: Cyrus Badde\n"
 "Language-Team: German\n"
@@ -11,8 +11,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-19T13:13:03+00:00\n"
-"PO-Revision-Date: 2026-10-19 12:00+0000\n"
+"POT-Creation-Date: 2026-10-20T00:28:27+00:00\n"
+"PO-Revision-Date: 2026-10-20 00:30+0000\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: seooptimierung-toolkit\n"
 
@@ -143,7 +143,7 @@ msgstr "Nicht gesetzt"
 #: src/Admin/LinkAudit.php:565
 #: src/Admin/LinkAudit.php:837
 #: src/Admin/LinkAudit.php:1146
-#: src/Admin/LinkSuggestions.php:74
+#: src/Admin/LinkSuggestions.php:75
 #: src/Admin/NotFoundMonitorPage.php:171
 #: src/Admin/NotFoundMonitorPage.php:188
 #: src/Admin/RedirectsPage.php:403
@@ -239,15 +239,35 @@ msgstr "Inhalt"
 
 #: src/Admin/BulkEditor.php:187
 #: src/Admin/Metabox.php:430
-#: src/Schema/ContentTypes.php:63
-#: src/Schema/ContentTypes.php:251
+#: src/Schema/ContentTypes.php:64
+#: src/Schema/ContentTypes.php:252
+#: src/Schema/ExtraContentTypes.php:157
+#: src/Schema/ExtraContentTypes.php:204
+#: src/Schema/ExtraContentTypes.php:640
+#: src/Schema/ExtraContentTypes.php:704
+#: src/Schema/ExtraContentTypes.php:773
+#: src/Schema/ExtraContentTypes.php:858
 msgid "Title"
 msgstr "Titel"
 
 #: src/Admin/BulkEditor.php:188
-#: src/Schema/ContentTypes.php:201
-#: src/Schema/ContentTypes.php:213
-#: src/Schema/ContentTypes.php:252
+#: src/Schema/ContentTypes.php:202
+#: src/Schema/ContentTypes.php:214
+#: src/Schema/ContentTypes.php:253
+#: src/Schema/ExtraContentTypes.php:64
+#: src/Schema/ExtraContentTypes.php:158
+#: src/Schema/ExtraContentTypes.php:205
+#: src/Schema/ExtraContentTypes.php:235
+#: src/Schema/ExtraContentTypes.php:293
+#: src/Schema/ExtraContentTypes.php:328
+#: src/Schema/ExtraContentTypes.php:366
+#: src/Schema/ExtraContentTypes.php:427
+#: src/Schema/ExtraContentTypes.php:458
+#: src/Schema/ExtraContentTypes.php:494
+#: src/Schema/ExtraContentTypes.php:641
+#: src/Schema/ExtraContentTypes.php:718
+#: src/Schema/ExtraContentTypes.php:774
+#: src/Schema/ExtraContentTypes.php:830
 msgid "Description"
 msgstr "Beschreibung"
 
@@ -379,7 +399,7 @@ msgstr "Beitrag"
 #: src/Admin/RedirectsPage.php:255
 #: src/Admin/RedirectsPage.php:320
 #: src/Admin/Settings.php:794
-#: src/Schema/ContentTypes.php:1210
+#: src/Schema/ContentTypes.php:1228
 msgid "Type"
 msgstr "Typ"
 
@@ -662,10 +682,18 @@ msgid "Suggest alt text for every image on this page"
 msgstr "Alt-Text für jedes Bild auf dieser Seite vorschlagen"
 
 #: src/Admin/ImageSeo.php:375
-#: src/Schema/ContentTypes.php:65
-#: src/Schema/ContentTypes.php:80
-#: src/Schema/ContentTypes.php:132
-#: src/Schema/ContentTypes.php:214
+#: src/Schema/ContentTypes.php:66
+#: src/Schema/ContentTypes.php:81
+#: src/Schema/ContentTypes.php:133
+#: src/Schema/ContentTypes.php:215
+#: src/Schema/ExtraContentTypes.php:65
+#: src/Schema/ExtraContentTypes.php:329
+#: src/Schema/ExtraContentTypes.php:367
+#: src/Schema/ExtraContentTypes.php:428
+#: src/Schema/ExtraContentTypes.php:642
+#: src/Schema/ExtraContentTypes.php:719
+#: src/Schema/ExtraContentTypes.php:775
+#: src/Schema/ExtraContentTypes.php:857
 msgid "Image"
 msgstr "Bild"
 
@@ -905,7 +933,7 @@ msgstr "URLs"
 
 #: src/Admin/IndexNowPage.php:347
 #: src/Admin/Settings.php:1421
-#: src/Schema/ContentTypes.php:103
+#: src/Schema/ContentTypes.php:104
 msgid "Status"
 msgstr "Status"
 
@@ -1113,19 +1141,21 @@ msgstr "Kein Bildindex"
 
 #: src/Admin/Metabox.php:140
 #: src/Admin/Metabox.php:691
-#: src/Frontend/Blocks.php:75
+#: src/Frontend/Blocks.php:77
+#: src/Schema/ExtraContentTypes.php:541
 msgid "Question"
 msgstr "Frage"
 
 #: src/Admin/Metabox.php:141
 #: src/Admin/Metabox.php:692
-#: src/Frontend/Blocks.php:76
+#: src/Frontend/Blocks.php:78
+#: src/Schema/ExtraContentTypes.php:545
 msgid "Answer"
 msgstr "Antwort"
 
 #: src/Admin/Metabox.php:142
 #: src/Admin/Metabox.php:694
-#: src/Frontend/Blocks.php:74
+#: src/Frontend/Blocks.php:76
 msgid "Remove"
 msgstr "Entfernen"
 
@@ -1208,6 +1238,7 @@ msgid "Leave empty to use the automatic type (Article or WebPage). Any Schema.or
 msgstr "Leer lassen, um den automatischen Typ (Article oder WebPage) zu verwenden. Jeder Schema.org-Typname funktioniert, nicht nur die Vorschläge."
 
 #: src/Admin/Metabox.php:654
+#: src/Schema/ExtraContentTypes.php:66
 msgid "Brand"
 msgstr "Marke"
 
@@ -1228,7 +1259,7 @@ msgid "Optional. Leave empty unless the current price is a limited-time offer."
 msgstr "Optional. Leer lassen, außer der aktuelle Preis ist ein zeitlich begrenztes Angebot."
 
 #: src/Admin/Metabox.php:678
-#: src/Frontend/Blocks.php:73
+#: src/Frontend/Blocks.php:75
 msgid "Add question"
 msgstr "Frage hinzufügen"
 
@@ -1437,6 +1468,7 @@ msgstr "automatisch deaktiviert: unsicheres Muster"
 
 #: src/Admin/RedirectsPage.php:367
 #: src/Admin/Settings.php:995
+#: src/Schema/ExtraContentTypes.php:1307
 msgid "Yes"
 msgstr "Ja"
 
@@ -1660,7 +1692,7 @@ msgid "Default Twitter/X @handle for authors"
 msgstr "Standard-Twitter/X-@Handle für Autoren"
 
 #: src/Admin/Settings.php:726
-#: src/Frontend/Blocks.php:87
+#: src/Frontend/Blocks.php:89
 #: assets/blocks/blocks.js:37
 msgid "Breadcrumbs"
 msgstr "Breadcrumbs"
@@ -1690,12 +1722,15 @@ msgid "only used when \"Site represents\" above is set to \"A local business\"."
 msgstr "wird nur verwendet, wenn „Die Website steht für“ oben auf „Ein lokales Unternehmen“ steht."
 
 #: src/Admin/Settings.php:737
-#: src/Schema/ContentTypes.php:169
+#: src/Schema/ContentTypes.php:170
+#: src/Schema/ExtraContentTypes.php:946
 msgid "Street address"
 msgstr "Straße und Hausnummer"
 
 #: src/Admin/Settings.php:738
-#: src/Schema/ContentTypes.php:171
+#: src/Schema/ContentTypes.php:172
+#: src/Schema/ExtraContentTypes.php:243
+#: src/Schema/ExtraContentTypes.php:948
 msgid "City"
 msgstr "Stadt"
 
@@ -1704,7 +1739,8 @@ msgid "State/region"
 msgstr "Bundesland/Region"
 
 #: src/Admin/Settings.php:740
-#: src/Schema/ContentTypes.php:170
+#: src/Schema/ContentTypes.php:171
+#: src/Schema/ExtraContentTypes.php:947
 msgid "Postal code"
 msgstr "Postleitzahl"
 
@@ -1721,10 +1757,14 @@ msgid "Price range (e.g. $$ or €€)"
 msgstr "Preisklasse (z. B. $$ oder €€)"
 
 #: src/Admin/Settings.php:744
+#: src/Schema/ExtraContentTypes.php:339
+#: src/Schema/ExtraContentTypes.php:435
 msgid "Latitude"
 msgstr "Breitengrad"
 
 #: src/Admin/Settings.php:745
+#: src/Schema/ExtraContentTypes.php:340
+#: src/Schema/ExtraContentTypes.php:436
 msgid "Longitude"
 msgstr "Längengrad"
 
@@ -1733,6 +1773,8 @@ msgid "Opening hours — one line per rule: comma-separated two-letter days, a s
 msgstr "Öffnungszeiten – eine Zeile pro Regel: zweibuchstabige Tage durch Kommas getrennt, ein Leerzeichen, dann HH:MM-HH:MM. Beispiel: „Mo,Tu,We,Th,Fr 09:00-18:00“ und „Sa 10:00-14:00“ in zwei Zeilen."
 
 #: src/Admin/Settings.php:748
+#: src/Schema/ExtraContentTypes.php:335
+#: src/Schema/ExtraContentTypes.php:430
 msgid "Opening hours"
 msgstr "Öffnungszeiten"
 
@@ -1957,6 +1999,7 @@ msgid "Only takes effect when WPML, Polylang, or a compatible plugin (e.g. slim-
 msgstr "Wirkt nur, wenn WPML, Polylang oder ein kompatibles Plugin (z. B. slim-hreflang) tatsächlich URLs in anderen Sprachen liefert – ist keines aktiv, werden überhaupt keine hreflang- oder x-default-Tags ausgegeben."
 
 #: src/Admin/Settings.php:1101
+#: src/Schema/ExtraContentTypes.php:327
 msgid "Business type"
 msgstr "Geschäftsart"
 
@@ -2624,19 +2667,19 @@ msgstr "Die gesamte Website jetzt auf noindex setzen"
 msgid "Dismiss (this is fine)"
 msgstr "Ausblenden (ist in Ordnung)"
 
-#: src/Frontend/Blocks.php:72
+#: src/Frontend/Blocks.php:74
 msgid "Add item"
 msgstr "Eintrag hinzufügen"
 
-#: src/Frontend/Blocks.php:77
+#: src/Frontend/Blocks.php:79
 msgid "Choose image"
 msgstr "Bild auswählen"
 
-#: src/Frontend/Blocks.php:78
+#: src/Frontend/Blocks.php:80
 msgid "Shown on the page and added to the structured data (JSON-LD)."
 msgstr "Wird auf der Seite angezeigt und den strukturierten Daten (JSON-LD) hinzugefügt."
 
-#: src/Frontend/Blocks.php:88
+#: src/Frontend/Blocks.php:90
 msgid "The trail from the home page to the current page."
 msgstr "Der Pfad von der Startseite zur aktuellen Seite."
 
@@ -2688,566 +2731,1430 @@ msgstr "Benutzername oder Passwort ist falsch."
 msgid "The homepage returned HTTP %d."
 msgstr "Die Startseite hat HTTP %d geliefert."
 
-#: src/Schema/ContentTypes.php:50
+#: src/Schema/ContentTypes.php:51
 msgid "FAQ (structured data)"
 msgstr "FAQ (strukturierte Daten)"
 
-#: src/Schema/ContentTypes.php:51
+#: src/Schema/ContentTypes.php:52
 msgid "Questions and answers, shown on the page and marked up as FAQ."
 msgstr "Fragen und Antworten, auf der Seite angezeigt und als FAQ ausgezeichnet."
 
-#: src/Schema/ContentTypes.php:54
+#: src/Schema/ContentTypes.php:55
 msgid "Questions and answers"
 msgstr "Fragen und Antworten"
 
-#: src/Schema/ContentTypes.php:59
+#: src/Schema/ContentTypes.php:60
 msgid "How-to (structured data)"
 msgstr "Anleitung (strukturierte Daten)"
 
-#: src/Schema/ContentTypes.php:60
+#: src/Schema/ContentTypes.php:61
 msgid "Step-by-step instructions, shown on the page and marked up as HowTo."
 msgstr "Schritt-für-Schritt-Anleitung, auf der Seite angezeigt und als HowTo ausgezeichnet."
 
-#: src/Schema/ContentTypes.php:64
-#: src/Schema/ContentTypes.php:79
-#: src/Schema/ContentTypes.php:98
+#: src/Schema/ContentTypes.php:65
+#: src/Schema/ContentTypes.php:80
+#: src/Schema/ContentTypes.php:99
 msgid "Short description"
 msgstr "Kurzbeschreibung"
 
-#: src/Schema/ContentTypes.php:66
+#: src/Schema/ContentTypes.php:67
 msgid "Total time (minutes)"
 msgstr "Gesamtdauer (Minuten)"
 
-#: src/Schema/ContentTypes.php:67
-#: src/Schema/ContentTypes.php:1119
+#: src/Schema/ContentTypes.php:68
+#: src/Schema/ContentTypes.php:1137
 msgid "Materials"
 msgstr "Material"
 
-#: src/Schema/ContentTypes.php:68
-#: src/Schema/ContentTypes.php:1122
+#: src/Schema/ContentTypes.php:69
+#: src/Schema/ContentTypes.php:1140
 msgid "Tools"
 msgstr "Werkzeuge"
 
-#: src/Schema/ContentTypes.php:69
-#: src/Schema/ContentTypes.php:1125
+#: src/Schema/ContentTypes.php:70
+#: src/Schema/ContentTypes.php:1143
 msgid "Steps"
 msgstr "Schritte"
 
-#: src/Schema/ContentTypes.php:69
-#: src/Schema/ContentTypes.php:88
+#: src/Schema/ContentTypes.php:70
+#: src/Schema/ContentTypes.php:89
 msgid "One step per entry, in order."
 msgstr "Ein Schritt pro Eintrag, in der richtigen Reihenfolge."
 
-#: src/Schema/ContentTypes.php:74
+#: src/Schema/ContentTypes.php:75
 msgid "Recipe (structured data)"
 msgstr "Rezept (strukturierte Daten)"
 
-#: src/Schema/ContentTypes.php:75
+#: src/Schema/ContentTypes.php:76
 msgid "A recipe card, shown on the page and marked up as Recipe."
 msgstr "Eine Rezeptkarte, auf der Seite angezeigt und als Recipe ausgezeichnet."
 
-#: src/Schema/ContentTypes.php:78
+#: src/Schema/ContentTypes.php:79
 msgid "Recipe name"
 msgstr "Rezeptname"
 
-#: src/Schema/ContentTypes.php:81
+#: src/Schema/ContentTypes.php:82
 msgid "Preparation time (minutes)"
 msgstr "Zubereitungszeit (Minuten)"
 
-#: src/Schema/ContentTypes.php:82
+#: src/Schema/ContentTypes.php:83
 msgid "Cooking time (minutes)"
 msgstr "Kochzeit (Minuten)"
 
-#: src/Schema/ContentTypes.php:83
+#: src/Schema/ContentTypes.php:84
 msgid "Yield"
 msgstr "Ergibt"
 
-#: src/Schema/ContentTypes.php:83
+#: src/Schema/ContentTypes.php:84
 msgid "e.g. 4 servings"
 msgstr "z. B. 4 Portionen"
 
-#: src/Schema/ContentTypes.php:84
-#: src/Schema/ContentTypes.php:217
+#: src/Schema/ContentTypes.php:85
+#: src/Schema/ContentTypes.php:218
 msgid "Category"
 msgstr "Kategorie"
 
-#: src/Schema/ContentTypes.php:84
+#: src/Schema/ContentTypes.php:85
 msgid "e.g. Main course"
 msgstr "z. B. Hauptgericht"
 
-#: src/Schema/ContentTypes.php:85
+#: src/Schema/ContentTypes.php:86
+#: src/Schema/ExtraContentTypes.php:334
 msgid "Cuisine"
 msgstr "Küche"
 
-#: src/Schema/ContentTypes.php:85
+#: src/Schema/ContentTypes.php:86
+#: src/Schema/ExtraContentTypes.php:334
 msgid "e.g. Italian"
 msgstr "z. B. Italienisch"
 
-#: src/Schema/ContentTypes.php:86
+#: src/Schema/ContentTypes.php:87
 msgid "Calories per serving"
 msgstr "Kalorien pro Portion"
 
-#: src/Schema/ContentTypes.php:86
+#: src/Schema/ContentTypes.php:87
 msgid "e.g. 320 calories"
 msgstr "z. B. 320 Kalorien"
 
-#: src/Schema/ContentTypes.php:87
-#: src/Schema/ContentTypes.php:1154
+#: src/Schema/ContentTypes.php:88
+#: src/Schema/ContentTypes.php:1172
 msgid "Ingredients"
 msgstr "Zutaten"
 
-#: src/Schema/ContentTypes.php:88
-#: src/Schema/ContentTypes.php:1157
+#: src/Schema/ContentTypes.php:89
+#: src/Schema/ContentTypes.php:1175
 msgid "Instructions"
 msgstr "Zubereitung"
 
-#: src/Schema/ContentTypes.php:93
+#: src/Schema/ContentTypes.php:94
 msgid "Event (structured data)"
 msgstr "Veranstaltung (strukturierte Daten)"
 
-#: src/Schema/ContentTypes.php:94
+#: src/Schema/ContentTypes.php:95
 msgid "Date, place and tickets of an event, shown on the page and marked up as Event."
 msgstr "Datum, Ort und Tickets einer Veranstaltung, auf der Seite angezeigt und als Event ausgezeichnet."
 
-#: src/Schema/ContentTypes.php:97
+#: src/Schema/ContentTypes.php:98
 msgid "Event name"
 msgstr "Name der Veranstaltung"
 
-#: src/Schema/ContentTypes.php:99
-#: src/Schema/ContentTypes.php:1175
+#: src/Schema/ContentTypes.php:100
+#: src/Schema/ContentTypes.php:1193
 msgid "Starts"
 msgstr "Beginnt"
 
-#: src/Schema/ContentTypes.php:100
-#: src/Schema/ContentTypes.php:1176
+#: src/Schema/ContentTypes.php:101
+#: src/Schema/ContentTypes.php:1194
 msgid "Ends"
 msgstr "Endet"
 
-#: src/Schema/ContentTypes.php:107
+#: src/Schema/ContentTypes.php:108
 msgid "Scheduled"
 msgstr "Findet statt"
 
-#: src/Schema/ContentTypes.php:108
+#: src/Schema/ContentTypes.php:109
 msgid "Cancelled"
 msgstr "Abgesagt"
 
-#: src/Schema/ContentTypes.php:109
+#: src/Schema/ContentTypes.php:110
 msgid "Postponed"
 msgstr "Verschoben"
 
-#: src/Schema/ContentTypes.php:110
+#: src/Schema/ContentTypes.php:111
 msgid "Rescheduled"
 msgstr "Neu terminiert"
 
-#: src/Schema/ContentTypes.php:111
+#: src/Schema/ContentTypes.php:112
 msgid "Moved online"
 msgstr "Online verlegt"
 
-#: src/Schema/ContentTypes.php:117
+#: src/Schema/ContentTypes.php:118
 msgid "Attendance"
 msgstr "Teilnahme"
 
-#: src/Schema/ContentTypes.php:121
+#: src/Schema/ContentTypes.php:122
 msgid "In person"
 msgstr "Vor Ort"
 
-#: src/Schema/ContentTypes.php:122
-#: src/Schema/ContentTypes.php:1178
+#: src/Schema/ContentTypes.php:123
+#: src/Schema/ContentTypes.php:1196
 msgid "Online"
 msgstr "Online"
 
-#: src/Schema/ContentTypes.php:123
+#: src/Schema/ContentTypes.php:124
 msgid "In person and online"
 msgstr "Vor Ort und online"
 
-#: src/Schema/ContentTypes.php:127
+#: src/Schema/ContentTypes.php:128
 msgid "Venue name"
 msgstr "Name des Veranstaltungsorts"
 
-#: src/Schema/ContentTypes.php:128
+#: src/Schema/ContentTypes.php:129
 msgid "Venue address"
 msgstr "Adresse des Veranstaltungsorts"
 
-#: src/Schema/ContentTypes.php:129
+#: src/Schema/ContentTypes.php:130
 msgid "Online link"
 msgstr "Online-Link"
 
-#: src/Schema/ContentTypes.php:130
-#: src/Schema/ContentTypes.php:1179
+#: src/Schema/ContentTypes.php:131
+#: src/Schema/ContentTypes.php:1197
 msgid "Organizer"
 msgstr "Veranstalter"
 
-#: src/Schema/ContentTypes.php:131
+#: src/Schema/ContentTypes.php:132
 msgid "Organizer website"
 msgstr "Website des Veranstalters"
 
-#: src/Schema/ContentTypes.php:133
+#: src/Schema/ContentTypes.php:134
 msgid "Ticket price"
 msgstr "Ticketpreis"
 
-#: src/Schema/ContentTypes.php:133
+#: src/Schema/ContentTypes.php:134
 msgid "e.g. 25 (0 for free)"
 msgstr "z. B. 25 (0 für kostenlos)"
 
-#: src/Schema/ContentTypes.php:134
-#: src/Schema/ContentTypes.php:239
+#: src/Schema/ContentTypes.php:135
+#: src/Schema/ContentTypes.php:240
+#: src/Schema/ExtraContentTypes.php:71
+#: src/Schema/ExtraContentTypes.php:180
+#: src/Schema/ExtraContentTypes.php:372
+#: src/Schema/ExtraContentTypes.php:657
+#: src/Schema/ExtraContentTypes.php:730
 msgid "Currency"
 msgstr "Währung"
 
-#: src/Schema/ContentTypes.php:135
+#: src/Schema/ContentTypes.php:136
 msgid "Ticket link"
 msgstr "Ticket-Link"
 
-#: src/Schema/ContentTypes.php:140
+#: src/Schema/ContentTypes.php:141
 msgid "Job posting (structured data)"
 msgstr "Stellenanzeige (strukturierte Daten)"
 
-#: src/Schema/ContentTypes.php:141
+#: src/Schema/ContentTypes.php:142
 msgid "A job ad, shown on the page and marked up as JobPosting."
 msgstr "Eine Stellenanzeige, auf der Seite angezeigt und als JobPosting ausgezeichnet."
 
-#: src/Schema/ContentTypes.php:144
+#: src/Schema/ContentTypes.php:145
+#: src/Schema/ExtraContentTypes.php:234
 msgid "Job title"
 msgstr "Berufsbezeichnung"
 
-#: src/Schema/ContentTypes.php:145
+#: src/Schema/ContentTypes.php:146
 msgid "Job description"
 msgstr "Stellenbeschreibung"
 
-#: src/Schema/ContentTypes.php:146
+#: src/Schema/ContentTypes.php:147
 msgid "Posted on"
 msgstr "Veröffentlicht am"
 
-#: src/Schema/ContentTypes.php:147
-#: src/Schema/ContentTypes.php:1213
+#: src/Schema/ContentTypes.php:148
+#: src/Schema/ContentTypes.php:1231
 msgid "Apply until"
 msgstr "Bewerbung bis"
 
-#: src/Schema/ContentTypes.php:150
+#: src/Schema/ContentTypes.php:151
 msgid "Employment type"
 msgstr "Beschäftigungsart"
 
-#: src/Schema/ContentTypes.php:154
+#: src/Schema/ContentTypes.php:155
 msgid "Full time"
 msgstr "Vollzeit"
 
-#: src/Schema/ContentTypes.php:155
+#: src/Schema/ContentTypes.php:156
 msgid "Part time"
 msgstr "Teilzeit"
 
-#: src/Schema/ContentTypes.php:156
+#: src/Schema/ContentTypes.php:157
 msgid "Contractor"
 msgstr "Freiberuflich"
 
-#: src/Schema/ContentTypes.php:157
+#: src/Schema/ContentTypes.php:158
 msgid "Temporary"
 msgstr "Befristet"
 
-#: src/Schema/ContentTypes.php:158
+#: src/Schema/ContentTypes.php:159
 msgid "Internship"
 msgstr "Praktikum"
 
-#: src/Schema/ContentTypes.php:159
+#: src/Schema/ContentTypes.php:160
 msgid "Volunteer"
 msgstr "Ehrenamt"
 
-#: src/Schema/ContentTypes.php:160
+#: src/Schema/ContentTypes.php:161
 msgid "Per diem"
 msgstr "Tagesweise"
 
-#: src/Schema/ContentTypes.php:161
+#: src/Schema/ContentTypes.php:162
+#: src/Schema/ExtraContentTypes.php:122
 msgid "Other"
 msgstr "Sonstiges"
 
-#: src/Schema/ContentTypes.php:165
+#: src/Schema/ContentTypes.php:166
 msgid "Hiring company"
 msgstr "Einstellendes Unternehmen"
 
-#: src/Schema/ContentTypes.php:166
+#: src/Schema/ContentTypes.php:167
 msgid "Company website"
 msgstr "Website des Unternehmens"
 
-#: src/Schema/ContentTypes.php:167
+#: src/Schema/ContentTypes.php:168
 msgid "Company logo"
 msgstr "Logo des Unternehmens"
 
-#: src/Schema/ContentTypes.php:168
+#: src/Schema/ContentTypes.php:169
 msgid "Fully remote"
 msgstr "Vollständig remote"
 
-#: src/Schema/ContentTypes.php:172
+#: src/Schema/ContentTypes.php:173
+#: src/Schema/ExtraContentTypes.php:949
 msgid "State / region"
 msgstr "Bundesland / Region"
 
-#: src/Schema/ContentTypes.php:173
+#: src/Schema/ContentTypes.php:174
+#: src/Schema/ExtraContentTypes.php:244
+#: src/Schema/ExtraContentTypes.php:950
 msgid "Country (2-letter code)"
 msgstr "Land (Zwei-Buchstaben-Code)"
 
-#: src/Schema/ContentTypes.php:174
+#: src/Schema/ContentTypes.php:175
 msgid "Salary from"
 msgstr "Gehalt ab"
 
-#: src/Schema/ContentTypes.php:175
+#: src/Schema/ContentTypes.php:176
 msgid "Salary up to"
 msgstr "Gehalt bis"
 
-#: src/Schema/ContentTypes.php:176
+#: src/Schema/ContentTypes.php:177
 msgid "Salary currency"
 msgstr "Währung des Gehalts"
 
-#: src/Schema/ContentTypes.php:179
+#: src/Schema/ContentTypes.php:180
 msgid "Salary per"
 msgstr "Gehalt pro"
 
-#: src/Schema/ContentTypes.php:183
+#: src/Schema/ContentTypes.php:184
 msgid "Year"
 msgstr "Jahr"
 
-#: src/Schema/ContentTypes.php:184
+#: src/Schema/ContentTypes.php:185
 msgid "Month"
 msgstr "Monat"
 
-#: src/Schema/ContentTypes.php:185
+#: src/Schema/ContentTypes.php:186
 msgid "Week"
 msgstr "Woche"
 
-#: src/Schema/ContentTypes.php:186
+#: src/Schema/ContentTypes.php:187
 msgid "Day"
 msgstr "Tag"
 
-#: src/Schema/ContentTypes.php:187
+#: src/Schema/ContentTypes.php:188
 msgid "Hour"
 msgstr "Stunde"
 
-#: src/Schema/ContentTypes.php:191
+#: src/Schema/ContentTypes.php:192
 msgid "Application link"
 msgstr "Bewerbungslink"
 
-#: src/Schema/ContentTypes.php:196
+#: src/Schema/ContentTypes.php:197
 msgid "Course (structured data)"
 msgstr "Kurs (strukturierte Daten)"
 
-#: src/Schema/ContentTypes.php:197
+#: src/Schema/ContentTypes.php:198
 msgid "A course or training, shown on the page and marked up as Course."
 msgstr "Ein Kurs oder eine Schulung, auf der Seite angezeigt und als Course ausgezeichnet."
 
-#: src/Schema/ContentTypes.php:200
+#: src/Schema/ContentTypes.php:201
 msgid "Course name"
 msgstr "Kursname"
 
-#: src/Schema/ContentTypes.php:202
-#: src/Schema/ContentTypes.php:1229
+#: src/Schema/ContentTypes.php:203
+#: src/Schema/ContentTypes.php:1247
+#: src/Schema/ExtraContentTypes.php:368
 msgid "Provider"
 msgstr "Anbieter"
 
-#: src/Schema/ContentTypes.php:203
+#: src/Schema/ContentTypes.php:204
+#: src/Schema/ExtraContentTypes.php:369
 msgid "Provider website"
 msgstr "Website des Anbieters"
 
-#: src/Schema/ContentTypes.php:208
+#: src/Schema/ContentTypes.php:209
 msgid "Software (structured data)"
 msgstr "Software (strukturierte Daten)"
 
-#: src/Schema/ContentTypes.php:209
+#: src/Schema/ContentTypes.php:210
 msgid "An app or program, shown on the page and marked up as SoftwareApplication."
 msgstr "Eine App oder ein Programm, auf der Seite angezeigt und als SoftwareApplication ausgezeichnet."
 
-#: src/Schema/ContentTypes.php:212
+#: src/Schema/ContentTypes.php:213
+#: src/Schema/ExtraContentTypes.php:63
+#: src/Schema/ExtraContentTypes.php:233
+#: src/Schema/ExtraContentTypes.php:275
+#: src/Schema/ExtraContentTypes.php:326
+#: src/Schema/ExtraContentTypes.php:364
+#: src/Schema/ExtraContentTypes.php:410
+#: src/Schema/ExtraContentTypes.php:493
 msgid "Name"
 msgstr "Name"
 
-#: src/Schema/ContentTypes.php:221
+#: src/Schema/ContentTypes.php:222
 msgid "Business"
 msgstr "Business"
 
-#: src/Schema/ContentTypes.php:222
+#: src/Schema/ContentTypes.php:223
 msgid "Developer tools"
 msgstr "Entwicklerwerkzeuge"
 
-#: src/Schema/ContentTypes.php:223
+#: src/Schema/ContentTypes.php:224
 msgid "Design"
 msgstr "Design"
 
-#: src/Schema/ContentTypes.php:224
+#: src/Schema/ContentTypes.php:225
 msgid "Education"
 msgstr "Bildung"
 
-#: src/Schema/ContentTypes.php:225
+#: src/Schema/ContentTypes.php:226
 msgid "Entertainment"
 msgstr "Unterhaltung"
 
-#: src/Schema/ContentTypes.php:226
+#: src/Schema/ContentTypes.php:227
 msgid "Finance"
 msgstr "Finanzen"
 
-#: src/Schema/ContentTypes.php:227
+#: src/Schema/ContentTypes.php:228
 msgid "Game"
 msgstr "Spiel"
 
-#: src/Schema/ContentTypes.php:228
+#: src/Schema/ContentTypes.php:229
 msgid "Health"
 msgstr "Gesundheit"
 
-#: src/Schema/ContentTypes.php:229
+#: src/Schema/ContentTypes.php:230
 msgid "Lifestyle"
 msgstr "Lifestyle"
 
-#: src/Schema/ContentTypes.php:230
+#: src/Schema/ContentTypes.php:231
 msgid "Multimedia"
 msgstr "Multimedia"
 
-#: src/Schema/ContentTypes.php:231
+#: src/Schema/ContentTypes.php:232
 msgid "Security"
 msgstr "Sicherheit"
 
-#: src/Schema/ContentTypes.php:232
+#: src/Schema/ContentTypes.php:233
 msgid "Shopping"
 msgstr "Shopping"
 
-#: src/Schema/ContentTypes.php:233
+#: src/Schema/ContentTypes.php:234
 msgid "Utilities"
 msgstr "Dienstprogramme"
 
-#: src/Schema/ContentTypes.php:237
-#: src/Schema/ContentTypes.php:1246
+#: src/Schema/ContentTypes.php:238
+#: src/Schema/ContentTypes.php:1264
 msgid "Operating system"
 msgstr "Betriebssystem"
 
-#: src/Schema/ContentTypes.php:238
-#: src/Schema/ContentTypes.php:1180
-#: src/Schema/ContentTypes.php:1247
+#: src/Schema/ContentTypes.php:239
+#: src/Schema/ContentTypes.php:1198
+#: src/Schema/ContentTypes.php:1265
+#: src/Schema/ExtraContentTypes.php:70
+#: src/Schema/ExtraContentTypes.php:179
+#: src/Schema/ExtraContentTypes.php:371
+#: src/Schema/ExtraContentTypes.php:656
+#: src/Schema/ExtraContentTypes.php:729
 msgid "Price"
 msgstr "Preis"
 
-#: src/Schema/ContentTypes.php:238
+#: src/Schema/ContentTypes.php:239
+#: src/Schema/ExtraContentTypes.php:70
 msgid "0 for free"
 msgstr "0 für kostenlos"
 
-#: src/Schema/ContentTypes.php:240
+#: src/Schema/ContentTypes.php:241
+#: src/Schema/ExtraContentTypes.php:500
 msgid "Download link"
 msgstr "Download-Link"
 
-#: src/Schema/ContentTypes.php:241
+#: src/Schema/ContentTypes.php:242
+#: src/Schema/ExtraContentTypes.php:75
 msgid "Average rating"
 msgstr "Durchschnittliche Bewertung"
 
-#: src/Schema/ContentTypes.php:241
+#: src/Schema/ContentTypes.php:242
 msgid "Only if you really collect ratings — never invent them. Google shows a rich result for software only with a rating or review."
 msgstr "Nur, wenn du wirklich Bewertungen sammelst – erfinde sie nie. Google zeigt für Software nur mit einer Bewertung oder Rezension ein Rich Result an."
 
-#: src/Schema/ContentTypes.php:242
+#: src/Schema/ContentTypes.php:243
+#: src/Schema/ExtraContentTypes.php:76
 msgid "Number of ratings"
 msgstr "Anzahl der Bewertungen"
 
-#: src/Schema/ContentTypes.php:247
+#: src/Schema/ContentTypes.php:248
 msgid "Video (structured data)"
 msgstr "Video (strukturierte Daten)"
 
-#: src/Schema/ContentTypes.php:248
+#: src/Schema/ContentTypes.php:249
 msgid "A video with its details, shown on the page and marked up as VideoObject."
 msgstr "Ein Video mit seinen Angaben, auf der Seite angezeigt und als VideoObject ausgezeichnet."
 
-#: src/Schema/ContentTypes.php:253
+#: src/Schema/ContentTypes.php:254
 msgid "Thumbnail"
 msgstr "Vorschaubild"
 
-#: src/Schema/ContentTypes.php:254
+#: src/Schema/ContentTypes.php:255
+#: src/Schema/ExtraContentTypes.php:129
+#: src/Schema/ExtraContentTypes.php:163
+#: src/Schema/ExtraContentTypes.php:462
+#: src/Schema/ExtraContentTypes.php:498
+#: src/Schema/ExtraContentTypes.php:602
+#: src/Schema/ExtraContentTypes.php:782
 msgid "Published"
 msgstr "Veröffentlicht"
 
-#: src/Schema/ContentTypes.php:255
+#: src/Schema/ContentTypes.php:256
 msgid "Video file URL"
 msgstr "URL der Videodatei"
 
-#: src/Schema/ContentTypes.php:256
+#: src/Schema/ContentTypes.php:257
 msgid "Embed URL"
 msgstr "Einbettungs-URL"
 
-#: src/Schema/ContentTypes.php:256
+#: src/Schema/ContentTypes.php:257
 msgid "e.g. https://www.youtube.com/embed/… — shown as the player."
 msgstr "z. B. https://www.youtube.com/embed/… – wird als Player angezeigt."
 
-#: src/Schema/ContentTypes.php:257
+#: src/Schema/ContentTypes.php:258
 msgid "Length (seconds)"
 msgstr "Länge (Sekunden)"
 
-#: src/Schema/ContentTypes.php:258
+#: src/Schema/ContentTypes.php:259
 msgid "Live stream"
 msgstr "Livestream"
 
-#: src/Schema/ContentTypes.php:258
+#: src/Schema/ContentTypes.php:259
 msgid "Marks the page as a live broadcast (BroadcastEvent)."
 msgstr "Markiert die Seite als Live-Übertragung (BroadcastEvent)."
 
-#: src/Schema/ContentTypes.php:259
+#: src/Schema/ContentTypes.php:260
 msgid "Live stream starts"
 msgstr "Livestream beginnt"
 
-#: src/Schema/ContentTypes.php:260
+#: src/Schema/ContentTypes.php:261
 msgid "Live stream ends"
 msgstr "Livestream endet"
 
-#: src/Schema/ContentTypes.php:1116
+#: src/Schema/ContentTypes.php:1134
 msgid "Time:"
 msgstr "Dauer:"
 
-#: src/Schema/ContentTypes.php:1139
+#: src/Schema/ContentTypes.php:1157
 msgid "Prep:"
 msgstr "Vorbereitung:"
 
-#: src/Schema/ContentTypes.php:1140
+#: src/Schema/ContentTypes.php:1158
 msgid "Cook:"
 msgstr "Kochen:"
 
-#: src/Schema/ContentTypes.php:1141
+#: src/Schema/ContentTypes.php:1159
 msgid "Yield:"
 msgstr "Ergibt:"
 
-#: src/Schema/ContentTypes.php:1142
+#: src/Schema/ContentTypes.php:1160
 msgid "Calories:"
 msgstr "Kalorien:"
 
-#: src/Schema/ContentTypes.php:1169
-#: src/Schema/ContentTypes.php:1181
+#: src/Schema/ContentTypes.php:1187
+#: src/Schema/ContentTypes.php:1199
 msgid "Tickets"
 msgstr "Tickets"
 
-#: src/Schema/ContentTypes.php:1177
+#: src/Schema/ContentTypes.php:1195
 msgid "Venue"
 msgstr "Ort"
 
-#: src/Schema/ContentTypes.php:1194
+#: src/Schema/ContentTypes.php:1212
 msgid "Remote"
 msgstr "Remote"
 
-#: src/Schema/ContentTypes.php:1204
+#: src/Schema/ContentTypes.php:1222
 msgid "Apply now"
 msgstr "Jetzt bewerben"
 
-#: src/Schema/ContentTypes.php:1208
+#: src/Schema/ContentTypes.php:1226
+#: src/Schema/ExtraContentTypes.php:283
 msgid "Company"
 msgstr "Unternehmen"
 
-#: src/Schema/ContentTypes.php:1209
+#: src/Schema/ContentTypes.php:1227
 msgid "Location"
 msgstr "Standort"
 
-#: src/Schema/ContentTypes.php:1211
+#: src/Schema/ContentTypes.php:1229
 msgid "Salary"
 msgstr "Gehalt"
 
-#: src/Schema/ContentTypes.php:1212
+#: src/Schema/ContentTypes.php:1230
+#: src/Schema/ExtraContentTypes.php:886
 msgid "Posted"
 msgstr "Veröffentlicht"
 
-#: src/Schema/ContentTypes.php:1240
-#: src/Schema/ContentTypes.php:1249
+#: src/Schema/ContentTypes.php:1258
+#: src/Schema/ContentTypes.php:1267
 msgid "Download"
 msgstr "Download"
 
-#: src/Schema/ContentTypes.php:1248
+#: src/Schema/ContentTypes.php:1266
+#: src/Schema/ExtraContentTypes.php:130
 msgid "Rating"
 msgstr "Bewertung"
+
+#: src/Schema/ExtraContentTypes.php:59
+msgid "Product (structured data)"
+msgstr "Produkt (strukturierte Daten)"
+
+#: src/Schema/ExtraContentTypes.php:60
+msgid "A product with price and availability, shown on the page and marked up as Product."
+msgstr "Ein Produkt mit Preis und Verfügbarkeit, auf der Seite angezeigt und als Product ausgezeichnet."
+
+#: src/Schema/ExtraContentTypes.php:67
+msgid "SKU"
+msgstr "Artikelnummer (SKU)"
+
+#: src/Schema/ExtraContentTypes.php:68
+msgid "GTIN / EAN"
+msgstr "GTIN / EAN"
+
+#: src/Schema/ExtraContentTypes.php:69
+msgid "Manufacturer part number"
+msgstr "Herstellernummer (MPN)"
+
+#: src/Schema/ExtraContentTypes.php:72
+msgid "Availability"
+msgstr "Verfügbarkeit"
+
+#: src/Schema/ExtraContentTypes.php:73
+#: src/Schema/ExtraContentTypes.php:728
+msgid "Condition"
+msgstr "Zustand"
+
+#: src/Schema/ExtraContentTypes.php:74
+#: src/Schema/ExtraContentTypes.php:181
+msgid "Buy link"
+msgstr "Kauflink"
+
+#: src/Schema/ExtraContentTypes.php:101
+msgid "Review (structured data)"
+msgstr "Bewertung (strukturierte Daten)"
+
+#: src/Schema/ExtraContentTypes.php:102
+msgid "Your own review of a product, book, film or business, marked up as Review."
+msgstr "Deine eigene Rezension eines Produkts, Buchs, Films oder Unternehmens, als Review ausgezeichnet."
+
+#: src/Schema/ExtraContentTypes.php:105
+#: src/Schema/ExtraContentTypes.php:882
+msgid "Headline"
+msgstr "Überschrift"
+
+#: src/Schema/ExtraContentTypes.php:108
+msgid "What is reviewed"
+msgstr "Was wird bewertet"
+
+#: src/Schema/ExtraContentTypes.php:112
+msgid "Product"
+msgstr "Produkt"
+
+#: src/Schema/ExtraContentTypes.php:113
+msgid "Book"
+msgstr "Buch"
+
+#: src/Schema/ExtraContentTypes.php:114
+msgid "Movie"
+msgstr "Film"
+
+#: src/Schema/ExtraContentTypes.php:115
+#: src/Schema/LocalBusinessTypes.php:43
+msgid "Restaurant"
+msgstr "Restaurant"
+
+#: src/Schema/ExtraContentTypes.php:116
+msgid "Local business"
+msgstr "Lokales Unternehmen"
+
+#: src/Schema/ExtraContentTypes.php:117
+msgid "Organization"
+msgstr "Organisation"
+
+#: src/Schema/ExtraContentTypes.php:118
+msgid "Software"
+msgstr "Software"
+
+#: src/Schema/ExtraContentTypes.php:119
+msgid "Course"
+msgstr "Kurs"
+
+#: src/Schema/ExtraContentTypes.php:120
+msgid "Event"
+msgstr "Veranstaltung"
+
+#: src/Schema/ExtraContentTypes.php:121
+msgid "Recipe"
+msgstr "Rezept"
+
+#: src/Schema/ExtraContentTypes.php:126
+msgid "Name of the reviewed item"
+msgstr "Name des bewerteten Objekts"
+
+#: src/Schema/ExtraContentTypes.php:127
+msgid "Review text"
+msgstr "Bewertungstext"
+
+#: src/Schema/ExtraContentTypes.php:128
+msgid "Reviewer"
+msgstr "Bewertende Person"
+
+#: src/Schema/ExtraContentTypes.php:130
+msgid "Your own verdict for this item, for example 4 out of 5."
+msgstr "Dein eigenes Urteil zu diesem Objekt, zum Beispiel 4 von 5."
+
+#: src/Schema/ExtraContentTypes.php:131
+msgid "Best possible rating"
+msgstr "Beste mögliche Bewertung"
+
+#: src/Schema/ExtraContentTypes.php:153
+msgid "Book (structured data)"
+msgstr "Buch (strukturierte Daten)"
+
+#: src/Schema/ExtraContentTypes.php:154
+msgid "A book with author and publisher, marked up as Book."
+msgstr "Ein Buch mit Autor und Verlag, als Book ausgezeichnet."
+
+#: src/Schema/ExtraContentTypes.php:159
+#: src/Schema/ExtraContentTypes.php:459
+#: src/Schema/ExtraContentTypes.php:806
+msgid "Cover"
+msgstr "Cover"
+
+#: src/Schema/ExtraContentTypes.php:160
+#: src/Schema/ExtraContentTypes.php:781
+#: src/Schema/ExtraContentTypes.php:884
+msgid "Author"
+msgstr "Autor"
+
+#: src/Schema/ExtraContentTypes.php:161
+msgid "ISBN"
+msgstr "ISBN"
+
+#: src/Schema/ExtraContentTypes.php:162
+msgid "Publisher"
+msgstr "Verlag"
+
+#: src/Schema/ExtraContentTypes.php:164
+msgid "Number of pages"
+msgstr "Seitenzahl"
+
+#: src/Schema/ExtraContentTypes.php:167
+msgid "Format"
+msgstr "Format"
+
+#: src/Schema/ExtraContentTypes.php:171
+msgid "Hardcover"
+msgstr "Gebundene Ausgabe"
+
+#: src/Schema/ExtraContentTypes.php:172
+msgid "Paperback"
+msgstr "Taschenbuch"
+
+#: src/Schema/ExtraContentTypes.php:173
+msgid "E-book"
+msgstr "E-Book"
+
+#: src/Schema/ExtraContentTypes.php:174
+msgid "Audiobook"
+msgstr "Hörbuch"
+
+#: src/Schema/ExtraContentTypes.php:178
+#: src/Schema/ExtraContentTypes.php:780
+msgid "Language (code)"
+msgstr "Sprache (Code)"
+
+#: src/Schema/ExtraContentTypes.php:200
+msgid "Movie (structured data)"
+msgstr "Film (strukturierte Daten)"
+
+#: src/Schema/ExtraContentTypes.php:201
+msgid "A film with director and cast, marked up as Movie."
+msgstr "Ein Film mit Regie und Besetzung, als Movie ausgezeichnet."
+
+#: src/Schema/ExtraContentTypes.php:206
+msgid "Poster"
+msgstr "Plakat"
+
+#: src/Schema/ExtraContentTypes.php:207
+msgid "Director"
+msgstr "Regie"
+
+#: src/Schema/ExtraContentTypes.php:208
+msgid "Cast"
+msgstr "Besetzung"
+
+#: src/Schema/ExtraContentTypes.php:209
+#: src/Schema/ExtraContentTypes.php:807
+msgid "Release date"
+msgstr "Erscheinungsdatum"
+
+#: src/Schema/ExtraContentTypes.php:210
+#: src/Schema/ExtraContentTypes.php:461
+msgid "Length (minutes)"
+msgstr "Länge (Minuten)"
+
+#: src/Schema/ExtraContentTypes.php:211
+#: src/Schema/ExtraContentTypes.php:808
+msgid "Genre"
+msgstr "Genre"
+
+#: src/Schema/ExtraContentTypes.php:212
+msgid "Age rating"
+msgstr "Altersfreigabe"
+
+#: src/Schema/ExtraContentTypes.php:229
+msgid "Person (structured data)"
+msgstr "Person (strukturierte Daten)"
+
+#: src/Schema/ExtraContentTypes.php:230
+msgid "A person with job title and profiles, marked up as Person."
+msgstr "Eine Person mit Berufsbezeichnung und Profilen, als Person ausgezeichnet."
+
+#: src/Schema/ExtraContentTypes.php:236
+msgid "Photo"
+msgstr "Foto"
+
+#: src/Schema/ExtraContentTypes.php:237
+msgid "Employer"
+msgstr "Arbeitgeber"
+
+#: src/Schema/ExtraContentTypes.php:238
+#: src/Schema/ExtraContentTypes.php:294
+#: src/Schema/ExtraContentTypes.php:330
+msgid "Website"
+msgstr "Website"
+
+#: src/Schema/ExtraContentTypes.php:239
+#: src/Schema/ExtraContentTypes.php:300
+msgid "Profiles on other sites"
+msgstr "Profile auf anderen Seiten"
+
+#: src/Schema/ExtraContentTypes.php:239
+#: src/Schema/ExtraContentTypes.php:300
+msgid "One address per entry, for example a LinkedIn or Wikipedia page."
+msgstr "Eine Adresse pro Eintrag, zum Beispiel eine LinkedIn- oder Wikipedia-Seite."
+
+#: src/Schema/ExtraContentTypes.php:240
+msgid "Topics"
+msgstr "Themen"
+
+#: src/Schema/ExtraContentTypes.php:241
+#: src/Schema/ExtraContentTypes.php:298
+#: src/Schema/ExtraContentTypes.php:332
+msgid "Email"
+msgstr "E-Mail"
+
+#: src/Schema/ExtraContentTypes.php:242
+#: src/Schema/ExtraContentTypes.php:299
+#: src/Schema/ExtraContentTypes.php:331
+#: src/Schema/ExtraContentTypes.php:429
+msgid "Phone"
+msgstr "Telefon"
+
+#: src/Schema/ExtraContentTypes.php:270
+msgid "Organization (structured data)"
+msgstr "Organisation (strukturierte Daten)"
+
+#: src/Schema/ExtraContentTypes.php:271
+msgid "A company, club or institution with contact details, marked up as Organization."
+msgstr "Ein Unternehmen, Verein oder eine Einrichtung mit Kontaktdaten, als Organization ausgezeichnet."
+
+#: src/Schema/ExtraContentTypes.php:278
+msgid "Kind of organization"
+msgstr "Art der Organisation"
+
+#: src/Schema/ExtraContentTypes.php:282
+msgid "Organization (generic)"
+msgstr "Organisation (allgemein)"
+
+#: src/Schema/ExtraContentTypes.php:284
+msgid "Non-profit"
+msgstr "Gemeinnützig"
+
+#: src/Schema/ExtraContentTypes.php:285
+msgid "School or university"
+msgstr "Schule oder Hochschule"
+
+#: src/Schema/ExtraContentTypes.php:286
+msgid "Government body"
+msgstr "Behörde"
+
+#: src/Schema/ExtraContentTypes.php:287
+#: src/Schema/LocalBusinessTypes.php:89
+msgid "Sports club"
+msgstr "Sportverein"
+
+#: src/Schema/ExtraContentTypes.php:288
+msgid "Medical organization"
+msgstr "Medizinische Einrichtung"
+
+#: src/Schema/ExtraContentTypes.php:292
+msgid "Legal name"
+msgstr "Rechtlicher Name"
+
+#: src/Schema/ExtraContentTypes.php:295
+msgid "Logo"
+msgstr "Logo"
+
+#: src/Schema/ExtraContentTypes.php:296
+msgid "Founded"
+msgstr "Gegründet"
+
+#: src/Schema/ExtraContentTypes.php:297
+msgid "VAT ID"
+msgstr "USt-IdNr."
+
+#: src/Schema/ExtraContentTypes.php:321
+msgid "Local business (structured data)"
+msgstr "Lokales Unternehmen (strukturierte Daten)"
+
+#: src/Schema/ExtraContentTypes.php:322
+msgid "A shop, restaurant or practice with address and opening hours, marked up as LocalBusiness."
+msgstr "Ein Geschäft, Restaurant oder eine Praxis mit Adresse und Öffnungszeiten, als LocalBusiness ausgezeichnet."
+
+#: src/Schema/ExtraContentTypes.php:333
+msgid "Price range"
+msgstr "Preisniveau"
+
+#: src/Schema/ExtraContentTypes.php:335
+#: src/Schema/ExtraContentTypes.php:430
+msgid "One entry per line, for example Mo-Fr 09:00-18:00."
+msgstr "Ein Eintrag pro Zeile, zum Beispiel Mo-Fr 09:00-18:00."
+
+#: src/Schema/ExtraContentTypes.php:360
+msgid "Service (structured data)"
+msgstr "Dienstleistung (strukturierte Daten)"
+
+#: src/Schema/ExtraContentTypes.php:361
+msgid "A service you offer, with provider and area, marked up as Service."
+msgstr "Eine Dienstleistung, die du anbietest, mit Anbieter und Gebiet, als Service ausgezeichnet."
+
+#: src/Schema/ExtraContentTypes.php:365
+msgid "Kind of service"
+msgstr "Art der Dienstleistung"
+
+#: src/Schema/ExtraContentTypes.php:370
+msgid "Area served"
+msgstr "Einzugsgebiet"
+
+#: src/Schema/ExtraContentTypes.php:370
+msgid "e.g. Berlin"
+msgstr "z. B. Berlin"
+
+#: src/Schema/ExtraContentTypes.php:373
+msgid "Order or contact link"
+msgstr "Bestell- oder Kontaktlink"
+
+#: src/Schema/ExtraContentTypes.php:405
+msgid "Place (structured data)"
+msgstr "Ort (strukturierte Daten)"
+
+#: src/Schema/ExtraContentTypes.php:406
+msgid "A place or sight with address and opening hours, marked up as Place."
+msgstr "Ein Ort oder eine Sehenswürdigkeit mit Adresse und Öffnungszeiten, als Place ausgezeichnet."
+
+#: src/Schema/ExtraContentTypes.php:413
+msgid "Kind of place"
+msgstr "Art des Ortes"
+
+#: src/Schema/ExtraContentTypes.php:417
+msgid "Place (generic)"
+msgstr "Ort (allgemein)"
+
+#: src/Schema/ExtraContentTypes.php:418
+msgid "Tourist attraction"
+msgstr "Sehenswürdigkeit"
+
+#: src/Schema/ExtraContentTypes.php:419
+msgid "Park"
+msgstr "Park"
+
+#: src/Schema/ExtraContentTypes.php:420
+msgid "Museum"
+msgstr "Museum"
+
+#: src/Schema/ExtraContentTypes.php:421
+msgid "Landmark"
+msgstr "Wahrzeichen"
+
+#: src/Schema/ExtraContentTypes.php:422
+msgid "Beach"
+msgstr "Strand"
+
+#: src/Schema/ExtraContentTypes.php:423
+msgid "Playground"
+msgstr "Spielplatz"
+
+#: src/Schema/ExtraContentTypes.php:431
+msgid "Free to visit"
+msgstr "Eintritt frei"
+
+#: src/Schema/ExtraContentTypes.php:453
+msgid "Podcast episode (structured data)"
+msgstr "Podcast-Folge (strukturierte Daten)"
+
+#: src/Schema/ExtraContentTypes.php:454
+msgid "One episode of a podcast with its audio, marked up as PodcastEpisode."
+msgstr "Eine Folge eines Podcasts mit Audiodatei, als PodcastEpisode ausgezeichnet."
+
+#: src/Schema/ExtraContentTypes.php:457
+msgid "Episode title"
+msgstr "Titel der Folge"
+
+#: src/Schema/ExtraContentTypes.php:460
+msgid "Audio file URL"
+msgstr "Adresse der Audiodatei"
+
+#: src/Schema/ExtraContentTypes.php:463
+msgid "Episode number"
+msgstr "Folgennummer"
+
+#: src/Schema/ExtraContentTypes.php:464
+msgid "Podcast name"
+msgstr "Name des Podcasts"
+
+#: src/Schema/ExtraContentTypes.php:465
+msgid "Podcast website"
+msgstr "Website des Podcasts"
+
+#: src/Schema/ExtraContentTypes.php:489
+msgid "Dataset (structured data)"
+msgstr "Datensatz (strukturierte Daten)"
+
+#: src/Schema/ExtraContentTypes.php:490
+msgid "A downloadable data set with licence and creator, marked up as Dataset."
+msgstr "Ein herunterladbarer Datensatz mit Lizenz und Urheber, als Dataset ausgezeichnet."
+
+#: src/Schema/ExtraContentTypes.php:495
+#: src/Schema/ExtraContentTypes.php:859
+msgid "Creator"
+msgstr "Urheber"
+
+#: src/Schema/ExtraContentTypes.php:496
+msgid "Creator website"
+msgstr "Website des Urhebers"
+
+#: src/Schema/ExtraContentTypes.php:497
+#: src/Schema/ExtraContentTypes.php:862
+msgid "Licence link"
+msgstr "Lizenzlink"
+
+#: src/Schema/ExtraContentTypes.php:499
+msgid "Keywords"
+msgstr "Schlagwörter"
+
+#: src/Schema/ExtraContentTypes.php:501
+msgid "File format"
+msgstr "Dateiformat"
+
+#: src/Schema/ExtraContentTypes.php:502
+msgid "Period covered"
+msgstr "Abgedeckter Zeitraum"
+
+#: src/Schema/ExtraContentTypes.php:503
+msgid "Region covered"
+msgstr "Abgedeckte Region"
+
+#: src/Schema/ExtraContentTypes.php:537
+msgid "Question and answer page (structured data)"
+msgstr "Frage-und-Antwort-Seite (strukturierte Daten)"
+
+#: src/Schema/ExtraContentTypes.php:538
+msgid "One question with its accepted answer, marked up as QAPage."
+msgstr "Eine Frage mit der akzeptierten Antwort, als QAPage ausgezeichnet."
+
+#: src/Schema/ExtraContentTypes.php:542
+msgid "Question details"
+msgstr "Details zur Frage"
+
+#: src/Schema/ExtraContentTypes.php:543
+msgid "Asked by"
+msgstr "Gefragt von"
+
+#: src/Schema/ExtraContentTypes.php:544
+msgid "Asked on"
+msgstr "Gefragt am"
+
+#: src/Schema/ExtraContentTypes.php:546
+msgid "Answered by"
+msgstr "Beantwortet von"
+
+#: src/Schema/ExtraContentTypes.php:547
+msgid "Answered on"
+msgstr "Beantwortet am"
+
+#: src/Schema/ExtraContentTypes.php:548
+msgid "Upvotes of the answer"
+msgstr "Zustimmungen zur Antwort"
+
+#: src/Schema/ExtraContentTypes.php:579
+msgid "Fact check (structured data)"
+msgstr "Faktencheck (strukturierte Daten)"
+
+#: src/Schema/ExtraContentTypes.php:580
+msgid "A fact check of a claim with a verdict, marked up as ClaimReview."
+msgstr "Der Faktencheck einer Behauptung mit Urteil, als ClaimReview ausgezeichnet."
+
+#: src/Schema/ExtraContentTypes.php:583
+msgid "Claim that was checked"
+msgstr "Geprüfte Behauptung"
+
+#: src/Schema/ExtraContentTypes.php:584
+msgid "Who made the claim"
+msgstr "Wer die Behauptung aufgestellt hat"
+
+#: src/Schema/ExtraContentTypes.php:585
+msgid "Claim made on"
+msgstr "Behauptung aufgestellt am"
+
+#: src/Schema/ExtraContentTypes.php:586
+msgid "Verdict"
+msgstr "Urteil"
+
+#: src/Schema/ExtraContentTypes.php:586
+msgid "e.g. False"
+msgstr "z. B. Falsch"
+
+#: src/Schema/ExtraContentTypes.php:589
+msgid "Verdict on a scale"
+msgstr "Urteil auf einer Skala"
+
+#: src/Schema/ExtraContentTypes.php:593
+msgid "1 – false"
+msgstr "1 – falsch"
+
+#: src/Schema/ExtraContentTypes.php:594
+msgid "2 – mostly false"
+msgstr "2 – überwiegend falsch"
+
+#: src/Schema/ExtraContentTypes.php:595
+msgid "3 – mixed"
+msgstr "3 – gemischt"
+
+#: src/Schema/ExtraContentTypes.php:596
+msgid "4 – mostly true"
+msgstr "4 – überwiegend wahr"
+
+#: src/Schema/ExtraContentTypes.php:597
+msgid "5 – true"
+msgstr "5 – wahr"
+
+#: src/Schema/ExtraContentTypes.php:601
+msgid "Fact-checking organization"
+msgstr "Faktencheck-Organisation"
+
+#: src/Schema/ExtraContentTypes.php:635
+msgid "Property listing (structured data)"
+msgstr "Immobilienanzeige (strukturierte Daten)"
+
+#: src/Schema/ExtraContentTypes.php:636
+msgid "A flat or house for sale or rent, marked up as RealEstateListing."
+msgstr "Eine Wohnung oder ein Haus zum Kauf oder zur Miete, als RealEstateListing ausgezeichnet."
+
+#: src/Schema/ExtraContentTypes.php:645
+msgid "Kind of property"
+msgstr "Art der Immobilie"
+
+#: src/Schema/ExtraContentTypes.php:649
+msgid "Apartment"
+msgstr "Wohnung"
+
+#: src/Schema/ExtraContentTypes.php:650
+msgid "House"
+msgstr "Haus"
+
+#: src/Schema/ExtraContentTypes.php:651
+msgid "Single-family home"
+msgstr "Einfamilienhaus"
+
+#: src/Schema/ExtraContentTypes.php:652
+msgid "Room"
+msgstr "Zimmer"
+
+#: src/Schema/ExtraContentTypes.php:658
+msgid "Living area (m²)"
+msgstr "Wohnfläche (m²)"
+
+#: src/Schema/ExtraContentTypes.php:659
+msgid "Rooms"
+msgstr "Zimmer"
+
+#: src/Schema/ExtraContentTypes.php:660
+msgid "Listed on"
+msgstr "Inseriert am"
+
+#: src/Schema/ExtraContentTypes.php:700
+msgid "Vehicle (structured data)"
+msgstr "Fahrzeug (strukturierte Daten)"
+
+#: src/Schema/ExtraContentTypes.php:701
+msgid "A car or motorbike for sale, marked up as Vehicle."
+msgstr "Ein Auto oder Motorrad zum Verkauf, als Fahrzeug ausgezeichnet."
+
+#: src/Schema/ExtraContentTypes.php:707
+msgid "Kind of vehicle"
+msgstr "Art des Fahrzeugs"
+
+#: src/Schema/ExtraContentTypes.php:711
+msgid "Car"
+msgstr "Auto"
+
+#: src/Schema/ExtraContentTypes.php:712
+msgid "Motorcycle"
+msgstr "Motorrad"
+
+#: src/Schema/ExtraContentTypes.php:713
+msgid "Bus or coach"
+msgstr "Bus oder Reisebus"
+
+#: src/Schema/ExtraContentTypes.php:714
+msgid "Moped"
+msgstr "Moped"
+
+#: src/Schema/ExtraContentTypes.php:720
+msgid "Make"
+msgstr "Marke"
+
+#: src/Schema/ExtraContentTypes.php:721
+msgid "Model"
+msgstr "Modell"
+
+#: src/Schema/ExtraContentTypes.php:722
+msgid "Model year"
+msgstr "Baujahr"
+
+#: src/Schema/ExtraContentTypes.php:723
+msgid "Mileage (km)"
+msgstr "Kilometerstand (km)"
+
+#: src/Schema/ExtraContentTypes.php:724
+msgid "Fuel"
+msgstr "Kraftstoff"
+
+#: src/Schema/ExtraContentTypes.php:725
+msgid "Transmission"
+msgstr "Getriebe"
+
+#: src/Schema/ExtraContentTypes.php:726
+msgid "Colour"
+msgstr "Farbe"
+
+#: src/Schema/ExtraContentTypes.php:727
+msgid "Vehicle identification number"
+msgstr "Fahrgestellnummer"
+
+#: src/Schema/ExtraContentTypes.php:731
+msgid "Link to the offer"
+msgstr "Link zum Angebot"
+
+#: src/Schema/ExtraContentTypes.php:769
+msgid "Learning resource (structured data)"
+msgstr "Lernmaterial (strukturierte Daten)"
+
+#: src/Schema/ExtraContentTypes.php:770
+msgid "A tutorial, worksheet or lesson, marked up as LearningResource."
+msgstr "Eine Anleitung, ein Arbeitsblatt oder eine Lektion, als LearningResource ausgezeichnet."
+
+#: src/Schema/ExtraContentTypes.php:776
+msgid "Kind of resource"
+msgstr "Art des Materials"
+
+#: src/Schema/ExtraContentTypes.php:776
+msgid "e.g. Tutorial, Worksheet"
+msgstr "z. B. Anleitung, Arbeitsblatt"
+
+#: src/Schema/ExtraContentTypes.php:777
+msgid "Level"
+msgstr "Niveau"
+
+#: src/Schema/ExtraContentTypes.php:777
+msgid "e.g. Beginner"
+msgstr "z. B. Anfänger"
+
+#: src/Schema/ExtraContentTypes.php:778
+msgid "What it teaches"
+msgstr "Was vermittelt wird"
+
+#: src/Schema/ExtraContentTypes.php:779
+msgid "Time needed (minutes)"
+msgstr "Benötigte Zeit (Minuten)"
+
+#: src/Schema/ExtraContentTypes.php:800
+msgid "Music album (structured data)"
+msgstr "Musikalbum (strukturierte Daten)"
+
+#: src/Schema/ExtraContentTypes.php:801
+msgid "An album with artist and release date, marked up as MusicAlbum."
+msgstr "Ein Album mit Künstler und Erscheinungsdatum, als MusicAlbum ausgezeichnet."
+
+#: src/Schema/ExtraContentTypes.php:804
+msgid "Album title"
+msgstr "Albumtitel"
+
+#: src/Schema/ExtraContentTypes.php:805
+msgid "Artist"
+msgstr "Künstler"
+
+#: src/Schema/ExtraContentTypes.php:809
+msgid "Tracks"
+msgstr "Titel"
+
+#: src/Schema/ExtraContentTypes.php:809
+msgid "One track per entry, in order."
+msgstr "Ein Titel pro Eintrag, in der richtigen Reihenfolge."
+
+#: src/Schema/ExtraContentTypes.php:810
+msgid "Listen or buy link"
+msgstr "Link zum Anhören oder Kaufen"
+
+#: src/Schema/ExtraContentTypes.php:825
+msgid "List of items (structured data)"
+msgstr "Liste (strukturierte Daten)"
+
+#: src/Schema/ExtraContentTypes.php:826
+msgid "A ranking or collection such as \"Top 10\", marked up as ItemList."
+msgstr "Eine Rangliste oder Sammlung wie „Top 10“, als ItemList ausgezeichnet."
+
+#: src/Schema/ExtraContentTypes.php:829
+msgid "List title"
+msgstr "Titel der Liste"
+
+#: src/Schema/ExtraContentTypes.php:833
+msgid "Entries"
+msgstr "Einträge"
+
+#: src/Schema/ExtraContentTypes.php:837
+msgid "One entry per line in the form: Name | address of its page. The address is optional."
+msgstr "Ein Eintrag pro Zeile in der Form: Name | Adresse der Seite. Die Adresse ist optional."
+
+#: src/Schema/ExtraContentTypes.php:840
+msgid "Numbered ranking"
+msgstr "Nummerierte Rangliste"
+
+#: src/Schema/ExtraContentTypes.php:853
+msgid "Licensable image (structured data)"
+msgstr "Lizenzierbares Bild (strukturierte Daten)"
+
+#: src/Schema/ExtraContentTypes.php:854
+msgid "An image with creator, credit and licence, so search engines can show a \"Licensable\" badge."
+msgstr "Ein Bild mit Urheber, Quellenangabe und Lizenz, damit Suchmaschinen das Label „Lizenzierbar“ anzeigen können."
+
+#: src/Schema/ExtraContentTypes.php:860
+msgid "Credit line"
+msgstr "Quellenangabe"
+
+#: src/Schema/ExtraContentTypes.php:861
+msgid "Copyright notice"
+msgstr "Urheberrechtsvermerk"
+
+#: src/Schema/ExtraContentTypes.php:863
+msgid "Page where the image can be licensed"
+msgstr "Seite, auf der das Bild lizenziert werden kann"
+
+#: src/Schema/ExtraContentTypes.php:878
+msgid "Forum post (structured data)"
+msgstr "Forenbeitrag (strukturierte Daten)"
+
+#: src/Schema/ExtraContentTypes.php:879
+msgid "A post from a forum or community thread, marked up as DiscussionForumPosting."
+msgstr "Ein Beitrag aus einem Forum oder einer Community-Diskussion, als DiscussionForumPosting ausgezeichnet."
+
+#: src/Schema/ExtraContentTypes.php:883
+msgid "Post text"
+msgstr "Beitragstext"
+
+#: src/Schema/ExtraContentTypes.php:885
+msgid "Author profile"
+msgstr "Profil des Autors"
+
+#: src/Schema/ExtraContentTypes.php:887
+msgid "Number of replies"
+msgstr "Anzahl der Antworten"
+
+#: src/Schema/ExtraContentTypes.php:1019
+msgid "In stock"
+msgstr "Auf Lager"
+
+#: src/Schema/ExtraContentTypes.php:1020
+msgid "Out of stock"
+msgstr "Nicht auf Lager"
+
+#: src/Schema/ExtraContentTypes.php:1021
+msgid "Pre-order"
+msgstr "Vorbestellung"
+
+#: src/Schema/ExtraContentTypes.php:1022
+msgid "Back order"
+msgstr "Nachbestellung"
+
+#: src/Schema/ExtraContentTypes.php:1023
+msgid "Limited availability"
+msgstr "Begrenzt verfügbar"
+
+#: src/Schema/ExtraContentTypes.php:1024
+msgid "Sold out"
+msgstr "Ausverkauft"
+
+#: src/Schema/ExtraContentTypes.php:1025
+msgid "Discontinued"
+msgstr "Nicht mehr lieferbar"
+
+#: src/Schema/ExtraContentTypes.php:1036
+msgid "New"
+msgstr "Neu"
+
+#: src/Schema/ExtraContentTypes.php:1037
+msgid "Used"
+msgstr "Gebraucht"
+
+#: src/Schema/ExtraContentTypes.php:1038
+msgid "Refurbished"
+msgstr "Generalüberholt"
+
+#: src/Schema/ExtraContentTypes.php:1039
+msgid "Damaged"
+msgstr "Beschädigt"
+
+#: src/Schema/ExtraContentTypes.php:1047
+msgid "Only if you really collect ratings — never invent them."
+msgstr "Nur, wenn du wirklich Bewertungen sammelst – erfinde sie nie."
 
 #: src/Schema/LocalBusinessTypes.php:28
 msgid "Local business (generic)"
@@ -3304,10 +4211,6 @@ msgstr "Essen und Trinken"
 #: src/Schema/LocalBusinessTypes.php:42
 msgid "Food establishment (generic)"
 msgstr "Gastronomiebetrieb (allgemein)"
-
-#: src/Schema/LocalBusinessTypes.php:43
-msgid "Restaurant"
-msgstr "Restaurant"
 
 #: src/Schema/LocalBusinessTypes.php:44
 msgid "Café or coffee shop"
@@ -3476,10 +4379,6 @@ msgstr "Fitnessclub"
 #: src/Schema/LocalBusinessTypes.php:88
 msgid "Gym"
 msgstr "Fitnessstudio"
-
-#: src/Schema/LocalBusinessTypes.php:89
-msgid "Sports club"
-msgstr "Sportverein"
 
 #: src/Schema/LocalBusinessTypes.php:90
 msgid "Sports activity location"

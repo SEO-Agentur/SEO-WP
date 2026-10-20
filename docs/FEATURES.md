@@ -86,7 +86,7 @@ Moved out of `readme.txt` (WordPress.org truncates the Description tab at 2500 c
 
 **Content blocks and structured data (1.7.0)**
 
-* Blocks for FAQ, How-to, Recipe, Event, Job posting, Course, Software and Video (incl. live stream): visible markup on the page plus a node in the single JSON-LD `@graph`; several per page are fine (an article with an FAQ and a recipe). FAQ questions join the one FAQPage node. `[seooptimierung_schema type="faq" q1="…" a1="…"]` as a shortcode fallback.
+* 28 content blocks — FAQ, How-to, Recipe, Event, Job posting, Course, Software, Video (incl. live stream), Product, Review, Book, Movie, Person, Organization, Local business (with the full business-type list), Service, Place, Podcast episode, Dataset, Q&A page, Fact check (ClaimReview), Property listing, Vehicle, Learning resource, Music album, Item list ("Top 10"), Licensable image and Forum post: visible markup on the page plus a node in the single JSON-LD `@graph`; several per page are fine (an article with an FAQ and a recipe). FAQ questions join the one FAQPage node. `[seooptimierung_schema type="faq" q1="…" a1="…"]` as a shortcode fallback. New types are declared as data in `src/Schema/ExtraContentTypes.php` (see docs/DEVELOPERS.md).
 * Breadcrumbs: block, `[seooptimierung_breadcrumbs]`, `seooptimierung_breadcrumbs()`; same trail as the BreadcrumbList schema (posts include their deepest category, post types their archive).
 
 **Links and images (1.7.0)**

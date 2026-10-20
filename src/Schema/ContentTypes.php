@@ -11,7 +11,8 @@ namespace Seooptimierung\Toolkit\Schema;
 
 /**
  * One registry drives everything about an embeddable content type — FAQ,
- * HowTo, Recipe, Event, JobPosting, Course, SoftwareApplication, VideoObject:
+ * HowTo, Recipe, Event, JobPosting, Course, SoftwareApplication, VideoObject
+ * (coded here) and the further types declared in ExtraContentTypes:
  *
  * - the fields the editor shows (definitions_for_editor()),
  * - the block attributes WordPress needs (block_attributes()),
@@ -262,6 +263,8 @@ final class ContentTypes {
 			),
 		);
 
+		$all = array_merge( $all, ExtraContentTypes::all() );
+
 		return $all;
 	}
 
@@ -501,7 +504,7 @@ final class ContentTypes {
 	 *
 	 * @param string $name Enumeration member.
 	 */
-	private static function enum_url( string $name ): string {
+	public static function enum_url( string $name ): string {
 		return 'https://schema.org/' . preg_replace( '/[^A-Za-z]/', '', $name );
 	}
 
@@ -511,7 +514,7 @@ final class ContentTypes {
 	 * @param array<string,mixed> $attrs Attributes.
 	 * @param string              $key   Attribute name.
 	 */
-	private static function text( array $attrs, string $key ): string {
+	public static function text( array $attrs, string $key ): string {
 		return trim( wp_strip_all_tags( isset( $attrs[ $key ] ) && is_scalar( $attrs[ $key ] ) ? (string) $attrs[ $key ] : '' ) );
 	}
 
@@ -521,7 +524,7 @@ final class ContentTypes {
 	 * @param array<string,mixed> $attrs Attributes.
 	 * @param string              $key   Attribute name.
 	 */
-	private static function url( array $attrs, string $key ): string {
+	public static function url( array $attrs, string $key ): string {
 		return esc_url_raw( trim( isset( $attrs[ $key ] ) && is_scalar( $attrs[ $key ] ) ? (string) $attrs[ $key ] : '' ) );
 	}
 
@@ -575,6 +578,12 @@ final class ContentTypes {
 		$zone = function_exists( 'wp_timezone' ) ? wp_timezone() : new \DateTimeZone( 'UTC' );
 		$node = null;
 
+		$definition = self::all()[ $slug ];
+
+		if ( isset( $definition['build'] ) ) {
+			$node = ExtraContentTypes::node( $definition, $attrs, $ctx, $zone );
+		}
+
 		switch ( $slug ) {
 			case 'howto':
 				$node = self::node_howto( $attrs, $ctx );
@@ -603,8 +612,12 @@ final class ContentTypes {
 			return null;
 		}
 
-		$node['@id']              = ( $ctx['url'] ?? '' ) . '#' . $slug . ( $index > 1 ? '-' . $index : '' );
-		$node['mainEntityOfPage'] = array( '@id' => ( $ctx['url'] ?? '' ) . '#webpage' );
+		$node['@id'] = ( $ctx['url'] ?? '' ) . '#' . $slug . ( $index > 1 ? '-' . $index : '' );
+
+		// A QAPage or property listing is itself a kind of web page, so it is not "the main entity of" one.
+		if ( empty( $definition['page'] ) ) {
+			$node['mainEntityOfPage'] = array( '@id' => ( $ctx['url'] ?? '' ) . '#webpage' );
+		}
 
 		return array_filter(
 			$node,
@@ -977,7 +990,12 @@ final class ContentTypes {
 			return '';
 		}
 
-		$inner = '';
+		$inner      = '';
+		$definition = self::all()[ $slug ];
+
+		if ( isset( $definition['build'] ) ) {
+			$inner = ExtraContentTypes::html( $definition, $attrs );
+		}
 
 		switch ( $slug ) {
 			case 'faq':

@@ -221,7 +221,29 @@ name never left dangling).
 |---|---|---|
 | `seooptimierung/breadcrumbs/items` | `array $items` (`name`, `url`; home first) | Change the trail for both the visible breadcrumbs and the BreadcrumbList schema. |
 | `seooptimierung/breadcrumbs/html` | `string $html, array $items` | Change the visible breadcrumb markup. |
-| `seooptimierung/schema/block_html` | `string $html, string $slug, array $attrs` | Change the visible markup of a content block (`faq`, `howto`, `recipe`, `event`, `job-posting`, `course`, `software-application`, `video`). |
+| `seooptimierung/schema/block_html` | `string $html, string $slug, array $attrs` | Change the visible markup of a content block (any content-block slug, e.g. `faq`, `recipe`, `product`, `review`, `qa-page`; the full list is the keys of `ContentTypes::all()`). |
 | `seooptimierung/indexing/google_eligible` | `bool $eligible, WP_Post $post` | Mark a page as a job/live-stream page for the Google Indexing API when the markup comes from somewhere else. |
 
 Template function: `seooptimierung_breadcrumbs( array $args = [], bool $display = true ): string` — args: `separator`, `home_label`, `link_current`, `class`.
+
+## Adding a content block type (1.8.0)
+
+Content blocks are declared in `src/Schema/ExtraContentTypes.php`: one entry per type with its editor `fields` and a `build` map of Schema.org property => rule. A generic builder produces the JSON-LD node and the visible markup from the same values; the block, the shortcode and the editor form come from the registry automatically.
+
+```php
+'dataset' => array(
+	'type'   => 'Dataset',
+	'title'  => __( 'Dataset (structured data)', 'seooptimierung-toolkit' ),
+	'fields' => array(
+		self::f( 'name', __( 'Name', 'seooptimierung-toolkit' ), 'text' ),
+		self::f( 'license', __( 'Licence link', 'seooptimierung-toolkit' ), 'url' ),
+	),
+	'build'  => array(
+		'@type'   => array( 'const', 'Dataset' ),
+		'name'    => array( 'text', 'name', 'title' ),   // falls back to the page title
+		'license' => array( 'url', 'license' ),
+	),
+),
+```
+
+Rules: `text`, `url`, `image`, `date`, `datetime`, `minutes`, `seconds`, `number`, `posint`, `list`, `enum`, `boolenum`, `bool`, `upper`, `currency`, `type`, `countif`, `const`, `ctx`, `listitems`, `itemcount`, `entities` and `entity` (a nested object that is left out when empty or when a required property is missing) — see the class comment. A type with `'page' => true` is itself a web page (QAPage, RealEstateListing) and gets no `mainEntityOfPage`. Add a test in `tests/Unit/ExtraContentTypesTest.php`; the registry tests check that every rule reads an existing field.
