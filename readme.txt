@@ -78,6 +78,7 @@ Seooptimierung Toolkit integrates with several third-party services. Every one i
 == Changelog ==
 
 = 1.7.1 =
+* Security hardening: the JSON-LD block is encoded so that no text value (for example in a FAQ or job description) can ever close the script element early.
 * Code quality: every value read from a form or from the server environment is now sanitized where it is read (URL list, bulk editor, FAQ fields, role matrix, API-key form, CSV upload, request method, host and URI).
 * Code quality: the importers pass table names to `$wpdb->prepare()` as identifiers (`%i`).
 * The remaining Plugin Check notes (noindex meta query in the sitemaps and llms.txt, the optional own-key AI fallback) are marked in the code with their reason.

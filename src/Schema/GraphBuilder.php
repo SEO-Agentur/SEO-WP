@@ -168,7 +168,8 @@ final class GraphBuilder {
 			'@graph'   => array_values( $nodes ),
 		);
 
-		return (string) wp_json_encode( $graph );
+		// HEX_TAG / HEX_AMP: a stray "</script>" or "<!--" in any text value cannot break out of the script element.
+		return (string) wp_json_encode( $graph, JSON_HEX_TAG | JSON_HEX_AMP );
 	}
 
 	/**
