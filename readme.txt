@@ -5,7 +5,7 @@ Tags: seo, wpml, polylang, sitemap, schema
 Requires at least: 6.4
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.9.0
+Stable tag: 1.10.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -76,6 +76,11 @@ Seooptimierung Toolkit integrates with several third-party services. Every one i
 **Resource Hint Scanner** — contacted only when you click "Scan site for suggestions" under Settings > Performance. Fetches your *own* site's pages (the home page and the newest post of a few content types) and your *own* stylesheets — never a third-party URL — to detect which external origins they load scripts, styles, fonts, images and media from. The result is a list of suggested lines you may choose to add to your own settings — nothing is applied automatically and nothing is sent anywhere else.
 
 == Changelog ==
+
+= 1.10.0 =
+* New: **combine, minify and defer your files** (Settings > Performance). Stylesheets and scripts of your own site that load next to each other are written into one cached file, optionally minified; scripts can be loaded with `defer` or `async` through WordPress's own script loading. The order WordPress decided on is kept, and anything that cannot be combined safely (other sites' files, conditional stylesheets, scripts with inline data or translations, scripts that start with "use strict") stays untouched. Exclusion lists, a "clear cache" button and `?seo_wp_no_optimize=1` to see any page without it. Everything is off by default.
+* New: **security headers for static files** (Settings > Security Headers). The headers were only sent by PHP, so CSS, JavaScript, WebP and other images, fonts and media never got them. One checkbox now writes them to `.htaccess` (Apache/LiteSpeed) or shows the nginx block, and "Check headers now" also checks a stylesheet, a script and an image.
+* Developers: filter `seooptimierung/assets/skip` to switch the optimizer off for a request.
 
 = 1.9.0 =
 * New: **14 more structured-data blocks** (42 in total): Holiday rental (VacationRental), Quiz with flashcards, Math solver, Profile page, Estimated salary, Product with variants (ProductGroup), Subscription content (paywall markup), Menu, TV series, Trip or tour, Sports event, Certificate or award, Scientific article and Law or regulation.

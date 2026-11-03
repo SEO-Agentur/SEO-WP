@@ -40,6 +40,7 @@ use Seooptimierung\Toolkit\Crawl\Verification;
 use Seooptimierung\Toolkit\Frontend\Blocks;
 use Seooptimierung\Toolkit\Frontend\Head;
 use Seooptimierung\Toolkit\Media\AltText;
+use Seooptimierung\Toolkit\Performance\AssetOptimizer;
 use Seooptimierung\Toolkit\Performance\Optimizations;
 use Seooptimierung\Toolkit\Performance\ServerHeaders;
 use Seooptimierung\Toolkit\Sitemaps\Router;
@@ -113,6 +114,7 @@ final class Plugin {
 		( new GoogleIndexing() )->register();
 		( new ServerHeaders() )->register();
 		( new Optimizations() )->register();
+		( new AssetOptimizer() )->register();
 		( new StagingProtection() )->register();
 
 		if ( is_admin() ) {

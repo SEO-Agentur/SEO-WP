@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Seooptimierung Toolkit 1.9.0\n"
+"Project-Id-Version: Seooptimierung Toolkit 1.10.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/seooptimierung-toolkit\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-20T00:51:27+00:00\n"
+"POT-Creation-Date: 2026-11-03T16:37:41+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: seooptimierung-toolkit\n"
@@ -19,8 +19,8 @@ msgstr ""
 #: src/Admin/AuthorFields.php:49
 #: src/Admin/Metabox.php:112
 #: src/Admin/Metabox.php:217
-#: src/Admin/Settings.php:235
-#: src/Admin/Settings.php:236
+#: src/Admin/Settings.php:244
+#: src/Admin/Settings.php:245
 #: src/Frontend/Blocks.php:48
 msgid "Seooptimierung Toolkit"
 msgstr ""
@@ -149,8 +149,9 @@ msgstr ""
 #: src/Admin/RedirectsPage.php:455
 #: src/Admin/RedirectsPage.php:483
 #: src/Admin/RoleManager.php:348
-#: src/Admin/Settings.php:355
-#: src/Admin/Settings.php:1555
+#: src/Admin/Settings.php:364
+#: src/Admin/Settings.php:1279
+#: src/Admin/Settings.php:1774
 #: src/Crawl/StagingProtection.php:137
 #: src/Crawl/StagingProtection.php:156
 msgid "You are not allowed to do this."
@@ -188,7 +189,7 @@ msgstr ""
 #: src/Admin/ImageSeo.php:122
 #: src/Admin/ImportWizard.php:112
 #: src/Admin/LinkAudit.php:326
-#: src/Admin/Settings.php:303
+#: src/Admin/Settings.php:312
 #: assets/admin/link-suggestions.js:112
 #: assets/admin/link-suggestions.js:118
 msgid "Something went wrong."
@@ -409,7 +410,7 @@ msgstr ""
 #: src/Admin/GoogleIndexingPage.php:205
 #: src/Admin/RedirectsPage.php:255
 #: src/Admin/RedirectsPage.php:320
-#: src/Admin/Settings.php:794
+#: src/Admin/Settings.php:810
 #: src/Schema/ContentTypes.php:1245
 msgid "Type"
 msgstr ""
@@ -505,7 +506,7 @@ msgid "No duplicates found."
 msgstr ""
 
 #: src/Admin/DuplicateChecker.php:177
-#: src/Admin/Settings.php:1339
+#: src/Admin/Settings.php:1430
 msgid "Value"
 msgstr ""
 
@@ -822,7 +823,7 @@ msgstr ""
 
 #: src/Admin/IndexNowPage.php:108
 #: src/Admin/IndexNowPage.php:109
-#: src/Admin/Settings.php:1079
+#: src/Admin/Settings.php:1095
 msgid "Instant Indexing"
 msgstr ""
 
@@ -874,8 +875,8 @@ msgstr ""
 
 #: src/Admin/IndexNowPage.php:226
 #: src/Admin/RoleManager.php:275
-#: src/Admin/Settings.php:246
-#: src/Admin/Settings.php:247
+#: src/Admin/Settings.php:255
+#: src/Admin/Settings.php:256
 msgid "Settings"
 msgstr ""
 
@@ -896,7 +897,7 @@ msgid "Current key file"
 msgstr ""
 
 #: src/Admin/IndexNowPage.php:252
-#: src/Admin/Settings.php:909
+#: src/Admin/Settings.php:925
 msgid "open"
 msgstr ""
 
@@ -948,7 +949,7 @@ msgid "URLs"
 msgstr ""
 
 #: src/Admin/IndexNowPage.php:347
-#: src/Admin/Settings.php:1421
+#: src/Admin/Settings.php:1593
 #: src/Schema/ContentTypes.php:104
 #: src/Schema/ExtraContentTypes.php:1360
 msgid "Status"
@@ -1181,7 +1182,7 @@ msgid "No image set"
 msgstr ""
 
 #: src/Admin/Metabox.php:424
-#: src/Admin/Settings.php:579
+#: src/Admin/Settings.php:594
 #: src/Schema/LocalBusinessTypes.php:27
 msgid "General"
 msgstr ""
@@ -1485,7 +1486,7 @@ msgid "auto-deactivated: unsafe pattern"
 msgstr ""
 
 #: src/Admin/RedirectsPage.php:367
-#: src/Admin/Settings.php:995
+#: src/Admin/Settings.php:1011
 #: src/Schema/ExtraContentTypes.php:2164
 msgid "Yes"
 msgstr ""
@@ -1561,238 +1562,238 @@ msgstr ""
 msgid "Save roles"
 msgstr ""
 
-#: src/Admin/Settings.php:47
-#: src/Admin/Settings.php:581
+#: src/Admin/Settings.php:48
+#: src/Admin/Settings.php:596
 msgid "Sitemaps"
 msgstr ""
 
-#: src/Admin/Settings.php:48
-#: src/Admin/Settings.php:585
-#: src/Admin/Settings.php:1488
+#: src/Admin/Settings.php:49
+#: src/Admin/Settings.php:600
+#: src/Admin/Settings.php:1707
 msgid "Security Headers"
 msgstr ""
 
-#: src/Admin/Settings.php:49
-#: src/Admin/Settings.php:584
-#: src/Admin/Settings.php:1203
+#: src/Admin/Settings.php:50
+#: src/Admin/Settings.php:599
+#: src/Admin/Settings.php:1222
 msgid "WordPress Cleanup"
 msgstr ""
 
-#: src/Admin/Settings.php:300
+#: src/Admin/Settings.php:309
 msgid "Scanning your home page and a few sample pages…"
 msgstr ""
 
 #. translators: %d: number of pages scanned.
-#: src/Admin/Settings.php:302
+#: src/Admin/Settings.php:311
 #, php-format
 msgid "Scanned %d page(s)."
 msgstr ""
 
-#: src/Admin/Settings.php:304
+#: src/Admin/Settings.php:313
 msgid "No external resources found — nothing to suggest."
 msgstr ""
 
-#: src/Admin/Settings.php:305
+#: src/Admin/Settings.php:314
 msgid "Origin"
 msgstr ""
 
-#: src/Admin/Settings.php:306
+#: src/Admin/Settings.php:315
 msgid "What loads from it"
 msgstr ""
 
-#: src/Admin/Settings.php:307
+#: src/Admin/Settings.php:316
 msgid "Pages"
 msgstr ""
 
-#: src/Admin/Settings.php:308
+#: src/Admin/Settings.php:317
 msgid "Suggested hint"
 msgstr ""
 
-#: src/Admin/Settings.php:309
+#: src/Admin/Settings.php:318
 msgid "already in your hints"
 msgstr ""
 
-#: src/Admin/Settings.php:310
+#: src/Admin/Settings.php:319
 msgid "Add checked to Resource Hints"
 msgstr ""
 
-#: src/Admin/Settings.php:311
+#: src/Admin/Settings.php:320
 msgid "preconnect opens the connection early (use it for the few origins that block rendering: stylesheets, scripts, fonts); dns-prefetch only resolves the name and suits images and embeds; preload fetches a specific file (a font) before the browser would find it. Keep the list short — a handful of well-chosen hints beats many."
 msgstr ""
 
-#: src/Admin/Settings.php:539
+#: src/Admin/Settings.php:554
 msgid "HSTS preload was switched off: it requires \"includeSubDomains\" and a max-age of at least 31536000 seconds (one year)."
 msgstr ""
 
-#: src/Admin/Settings.php:580
+#: src/Admin/Settings.php:595
 msgid "Content Types"
 msgstr ""
 
-#: src/Admin/Settings.php:582
+#: src/Admin/Settings.php:597
 msgid "Crawl"
 msgstr ""
 
-#: src/Admin/Settings.php:583
+#: src/Admin/Settings.php:598
 msgid "Performance"
 msgstr ""
 
-#: src/Admin/Settings.php:586
+#: src/Admin/Settings.php:601
 msgid "Server"
 msgstr ""
 
-#: src/Admin/Settings.php:592
+#: src/Admin/Settings.php:607
 msgid "Seooptimierung Toolkit Settings"
 msgstr ""
 
-#: src/Admin/Settings.php:696
+#: src/Admin/Settings.php:712
 msgid "Coexistence with another SEO plugin"
 msgstr ""
 
-#: src/Admin/Settings.php:696
+#: src/Admin/Settings.php:712
 msgid "Seooptimierung Toolkit is meant to replace Yoast SEO or Rank Math, not run alongside them. If you need to keep one of them active anyway (e.g. for a feature Seooptimierung Toolkit doesn't have), set this to stop Seooptimierung Toolkit printing its own title/meta description/canonical/Open Graph/Twitter Card/schema output — leaving all of that to the other plugin, so you never get duplicate tags. The Bulk Editor's Title/Description/Canonical columns then read and write that plugin's own fields instead of Seooptimierung Toolkit's. Everything else (sitemaps, hreflang, redirects, 404 monitor, IndexNow, Link Audit, Duplicate Checker, Role Manager, Performance) is unaffected."
 msgstr ""
 
-#: src/Admin/Settings.php:699
+#: src/Admin/Settings.php:715
 msgid "Leave title/meta output to"
 msgstr ""
 
-#: src/Admin/Settings.php:701
+#: src/Admin/Settings.php:717
 msgid "Seooptimierung Toolkit itself (default)"
 msgstr ""
 
-#: src/Admin/Settings.php:702
+#: src/Admin/Settings.php:718
 msgid "Yoast SEO"
 msgstr ""
 
-#: src/Admin/Settings.php:703
+#: src/Admin/Settings.php:719
 msgid "Rank Math"
 msgstr ""
 
-#: src/Admin/Settings.php:708
-#: src/Admin/Settings.php:730
+#: src/Admin/Settings.php:724
+#: src/Admin/Settings.php:746
 msgid "Separator"
 msgstr ""
 
-#: src/Admin/Settings.php:709
+#: src/Admin/Settings.php:725
 msgid "Home title template"
 msgstr ""
 
-#: src/Admin/Settings.php:710
+#: src/Admin/Settings.php:726
 msgid "Home description template"
 msgstr ""
 
-#: src/Admin/Settings.php:713
+#: src/Admin/Settings.php:729
 msgid "Site represents"
 msgstr ""
 
-#: src/Admin/Settings.php:715
+#: src/Admin/Settings.php:731
 msgid "An organization"
 msgstr ""
 
-#: src/Admin/Settings.php:716
+#: src/Admin/Settings.php:732
 msgid "A person"
 msgstr ""
 
-#: src/Admin/Settings.php:717
+#: src/Admin/Settings.php:733
 msgid "A local business"
 msgstr ""
 
-#: src/Admin/Settings.php:721
+#: src/Admin/Settings.php:737
 msgid "Organization/person/business name"
 msgstr ""
 
-#: src/Admin/Settings.php:722
+#: src/Admin/Settings.php:738
 msgid "Twitter/X @handle for the site"
 msgstr ""
 
-#: src/Admin/Settings.php:723
+#: src/Admin/Settings.php:739
 msgid "Default Twitter/X @handle for authors"
 msgstr ""
 
-#: src/Admin/Settings.php:726
+#: src/Admin/Settings.php:742
 #: src/Frontend/Blocks.php:89
 #: assets/blocks/blocks.js:37
 msgid "Breadcrumbs"
 msgstr ""
 
-#: src/Admin/Settings.php:727
+#: src/Admin/Settings.php:743
 msgid "Show the trail from the home page to the current page with the \"Breadcrumbs\" block, the [seooptimierung_breadcrumbs] shortcode, or seooptimierung_breadcrumbs() in your theme. The same trail is written into the structured data (BreadcrumbList)."
 msgstr ""
 
-#: src/Admin/Settings.php:729
+#: src/Admin/Settings.php:745
 msgid "Label of the first crumb"
 msgstr ""
 
-#: src/Admin/Settings.php:731
+#: src/Admin/Settings.php:747
 msgid "For posts and products, include the category (deepest one and its parents)"
 msgstr ""
 
-#: src/Admin/Settings.php:732
+#: src/Admin/Settings.php:748
 msgid "Link the current page in the trail"
 msgstr ""
 
-#: src/Admin/Settings.php:734
+#: src/Admin/Settings.php:750
 msgid "Local business details"
 msgstr ""
 
-#: src/Admin/Settings.php:734
+#: src/Admin/Settings.php:750
 msgid "only used when \"Site represents\" above is set to \"A local business\"."
 msgstr ""
 
-#: src/Admin/Settings.php:737
+#: src/Admin/Settings.php:753
 #: src/Schema/ContentTypes.php:170
 #: src/Schema/ExtraContentTypes.php:1556
 msgid "Street address"
 msgstr ""
 
-#: src/Admin/Settings.php:738
+#: src/Admin/Settings.php:754
 #: src/Schema/ContentTypes.php:172
 #: src/Schema/ExtraContentTypes.php:244
 #: src/Schema/ExtraContentTypes.php:1558
 msgid "City"
 msgstr ""
 
-#: src/Admin/Settings.php:739
+#: src/Admin/Settings.php:755
 msgid "State/region"
 msgstr ""
 
-#: src/Admin/Settings.php:740
+#: src/Admin/Settings.php:756
 #: src/Schema/ContentTypes.php:171
 #: src/Schema/ExtraContentTypes.php:1557
 msgid "Postal code"
 msgstr ""
 
-#: src/Admin/Settings.php:741
+#: src/Admin/Settings.php:757
 msgid "Country (ISO 3166-1 alpha-2, e.g. DE, CH, US)"
 msgstr ""
 
-#: src/Admin/Settings.php:742
+#: src/Admin/Settings.php:758
 msgid "Telephone"
 msgstr ""
 
-#: src/Admin/Settings.php:743
+#: src/Admin/Settings.php:759
 msgid "Price range (e.g. $$ or €€)"
 msgstr ""
 
-#: src/Admin/Settings.php:744
+#: src/Admin/Settings.php:760
 #: src/Schema/ExtraContentTypes.php:340
 #: src/Schema/ExtraContentTypes.php:436
 #: src/Schema/ExtraContentTypes.php:968
 msgid "Latitude"
 msgstr ""
 
-#: src/Admin/Settings.php:745
+#: src/Admin/Settings.php:761
 #: src/Schema/ExtraContentTypes.php:341
 #: src/Schema/ExtraContentTypes.php:437
 #: src/Schema/ExtraContentTypes.php:969
 msgid "Longitude"
 msgstr ""
 
-#: src/Admin/Settings.php:747
+#: src/Admin/Settings.php:763
 msgid "Opening hours — one line per rule: comma-separated two-letter days, a space, then HH:MM-HH:MM. Example: \"Mo,Tu,We,Th,Fr 09:00-18:00\" and \"Sa 10:00-14:00\" on two lines."
 msgstr ""
 
-#: src/Admin/Settings.php:748
+#: src/Admin/Settings.php:764
 #: src/Schema/ExtraContentTypes.php:336
 #: src/Schema/ExtraContentTypes.php:431
 msgid "Opening hours"
@@ -1800,862 +1801,986 @@ msgstr ""
 
 #. translators: %s: post type label.
 #. translators: %s: taxonomy label.
-#: src/Admin/Settings.php:764
-#: src/Admin/Settings.php:779
+#: src/Admin/Settings.php:780
+#: src/Admin/Settings.php:795
 #, php-format
 msgid "%s title template"
 msgstr ""
 
 #. translators: %s: post type label.
-#: src/Admin/Settings.php:770
+#: src/Admin/Settings.php:786
 #, php-format
 msgid "%s description template"
 msgstr ""
 
-#: src/Admin/Settings.php:795
+#: src/Admin/Settings.php:811
 msgid "Title template"
 msgstr ""
 
-#: src/Admin/Settings.php:796
+#: src/Admin/Settings.php:812
 msgid "Description template"
 msgstr ""
 
 #. translators: 1: link to the sitemap index, 2: link to the legacy sitemap.xml alias.
-#: src/Admin/Settings.php:857
+#: src/Admin/Settings.php:873
 #, php-format
 msgid "Sitemap index: %1$s (also reachable as %2$s). Submit the index to Google Search Console and Bing Webmaster Tools — it lists every sitemap switched on below."
 msgstr ""
 
-#: src/Admin/Settings.php:865
+#: src/Admin/Settings.php:881
 msgid "Disable WordPress core's own /wp-sitemap.xml (this plugin's sitemaps replace it)"
 msgstr ""
 
-#: src/Admin/Settings.php:871
+#: src/Admin/Settings.php:887
 msgid "Include hreflang alternates (xhtml:link) in sitemaps"
 msgstr ""
 
-#: src/Admin/Settings.php:875
+#: src/Admin/Settings.php:891
 msgid "When WPML, Polylang or slim-hreflang provides alternate-language URLs, this plugin's sitemaps normally list them as xhtml:link entries alongside the per-page <link rel=\"alternate\"> tags in the document head. Turn this off to have hreflang live only on the pages themselves — some setups prefer one single source of truth rather than two places search engines could theoretically disagree on."
 msgstr ""
 
-#: src/Admin/Settings.php:880
+#: src/Admin/Settings.php:896
 msgid "On"
 msgstr ""
 
-#: src/Admin/Settings.php:881
+#: src/Admin/Settings.php:897
 msgid "Sitemap"
 msgstr ""
 
-#: src/Admin/Settings.php:882
+#: src/Admin/Settings.php:898
 msgid "File name"
 msgstr ""
 
-#: src/Admin/Settings.php:888
+#: src/Admin/Settings.php:904
 msgid "Sitemap index"
 msgstr ""
 
-#: src/Admin/Settings.php:915
+#: src/Admin/Settings.php:931
 msgid "Leave a file name empty to use its default (shown greyed out). Names may contain lowercase letters, digits, \"-\" and \"_\"; a name that clashes with another sitemap is replaced by the default. Pages beyond the first one get a number appended automatically (sitemap_posts_2.xml)."
 msgstr ""
 
-#: src/Admin/Settings.php:918
+#: src/Admin/Settings.php:934
 msgid "Images: switching the image sitemap on moves the image entries out of the page/post sitemaps into sitemap_images.xml; switching it off keeps them inside the page/post sitemaps. Videos: the video sitemap lists self-hosted <video poster> elements and YouTube embeds, but only with a real thumbnail (Vimeo currently doesn't qualify); switched off, no video entries are written anywhere."
 msgstr ""
 
-#: src/Admin/Settings.php:921
+#: src/Admin/Settings.php:937
 msgid "Google News: a separate sitemap listing only article-like content (non-hierarchical public post types) published in the last 48 hours, capped at 1000 URLs. It disappears from the index automatically whenever nothing currently qualifies — Google News enrollment itself is a separate application."
 msgstr ""
 
 #. translators: %s: post type label, e.g. "Products".
-#: src/Admin/Settings.php:954
+#: src/Admin/Settings.php:970
 #, php-format
 msgid "%s (content type)"
 msgstr ""
 
 #. translators: %s: taxonomy label, e.g. "Product categories".
-#: src/Admin/Settings.php:957
+#: src/Admin/Settings.php:973
 #, php-format
 msgid "%s (taxonomy)"
 msgstr ""
 
-#: src/Admin/Settings.php:984
+#: src/Admin/Settings.php:1000
 msgid "Detected environment"
 msgstr ""
 
-#: src/Admin/Settings.php:986
+#: src/Admin/Settings.php:1002
 msgid "Looks like staging/development"
 msgstr ""
 
-#: src/Admin/Settings.php:987
+#: src/Admin/Settings.php:1003
 msgid "Looks like production"
 msgstr ""
 
-#: src/Admin/Settings.php:993
+#: src/Admin/Settings.php:1009
 msgid "Currently indexable by search engines"
 msgstr ""
 
 #. translators: %s: reason the site is noindexed.
-#: src/Admin/Settings.php:999
+#: src/Admin/Settings.php:1015
 #, php-format
 msgid "No — noindexed (%s)"
 msgstr ""
 
-#: src/Admin/Settings.php:1019
+#: src/Admin/Settings.php:1035
 msgid "this plugin's staging override, and WordPress' own \"Discourage search engines\" setting"
 msgstr ""
 
-#: src/Admin/Settings.php:1023
+#: src/Admin/Settings.php:1039
 msgid "this plugin's staging override, above"
 msgstr ""
 
-#: src/Admin/Settings.php:1026
+#: src/Admin/Settings.php:1042
 msgid "WordPress' own Settings > Reading > \"Discourage search engines\""
 msgstr ""
 
-#: src/Admin/Settings.php:1048
+#: src/Admin/Settings.php:1064
 msgid "A staging/development site is also automatically flagged with a dismissible admin notice suggesting this same setting — this checkbox is the same override, just reachable without waiting for that notice."
 msgstr ""
 
-#: src/Admin/Settings.php:1049
+#: src/Admin/Settings.php:1065
 msgid "Noindex this entire site (staging/development override) — overrides every other robots setting on every page"
 msgstr ""
 
-#: src/Admin/Settings.php:1051
+#: src/Admin/Settings.php:1067
 msgid "Custom robots.txt rules"
 msgstr ""
 
-#: src/Admin/Settings.php:1052
+#: src/Admin/Settings.php:1068
 msgid "Block known AI training crawlers"
 msgstr ""
 
-#: src/Admin/Settings.php:1053
+#: src/Admin/Settings.php:1069
 msgid "Enable /llms.txt (links plus each page's meta description)"
 msgstr ""
 
-#: src/Admin/Settings.php:1054
+#: src/Admin/Settings.php:1070
 msgid "Enable /llms-full.txt (additionally includes each page's body text)"
 msgstr ""
 
-#: src/Admin/Settings.php:1055
+#: src/Admin/Settings.php:1071
 msgid "Custom llms.txt content (appended after the generated list)"
 msgstr ""
 
-#: src/Admin/Settings.php:1056
+#: src/Admin/Settings.php:1072
 msgid "Google verification code"
 msgstr ""
 
-#: src/Admin/Settings.php:1056
-#: src/Admin/Settings.php:1057
-#: src/Admin/Settings.php:1058
-#: src/Admin/Settings.php:1059
-#: src/Admin/Settings.php:1060
+#: src/Admin/Settings.php:1072
+#: src/Admin/Settings.php:1073
+#: src/Admin/Settings.php:1074
+#: src/Admin/Settings.php:1075
+#: src/Admin/Settings.php:1076
 msgid "Code or the whole meta tag"
 msgstr ""
 
-#: src/Admin/Settings.php:1057
+#: src/Admin/Settings.php:1073
 msgid "Bing verification code"
 msgstr ""
 
-#: src/Admin/Settings.php:1058
+#: src/Admin/Settings.php:1074
 msgid "Baidu verification code"
 msgstr ""
 
-#: src/Admin/Settings.php:1059
+#: src/Admin/Settings.php:1075
 msgid "Pinterest verification code"
 msgstr ""
 
-#: src/Admin/Settings.php:1060
+#: src/Admin/Settings.php:1076
 msgid "Yandex verification code"
 msgstr ""
 
-#: src/Admin/Settings.php:1061
+#: src/Admin/Settings.php:1077
 msgid "When a published page's address changes, redirect the old address to the new one (301)"
 msgstr ""
 
-#: src/Admin/Settings.php:1062
+#: src/Admin/Settings.php:1078
 msgid "...and change links to the old address in your content and menus to the new one"
 msgstr ""
 
-#: src/Admin/Settings.php:1063
+#: src/Admin/Settings.php:1079
 msgid "Disable author archives"
 msgstr ""
 
-#: src/Admin/Settings.php:1064
+#: src/Admin/Settings.php:1080
 msgid "Disable date archives"
 msgstr ""
 
-#: src/Admin/Settings.php:1067
+#: src/Admin/Settings.php:1083
 msgid "Attachment pages"
 msgstr ""
 
-#: src/Admin/Settings.php:1069
+#: src/Admin/Settings.php:1085
 msgid "Redirect to the parent post (recommended)"
 msgstr ""
 
-#: src/Admin/Settings.php:1070
+#: src/Admin/Settings.php:1086
 msgid "Keep accessible, but noindex them"
 msgstr ""
 
-#: src/Admin/Settings.php:1071
+#: src/Admin/Settings.php:1087
 msgid "Leave to WordPress core"
 msgstr ""
 
-#: src/Admin/Settings.php:1075
+#: src/Admin/Settings.php:1091
 msgid "IndexNow (Bing, Yandex, Seznam, Naver)"
 msgstr ""
 
 #. translators: %s: link to the Instant Indexing admin page.
-#: src/Admin/Settings.php:1078
+#: src/Admin/Settings.php:1094
 #, php-format
 msgid "Moved to the %s page — enable it, optionally set a custom API key, and submit URLs manually or in one click there."
 msgstr ""
 
-#: src/Admin/Settings.php:1084
+#: src/Admin/Settings.php:1100
 msgid "x-default hreflang"
 msgstr ""
 
-#: src/Admin/Settings.php:1088
+#: src/Admin/Settings.php:1104
 msgid "Only takes effect when WPML, Polylang, or a compatible plugin (e.g. slim-hreflang) actually provides alternate-language URLs — with none active, no hreflang or x-default tags are output at all."
 msgstr ""
 
-#: src/Admin/Settings.php:1101
+#: src/Admin/Settings.php:1117
 #: src/Schema/ExtraContentTypes.php:328
 msgid "Business type"
 msgstr ""
 
-#: src/Admin/Settings.php:1120
+#: src/Admin/Settings.php:1136
 msgid "The Schema.org type written into your structured data (the name in brackets is the exact value). Pick the most specific one that fits; \"Local business (generic)\" if none does."
 msgstr ""
 
-#: src/Admin/Settings.php:1131
+#: src/Admin/Settings.php:1147
 msgid "WPML/Polylang's default language"
 msgstr ""
 
-#: src/Admin/Settings.php:1132
+#: src/Admin/Settings.php:1148
 msgid "Off"
 msgstr ""
 
 #. translators: 1: language name, 2: language code.
-#: src/Admin/Settings.php:1155
+#: src/Admin/Settings.php:1171
 #, php-format
 msgid "Always %1$s (%2$s)"
 msgstr ""
 
-#: src/Admin/Settings.php:1174
-msgid "This plugin cannot auto-detect critical CSS — that requires actually rendering the page (real layout, real box positions), which no CSS parsing pass can do. Paste critical CSS from a tool of your choice, or write it by hand."
-msgstr ""
-
-#: src/Admin/Settings.php:1177
-msgid "Critical CSS (inlined in <head>)"
-msgstr ""
-
-#: src/Admin/Settings.php:1180
-msgid "Independent of the above: without critical CSS in place, deferring every other stylesheet will show a flash of unstyled content until they finish loading — enable this once you have critical CSS covering what visitors see immediately, or if you've decided that tradeoff is acceptable for your site."
-msgstr ""
-
-#: src/Admin/Settings.php:1183
-msgid "Load all other stylesheets non-blocking"
-msgstr ""
-
-#: src/Admin/Settings.php:1185
-msgid "Resource hints"
-msgstr ""
-
-#: src/Admin/Settings.php:1185
-msgid "one per line: preconnect/dns-prefetch/preload/prefetch/prerender, a URL, and optional as=…, type=… and crossorigin — e.g. the two lines below cover a typical Google Fonts setup."
-msgstr ""
-
-#: src/Admin/Settings.php:1190
-msgid "Resource hints (output early in <head>)"
+#: src/Admin/Settings.php:1191
+msgid "Critical CSS and non-blocking stylesheets"
 msgstr ""
 
 #: src/Admin/Settings.php:1193
+msgid "This plugin cannot auto-detect critical CSS — that requires actually rendering the page (real layout, real box positions), which no CSS parsing pass can do. Paste critical CSS from a tool of your choice, or write it by hand."
+msgstr ""
+
+#: src/Admin/Settings.php:1196
+msgid "Critical CSS (inlined in <head>)"
+msgstr ""
+
+#: src/Admin/Settings.php:1199
+msgid "Independent of the above: without critical CSS in place, deferring every other stylesheet will show a flash of unstyled content until they finish loading — enable this once you have critical CSS covering what visitors see immediately, or if you've decided that tradeoff is acceptable for your site."
+msgstr ""
+
+#: src/Admin/Settings.php:1202
+msgid "Load all other stylesheets non-blocking"
+msgstr ""
+
+#: src/Admin/Settings.php:1204
+msgid "Resource hints"
+msgstr ""
+
+#: src/Admin/Settings.php:1204
+msgid "one per line: preconnect/dns-prefetch/preload/prefetch/prerender, a URL, and optional as=…, type=… and crossorigin — e.g. the two lines below cover a typical Google Fonts setup."
+msgstr ""
+
+#: src/Admin/Settings.php:1209
+msgid "Resource hints (output early in <head>)"
+msgstr ""
+
+#: src/Admin/Settings.php:1212
 msgid "Scan site for suggestions"
 msgstr ""
 
-#: src/Admin/Settings.php:1195
+#: src/Admin/Settings.php:1214
 msgid "Loads your home page and the newest post of a few content types, plus the stylesheets they use, and lists every external origin they pull scripts, styles, fonts, images, embeds and media from — with how often, on how many pages, and whether a hint already exists. Pick which suggested hints to add; nothing is inserted or saved automatically."
 msgstr ""
 
 #. translators: %s: link to the WordPress Cleanup page.
-#: src/Admin/Settings.php:1202
+#: src/Admin/Settings.php:1221
 #, php-format
 msgid "Emoji, embeds, Dashicons, revisions, Heartbeat, comments and the other \"unused WordPress features\" switches now have their own page: %s."
 msgstr ""
 
+#: src/Admin/Settings.php:1233
+msgid "The cache was cleared."
+msgstr ""
+
+#: src/Admin/Settings.php:1237
+msgid "Combine and minify stylesheets and scripts"
+msgstr ""
+
+#: src/Admin/Settings.php:1238
+msgid "Files of this site that load next to each other are written into one cached file, optionally minified, so the browser needs fewer requests. The order WordPress decided on is kept; files that cannot be combined safely (other sites' files, conditional stylesheets, scripts with inline code or translations, scripts starting with \"use strict\") stay as they are. Everything is off by default — switch one thing on, open your site in a private window and look through the important pages. Add ?seo_wp_no_optimize=1 to any address to see that page without any of this."
+msgstr ""
+
+#: src/Admin/Settings.php:1241
+msgid "Combine stylesheets (CSS) into one file"
+msgstr ""
+
 #: src/Admin/Settings.php:1242
-msgid "WordPress ships with features that many sites never use but that still add markup, requests or attack surface. Every switch below is off by default — turn on only what your site genuinely does without, and read the \"only needed if\" note first."
+msgid "Minify stylesheets (removes comments and extra spaces)"
+msgstr ""
+
+#: src/Admin/Settings.php:1243
+msgid "Loading stylesheets non-blocking (\"defer\") is the checkbox further down, below the critical CSS box, and applies to the combined files too."
+msgstr ""
+
+#: src/Admin/Settings.php:1244
+msgid "Never touch these stylesheets"
 msgstr ""
 
 #: src/Admin/Settings.php:1245
-msgid "Page source (<head> and headers)"
-msgstr ""
-
-#: src/Admin/Settings.php:1245
-msgid "Invisible clutter that crawlers and visitors never need."
-msgstr ""
-
-#: src/Admin/Settings.php:1246
-msgid "Remove the WordPress version (generator tag)"
-msgstr ""
-
-#: src/Admin/Settings.php:1246
-msgid "Harmless to remove. The version can still leak through \"?ver=\" asset URLs unless you also strip those below."
+msgid "One entry per line: a handle (e.g. elementor-frontend) or a part of the file address (e.g. /plugins/slider/). Lines starting with # are comments."
 msgstr ""
 
 #: src/Admin/Settings.php:1247
-msgid "Remove the RSD (Really Simple Discovery) link"
-msgstr ""
-
-#: src/Admin/Settings.php:1247
-msgid "Only needed if you publish with an old desktop blogging client or XML-RPC based tool."
+msgid "Combine scripts (JavaScript) into one file"
 msgstr ""
 
 #: src/Admin/Settings.php:1248
-msgid "Remove the wlwmanifest (Windows Live Writer) link"
-msgstr ""
-
-#: src/Admin/Settings.php:1248
-msgid "Windows Live Writer is discontinued; there is practically no case where this is still needed."
+msgid "Minify scripts (careful: removes comments and extra spaces; files ending in .min.js are left as they are)"
 msgstr ""
 
 #: src/Admin/Settings.php:1249
-msgid "Remove the shortlink (<head> tag and Link header)"
-msgstr ""
-
-#: src/Admin/Settings.php:1249
-msgid "Only needed if you or a tool relies on the \"?p=123\" short URL of posts."
+msgid "Load scripts with defer (they run after the page is parsed)"
 msgstr ""
 
 #: src/Admin/Settings.php:1250
-msgid "Remove rel=\"prev\"/\"next\" links to neighbouring posts"
-msgstr ""
-
-#: src/Admin/Settings.php:1250
-msgid "Search engines and browsers no longer use these for ordinary posts."
+msgid "Load independent scripts with async (they run as soon as they have loaded)"
 msgstr ""
 
 #: src/Admin/Settings.php:1251
-msgid "Remove RSS feed auto-discovery links"
-msgstr ""
-
-#: src/Admin/Settings.php:1251
-msgid "Only needed if visitors subscribe by pasting your site address into a feed reader; the feeds themselves keep working."
-msgstr ""
-
-#: src/Admin/Settings.php:1252
-msgid "Remove REST API discovery links (<head> and HTTP headers)"
-msgstr ""
-
-#: src/Admin/Settings.php:1252
-msgid "Only needed if an app or tool finds your REST API by discovery; the API itself stays reachable."
-msgstr ""
-
-#: src/Admin/Settings.php:1253
-msgid "Remove the X-Pingback header"
-msgstr ""
-
-#: src/Admin/Settings.php:1253
-msgid "Only needed if other blogs should be able to send you pingbacks."
-msgstr ""
-
-#: src/Admin/Settings.php:1254
-msgid "Disable embeds (oEmbed discovery, the oEmbed JSON endpoint and wp-embed.js)"
-msgstr ""
-
-#: src/Admin/Settings.php:1254
-msgid "Only needed if other sites embed your posts as preview cards, or you paste links to your own posts into the editor and expect a card."
-msgstr ""
-
-#: src/Admin/Settings.php:1255
-msgid "Remove the inline style of the \"Recent Comments\" widget"
-msgstr ""
-
-#: src/Admin/Settings.php:1255
-msgid "Only matters if you use that widget and rely on its default spacing."
+msgid "Defer and async use WordPress's own script loading, which keeps dependencies and inline code intact. What it cannot see is code printed by hand into a page that expects a script to be there already — typically inline jQuery(…) code. That is why jQuery is excluded below until you change the list. If something stops working, add the script's handle to the list or switch the option off."
 msgstr ""
 
 #: src/Admin/Settings.php:1257
+msgid "Never touch these scripts"
+msgstr ""
+
+#. translators: 1: number of cached files, 2: their size.
+#: src/Admin/Settings.php:1266
+#, php-format
+msgid "Generated files: %1$s (%2$s). They are rebuilt automatically when a file changes and removed when the theme or a plugin changes."
+msgstr ""
+
+#: src/Admin/Settings.php:1270
+msgid "Clear the cache now"
+msgstr ""
+
+#: src/Admin/Settings.php:1333
+msgid "WordPress ships with features that many sites never use but that still add markup, requests or attack surface. Every switch below is off by default — turn on only what your site genuinely does without, and read the \"only needed if\" note first."
+msgstr ""
+
+#: src/Admin/Settings.php:1336
+msgid "Page source (<head> and headers)"
+msgstr ""
+
+#: src/Admin/Settings.php:1336
+msgid "Invisible clutter that crawlers and visitors never need."
+msgstr ""
+
+#: src/Admin/Settings.php:1337
+msgid "Remove the WordPress version (generator tag)"
+msgstr ""
+
+#: src/Admin/Settings.php:1337
+msgid "Harmless to remove. The version can still leak through \"?ver=\" asset URLs unless you also strip those below."
+msgstr ""
+
+#: src/Admin/Settings.php:1338
+msgid "Remove the RSD (Really Simple Discovery) link"
+msgstr ""
+
+#: src/Admin/Settings.php:1338
+msgid "Only needed if you publish with an old desktop blogging client or XML-RPC based tool."
+msgstr ""
+
+#: src/Admin/Settings.php:1339
+msgid "Remove the wlwmanifest (Windows Live Writer) link"
+msgstr ""
+
+#: src/Admin/Settings.php:1339
+msgid "Windows Live Writer is discontinued; there is practically no case where this is still needed."
+msgstr ""
+
+#: src/Admin/Settings.php:1340
+msgid "Remove the shortlink (<head> tag and Link header)"
+msgstr ""
+
+#: src/Admin/Settings.php:1340
+msgid "Only needed if you or a tool relies on the \"?p=123\" short URL of posts."
+msgstr ""
+
+#: src/Admin/Settings.php:1341
+msgid "Remove rel=\"prev\"/\"next\" links to neighbouring posts"
+msgstr ""
+
+#: src/Admin/Settings.php:1341
+msgid "Search engines and browsers no longer use these for ordinary posts."
+msgstr ""
+
+#: src/Admin/Settings.php:1342
+msgid "Remove RSS feed auto-discovery links"
+msgstr ""
+
+#: src/Admin/Settings.php:1342
+msgid "Only needed if visitors subscribe by pasting your site address into a feed reader; the feeds themselves keep working."
+msgstr ""
+
+#: src/Admin/Settings.php:1343
+msgid "Remove REST API discovery links (<head> and HTTP headers)"
+msgstr ""
+
+#: src/Admin/Settings.php:1343
+msgid "Only needed if an app or tool finds your REST API by discovery; the API itself stays reachable."
+msgstr ""
+
+#: src/Admin/Settings.php:1344
+msgid "Remove the X-Pingback header"
+msgstr ""
+
+#: src/Admin/Settings.php:1344
+msgid "Only needed if other blogs should be able to send you pingbacks."
+msgstr ""
+
+#: src/Admin/Settings.php:1345
+msgid "Disable embeds (oEmbed discovery, the oEmbed JSON endpoint and wp-embed.js)"
+msgstr ""
+
+#: src/Admin/Settings.php:1345
+msgid "Only needed if other sites embed your posts as preview cards, or you paste links to your own posts into the editor and expect a card."
+msgstr ""
+
+#: src/Admin/Settings.php:1346
+msgid "Remove the inline style of the \"Recent Comments\" widget"
+msgstr ""
+
+#: src/Admin/Settings.php:1346
+msgid "Only matters if you use that widget and rely on its default spacing."
+msgstr ""
+
+#: src/Admin/Settings.php:1348
 msgid "Scripts and styles loaded on every page"
 msgstr ""
 
-#: src/Admin/Settings.php:1258
+#: src/Admin/Settings.php:1349
 msgid "Disable emoji scripts and styles"
 msgstr ""
 
-#: src/Admin/Settings.php:1258
+#: src/Admin/Settings.php:1349
 msgid "Modern browsers draw emoji natively; only very old browsers lose the emoji images."
 msgstr ""
 
-#: src/Admin/Settings.php:1259
+#: src/Admin/Settings.php:1350
 msgid "Disable Dashicons for visitors who aren't logged in"
 msgstr ""
 
-#: src/Admin/Settings.php:1259
+#: src/Admin/Settings.php:1350
 msgid "Only needed if your theme or a plugin shows Dashicons icons on the public site."
 msgstr ""
 
-#: src/Admin/Settings.php:1260
+#: src/Admin/Settings.php:1351
 msgid "Remove the block editor's front-end stylesheets (wp-block-library)"
 msgstr ""
 
-#: src/Admin/Settings.php:1260
+#: src/Admin/Settings.php:1351
 msgid "Only for classic themes whose content does not use block styling. Block themes and block-built pages need these styles — test before enabling."
 msgstr ""
 
-#: src/Admin/Settings.php:1261
+#: src/Admin/Settings.php:1352
 msgid "Remove inline \"global styles\" and SVG duotone filters"
 msgstr ""
 
-#: src/Admin/Settings.php:1261
+#: src/Admin/Settings.php:1352
 msgid "Only for classic themes without theme.json. Block themes build their whole look from these styles — leave off there."
 msgstr ""
 
-#: src/Admin/Settings.php:1262
+#: src/Admin/Settings.php:1353
 msgid "Remove jQuery Migrate"
 msgstr ""
 
-#: src/Admin/Settings.php:1262
+#: src/Admin/Settings.php:1353
 msgid "Only needed if an old theme or plugin still uses jQuery functions that were removed from current jQuery. If something on the page breaks, switch it back off."
 msgstr ""
 
-#: src/Admin/Settings.php:1263
+#: src/Admin/Settings.php:1354
 msgid "Remove \"?ver=\" from script and style URLs"
 msgstr ""
 
-#: src/Admin/Settings.php:1263
+#: src/Admin/Settings.php:1354
 msgid "Some caches and CDNs then store assets more aggressively, but browsers also no longer re-download a file automatically after a plugin or theme update — purge your cache after updates."
 msgstr ""
 
-#: src/Admin/Settings.php:1264
+#: src/Admin/Settings.php:1355
 msgid "Block Google Maps scripts from loading"
 msgstr ""
 
-#: src/Admin/Settings.php:1264
+#: src/Admin/Settings.php:1355
 msgid "Only needed if a theme or plugin shows a Google map. Use it when a plugin loads the Maps API on pages that have no map."
 msgstr ""
 
-#: src/Admin/Settings.php:1266
+#: src/Admin/Settings.php:1357
 #: src/Sitemaps/SitemapNames.php:168
 msgid "Images"
 msgstr ""
 
-#: src/Admin/Settings.php:1267
+#: src/Admin/Settings.php:1358
 msgid "Don't link inserted images to their attachment page"
 msgstr ""
 
-#: src/Admin/Settings.php:1267
+#: src/Admin/Settings.php:1358
 msgid "Stops images in content from linking to a thin attachment page. Only needed if you actually want visitors to land on attachment pages."
 msgstr ""
 
-#: src/Admin/Settings.php:1269
+#: src/Admin/Settings.php:1360
 msgid "Features and endpoints"
 msgstr ""
 
-#: src/Admin/Settings.php:1269
+#: src/Admin/Settings.php:1360
 msgid "Interfaces WordPress exposes by default; several are common attack targets."
 msgstr ""
 
-#: src/Admin/Settings.php:1270
+#: src/Admin/Settings.php:1361
 msgid "Disable XML-RPC"
 msgstr ""
 
-#: src/Admin/Settings.php:1270
+#: src/Admin/Settings.php:1361
 msgid "Only needed for Jetpack, some old mobile/desktop publishing apps and pingbacks."
 msgstr ""
 
-#: src/Admin/Settings.php:1271
+#: src/Admin/Settings.php:1362
 msgid "Disable self-pingbacks"
 msgstr ""
 
-#: src/Admin/Settings.php:1271
+#: src/Admin/Settings.php:1362
 msgid "Linking to your own posts no longer pings them. There is rarely a reason to want those pings."
 msgstr ""
 
-#: src/Admin/Settings.php:1272
+#: src/Admin/Settings.php:1363
 msgid "Disable RSS feeds entirely (visitors get a message instead)"
 msgstr ""
 
-#: src/Admin/Settings.php:1272
+#: src/Admin/Settings.php:1363
 msgid "Only needed if you want people or aggregators to subscribe to your content."
 msgstr ""
 
-#: src/Admin/Settings.php:1273
+#: src/Admin/Settings.php:1364
 msgid "Restrict the REST API to logged-in users"
 msgstr ""
 
-#: src/Admin/Settings.php:1273
+#: src/Admin/Settings.php:1364
 msgid "Careful: many themes, page builders and the block editor itself rely on the REST API, including for visitors who aren't logged in — test thoroughly before relying on this in production. This also blocks the slim-hreflang companion plugin's multisite manifest route, so hreflang sync between your sites stops unless you exempt that route yourself."
 msgstr ""
 
-#: src/Admin/Settings.php:1274
+#: src/Admin/Settings.php:1365
 msgid "Disable application passwords"
 msgstr ""
 
-#: src/Admin/Settings.php:1274
+#: src/Admin/Settings.php:1365
 msgid "Only needed if an app, script or integration logs in to the REST API with an application password (e.g. a headless front end or an automation tool)."
 msgstr ""
 
-#: src/Admin/Settings.php:1275
+#: src/Admin/Settings.php:1366
 msgid "Block username enumeration (?author=1 and the public REST user list)"
 msgstr ""
 
-#: src/Admin/Settings.php:1275
+#: src/Admin/Settings.php:1366
 msgid "Only needed if a front end or app reads author data from the public REST API. Author archive pages keep working at their normal URLs."
 msgstr ""
 
-#: src/Admin/Settings.php:1276
+#: src/Admin/Settings.php:1367
 msgid "Show one neutral login error message"
 msgstr ""
 
-#: src/Admin/Settings.php:1276
+#: src/Admin/Settings.php:1367
 msgid "Replaces \"unknown username\" / \"wrong password\" with a single message so the login form doesn't reveal which usernames exist."
 msgstr ""
 
-#: src/Admin/Settings.php:1278
+#: src/Admin/Settings.php:1369
 msgid "Comments"
 msgstr ""
 
-#: src/Admin/Settings.php:1279
+#: src/Admin/Settings.php:1370
 msgid "Disable comments sitewide (closes comments and pings, hides the Comments admin menu)"
 msgstr ""
 
-#: src/Admin/Settings.php:1279
+#: src/Admin/Settings.php:1370
 msgid "Only needed if your site has a discussion. Existing comments are kept in the database."
 msgstr ""
 
-#: src/Admin/Settings.php:1280
+#: src/Admin/Settings.php:1371
 msgid "Show comment author names as plain text, without a link to their URL"
 msgstr ""
 
-#: src/Admin/Settings.php:1280
+#: src/Admin/Settings.php:1371
 msgid "Takes away the main incentive for link-spam comments; commenters' links are only ever useful on a very open community blog."
 msgstr ""
 
-#: src/Admin/Settings.php:1282
+#: src/Admin/Settings.php:1373
 msgid "Database and admin load"
 msgstr ""
 
-#: src/Admin/Settings.php:1283
+#: src/Admin/Settings.php:1374
 msgid "Post revisions to keep"
 msgstr ""
 
-#: src/Admin/Settings.php:1283
+#: src/Admin/Settings.php:1374
 msgid "Leave empty for WordPress' own default (unlimited). 0 disables revisions entirely — only do that if nobody ever needs to roll back an edit."
 msgstr ""
 
-#: src/Admin/Settings.php:1284
+#: src/Admin/Settings.php:1375
 msgid "Autosave interval (seconds)"
 msgstr ""
 
-#: src/Admin/Settings.php:1284
+#: src/Admin/Settings.php:1375
 msgid "Leave empty for WordPress' own default (60 seconds)."
 msgstr ""
 
-#: src/Admin/Settings.php:1287
+#: src/Admin/Settings.php:1378
 msgid "Heartbeat API"
 msgstr ""
 
-#: src/Admin/Settings.php:1289
-#: src/Admin/Settings.php:1464
-#: src/Admin/Settings.php:1474
+#: src/Admin/Settings.php:1380
+#: src/Admin/Settings.php:1683
+#: src/Admin/Settings.php:1693
 msgid "Leave as-is"
 msgstr ""
 
-#: src/Admin/Settings.php:1290
+#: src/Admin/Settings.php:1381
 msgid "Disable everywhere in wp-admin except the post editor"
 msgstr ""
 
-#: src/Admin/Settings.php:1291
+#: src/Admin/Settings.php:1382
 msgid "Disable on the public site"
 msgstr ""
 
-#: src/Admin/Settings.php:1292
+#: src/Admin/Settings.php:1383
 msgid "Disable everywhere"
 msgstr ""
 
-#: src/Admin/Settings.php:1296
+#: src/Admin/Settings.php:1387
 msgid "The Heartbeat polls admin-ajax.php on a timer for post locks, autosave and the dashboard widgets. Only needed in the editor: switching it off elsewhere saves server load, switching it off there too means no post-lock warning when two people edit the same post."
 msgstr ""
 
-#: src/Admin/Settings.php:1297
+#: src/Admin/Settings.php:1388
 msgid "Heartbeat frequency (seconds)"
 msgstr ""
 
-#: src/Admin/Settings.php:1297
+#: src/Admin/Settings.php:1388
 msgid "Leave empty for WordPress' own default. Ignored when Heartbeat is fully disabled above."
 msgstr ""
 
-#: src/Admin/Settings.php:1298
+#: src/Admin/Settings.php:1389
 msgid "Remove the WordPress news, events and Quick Draft boxes from the dashboard"
 msgstr ""
 
-#: src/Admin/Settings.php:1298
+#: src/Admin/Settings.php:1389
 msgid "Only affects the admin dashboard; the boxes load external content on every dashboard visit."
 msgstr ""
 
-#: src/Admin/Settings.php:1301
+#: src/Admin/Settings.php:1392
 msgid "WooCommerce"
 msgstr ""
 
-#: src/Admin/Settings.php:1302
+#: src/Admin/Settings.php:1393
 msgid "Disable cart fragments (the wc-ajax=get_refreshed_fragments request)"
 msgstr ""
 
-#: src/Admin/Settings.php:1302
+#: src/Admin/Settings.php:1393
 msgid "Only needed if a mini-cart or cart counter must update live on every page without a reload."
 msgstr ""
 
-#: src/Admin/Settings.php:1303
+#: src/Admin/Settings.php:1394
 msgid "Only load WooCommerce scripts/styles on shop, cart, checkout and account pages"
 msgstr ""
 
-#: src/Admin/Settings.php:1303
+#: src/Admin/Settings.php:1394
 msgid "Only needed if you use WooCommerce blocks or shortcodes (e.g. add-to-cart buttons) on other pages."
 msgstr ""
 
-#: src/Admin/Settings.php:1318
+#: src/Admin/Settings.php:1409
 msgid "Response headers that tell browsers how to treat your pages. Each one can be switched on individually. Use \"Check headers now\" below the Save button to see what your site actually sends — including headers sent twice because a security plugin or the web server sends the same ones."
 msgstr ""
 
-#: src/Admin/Settings.php:1322
+#: src/Admin/Settings.php:1413
 msgid "Send X-Content-Type-Options: nosniff"
 msgstr ""
 
-#: src/Admin/Settings.php:1323
+#: src/Admin/Settings.php:1414
 msgid "Stops browsers from guessing a file's type against the declared Content-Type. Safe to enable on practically every site."
 msgstr ""
 
-#: src/Admin/Settings.php:1326
+#: src/Admin/Settings.php:1417
 msgid "Send the Referrer-Policy header"
 msgstr ""
 
-#: src/Admin/Settings.php:1329
-#: src/Admin/Settings.php:1352
-#: src/Admin/Settings.php:1378
+#: src/Admin/Settings.php:1420
+#: src/Admin/Settings.php:1443
+#: src/Admin/Settings.php:1469
 msgid "Policy"
 msgstr ""
 
-#: src/Admin/Settings.php:1333
+#: src/Admin/Settings.php:1424
 msgid "How much of the page address is passed on when a visitor follows a link. \"strict-origin-when-cross-origin\" is the current browser default and a sensible choice; analytics or affiliate partners that need the full address on cross-site links may need a looser value."
 msgstr ""
 
-#: src/Admin/Settings.php:1336
+#: src/Admin/Settings.php:1427
 msgid "Send the X-Frame-Options header"
 msgstr ""
 
-#: src/Admin/Settings.php:1341
+#: src/Admin/Settings.php:1432
 msgid "SAMEORIGIN (recommended)"
 msgstr ""
 
-#: src/Admin/Settings.php:1342
+#: src/Admin/Settings.php:1433
 msgid "DENY"
 msgstr ""
 
-#: src/Admin/Settings.php:1346
+#: src/Admin/Settings.php:1437
 msgid "Protects against clickjacking. SAMEORIGIN lets your own site frame itself; DENY blocks all framing, which also stops your own page builder's or customizer's preview from working on the front end."
 msgstr ""
 
-#: src/Admin/Settings.php:1349
+#: src/Admin/Settings.php:1440
 msgid "Send the Permissions-Policy header"
 msgstr ""
 
-#: src/Admin/Settings.php:1356
+#: src/Admin/Settings.php:1447
 msgid "Switches off browser features for your pages. The default turns off geolocation, camera and microphone — remove an entry if your site uses it (e.g. a store locator needs geolocation)."
 msgstr ""
 
-#: src/Admin/Settings.php:1359
+#: src/Admin/Settings.php:1450
 msgid "Send the Strict-Transport-Security header (only sent over HTTPS)"
 msgstr ""
 
-#: src/Admin/Settings.php:1362
+#: src/Admin/Settings.php:1453
 msgid "max-age (seconds)"
 msgstr ""
 
-#: src/Admin/Settings.php:1365
+#: src/Admin/Settings.php:1456
 msgid "How long browsers remember to use HTTPS only. 31536000 = one year (recommended once HTTPS works everywhere)."
 msgstr ""
 
-#: src/Admin/Settings.php:1367
+#: src/Admin/Settings.php:1458
 msgid "Include subdomains (includeSubDomains)"
 msgstr ""
 
-#: src/Admin/Settings.php:1368
+#: src/Admin/Settings.php:1459
 msgid "Applies HSTS to every subdomain. Only enable it if every subdomain serves HTTPS."
 msgstr ""
 
-#: src/Admin/Settings.php:1369
+#: src/Admin/Settings.php:1460
 msgid "Allow preloading (preload)"
 msgstr ""
 
-#: src/Admin/Settings.php:1370
+#: src/Admin/Settings.php:1461
 msgid "Marks the domain for the browsers' built-in HSTS list; needs includeSubDomains and a max-age of at least one year, and is hard to undo — submit the domain at hstspreload.org afterwards. HSTS itself is cached by browsers for the whole max-age, so make sure HTTPS works sitewide first."
 msgstr ""
 
-#: src/Admin/Settings.php:1373
+#: src/Admin/Settings.php:1464
 msgid "Send the Content-Security-Policy header (public pages only, never wp-admin or the login screen)"
 msgstr ""
 
-#: src/Admin/Settings.php:1374
+#: src/Admin/Settings.php:1465
 msgid "Report-only mode (recommended while tuning)"
 msgstr ""
 
-#: src/Admin/Settings.php:1375
+#: src/Admin/Settings.php:1466
 msgid "In report-only mode the browser only logs violations in its developer console and blocks nothing. Switch it off once you have confirmed that nothing on your site is reported."
 msgstr ""
 
-#: src/Admin/Settings.php:1381
+#: src/Admin/Settings.php:1472
 msgid "The default suits a typical WordPress site (inline scripts/styles allowed, https images and embeds). Add the hosts you really load from, e.g. fonts.googleapis.com in style-src and fonts.gstatic.com in font-src for Google Fonts, or your analytics and video providers."
 msgstr ""
 
-#: src/Admin/Settings.php:1393
-msgid "Check headers now"
-msgstr ""
-
-#: src/Admin/Settings.php:1421
-msgid "Header"
-msgstr ""
-
-#: src/Admin/Settings.php:1421
-msgid "Value sent"
-msgstr ""
-
-#: src/Admin/Settings.php:1428
-msgid "sent, as configured"
-msgstr ""
-
-#: src/Admin/Settings.php:1431
-msgid "sent more than once — another plugin or the server sends it too"
-msgstr ""
-
-#: src/Admin/Settings.php:1434
-msgid "arrives with a different value than configured — a CDN, proxy or the web server replaces it"
-msgstr ""
-
-#: src/Admin/Settings.php:1437
-msgid "configured, but not arriving — a cache or the server strips it"
-msgstr ""
-
-#: src/Admin/Settings.php:1440
-msgid "sent, but not by this plugin (another plugin, the server or a CDN)"
-msgstr ""
-
-#: src/Admin/Settings.php:1443
-msgid "not configured, not sent"
-msgstr ""
-
-#: src/Admin/Settings.php:1448
-msgid "The check requests your home page from the server itself; a CDN or caching layer in front of the site may add or remove headers that this request does or doesn't see. Only one of the two CSP rows is expected to be sent."
-msgstr ""
-
-#: src/Admin/Settings.php:1457
-msgid "Redirects & URL normalization"
-msgstr ""
-
-#: src/Admin/Settings.php:1459
-msgid "Redirect HTTP to HTTPS"
-msgstr ""
-
-#: src/Admin/Settings.php:1462
-msgid "WWW ↔ non-WWW"
-msgstr ""
-
-#: src/Admin/Settings.php:1465
-msgid "Redirect to www."
-msgstr ""
-
-#: src/Admin/Settings.php:1466
-msgid "Redirect to the bare domain (non-www)"
-msgstr ""
-
-#: src/Admin/Settings.php:1472
-msgid "Trailing slash"
-msgstr ""
-
-#: src/Admin/Settings.php:1475
-msgid "Force a trailing slash"
-msgstr ""
-
 #: src/Admin/Settings.php:1476
-msgid "Remove the trailing slash"
+msgid "Static files (CSS, JavaScript, images, fonts)"
+msgstr ""
+
+#: src/Admin/Settings.php:1477
+msgid "The headers above are sent by PHP, but the web server answers CSS, JavaScript, WebP and other images, fonts and media files on its own, without running PHP — so they never get these headers. Switch this on to send the headers above (except the Content-Security-Policy, which only governs pages) with those files too."
+msgstr ""
+
+#: src/Admin/Settings.php:1479
+msgid "Also send the headers above with static files"
 msgstr ""
 
 #: src/Admin/Settings.php:1480
+msgid "This needs web-server configuration. On Apache and LiteSpeed the rules are written to .htaccess with the button below the Save button; on nginx you copy the shown block into the server configuration. Save the checkbox first."
+msgstr ""
+
+#: src/Admin/Settings.php:1491
+msgid "Check headers now"
+msgstr ""
+
+#: src/Admin/Settings.php:1523
+msgid "Home page"
+msgstr ""
+
+#: src/Admin/Settings.php:1547
+msgid "The check requests your home page and one stylesheet, one script and one image from the server itself; a CDN or caching layer in front of the site may add or remove headers that this request does or doesn't see. For pages only one of the two CSP rows is expected to be sent; static files never get a CSP from this plugin."
+msgstr ""
+
+#: src/Admin/Settings.php:1561
+msgid "Stylesheet (CSS)"
+msgstr ""
+
+#: src/Admin/Settings.php:1562
+msgid "Script (JavaScript)"
+msgstr ""
+
+#: src/Admin/Settings.php:1563
+msgid "Image (WebP, PNG, JPEG)"
+msgstr ""
+
+#: src/Admin/Settings.php:1593
+msgid "Header"
+msgstr ""
+
+#: src/Admin/Settings.php:1593
+msgid "Value sent"
+msgstr ""
+
+#: src/Admin/Settings.php:1598
+msgid "sent, as configured"
+msgstr ""
+
+#: src/Admin/Settings.php:1601
+msgid "sent more than once — another plugin or the server sends it too"
+msgstr ""
+
+#: src/Admin/Settings.php:1604
+msgid "arrives with a different value than configured — a CDN, proxy or the web server replaces it"
+msgstr ""
+
+#: src/Admin/Settings.php:1607
+msgid "configured, but not arriving — a cache or the server strips it"
+msgstr ""
+
+#: src/Admin/Settings.php:1610
+msgid "sent, but not by this plugin (another plugin, the server or a CDN)"
+msgstr ""
+
+#: src/Admin/Settings.php:1613
+msgid "not configured, not sent"
+msgstr ""
+
+#: src/Admin/Settings.php:1629
+msgid "Headers for static files"
+msgstr ""
+
+#: src/Admin/Settings.php:1632
+msgid "Switched off. Tick \"Also send the headers above with static files\", save, and the rules for CSS, JavaScript, WebP and other files appear here."
+msgstr ""
+
+#: src/Admin/Settings.php:1638
+#: src/Admin/Settings.php:1743
+msgid ".htaccess updated."
+msgstr ""
+
+#: src/Admin/Settings.php:1650
+msgid "None of the headers above is switched on, so there is nothing to send with static files."
+msgstr ""
+
+#: src/Admin/Settings.php:1655
+msgid "Apache/LiteSpeed: these rules are part of the block this plugin keeps in .htaccess (together with the Server tab's compression and caching rules). Needs mod_headers, which most hosts have."
+msgstr ""
+
+#: src/Admin/Settings.php:1661
+#: src/Admin/Settings.php:1733
+#: src/Admin/Settings.php:1764
+msgid "Apply to .htaccess"
+msgstr ""
+
+#: src/Admin/Settings.php:1666
+msgid "This server does not look like Apache or LiteSpeed, so .htaccess has no effect. For nginx, add this block to the server configuration and reload nginx. Note that nginx drops the headers of the surrounding block inside a location with its own add_header, so repeat any others here (for example Cache-Control)."
+msgstr ""
+
+#: src/Admin/Settings.php:1676
+msgid "Redirects & URL normalization"
+msgstr ""
+
+#: src/Admin/Settings.php:1678
+msgid "Redirect HTTP to HTTPS"
+msgstr ""
+
+#: src/Admin/Settings.php:1681
+msgid "WWW ↔ non-WWW"
+msgstr ""
+
+#: src/Admin/Settings.php:1684
+msgid "Redirect to www."
+msgstr ""
+
+#: src/Admin/Settings.php:1685
+msgid "Redirect to the bare domain (non-www)"
+msgstr ""
+
+#: src/Admin/Settings.php:1691
+msgid "Trailing slash"
+msgstr ""
+
+#: src/Admin/Settings.php:1694
+msgid "Force a trailing slash"
+msgstr ""
+
+#: src/Admin/Settings.php:1695
+msgid "Remove the trailing slash"
+msgstr ""
+
+#: src/Admin/Settings.php:1699
 msgid "Collapse duplicate slashes in the URL path"
 msgstr ""
 
-#: src/Admin/Settings.php:1482
+#: src/Admin/Settings.php:1701
 msgid "Response headers"
 msgstr ""
 
 #. translators: %s: link to the Security Headers page.
-#: src/Admin/Settings.php:1487
+#: src/Admin/Settings.php:1706
 #, php-format
 msgid "X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy, HSTS and the Content-Security-Policy are configured on their own page: %s."
 msgstr ""
 
-#: src/Admin/Settings.php:1491
+#: src/Admin/Settings.php:1710
 msgid "Send Access-Control-Allow-Origin (CORS)"
 msgstr ""
 
-#: src/Admin/Settings.php:1492
+#: src/Admin/Settings.php:1711
 msgid "Allowed origin"
 msgstr ""
 
-#: src/Admin/Settings.php:1492
+#: src/Admin/Settings.php:1711
 msgid "e.g. https://example.com — left blank, no CORS header is sent at all"
 msgstr ""
 
-#: src/Admin/Settings.php:1493
+#: src/Admin/Settings.php:1712
 msgid "Allow uploading WebP, AVIF, WOFF/WOFF2 and JSON files"
 msgstr ""
 
-#: src/Admin/Settings.php:1495
+#: src/Admin/Settings.php:1714
 msgid "Gzip, Brotli, browser caching, hotlink protection & directory browsing"
 msgstr ""
 
-#: src/Admin/Settings.php:1495
+#: src/Admin/Settings.php:1714
 msgid "these need actual web-server configuration, not just a PHP hook — see below the Save button for how they're applied."
 msgstr ""
 
-#: src/Admin/Settings.php:1497
+#: src/Admin/Settings.php:1716
 msgid "Gzip compression"
 msgstr ""
 
-#: src/Admin/Settings.php:1498
+#: src/Admin/Settings.php:1717
 msgid "Brotli compression (only takes effect if the server supports it)"
 msgstr ""
 
-#: src/Admin/Settings.php:1499
+#: src/Admin/Settings.php:1718
 msgid "Browser caching (Expires / Cache-Control) for static assets"
 msgstr ""
 
-#: src/Admin/Settings.php:1500
+#: src/Admin/Settings.php:1719
 msgid "Hotlink protection for images"
 msgstr ""
 
-#: src/Admin/Settings.php:1501
+#: src/Admin/Settings.php:1720
 msgid "Disable directory browsing (Options -Indexes)"
 msgstr ""
 
-#: src/Admin/Settings.php:1514
-#: src/Admin/Settings.php:1545
-msgid "Apply to .htaccess"
-msgstr ""
-
-#: src/Admin/Settings.php:1517
+#: src/Admin/Settings.php:1736
 msgid "This server doesn't look like Apache or LiteSpeed, so .htaccess has no effect here (this is normal on Nginx). Paste the rules below into your server's own configuration and reload it instead — this plugin can't do that part for you."
 msgstr ""
 
-#: src/Admin/Settings.php:1519
+#: src/Admin/Settings.php:1738
 msgid "Writes the rules below into a marked block in this site's .htaccess (only that block is ever touched), using the checkboxes above — save them first, then apply."
 msgstr ""
 
-#: src/Admin/Settings.php:1524
-msgid ".htaccess updated."
-msgstr ""
-
-#: src/Admin/Settings.php:1538
+#: src/Admin/Settings.php:1757
 msgid "(No .htaccess-backed toggle is currently enabled — save the checkboxes above first.)"
 msgstr ""
 
@@ -2717,19 +2842,19 @@ msgstr ""
 msgid "Page %d"
 msgstr ""
 
-#: src/Performance/Htaccess.php:178
+#: src/Performance/Htaccess.php:194
 msgid "This server doesn't appear to be Apache or LiteSpeed — .htaccess has no effect here. Use the shown snippet in your server's own configuration instead."
 msgstr ""
 
-#: src/Performance/Htaccess.php:189
+#: src/Performance/Htaccess.php:205
 msgid ".htaccess doesn't exist and its directory isn't writable by PHP — create the file manually and try again."
 msgstr ""
 
-#: src/Performance/Htaccess.php:195
+#: src/Performance/Htaccess.php:211
 msgid ".htaccess isn't writable by PHP — fix its file permissions and try again."
 msgstr ""
 
-#: src/Performance/Htaccess.php:207
+#: src/Performance/Htaccess.php:223
 msgid "Writing to .htaccess failed for an unknown reason."
 msgstr ""
 

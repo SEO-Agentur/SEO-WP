@@ -245,4 +245,55 @@ final class SecurityHeaderConfigTest extends TestCase {
 		$this->assertSame( 'foreign', $report['X-Frame-Options']['state'] );
 		$this->assertSame( 'absent', $report['Content-Security-Policy']['state'] );
 	}
+
+	/**
+	 * Static files get the configured headers only when the option is on,
+	 * and never the Content-Security-Policy.
+	 */
+	public function test_static_headers(): void {
+		$settings = array(
+			'sec_x_content_type_options' => true,
+			'sec_referrer_policy'        => true,
+			'sec_hsts'                   => true,
+			'sec_csp'                    => true,
+		);
+
+		$this->assertSame( array(), SecurityHeaderConfig::static_headers( $settings, true ), 'off by default' );
+
+		$settings['sec_static_files'] = true;
+		$headers                      = SecurityHeaderConfig::static_headers( $settings, true );
+
+		$this->assertSame( 'nosniff', $headers['X-Content-Type-Options'] );
+		$this->assertArrayHasKey( 'Referrer-Policy', $headers );
+		$this->assertArrayHasKey( 'Strict-Transport-Security', $headers );
+		$this->assertArrayNotHasKey( 'Content-Security-Policy', $headers );
+		$this->assertArrayNotHasKey( 'Content-Security-Policy-Report-Only', $headers );
+		$this->assertArrayNotHasKey( 'Strict-Transport-Security', SecurityHeaderConfig::static_headers( $settings, false ), 'HSTS only on HTTPS sites' );
+	}
+
+	/**
+	 * The Apache and nginx rules cover CSS, JS and WebP and quote values safely.
+	 */
+	public function test_server_rules_for_static_files(): void {
+		$headers = array(
+			'X-Content-Type-Options' => 'nosniff',
+			'Permissions-Policy'     => 'camera=(self "https://x")',
+		);
+
+		$apache = SecurityHeaderConfig::apache_rules( $headers );
+		$this->assertStringContainsString( '<IfModule mod_headers.c>', $apache );
+		$this->assertStringContainsString( '\\.(css|js|', $apache );
+		$this->assertStringContainsString( 'webp', $apache );
+		$this->assertStringContainsString( 'Header always set X-Content-Type-Options "nosniff"', $apache );
+		$this->assertStringContainsString( 'camera=(self \\"https://x\\")', $apache );
+
+		$nginx = SecurityHeaderConfig::nginx_rules( $headers );
+		$this->assertStringContainsString( 'location ~* \\.(css|js|', $nginx );
+		$this->assertStringContainsString( ')$ {', $nginx );
+		$this->assertStringContainsString( 'add_header X-Content-Type-Options "nosniff" always;', $nginx );
+
+		$this->assertSame( '', SecurityHeaderConfig::apache_rules( array() ) );
+		$this->assertSame( '', SecurityHeaderConfig::nginx_rules( array() ) );
+	}
 }
+

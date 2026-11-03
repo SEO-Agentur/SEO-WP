@@ -226,6 +226,14 @@ name never left dangling).
 
 Template function: `seooptimierung_breadcrumbs( array $args = [], bool $display = true ): string` — args: `separator`, `home_label`, `link_current`, `class`.
 
+## Asset optimizer (1.10.0)
+
+| Filter | Arguments | Purpose |
+|---|---|---|
+| `seooptimierung/assets/skip` | `bool $skip` | Return `true` to switch the combine/minify/defer optimizer off for the current request (it already skips admin, AJAX, REST, feeds, the Customizer, page-builder editors and `?seo_wp_no_optimize`). |
+
+Generated files live in `wp-content/uploads/seooptimierung-cache/{css,js}/` and are removed when the theme or a plugin changes, the settings are saved or "Clear the cache now" is used.
+
 ## Adding a content block type (1.8.0)
 
 Content blocks are declared in `src/Schema/ExtraContentTypes.php`: one entry per type with its editor `fields` and a `build` map of Schema.org property => rule. A generic builder produces the JSON-LD node and the visible markup from the same values; the block, the shortcode and the editor form come from the registry automatically.

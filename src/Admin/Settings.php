@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Seooptimierung\Toolkit\Admin;
 
 use Seooptimierung\Toolkit\Crawl\Verification;
+use Seooptimierung\Toolkit\Performance\AssetOptimizer;
 use Seooptimierung\Toolkit\Performance\Htaccess;
 use Seooptimierung\Toolkit\Performance\ResourceHintScanner;
 use Seooptimierung\Toolkit\Performance\SecurityHeaderConfig;
@@ -78,6 +79,12 @@ final class Settings {
 		),
 		'performance' => array(
 			'defer_noncritical_css',
+			'css_combine',
+			'css_minify',
+			'js_combine',
+			'js_minify',
+			'js_defer',
+			'js_async',
 		),
 		'cleanup'     => array(
 			'disable_emojis',
@@ -121,6 +128,7 @@ final class Settings {
 			'sec_hsts_preload',
 			'sec_csp',
 			'sec_csp_report_only',
+			'sec_static_files',
 		),
 		'server'      => array(
 			'force_https',
@@ -205,6 +213,7 @@ final class Settings {
 		add_action( 'admin_enqueue_scripts', array( $this, 'maybe_enqueue_assets' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_menu_icon_style' ) );
 		add_action( 'admin_post_seo_wp_apply_htaccess', array( $this, 'handle_apply_htaccess' ) );
+		add_action( 'admin_post_seo_wp_clear_asset_cache', array( $this, 'handle_clear_asset_cache' ) );
 		add_action( 'wp_ajax_seo_wp_scan_resource_hints', array( $this, 'handle_scan_resource_hints_ajax' ) );
 
 		// This form submits through WordPress core's own options.php, whose
@@ -446,6 +455,12 @@ final class Settings {
 			$clean['critical_css'] = sanitize_textarea_field( wp_unslash( (string) $input['critical_css'] ) );
 		}
 
+		foreach ( array( 'css_exclude', 'js_exclude' ) as $exclude_key ) {
+			if ( array_key_exists( $exclude_key, $input ) ) {
+				$clean[ $exclude_key ] = sanitize_textarea_field( wp_unslash( (string) $input[ $exclude_key ] ) );
+			}
+		}
+
 		if ( array_key_exists( 'resource_hints', $input ) ) {
 			$clean['resource_hints'] = sanitize_textarea_field( wp_unslash( (string) $input['resource_hints'] ) );
 		}
@@ -643,6 +658,7 @@ final class Settings {
 		}
 
 		if ( 'security' === $active_tab ) {
+			$this->render_security_static_section();
 			$this->render_security_check();
 		}
 
@@ -1170,6 +1186,9 @@ final class Settings {
 	 * independent toggle to load every other stylesheet non-blocking.
 	 */
 	private function render_performance_tab(): void {
+		$this->render_asset_optimizer_fields();
+
+		$this->section_heading( __( 'Critical CSS and non-blocking stylesheets', 'seooptimierung-toolkit' ) );
 		echo '<tr><td colspan="2"><p class="description">';
 		echo esc_html__( 'This plugin cannot auto-detect critical CSS — that requires actually rendering the page (real layout, real box positions), which no CSS parsing pass can do. Paste critical CSS from a tool of your choice, or write it by hand.', 'seooptimierung-toolkit' );
 		echo '</p></td></tr>';
@@ -1203,6 +1222,78 @@ final class Settings {
 			'<a href="' . esc_url( $this->tab_url( 'cleanup' ) ) . '">' . esc_html__( 'WordPress Cleanup', 'seooptimierung-toolkit' ) . '</a>'
 		);
 		echo '</p></td></tr>';
+	}
+
+	/**
+	 * The "combine, minify, defer" switches for stylesheets and scripts.
+	 */
+	private function render_asset_optimizer_fields(): void {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only banner reflecting a prior action's redirect.
+		if ( isset( $_GET['cache_cleared'] ) ) {
+			echo '<tr><td colspan="2"><div class="notice notice-success inline"><p>' . esc_html__( 'The cache was cleared.', 'seooptimierung-toolkit' ) . '</p></div></td></tr>';
+		}
+
+		$this->section_heading(
+			__( 'Combine and minify stylesheets and scripts', 'seooptimierung-toolkit' ),
+			__( 'Files of this site that load next to each other are written into one cached file, optionally minified, so the browser needs fewer requests. The order WordPress decided on is kept; files that cannot be combined safely (other sites\' files, conditional stylesheets, scripts with inline code or translations, scripts starting with "use strict") stay as they are. Everything is off by default — switch one thing on, open your site in a private window and look through the important pages. Add ?seo_wp_no_optimize=1 to any address to see that page without any of this.', 'seooptimierung-toolkit' )
+		);
+
+		$this->checkbox_field( 'css_combine', __( 'Combine stylesheets (CSS) into one file', 'seooptimierung-toolkit' ), false );
+		$this->checkbox_field( 'css_minify', __( 'Minify stylesheets (removes comments and extra spaces)', 'seooptimierung-toolkit' ), false );
+		echo '<tr><td colspan="2"><p class="description">' . esc_html__( 'Loading stylesheets non-blocking ("defer") is the checkbox further down, below the critical CSS box, and applies to the combined files too.', 'seooptimierung-toolkit' ) . '</p></td></tr>';
+		$this->textarea_field( 'css_exclude', __( 'Never touch these stylesheets', 'seooptimierung-toolkit' ) );
+		echo '<tr><td colspan="2"><p class="description">' . esc_html__( 'One entry per line: a handle (e.g. elementor-frontend) or a part of the file address (e.g. /plugins/slider/). Lines starting with # are comments.', 'seooptimierung-toolkit' ) . '</p></td></tr>';
+
+		$this->checkbox_field( 'js_combine', __( 'Combine scripts (JavaScript) into one file', 'seooptimierung-toolkit' ), false );
+		$this->checkbox_field( 'js_minify', __( 'Minify scripts (careful: removes comments and extra spaces; files ending in .min.js are left as they are)', 'seooptimierung-toolkit' ), false );
+		$this->checkbox_field( 'js_defer', __( 'Load scripts with defer (they run after the page is parsed)', 'seooptimierung-toolkit' ), false );
+		$this->checkbox_field( 'js_async', __( 'Load independent scripts with async (they run as soon as they have loaded)', 'seooptimierung-toolkit' ), false );
+		echo '<tr><td colspan="2"><p class="description">' . esc_html__( 'Defer and async use WordPress\'s own script loading, which keeps dependencies and inline code intact. What it cannot see is code printed by hand into a page that expects a script to be there already — typically inline jQuery(…) code. That is why jQuery is excluded below until you change the list. If something stops working, add the script\'s handle to the list or switch the option off.', 'seooptimierung-toolkit' ) . '</p></td></tr>';
+
+		$settings = get_option( self::OPTION_KEY, array() );
+		$value    = is_array( $settings ) && array_key_exists( 'js_exclude', $settings ) ? (string) $settings['js_exclude'] : AssetOptimizer::DEFAULT_JS_EXCLUDE;
+		printf(
+			'<tr><th scope="row"><label for="js_exclude">%1$s</label></th><td><textarea id="js_exclude" name="%2$s[js_exclude]" rows="4" class="large-text code">%3$s</textarea></td></tr>',
+			esc_html__( 'Never touch these scripts', 'seooptimierung-toolkit' ),
+			esc_attr( self::OPTION_KEY ),
+			esc_textarea( $value )
+		);
+
+		$stats = ( new AssetOptimizer() )->cache_stats();
+		echo '<tr><td colspan="2"><p class="description">';
+		printf(
+			/* translators: 1: number of cached files, 2: their size. */
+			esc_html__( 'Generated files: %1$s (%2$s). They are rebuilt automatically when a file changes and removed when the theme or a plugin changes.', 'seooptimierung-toolkit' ),
+			esc_html( number_format_i18n( $stats['files'] ) ),
+			esc_html( $stats['bytes'] > 0 ? (string) size_format( $stats['bytes'] ) : '0 B' )
+		);
+		echo ' <a class="button" href="' . esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=seo_wp_clear_asset_cache' ), 'seo_wp_clear_asset_cache' ) ) . '">' . esc_html__( 'Clear the cache now', 'seooptimierung-toolkit' ) . '</a>';
+		echo '</p></td></tr>';
+	}
+
+	/**
+	 * Handles the "Clear the cache now" link.
+	 */
+	public function handle_clear_asset_cache(): void {
+		if ( ! current_user_can( self::CAPABILITY ) ) {
+			wp_die( esc_html__( 'You are not allowed to do this.', 'seooptimierung-toolkit' ) );
+		}
+
+		check_admin_referer( 'seo_wp_clear_asset_cache' );
+
+		( new AssetOptimizer() )->purge();
+
+		wp_safe_redirect(
+			add_query_arg(
+				array(
+					'page'          => self::PAGE_SLUG,
+					'tab'           => 'performance',
+					'cache_cleared' => 1,
+				),
+				admin_url( 'admin.php' )
+			)
+		);
+		exit;
 	}
 
 	/**
@@ -1380,6 +1471,13 @@ final class Settings {
 			esc_textarea( array_key_exists( 'sec_csp_policy', $settings ) && '' !== (string) $settings['sec_csp_policy'] ? (string) $settings['sec_csp_policy'] : SecurityHeaderConfig::DEFAULT_CSP ),
 			esc_html__( 'The default suits a typical WordPress site (inline scripts/styles allowed, https images and embeds). Add the hosts you really load from, e.g. fonts.googleapis.com in style-src and fonts.gstatic.com in font-src for Google Fonts, or your analytics and video providers.', 'seooptimierung-toolkit' )
 		);
+
+		$this->section_heading(
+			__( 'Static files (CSS, JavaScript, images, fonts)', 'seooptimierung-toolkit' ),
+			__( 'The headers above are sent by PHP, but the web server answers CSS, JavaScript, WebP and other images, fonts and media files on its own, without running PHP — so they never get these headers. Switch this on to send the headers above (except the Content-Security-Policy, which only governs pages) with those files too.', 'seooptimierung-toolkit' )
+		);
+		$this->checkbox_field( 'sec_static_files', __( 'Also send the headers above with static files', 'seooptimierung-toolkit' ), false );
+		echo '<tr><td colspan="2"><p class="description">' . esc_html__( 'This needs web-server configuration. On Apache and LiteSpeed the rules are written to .htaccess with the button below the Save button; on nginx you copy the shown block into the server configuration. Save the checkbox first.', 'seooptimierung-toolkit' ) . '</p></td></tr>';
 	}
 
 	/**
@@ -1418,11 +1516,83 @@ final class Settings {
 			}
 		}
 
-		echo '<table class="widefat striped" style="max-width:900px;"><thead><tr><th>' . esc_html__( 'Header', 'seooptimierung-toolkit' ) . '</th><th>' . esc_html__( 'Status', 'seooptimierung-toolkit' ) . '</th><th>' . esc_html__( 'Value sent', 'seooptimierung-toolkit' ) . '</th></tr></thead><tbody>';
 		$settings = get_option( self::OPTION_KEY, array() );
-		$expected = SecurityHeaderConfig::headers( is_array( $settings ) ? $settings : array(), 0 === strpos( home_url( '/' ), 'https://' ), true );
+		$settings = is_array( $settings ) ? $settings : array();
+		$is_ssl   = 0 === strpos( home_url( '/' ), 'https://' );
 
-		foreach ( SecurityHeaderConfig::check_report( $received, $expected ) as $name => $row ) {
+		echo '<h3>' . esc_html__( 'Home page', 'seooptimierung-toolkit' ) . '</h3>';
+		$this->render_header_report( SecurityHeaderConfig::check_report( $received, SecurityHeaderConfig::headers( $settings, $is_ssl, true ) ) );
+
+		$static_expected = SecurityHeaderConfig::static_headers( $settings, $is_ssl );
+		foreach ( $this->sample_static_files( (string) wp_remote_retrieve_body( $response ) ) as $label => $url ) {
+			echo '<h3>' . esc_html( $label ) . '</h3>';
+			echo '<p class="description"><code>' . esc_html( $url ) . '</code></p>';
+
+			$file = wp_remote_head( $url, array( 'timeout' => 10 ) );
+			if ( is_wp_error( $file ) ) {
+				echo '<div class="notice notice-error inline"><p>' . esc_html( $file->get_error_message() ) . '</p></div>';
+				continue;
+			}
+
+			$file_received = array();
+			foreach ( SecurityHeaderConfig::CHECKED_HEADERS as $name ) {
+				$value = wp_remote_retrieve_header( $file, $name );
+				if ( '' !== $value && array() !== $value ) {
+					$file_received[ strtolower( $name ) ] = $value;
+				}
+			}
+			$this->render_header_report( SecurityHeaderConfig::check_report( $file_received, $static_expected ) );
+		}
+
+		echo '<p class="description">' . esc_html__( 'The check requests your home page and one stylesheet, one script and one image from the server itself; a CDN or caching layer in front of the site may add or remove headers that this request does or doesn\'t see. For pages only one of the two CSP rows is expected to be sent; static files never get a CSP from this plugin.', 'seooptimierung-toolkit' ) . '</p>';
+	}
+
+	/**
+	 * One stylesheet, one script and one image of this site as linked from
+	 * a page, to check which headers the web server sends with them.
+	 *
+	 * @param string $html The page's HTML.
+	 * @return array<string,string> Label => absolute URL (only the kinds that were found).
+	 */
+	private function sample_static_files( string $html ): array {
+		$host  = (string) wp_parse_url( home_url( '/' ), PHP_URL_HOST );
+		$found = array();
+		$kinds = array(
+			__( 'Stylesheet (CSS)', 'seooptimierung-toolkit' ) => '/<link[^>]+href=[\'"]([^\'"]+\.css(?:\?[^\'"]*)?)[\'"]/i',
+			__( 'Script (JavaScript)', 'seooptimierung-toolkit' ) => '/<script[^>]+src=[\'"]([^\'"]+\.js(?:\?[^\'"]*)?)[\'"]/i',
+			__( 'Image (WebP, PNG, JPEG)', 'seooptimierung-toolkit' ) => '/<img[^>]+src=[\'"]([^\'"]+\.(?:webp|avif|png|jpe?g)(?:\?[^\'"]*)?)[\'"]/i',
+		);
+
+		foreach ( $kinds as $label => $pattern ) {
+			if ( 0 === preg_match_all( $pattern, $html, $matches ) ) {
+				continue;
+			}
+			foreach ( $matches[1] as $candidate ) {
+				$url = html_entity_decode( $candidate );
+				if ( 0 === strpos( $url, '//' ) ) {
+					$url = 'https:' . $url;
+				} elseif ( 0 === strpos( $url, '/' ) ) {
+					$url = home_url( $url );
+				}
+				if ( 1 === preg_match( '#^https?://#i', $url ) && (string) wp_parse_url( $url, PHP_URL_HOST ) === $host ) {
+					$found[ $label ] = $url;
+					break;
+				}
+			}
+		}
+
+		return $found;
+	}
+
+	/**
+	 * The status table of the live check.
+	 *
+	 * @param array<string,array{state:string,value:string}> $report Result of SecurityHeaderConfig::check_report().
+	 */
+	private function render_header_report( array $report ): void {
+		echo '<table class="widefat striped" style="max-width:900px;"><thead><tr><th>' . esc_html__( 'Header', 'seooptimierung-toolkit' ) . '</th><th>' . esc_html__( 'Status', 'seooptimierung-toolkit' ) . '</th><th>' . esc_html__( 'Value sent', 'seooptimierung-toolkit' ) . '</th></tr></thead><tbody>';
+
+		foreach ( $report as $name => $row ) {
 			switch ( $row['state'] ) {
 				case 'ok':
 					$status = '<span style="color:#00a32a;">&#10003; ' . esc_html__( 'sent, as configured', 'seooptimierung-toolkit' ) . '</span>';
@@ -1445,7 +1615,56 @@ final class Settings {
 			printf( '<tr><td><code>%1$s</code></td><td>%2$s</td><td><code>%3$s</code></td></tr>', esc_html( $name ), $status, esc_html( $row['value'] ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $status is assembled above from escaped strings and fixed markup.
 		}
 		echo '</tbody></table>';
-		echo '<p class="description">' . esc_html__( 'The check requests your home page from the server itself; a CDN or caching layer in front of the site may add or remove headers that this request does or doesn\'t see. Only one of the two CSP rows is expected to be sent.', 'seooptimierung-toolkit' ) . '</p>';
+	}
+
+	/**
+	 * Below the Save button of the Security page: the .htaccess rules (or
+	 * the nginx block) that send the headers with static files.
+	 */
+	private function render_security_static_section(): void {
+		$settings = get_option( self::OPTION_KEY, array() );
+		$settings = is_array( $settings ) ? $settings : array();
+		$htaccess = new Htaccess();
+
+		echo '<h2>' . esc_html__( 'Headers for static files', 'seooptimierung-toolkit' ) . '</h2>';
+
+		if ( ! SecurityHeaderConfig::static_files_enabled( $settings ) ) {
+			echo '<p class="description">' . esc_html__( 'Switched off. Tick "Also send the headers above with static files", save, and the rules for CSS, JavaScript, WebP and other files appear here.', 'seooptimierung-toolkit' ) . '</p>';
+			return;
+		}
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only banners reflecting a prior action's redirect.
+		if ( isset( $_GET['htaccess_applied'] ) ) {
+			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( '.htaccess updated.', 'seooptimierung-toolkit' ) . '</p></div>';
+		}
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only banner.
+		if ( isset( $_GET['htaccess_error'] ) ) {
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only banner, value only ever originates from this class's own redirect.
+			printf( '<div class="notice notice-error is-dismissible"><p>%s</p></div>', esc_html( sanitize_text_field( wp_unslash( (string) $_GET['htaccess_error'] ) ) ) );
+		}
+
+		$is_ssl  = 0 === strpos( home_url( '/' ), 'https://' );
+		$headers = SecurityHeaderConfig::static_headers( $settings, $is_ssl );
+
+		if ( array() === $headers ) {
+			echo '<p class="description">' . esc_html__( 'None of the headers above is switched on, so there is nothing to send with static files.', 'seooptimierung-toolkit' ) . '</p>';
+			return;
+		}
+
+		if ( $htaccess->server_supports_htaccess() ) {
+			echo '<p class="description">' . esc_html__( 'Apache/LiteSpeed: these rules are part of the block this plugin keeps in .htaccess (together with the Server tab\'s compression and caching rules). Needs mod_headers, which most hosts have.', 'seooptimierung-toolkit' ) . '</p>';
+			printf( '<textarea readonly rows="9" class="large-text code">%s</textarea>', esc_textarea( SecurityHeaderConfig::apache_rules( $headers ) ) );
+			echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
+			echo '<input type="hidden" name="action" value="seo_wp_apply_htaccess" />';
+			echo '<input type="hidden" name="return_tab" value="security" />';
+			wp_nonce_field( 'seo_wp_apply_htaccess', 'seo_wp_apply_htaccess_nonce' );
+			submit_button( __( 'Apply to .htaccess', 'seooptimierung-toolkit' ), 'secondary', 'submit', false );
+			echo '</form>';
+			return;
+		}
+
+		echo '<p class="description">' . esc_html__( 'This server does not look like Apache or LiteSpeed, so .htaccess has no effect. For nginx, add this block to the server configuration and reload nginx. Note that nginx drops the headers of the surrounding block inside a location with its own add_header, so repeat any others here (for example Cache-Control).', 'seooptimierung-toolkit' ) . '</p>';
+		printf( '<textarea readonly rows="9" class="large-text code">%s</textarea>', esc_textarea( SecurityHeaderConfig::nginx_rules( $headers ) ) );
 	}
 
 	/**
@@ -1559,10 +1778,14 @@ final class Settings {
 
 		$result = ( new Htaccess() )->write();
 
-		$args = array(
+		$return_tab = isset( $_POST['return_tab'] ) ? sanitize_key( wp_unslash( $_POST['return_tab'] ) ) : 'server';
+		$args       = array(
 			'page' => self::PAGE_SLUG,
-			'tab'  => 'server',
+			'tab'  => 'security' === $return_tab ? 'security' : 'server',
 		);
+		if ( 'security' === $return_tab ) {
+			$args['page'] = self::PAGE_SLUG . '-security';
+		}
 
 		if ( is_wp_error( $result ) ) {
 			$args['htaccess_error'] = $result->get_error_message();

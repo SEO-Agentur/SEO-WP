@@ -97,6 +97,11 @@ final class Htaccess {
 		if ( $this->enabled( 'enable_hotlink_protection' ) ) {
 			$blocks[] = $this->hotlink_protection_block();
 		}
+
+		$security = $this->security_headers_block();
+		if ( '' !== $security ) {
+			$blocks[] = $security;
+		}
 		if ( $this->enabled( 'disable_directory_browsing' ) ) {
 			$blocks[] = "<IfModule mod_autoindex.c>\n\tOptions -Indexes\n</IfModule>";
 		}
@@ -149,6 +154,17 @@ final class Htaccess {
 			. "\t\tHeader set Cache-Control \"public, max-age=31536000, immutable\"\n"
 			. "\t</FilesMatch>\n"
 			. '</IfModule>';
+	}
+
+	/**
+	 * The security headers for static files (CSS, JavaScript, images,
+	 * fonts) — the Security Headers page's own setting, written here
+	 * because the web server answers those files without running PHP.
+	 */
+	public function security_headers_block(): string {
+		$is_ssl = 'https' === wp_parse_url( home_url(), PHP_URL_SCHEME );
+
+		return SecurityHeaderConfig::apache_rules( SecurityHeaderConfig::static_headers( $this->settings(), $is_ssl ) );
 	}
 
 	/**

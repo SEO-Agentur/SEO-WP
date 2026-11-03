@@ -121,6 +121,85 @@ final class SecurityHeaderConfig {
 	}
 
 	/**
+	 * File extensions of the static files the web server answers without
+	 * PHP (CSS, JavaScript, images, fonts, media) — the ones the PHP
+	 * headers never reach.
+	 *
+	 * @var string[]
+	 */
+	public const STATIC_EXTENSIONS = array( 'css', 'js', 'mjs', 'json', 'webp', 'avif', 'png', 'jpg', 'jpeg', 'gif', 'svg', 'ico', 'woff', 'woff2', 'ttf', 'otf', 'eot', 'mp4', 'webm', 'mp3', 'pdf' );
+
+	/**
+	 * Whether the headers are also to be sent with static files.
+	 *
+	 * @param array<string,mixed> $settings The plugin settings array.
+	 */
+	public static function static_files_enabled( array $settings ): bool {
+		return ! empty( $settings['sec_static_files'] );
+	}
+
+	/**
+	 * The headers that make sense on a static file: the configured ones
+	 * minus the Content-Security-Policy, which only governs documents.
+	 * Empty when the static-files option is off.
+	 *
+	 * @param array<string,mixed> $settings The plugin settings array.
+	 * @param bool                $is_ssl   Whether the site is served over HTTPS (HSTS is only ever sent then).
+	 * @return array<string,string>
+	 */
+	public static function static_headers( array $settings, bool $is_ssl ): array {
+		if ( ! self::static_files_enabled( $settings ) ) {
+			return array();
+		}
+
+		return self::headers( $settings, $is_ssl, false );
+	}
+
+	/**
+	 * Apache rules (mod_headers) that add the given headers to every
+	 * static file. `Header always set` replaces a header of the same name
+	 * instead of adding a second one.
+	 *
+	 * @param array<string,string> $headers Header name => value.
+	 */
+	public static function apache_rules( array $headers ): string {
+		if ( array() === $headers ) {
+			return '';
+		}
+
+		$lines = array();
+		foreach ( $headers as $name => $value ) {
+			$lines[] = "\t\tHeader always set " . $name . ' "' . str_replace( array( '\\', '"' ), array( '\\\\', '\\"' ), $value ) . '"';
+		}
+
+		return "<IfModule mod_headers.c>\n"
+			. "\t<FilesMatch \"\\.(" . implode( '|', self::STATIC_EXTENSIONS ) . ")$\">\n"
+			. implode( "\n", $lines ) . "\n"
+			. "\t</FilesMatch>\n"
+			. '</IfModule>';
+	}
+
+	/**
+	 * The same headers as an nginx location block. Note that nginx drops
+	 * every add_header of the server block inside a location that has its
+	 * own, so any other headers must be repeated here.
+	 *
+	 * @param array<string,string> $headers Header name => value.
+	 */
+	public static function nginx_rules( array $headers ): string {
+		if ( array() === $headers ) {
+			return '';
+		}
+
+		$lines = array();
+		foreach ( $headers as $name => $value ) {
+			$lines[] = "\tadd_header " . $name . ' "' . str_replace( array( '\\', '"' ), array( '\\\\', '\\"' ), $value ) . '" always;';
+		}
+
+		return 'location ~* \\.(' . implode( '|', self::STATIC_EXTENSIONS ) . ")$ {\n" . implode( "\n", $lines ) . "\n}";
+	}
+
+	/**
 	 * Header names shown in the live check, in display order.
 	 *
 	 * @var string[]
