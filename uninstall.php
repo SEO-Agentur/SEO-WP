@@ -37,3 +37,26 @@ delete_option( 'seo_wp_staging_notice_dismissed' );
 delete_option( 'seo_wp_rewrite_version' );
 delete_option( 'seo_wp_image_alt_scan' );
 delete_option( 'seo_wp_slug_log' );
+delete_option( 'seo_wp_asset_skip' );
+
+// The files the asset optimizer generated in the uploads folder.
+$seo_wp_uploads = wp_upload_dir( null, false );
+if ( empty( $seo_wp_uploads['error'] ) ) {
+	require_once ABSPATH . 'wp-admin/includes/file.php';
+
+	if ( WP_Filesystem() ) {
+		global $wp_filesystem;
+
+		$seo_wp_cache_dir = trailingslashit( $seo_wp_uploads['basedir'] ) . 'seooptimierung-cache';
+		if ( $wp_filesystem->is_dir( $seo_wp_cache_dir ) ) {
+			$wp_filesystem->delete( $seo_wp_cache_dir, true );
+		}
+	}
+}
+
+// The block this plugin keeps in .htaccess (compression, caching, security headers): emptied, as core does with its own.
+$seo_wp_htaccess = ABSPATH . '.htaccess';
+if ( file_exists( $seo_wp_htaccess ) && is_writable( $seo_wp_htaccess ) ) { // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_is_writable -- permission pre-check for insert_with_markers(), which writes the file directly as core does.
+	require_once ABSPATH . 'wp-admin/includes/misc.php';
+	insert_with_markers( $seo_wp_htaccess, 'Seooptimierung Toolkit Performance', array() );
+}
